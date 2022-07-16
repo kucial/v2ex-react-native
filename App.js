@@ -15,7 +15,10 @@ import HomeScreen from './src/screens/HomeScreen'
 import NodesScreen from './src/screens/NodesScreen'
 import MyScreen from './src/screens/MyScreen'
 import SearchScreen from './src/screens/SearchScreen'
-import PostScreen from './src/screens/PostScreen'
+import TopicScreen from './src/screens/TopicScreen'
+import NodeScreen from './src/screens/NodeScreen'
+import BrowserScreen from './src/screens/BrowserScreen'
+import MemberScreen from './src/screens/MemberScreen'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -24,7 +27,7 @@ function MainTab() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#e91e63'
+        tabBarActiveTintColor: '#111'
         // headerShown: false,
       }}>
       <Tab.Screen
@@ -32,6 +35,7 @@ function MainTab() {
         component={HomeScreen}
         options={{
           tabBarIcon: HomeIcon,
+          tabBarLabel: '主题',
           header: MyHeader
         }}
       />
@@ -40,6 +44,7 @@ function MainTab() {
         component={NodesScreen}
         options={{
           tabBarIcon: CollectionIcon,
+          tabBarLabel: '节点',
           header: MyHeader
         }}
       />
@@ -47,7 +52,8 @@ function MainTab() {
         name="my"
         component={MyScreen}
         options={{
-          tabBarIcon: UserIcon
+          tabBarIcon: UserIcon,
+          tabBarLabel: '我的'
         }}
       />
     </Tab.Navigator>
@@ -56,7 +62,11 @@ function MainTab() {
 
 function AppStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerTintColor: '#111',
+        headerBackTitleVisible: false
+      }}>
       <Stack.Screen
         name="main"
         component={MainTab}
@@ -67,7 +77,28 @@ function AppStack() {
         component={SearchScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="post" component={PostScreen} />
+      <Stack.Screen
+        name="topic"
+        component={TopicScreen}
+        options={{
+          title: '话题'
+        }}
+      />
+      <Stack.Screen name="node" component={NodeScreen} />
+      <Stack.Screen
+        name="browser"
+        component={BrowserScreen}
+        options={{
+          title: '内嵌网页'
+        }}
+      />
+      <Stack.Screen
+        name="member"
+        component={MemberScreen}
+        options={{
+          title: '成员'
+        }}
+      />
     </Stack.Navigator>
   )
 }
