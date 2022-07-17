@@ -36,10 +36,13 @@ export default function ReplyRow(props) {
             </View>
           </View>
         </View>
-        <View className="pl-[34px] pr-4 pb-2">
+        <View className="pl-[34px] pr-4 py-2">
           <RenderHtml
             contentWidth={width - 50}
-            source={{ html: `<div>${data.content_rendered}</div>` }}
+            source={{
+              html: data.content_rendered,
+              baseUrl: 'https://v2ex.com'
+            }}
           />
         </View>
       </View>

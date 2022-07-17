@@ -13,10 +13,9 @@ import React, { useLayoutEffect, useMemo } from 'react'
 import TimeAgo from '@/Components/TimeAgo'
 import RenderHtml from '@/Components/RenderHtml'
 import ReplyRow from '@/Components/ReplyRow'
-import replies from '@/mock/replies'
-import { useTailwind } from 'tailwindcss-react-native'
+import useSWR from 'swr'
 
-const maxLen = (str, limit = 0) => {
+const maxLen = (str = '', limit = 0) => {
   if (limit && str.length > limit) {
     return str.slice(0, limit) + ' ...'
   }
@@ -25,19 +24,40 @@ const maxLen = (str, limit = 0) => {
 
 // ·
 export default function TopicScreen({ navigation, route }) {
-  const { width } = useWindowDimensions()
-  const tw = useTailwind()
   const {
-    params: { data: topic }
+    params: { brief, id }
   } = route
-  const { member, node } = topic
+  const topicSwr = useSWR([
+    '/api/topics/show.json',
+    {
+      params: {
+        id
+      }
+    }
+  ])
+
+  const repliesSwr = useSWR([
+    '/api/replies/show.json',
+    {
+      params: {
+        topic_id: id
+      }
+    }
+  ])
+
+  const { width } = useWindowDimensions()
+
+  const topic = topicSwr.data?.[0] || brief || {}
+  const isFallback = topic === brief
 
   useLayoutEffect(() => {
-    const title = maxLen(topic.title, 16)
-    navigation.setOptions({
-      title
-    })
-  }, [])
+    if (topic.title) {
+      const title = maxLen(topic.title, 16)
+      navigation.setOptions({
+        title
+      })
+    }
+  }, [topic?.title])
 
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
@@ -50,25 +70,39 @@ export default function TopicScreen({ navigation, route }) {
     }
   }, [])
 
+  if (!topic) {
+    return (
+      <View>
+        <Text>LOADING</Text>
+      </View>
+    )
+  }
+
+  const { member, node } = topic
+
+  console.log('topic.content', topic)
+
+  // return null
+
   const baseContent = (
     <>
-      <View className="bg-white p-4 mb-2 shadow-sm">
-        <View className="flex flex-row">
+      <View className="bg-white py-3 px-4 mb-2 shadow-sm">
+        <View className="flex flex-row mb-2">
           <View className="flex flex-row flex-1">
             <Image
               source={{ uri: member.avatar_normal }}
-              className="w-[40px] h-[40px] rounded"
+              className="w-[32px] h-[32px] rounded"
             />
-            <View className="pl-2 mb-3">
-              <View className="flex flex-row space-x-2">
-                <View className="py-[2px]">
-                  <Text className="font-medium">{member.username}</Text>
-                </View>
+            <View className="pl-2 flex flex-row items-center">
+              <View className="py-[2px]">
+                <Text className="font-medium">{member.username}</Text>
               </View>
-              <View className="mt-[1px]">
-                <Text className="text-gray-400 text-xs">
-                  <TimeAgo date={topic.created * 1000} />
-                </Text>
+              <View className="ml-2">
+                {topic.created && (
+                  <Text className="text-gray-400 text-xs">
+                    <TimeAgo date={topic.created * 1000} />
+                  </Text>
+                )}
               </View>
             </View>
           </View>
@@ -77,24 +111,35 @@ export default function TopicScreen({ navigation, route }) {
               className="py-1 px-[6px] rounded bg-gray-100 active:opacity-50"
               hitSlop={6}
               onPress={() => {
-                navigation.push('node', {
+                navigation.navigate('node', {
                   id: node.id,
-                  data: node
+                  brief: node
                 })
               }}>
               <Text className="text-gray-500">{node.title}</Text>
             </Pressable>
           </View>
         </View>
-        <View className="pb-2 border-b border-b-gray-300 border-solid">
+        <View className="pb-2 border-b border-b-gray-300 border-solid mb-2">
           <Text className="text-lg font-semibold">{topic.title}</Text>
         </View>
-
-        <RenderHtml
-          contentWidth={width - 32}
-          source={{ html: topic.content_rendered }}
-          baseStyle={tw('text-base')}
-        />
+        {!!topic.content_rendered && (
+          <RenderHtml
+            contentWidth={width - 32}
+            source={{
+              html: topic.content_rendered,
+              baseUrl: 'https://v2ex.com'
+            }}
+            baseStyle={{
+              fontSize: 16
+            }}
+          />
+        )}
+        {isFallback && (
+          <View className="mt-1">
+            <Text className="text-gray-400">LOADING....</Text>
+          </View>
+        )}
       </View>
       {/* <View className="bg-white p-4 mb-2">
         <TagIcon size={18} color={'#444'} />
@@ -103,15 +148,25 @@ export default function TopicScreen({ navigation, route }) {
   )
 
   return (
-    <SafeAreaView className="bg-white">
-      <View className="bg-gray-100">
-        <FlatList
-          data={replies}
-          ListHeaderComponent={() => baseContent}
-          renderItem={renderReply}
-          keyExtractor={keyExtractor}
-        />
-      </View>
-    </SafeAreaView>
+    <View className="flex-1">
+      <FlatList
+        className="flex-1"
+        data={repliesSwr.data || []}
+        ListHeaderComponent={() => baseContent}
+        ListFooterComponent={() => (
+          <SafeAreaView>
+            <View className="flex flex-row justify-center py-4">
+              <Text className="text-gray-400">
+                {topic.replies && repliesSwr.data && repliesSwr.data.length > 0
+                  ? '到底底部啦'
+                  : ''}
+              </Text>
+            </View>
+          </SafeAreaView>
+        )}
+        renderItem={renderReply}
+        keyExtractor={keyExtractor}
+      />
+    </View>
   )
 }

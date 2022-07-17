@@ -2,6 +2,7 @@ import { TailwindProvider } from 'tailwindcss-react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { SWRConfig } from 'swr'
 
 import {
   CollectionIcon,
@@ -19,6 +20,7 @@ import TopicScreen from './src/screens/TopicScreen'
 import NodeScreen from './src/screens/NodeScreen'
 import BrowserScreen from './src/screens/BrowserScreen'
 import MemberScreen from './src/screens/MemberScreen'
+import fetcher, { FetcherWebView } from './src/utils/fetcher'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -105,10 +107,18 @@ function AppStack() {
 
 export default function App() {
   return (
-    <TailwindProvider>
-      <NavigationContainer>
-        <AppStack />
-      </NavigationContainer>
-    </TailwindProvider>
+    <>
+      <FetcherWebView />
+      <SWRConfig
+        value={{
+          fetcher: fetcher
+        }}>
+        <TailwindProvider>
+          <NavigationContainer>
+            <AppStack />
+          </NavigationContainer>
+        </TailwindProvider>
+      </SWRConfig>
+    </>
   )
 }

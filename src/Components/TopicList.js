@@ -1,17 +1,42 @@
-import { FlatList } from 'react-native'
+import { FlatList, View, Text } from 'react-native'
 import React, { useCallback } from 'react'
 
 import TopicRow from '@/Components/TopicRow'
 import topics from '@/mock/topics'
+import useSWR from 'swr'
 
 export default function TopicList(props) {
+  const { data, error } = useSWR([
+    '/page/index/feed.json',
+    {
+      params: {
+        tab: props.type
+      }
+    }
+  ])
   const renderItem = useCallback(({ item }) => {
     return <TopicRow data={item} />
   }, [])
 
+  if (error) {
+    return (
+      <View>
+        <Text>{error.message}</Text>
+      </View>
+    )
+  }
+
+  if (!data) {
+    return (
+      <View>
+        <Text>LOADING</Text>
+      </View>
+    )
+  }
+
   return (
     <FlatList
-      data={topics}
+      data={data}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
     />

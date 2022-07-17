@@ -1,60 +1,39 @@
 import React, { useMemo } from 'react'
+import { View, Text } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import TopicList from '@/Components/TopicList'
+import useSWR from 'swr'
 
 const Tab = createMaterialTopTabNavigator()
 
-const tabs = [
-  {
-    value: 'latest',
-    label: '最新'
-  },
-  {
-    value: 'hottest',
-    label: '最热'
-  },
-  {
-    value: 'all',
-    label: '全部'
-  },
-  {
-    value: 'tech',
-    label: '技术'
-  },
-  {
-    value: 'idea',
-    label: '创意'
-  },
-  {
-    value: 'play',
-    label: '好玩'
-  },
-  {
-    value: 'apple',
-    label: 'Apple'
-  },
-  {
-    value: 'job',
-    label: '酷工作'
-  },
-  {
-    value: 'deals',
-    label: '交易'
-  },
-  {
-    value: 'city',
-    label: '城市'
-  }
-]
+export default function HomeScreen() {
+  const tabsState = useSWR('/page/index/tabs.json')
 
-export default function HomeScreen({ navigation }) {
   const components = useMemo(() => {
+    if (!tabsState.data) {
+      return null
+    }
     const map = {}
-    tabs.forEach((tab) => {
+    tabsState.data.forEach((tab) => {
       map[tab.value] = (props) => <TopicList type={tab.value} {...props} />
     })
     return map
-  }, [])
+  }, [tabsState.data])
+
+  if (tabsState.error) {
+    return (
+      <View>
+        <Text>{tabsState.error.message}</Text>
+      </View>
+    )
+  }
+  if (!tabsState.data) {
+    return (
+      <View>
+        <Text>LOADING SCREEN</Text>
+      </View>
+    )
+  }
 
   return (
     <Tab.Navigator
@@ -68,9 +47,10 @@ export default function HomeScreen({ navigation }) {
           width: 62,
           minHeight: 42
         },
-        tabBarIndicatorStyle: { backgroundColor: '#111' }
+        tabBarIndicatorStyle: { backgroundColor: '#111' },
+        lazy: true
       }}>
-      {tabs.map((tab) => (
+      {tabsState.data.map((tab) => (
         <Tab.Screen
           key={tab.value}
           name={tab.value}

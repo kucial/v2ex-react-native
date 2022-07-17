@@ -4,7 +4,8 @@ import { useNavigation } from '@react-navigation/native'
 import TimeAgo from '@/Components/TimeAgo'
 
 export default function TopicRow(props) {
-  const { node, member, title, replies, last_touched } = props.data
+  const { node, member, title, replies, last_touched, formatted_time_ago } =
+    props.data
   const navigation = useNavigation()
   return (
     <TouchableOpacity
@@ -12,7 +13,7 @@ export default function TopicRow(props) {
       onPress={() => {
         navigation.navigate('topic', {
           id: props.data.id,
-          data: props.data
+          brief: props.data
         })
       }}>
       <View className="flex-1 py-2 pl-1">
@@ -20,8 +21,8 @@ export default function TopicRow(props) {
           <Pressable
             onPress={() => {
               navigation.navigate('member', {
-                id: member.id,
-                data: member
+                username: member.username,
+                brief: member
               })
             }}>
             <Image
@@ -37,11 +38,11 @@ export default function TopicRow(props) {
               className="py-[2px] px-[6px] rounded bg-gray-100 active:opacity-60"
               onPress={() => {
                 navigation.navigate('node', {
-                  id: node.id,
-                  data: node
+                  name: node.name,
+                  brief: node
                 })
               }}>
-              <Text className="text-gray-500 text-xs">{node.name}</Text>
+              <Text className="text-gray-500 text-xs">{node.title}</Text>
             </Pressable>
           </View>
           <Text className="text-gray-400">·</Text>
@@ -50,8 +51,8 @@ export default function TopicRow(props) {
               className="active:opacity-60"
               onPress={() => {
                 navigation.navigate('member', {
-                  id: member.id,
-                  data: member
+                  username: member.username,
+                  brief: member
                 })
               }}>
               <Text className="font-bold text-xs text-gray-700">
@@ -64,7 +65,11 @@ export default function TopicRow(props) {
           <Text className="text-base text-gray-700">{title}</Text>
           <View className="mt-2">
             <Text className="text-xs text-gray-400">
-              <TimeAgo date={last_touched * 1000} />
+              {last_touched ? (
+                <TimeAgo date={last_touched * 1000} />
+              ) : (
+                formatted_time_ago
+              )}
             </Text>
           </View>
         </View>

@@ -1,9 +1,18 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
+import useSWR from 'swr'
 
 export default function MemberScreen({ route }) {
-  const { username, id, data } = route.params
-  console.log(data)
+  const { username, brief } = route.params
+  const memberSwr = useSWR([
+    '/api/members/show.json',
+    {
+      params: {
+        username
+      }
+    }
+  ])
+  const member = memberSwr.data || brief || {}
 
   return (
     <View>
@@ -11,15 +20,20 @@ export default function MemberScreen({ route }) {
         <View className="mr-4">
           <Image
             className="w-[60px] h-[60px] rounded"
-            source={{ uri: data.avatar_large }}></Image>
+            source={{ uri: member.avatar_large || member.avatar_mini }}></Image>
         </View>
         <View className="flex-1">
           <View className="mb-1">
-            <Text className="text-xl font-semibold">{data.username}</Text>
+            <Text className="text-xl font-semibold">
+              {member.username || ''}
+            </Text>
           </View>
           <Text className="text-gray-500">
-            VE2X 第 {data.id} 号会员，加入于{' '}
-            {new Date(data.created * 1000).toLocaleString()}
+            {member.id
+              ? `VE2X 第 ${member.id} 号会员，加入于 ${new Date(
+                  member.created * 1000
+                ).toLocaleString()}`
+              : '    '}
           </Text>
         </View>
       </View>

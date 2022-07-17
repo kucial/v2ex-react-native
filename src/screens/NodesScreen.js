@@ -1,17 +1,27 @@
 import { Image, Text, View, ScrollView } from 'react-native'
 import React, { useMemo } from 'react'
-import listToTree from 'list-to-tree-lite'
-import nodes from '@/mock/nodes'
+
 import { Pressable } from 'react-native'
+import useSWR from 'swr'
 
 export default function NodesScreen({ navigation }) {
-  console.log(nodes[0], nodes.length)
-  const tree = useMemo(() => {
-    return listToTree(JSON.parse(JSON.stringify(nodes)), {
-      idKey: 'name',
-      parentKey: 'parent_node_name'
-    })
-  }, [])
+  const nodesSwr = useSWR('/api/nodes/all.json')
+
+  if (nodesSwr.error) {
+    return (
+      <View>
+        <Text>{nodesSwr.error.message}</Text>
+      </View>
+    )
+  }
+
+  if (!nodesSwr.data) {
+    return (
+      <View>
+        <Text>LOADING...</Text>
+      </View>
+    )
+  }
 
   return (
     <ScrollView
@@ -19,14 +29,14 @@ export default function NodesScreen({ navigation }) {
         paddingVertical: 12
       }}>
       <View className="flex flex-row flex-wrap">
-        {tree.map((node) => (
+        {nodesSwr.data.map((node) => (
           <View className="basis-1/3 px-2 mb-4" key={node.name}>
             <Pressable
               className="flex flex-col items-center py-2 bg-white shadow flex-1 rounded-lg"
               onPress={() => {
                 navigation.navigate('node', {
                   id: node.id,
-                  data: node
+                  brief: node
                 })
               }}>
               <Image

@@ -10,7 +10,12 @@ const ImageRenderer = (props) => {
 }
 
 const getMemberName = (href) => {
-  const match = /about:\/\/\/member\/(\w*)$/.exec(href)
+  const match = /\/member\/(\w*)$/.exec(href)
+  return match?.[1]
+}
+
+const getTopicId = (href) => {
+  const match = /https:\/\/v2ex.com\/t\/(\w*)$/.exec(href)
   return match?.[1]
 }
 
@@ -18,11 +23,18 @@ export default function RenderHtml({ tagsStyles = {}, ...props }) {
   const tw = useTailwind()
   const navigation = useNavigation()
   const handleAnchorPress = useCallback((e, href) => {
-    if (/about:\/\//.test(href)) {
+    console.log(href)
+    if (new RegExp('^https://v2ex.com').test(href)) {
       const memberName = getMemberName(href)
       if (memberName) {
         navigation.navigate('member', {
           username: memberName
+        })
+      }
+      const topicId = getTopicId(href)
+      if (topicId) {
+        navigation.navigate('topic', {
+          id: topicId
         })
       }
     } else {
