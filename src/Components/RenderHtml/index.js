@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native'
 import { useCallback } from 'react'
-import RenderHtml, { useInternalRenderer } from 'react-native-render-html'
+import BaseRender, { useInternalRenderer } from 'react-native-render-html'
+import { useTailwind } from 'tailwindcss-react-native'
 import ImageElement from './ImageElement'
 
 const ImageRenderer = (props) => {
@@ -13,7 +14,8 @@ const getMemberName = (href) => {
   return match?.[1]
 }
 
-export default function WrappedRenderHtml(props) {
+export default function RenderHtml({ tagsStyles = {}, ...props }) {
+  const tw = useTailwind()
   const navigation = useNavigation()
   const handleAnchorPress = useCallback((e, href) => {
     if (/about:\/\//.test(href)) {
@@ -32,30 +34,19 @@ export default function WrappedRenderHtml(props) {
     }
   }, [])
   return (
-    <RenderHtml
+    <BaseRender
       tagsStyles={{
-        body: {
-          fontSize: 16,
-          color: '#333'
-        },
-        div: {
-          lineHeight: '1.5em',
-          marginBottom: 6
-        },
-        p: {
-          lineHeight: '1.5em',
-          marginBottom: 6
-        },
-        h2: {
-          borderBottomColor: '#e8e8e8',
-          borderBottomWidth: 1,
-          paddingBottom: 6
-        },
+        body: tw('text-gray-700'),
+        // h2: tw('text-xl'),
+        // h3: tw('text-lg'),
+        // h2: tw('border-b pb-[6px] border-gray-300'),
         pre: { backgroundColor: '#f6f6f6', padding: 12 },
-        code: { fontSize: 14, marginBottom: 0 },
+        code: tw('text-sm'),
         ul: {
           paddingLeft: 12
-        }
+        },
+        a: tw('no-underline'),
+        ...tagsStyles
       }}
       renderers={{
         img: ImageRenderer

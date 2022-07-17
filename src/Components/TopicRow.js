@@ -1,7 +1,6 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Pressable } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
-import NodeTag from '@/Components/NodeTag'
 import TimeAgo from '@/Components/TimeAgo'
 
 export default function TopicRow(props) {
@@ -12,26 +11,53 @@ export default function TopicRow(props) {
       className="border-b border-gray-200 bg-white flex flex-row items-center"
       onPress={() => {
         navigation.navigate('topic', {
-          data: props.data,
-          id: props.data.id
+          id: props.data.id,
+          data: props.data
         })
       }}>
       <View className="flex-1 py-2 pl-1">
         <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
-          <Image
-            source={{
-              uri: member.avatar_mini
-            }}
-            className="w-[24px] h-[24px] rounded"
-          />
+          <Pressable
+            onPress={() => {
+              navigation.navigate('member', {
+                id: member.id,
+                data: member
+              })
+            }}>
+            <Image
+              source={{
+                uri: member.avatar_mini
+              }}
+              className="w-[24px] h-[24px] rounded"
+            />
+          </Pressable>
           <View>
-            <NodeTag data={node} />
+            <Pressable
+              hitSlop={4}
+              className="py-[2px] px-[6px] rounded bg-gray-100 active:opacity-60"
+              onPress={() => {
+                navigation.navigate('node', {
+                  id: node.id,
+                  data: node
+                })
+              }}>
+              <Text className="text-gray-500 text-xs">{node.name}</Text>
+            </Pressable>
           </View>
           <Text className="text-gray-400">·</Text>
           <View className="relative top-[1px]">
-            <Text className="font-bold text-xs text-gray-700">
-              {member.username}
-            </Text>
+            <Pressable
+              className="active:opacity-60"
+              onPress={() => {
+                navigation.navigate('member', {
+                  id: member.id,
+                  data: member
+                })
+              }}>
+              <Text className="font-bold text-xs text-gray-700">
+                {member.username}
+              </Text>
+            </Pressable>
           </View>
         </View>
         <View className="pl-[34px]">
@@ -43,7 +69,7 @@ export default function TopicRow(props) {
           </View>
         </View>
       </View>
-      <View className="w-[72px] flex flex-row justify-end pr-4">
+      <View className="w-[80px] flex flex-row justify-end pr-4">
         {!!replies && (
           <View className="rounded-full text-xs px-2 bg-gray-400">
             <Text className="text-white">{replies}</Text>

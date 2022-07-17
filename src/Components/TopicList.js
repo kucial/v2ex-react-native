@@ -1,4 +1,4 @@
-import { View, Text, FlatList } from 'react-native'
+import { FlatList } from 'react-native'
 import React, { useCallback } from 'react'
 
 import TopicRow from '@/Components/TopicRow'

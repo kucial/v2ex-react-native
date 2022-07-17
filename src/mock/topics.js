@@ -51,7 +51,7 @@ export const topic = {
   content_rendered:
     '<p>不知道国内定制的 android 系统内置了些什么，比 pixel 系列手机系统文件大了一倍以上。\n左边 pixel 3xl 右边 iQOO Z5 都是 android 12 只看系统文件。</p>\n<p><img alt="" class="embedded_image" loading="lazy" referrerpolicy="no-referrer" rel="noreferrer" src="https://i.imgur.com/QinbgV6.png"/></p>\n',
   last_modified: 1657958096,
-  replies: 0,
+  replies: 20,
   id: 866638
 }
 

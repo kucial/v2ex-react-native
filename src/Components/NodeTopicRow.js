@@ -1,0 +1,46 @@
+import { View, Text, Pressable, Image } from 'react-native'
+import React from 'react'
+import { topic } from '@/mock/topics'
+
+export default function NodeTopicRow(props) {
+  const { data = topic } = props
+
+  const { member } = data
+
+  return (
+    <Pressable className="flex flex-row items-center border-b border-gray-200 bg-white active:opacity-60 p-2">
+      <View className="mr-2 self-start">
+        <Image
+          className="w-[24px] h-[24px] rounded"
+          source={{
+            uri: member.avatar_mini
+          }}
+        />
+      </View>
+      <View className="flex-1 relative top-[-2px]">
+        <Text className="text-lg font-medium text-gray-700 mb-2 leading-none">
+          {data.title}
+        </Text>
+        <View className="flex flex-row space-x-1">
+          <Text className="font-semibold text-gray-400">{member.username}</Text>
+          {data.views ? (
+            <>
+              <Text className="text-gray-400">·</Text>
+              <Text className="text-gray-400">{data.views} 次点击</Text>
+            </>
+          ) : (
+            <View />
+          )}
+        </View>
+      </View>
+
+      <View className="w-[80px] flex flex-row items-center justify-end pr-2">
+        {!!data.replies && (
+          <View className="rounded-full text-xs px-2 bg-gray-400">
+            <Text className="text-white">{data.replies}</Text>
+          </View>
+        )}
+      </View>
+    </Pressable>
+  )
+}
