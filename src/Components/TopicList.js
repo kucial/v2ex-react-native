@@ -2,7 +2,6 @@ import { FlatList, View, Text } from 'react-native'
 import React, { useCallback } from 'react'
 
 import TopicRow from '@/Components/TopicRow'
-import topics from '@/mock/topics'
 import useSWR from 'swr'
 
 export default function TopicList(props) {

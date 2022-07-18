@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { View } from 'react-native'
 import WebView from 'react-native-webview'
 import { stringify } from 'qs'
@@ -98,7 +98,7 @@ const CUSTOM_ENDPOINTS = {
   }
 }
 const request = async (url, config = {}) => {
-  console.log(url, config)
+  // console.log(url, config)
   if (OFFICIAL_ENDPOINTS.some((endpoint) => url.indexOf(endpoint) > -1)) {
     return instance({
       method: 'GET',
@@ -144,20 +144,21 @@ export const FetcherWebView = () => {
     (config) => {
       return new Promise((resolve, reject) => {
         const key = config.key || counter++
-        const timer = setTimeout(() => {
-          reject(new Error('Request Timeout'))
-        }, 10000)
         function Wrapped(props) {
           const ref = useRef()
-          const url = getUrl(config)
+          const timerRef = useRef()
+          useEffect(() => {
+            timerRef.current = setTimeout(() => {
+              reject(new Error('Request Timeout'))
+            }, 10000)
+          })
           return (
             <WebView
               ref={ref}
               source={{ uri: getUrl(config) }}
-              javaScriptEnabled={true}
               onLoad={() => {
-                clearTimeout(timer)
-                console.log(`${url} LOADED`)
+                clearTimeout(timerRef.current)
+                // console.log(`${url} LOADED`)
                 ref.current.injectJavaScript(config.dataExtractor)
               }}
               onMessage={(event) => {

@@ -20,6 +20,8 @@ import TopicScreen from './src/screens/TopicScreen'
 import NodeScreen from './src/screens/NodeScreen'
 import BrowserScreen from './src/screens/BrowserScreen'
 import MemberScreen from './src/screens/MemberScreen'
+import DebugScreen from './src/screens/DebugScreen'
+
 import fetcher, { FetcherWebView } from './src/utils/fetcher'
 
 const Stack = createNativeStackNavigator()
