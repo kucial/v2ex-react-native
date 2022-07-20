@@ -3,6 +3,7 @@ import { useRef, useState, useCallback, useEffect } from 'react'
 import { View } from 'react-native'
 import WebView from 'react-native-webview'
 import { stringify } from 'qs'
+import { OFFICIAL_ENDPOINTS } from './constants'
 
 const instance = axios.create({
   baseURL: 'https://www.v2ex.com',
@@ -20,18 +21,6 @@ instance.interceptors.response.use(
 
 const USER_AGENT =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1 V2EX_3rd_party'
-
-const OFFICIAL_ENDPOINTS = [
-  '/api/site/stats.json',
-  '/api/site/info.json',
-  '/api/nodes/all.json',
-  '/api/nodes/show.json',
-  '/api/topics/hot.json',
-  '/api/topics/latest.json',
-  '/api/topics/show.json',
-  '/api/replies/show.json',
-  '/api/members/show.json'
-]
 
 const CUSTOM_ENDPOINTS = {
   '/page/index/tabs.json': {

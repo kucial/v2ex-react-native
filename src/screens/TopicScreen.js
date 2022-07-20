@@ -22,6 +22,10 @@ const maxLen = (str = '', limit = 0) => {
   return str
 }
 
+const htmlBaseStyle = {
+  fontSize: 16
+}
+
 // ·
 export default function TopicScreen({ navigation, route }) {
   const {
@@ -130,9 +134,7 @@ export default function TopicScreen({ navigation, route }) {
               html: topic.content_rendered,
               baseUrl: 'https://v2ex.com'
             }}
-            baseStyle={{
-              fontSize: 16
-            }}
+            baseStyle={htmlBaseStyle}
           />
         )}
         {isFallback && (
