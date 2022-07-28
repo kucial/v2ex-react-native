@@ -2,6 +2,7 @@ import { FlatList, View, Text } from 'react-native'
 import React, { useCallback } from 'react'
 
 import TopicRow from '@/Components/TopicRow'
+import TopicRowSkeleton from '@/Components/Skeleton/TopicRowSkeleton'
 import useSWR from 'swr'
 
 export default function TopicList(props) {
@@ -28,7 +29,12 @@ export default function TopicList(props) {
   if (!data) {
     return (
       <View>
-        <Text>LOADING</Text>
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
       </View>
     )
   }

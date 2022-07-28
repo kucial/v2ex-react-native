@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import { View, Text } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import TopicList from '@/Components/TopicList'
+import HomeSkeleton from '@/Components/Skeleton/HomeSkeleton'
 import useSWR from 'swr'
 
 const Tab = createMaterialTopTabNavigator()
@@ -27,12 +28,9 @@ export default function HomeScreen() {
       </View>
     )
   }
+
   if (!tabsState.data) {
-    return (
-      <View>
-        <Text>LOADING SCREEN</Text>
-      </View>
-    )
+    return <HomeSkeleton />
   }
 
   return (
