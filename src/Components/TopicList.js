@@ -1,12 +1,13 @@
-import { FlatList, View, Text } from 'react-native'
+import { FlatList, View, Text, RefreshControl, ScrollView } from 'react-native'
 import React, { useCallback } from 'react'
-
-import TopicRow from '@/Components/TopicRow'
-import TopicRowSkeleton from '@/Components/Skeleton/TopicRowSkeleton'
 import useSWR from 'swr'
 
+import ErrorNotice from '@/Components/ErrorNotice'
+import TopicRow from '@/Components/TopicRow'
+import TopicRowSkeleton from '@/Components/Skeleton/TopicRowSkeleton'
+
 export default function TopicList(props) {
-  const { data, error } = useSWR([
+  const listSwr = useSWR([
     '/page/index/feed.json',
     {
       params: {
@@ -18,15 +19,21 @@ export default function TopicList(props) {
     return <TopicRow data={item} />
   }, [])
 
-  if (error) {
+  if (listSwr.error) {
     return (
-      <View>
-        <Text>{error.message}</Text>
-      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={listSwr.isValidating}
+            onRefresh={listSwr.mutate}
+          />
+        }>
+        <ErrorNotice error={listSwr.error} />
+      </ScrollView>
     )
   }
 
-  if (!data) {
+  if (!listSwr.data) {
     return (
       <View>
         <TopicRowSkeleton />
@@ -41,7 +48,13 @@ export default function TopicList(props) {
 
   return (
     <FlatList
-      data={data}
+      refreshControl={
+        <RefreshControl
+          refreshing={listSwr.isValidating}
+          onRefresh={listSwr.mutate}
+        />
+      }
+      data={listSwr.data}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
     />

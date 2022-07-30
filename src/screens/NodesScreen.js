@@ -1,55 +1,78 @@
-import { Image, Text, View, ScrollView } from 'react-native'
-import React, { useMemo } from 'react'
+import {
+  Image,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  RefreshControl
+} from 'react-native'
+import React from 'react'
 
-import { Pressable } from 'react-native'
 import useSWR from 'swr'
+import ErrorNotice from '@/Components/ErrorNotice'
+import NodesSkeleton from '@/Components/Skeleton/NodesSkeleton'
 
 export default function NodesScreen({ navigation }) {
-  const nodesSwr = useSWR('/api/nodes/all.json')
+  const nodesSwr = useSWR('/page/planes/node-groups.json')
 
   if (nodesSwr.error) {
     return (
-      <View>
-        <Text>{nodesSwr.error.message}</Text>
-      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={nodesSwr.isValidating}
+            onRefresh={nodesSwr.mutate}
+          />
+        }>
+        <ErrorNotice error={nodesSwr.error} />
+      </ScrollView>
     )
   }
 
   if (!nodesSwr.data) {
-    return (
-      <View>
-        <Text>LOADING...</Text>
-      </View>
-    )
+    return <NodesSkeleton />
   }
 
   return (
     <ScrollView
-      contentContainerStyle={{
-        paddingVertical: 12
-      }}>
-      <View className="flex flex-row flex-wrap">
-        {nodesSwr.data.map((node) => (
-          <View className="basis-1/3 px-2 mb-4" key={node.name}>
-            <Pressable
-              className="flex flex-col items-center py-2 bg-white shadow flex-1 rounded-lg"
-              onPress={() => {
-                navigation.navigate('node', {
-                  id: node.id,
-                  brief: node
-                })
-              }}>
-              <Image
-                className="w-[36px] h-[36px] mb-2 bg-gray-100"
-                source={{ uri: node.avatar_normal }}
-              />
-              <View className="min-w-0 overflow-hidden">
-                <Text className="truncate">{node.title}</Text>
-              </View>
-            </Pressable>
+      refreshControl={
+        <RefreshControl
+          refreshing={nodesSwr.isValidating}
+          onRefresh={nodesSwr.mutate}
+        />
+      }>
+      {nodesSwr.data.map((g) => (
+        <View
+          className="bg-white mx-1 mt-1 mb-4 rounded-sm shadow"
+          key={g.name}>
+          <View className="flex flex-row justify-between items-center border-b border-b-gray-400 px-3">
+            <View className="py-2">
+              <Text className="font-medium">{g.title}</Text>
+            </View>
+            <View className="flex flex-row space-x-1">
+              <Text className="color-gray-500 text-xs">{g.name}</Text>
+              <Text className="color-gray-500 text-xs">•</Text>
+              <Text className="color-gray-500 text-xs">
+                {g.nodes.length} nodes
+              </Text>
+            </View>
           </View>
-        ))}
-      </View>
+          <View className="flex flex-row flex-wrap py-2 px-3">
+            {g.nodes.map((node) => (
+              <Pressable
+                key={node.name}
+                className="py-2 px-2 bg-white border border-gray-400 rounded-lg mr-2 mb-2"
+                onPress={() => {
+                  navigation.navigate('node', {
+                    name: node.name
+                  })
+                }}>
+                <Text>{node.title}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ))}
     </ScrollView>
   )
 }

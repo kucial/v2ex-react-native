@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import React, { useMemo } from 'react'
 import { useTailwind } from 'tailwindcss-react-native'
 
@@ -6,7 +6,7 @@ const randomPercentage = () => {
   return (Math.max(0.3, Math.random()) * 100).toFixed() + '%'
 }
 
-const valueInRange = (range) => {
+export const valueInRange = (range) => {
   const [min, max] = range
   const delta = max - min
   return min + Math.random() * delta
@@ -83,5 +83,22 @@ export function BlockText(props) {
         ))}
       <InlineText style={props.style} randomWidth key={lines - 1} />
     </View>
+  )
+}
+
+export function InlineBox(props) {
+  const tw = useTailwind()
+  const width = useMemo(() => {
+    if (Array.isArray(props.width)) {
+      return valueInRange(props.width)
+    }
+    if (props.width) {
+      return props.width
+    }
+  }, [props.width])
+  return (
+    <Pressable style={[tw('bg-gray-100'), props.style, { width }]}>
+      <Text> </Text>
+    </Pressable>
   )
 }

@@ -84,6 +84,42 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
     `
+  },
+
+  '/page/planes/node-groups.json': {
+    url: 'https://www.v2ex.com/planes',
+    dataExtractor: `
+    (function() {
+      try {
+        const boxes = document.querySelectorAll('#Wrapper .content > .box')
+        const groups = [...boxes].map((d) => {
+          const header = d.querySelector('.header');
+          const title = header.childNodes[0].textContent;
+          const name = header.querySelector('.fr')?.childNodes[0].textContent.replace(' • ', '');
+          if (!name) {
+            return null;
+          }
+          const nodes = [...d.querySelectorAll('.inner a.item_node')].map((a) => {
+            return {
+              title: a.textContent,
+              name: (new URL(a.href)).pathname.replace('/go/', '')
+            }
+          });
+          return {
+            title,
+            name,
+            nodes,
+          }
+        }).filter(Boolean);
+        window.ReactNativeWebView.postMessage(JSON.stringify(groups))
+      } catch (err) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          error: true,
+          message: err.message
+        }))
+      }
+    }());
+    `
   }
 }
 const request = async (url, config = {}) => {
