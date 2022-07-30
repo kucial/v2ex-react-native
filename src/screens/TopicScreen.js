@@ -10,11 +10,13 @@ import {
 } from 'react-native'
 import React, { useLayoutEffect, useMemo } from 'react'
 import useSWR from 'swr'
+
 // import { TagIcon } from 'react-native-heroicons/outline'
 
 import TimeAgo from '@/Components/TimeAgo'
 import RenderHtml from '@/Components/RenderHtml'
 import ReplyRow from '@/Components/ReplyRow'
+import ErrorNotice from '@/Components/ErrorNotice'
 import { BlockText } from '@/Components/Skeleton/Elements'
 import TopicSkeleton from '@/Components/Skeleton/TopicSkeleton'
 
@@ -107,17 +109,19 @@ export default function TopicScreen({ navigation, route }) {
             </View>
           </View>
           <View>
-            <Pressable
-              className="py-1 px-[6px] rounded bg-gray-100 active:opacity-50"
-              hitSlop={6}
-              onPress={() => {
-                navigation.navigate('node', {
-                  id: node.id,
-                  brief: node
-                })
-              }}>
-              <Text className="text-gray-500">{node.title}</Text>
-            </Pressable>
+            {node && (
+              <Pressable
+                className="py-1 px-[6px] rounded bg-gray-100 active:opacity-50"
+                hitSlop={6}
+                onPress={() => {
+                  navigation.navigate('node', {
+                    name: node.name,
+                    brief: node
+                  })
+                }}>
+                <Text className="text-gray-500">{node.title}</Text>
+              </Pressable>
+            )}
           </View>
         </View>
         <View className="pb-2 border-b border-b-gray-300 border-solid mb-2">
@@ -133,6 +137,7 @@ export default function TopicScreen({ navigation, route }) {
             baseStyle={htmlBaseStyle}
           />
         )}
+        {topicSwr.error && <ErrorNotice error={topicSwr.error} />}
         {isFallback && (
           <View className="mt-1">
             <BlockText lines={[5, 10]} />

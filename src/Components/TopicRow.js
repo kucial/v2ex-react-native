@@ -11,7 +11,7 @@ export default function TopicRow(props) {
     <TouchableOpacity
       className="border-b border-gray-200 bg-white flex flex-row items-center"
       onPress={() => {
-        navigation.navigate('topic', {
+        navigation.push('topic', {
           id: props.data.id,
           brief: props.data
         })

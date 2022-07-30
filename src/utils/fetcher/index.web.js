@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import pathMatch from 'path-match'
 import { OFFICIAL_ENDPOINTS } from './constants'
 
 const instance = axios.create({

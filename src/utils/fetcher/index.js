@@ -2,7 +2,9 @@ import axios from 'axios'
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { View } from 'react-native'
 import WebView from 'react-native-webview'
-import { stringify } from 'qs'
+import { stringify, parse } from 'qs'
+import { parse as pathParse } from 'path-to-regexp'
+import pathMatch from 'path-match'
 import { OFFICIAL_ENDPOINTS } from './constants'
 
 const instance = axios.create({
@@ -19,12 +21,10 @@ instance.interceptors.response.use(
   }
 )
 
-const USER_AGENT =
-  'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1 V2EX_3rd_party'
-
 const CUSTOM_ENDPOINTS = {
   '/page/index/tabs.json': {
-    url: 'https://www.v2ex.com',
+    host: 'https://www.v2ex.com',
+    pathname: '/',
     dataExtractor: `
       (function() {
         try {
@@ -46,7 +46,8 @@ const CUSTOM_ENDPOINTS = {
   },
   // params: tab={tab}
   '/page/index/feed.json': {
-    url: 'https://www.v2ex.com',
+    host: 'https://www.v2ex.com',
+    pathname: '/',
     dataExtractor: `
       (function() {
         try {
@@ -87,7 +88,8 @@ const CUSTOM_ENDPOINTS = {
   },
 
   '/page/planes/node-groups.json': {
-    url: 'https://www.v2ex.com/planes',
+    host: 'https://www.v2ex.com',
+    pathname: '/planes',
     dataExtractor: `
     (function() {
       try {
@@ -120,6 +122,60 @@ const CUSTOM_ENDPOINTS = {
       }
     }());
     `
+  },
+
+  '/page/go/:name/feed.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/go/:name',
+    dataExtractor: `
+      (function() {
+        try {
+          const cells = document.querySelectorAll('#Wrapper .content > .box:nth-child(2) .cell')
+          const data = [...cells].map((d) => {
+            if (!d.querySelector('table')) {
+              return;
+            }
+            const username = d.querySelector('td:nth-child(1) a').getAttribute('href').replace('/member/', '')
+            const avatar_normal = d.querySelector('td:nth-child(1) a img').src;
+            const id = d.querySelector('.item_title a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0];
+            const title = d.querySelector('.topic-link').textContent;
+            const replies = Number(d.querySelector('.count_livid')?.textContent.trim() || 0);
+            const last_reply_by = d.querySelector('td:nth-child(3) .small strong').textContent;
+            const metaText =  d.querySelector('td:nth-child(3) .small').textContent;
+            const characterMatch = new RegExp('(\\d+).*个字符').exec(metaText);
+            const clickMatch = new RegExp('(\\d+).*次点击').exec(metaText);
+
+            return {
+              id,
+              title,
+              replies,
+              characters: characterMatch ? Number(characterMatch[1]) : undefined,
+              clicks: clickMatch ? Number(clickMatch[2]) : undefined,
+              last_reply_by,
+              metaText,
+              member: { username, avatar_normal },
+            }
+          }).filter(Boolean);
+          const pageText = document.querySelector('#Wrapper .content > .box:nth-child(2) .inner td[align=center]')?.textContent
+          let pagination;
+          if (pageText) {
+            pagination = {
+              current: Number(pageText.split('/')[0]),
+              total: Number(pageText.split('/')[1])
+            }
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            data,
+            pagination,
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }());
+    `
   }
 }
 const request = async (url, config = {}) => {
@@ -131,16 +187,36 @@ const request = async (url, config = {}) => {
       ...config
     })
   }
+  let urlParams = {}
+  const requestEntry = Object.entries(CUSTOM_ENDPOINTS).find(([path]) => {
+    if (path === url) {
+      return true
+    }
+    const match = pathMatch()(path)(url.split('?')[0])
+    if (match) {
+      urlParams = match
+      return true
+    }
+  })
 
-  const requestConfig = CUSTOM_ENDPOINTS[url]
-  if (!requestConfig) {
-    const error = new Error('Unknown API endpoint')
+  if (!requestEntry) {
+    const error = new Error(`Unknown API endpoint for ${url}`)
     error.code = 'UNKNOWN_API_ENDPOINT'
     throw error
   }
+
+  urlParams = {
+    ...urlParams,
+    ...parse(url.split('?')[1] || '')
+  }
+
   return manger.fetch({
     ...config,
-    ...requestConfig
+    ...requestEntry[1],
+    params: {
+      ...(config.params || {}),
+      ...urlParams
+    }
   })
 }
 
@@ -154,12 +230,26 @@ const manger = {
 }
 
 const getUrl = (config) => {
-  const { url, params } = config
-  let query = params ? stringify(params) : ''
-  if (query) {
-    return `${url}?${query}`
+  const { host, pathname, params = {} } = config
+  const tokens = pathParse(pathname)
+  const cParams = { ...params }
+  const parts = tokens.map((item) => {
+    if (item instanceof Object) {
+      if (cParams[item.name]) {
+        delete cParams[item.name]
+        return `/${params[item.name]}`
+      }
+      return ''
+    }
+    return item
+  })
+
+  const parsedPath = parts.join('')
+  const queryStr = stringify(cParams)
+  if (queryStr) {
+    return `${host}${parsedPath}?${queryStr}`
   }
-  return url
+  return `${host}${parsedPath}`
 }
 
 let counter = 0

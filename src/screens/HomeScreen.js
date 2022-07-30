@@ -1,35 +1,32 @@
 import React, { useMemo } from 'react'
+import useSWR from 'swr'
 import { View, Text } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import TopicList from '@/Components/TopicList'
 import HomeSkeleton from '@/Components/Skeleton/HomeSkeleton'
-import useSWR from 'swr'
+import ErrorNotice from '@/Components/ErrorNotice'
 
 const Tab = createMaterialTopTabNavigator()
 
 export default function HomeScreen() {
-  const tabsState = useSWR('/page/index/tabs.json')
+  const tabsSwr = useSWR('/page/index/tabs.json')
 
   const components = useMemo(() => {
-    if (!tabsState.data) {
+    if (!tabsSwr.data) {
       return null
     }
     const map = {}
-    tabsState.data.forEach((tab) => {
+    tabsSwr.data.forEach((tab) => {
       map[tab.value] = (props) => <TopicList type={tab.value} {...props} />
     })
     return map
-  }, [tabsState.data])
+  }, [tabsSwr.data])
 
-  if (tabsState.error) {
-    return (
-      <View>
-        <Text>{tabsState.error.message}</Text>
-      </View>
-    )
+  if (tabsSwr.error) {
+    return <ErrorNotice error={tabsSwr.error} />
   }
 
-  if (!tabsState.data) {
+  if (!tabsSwr.data) {
     return <HomeSkeleton />
   }
 
@@ -48,7 +45,7 @@ export default function HomeScreen() {
         tabBarIndicatorStyle: { backgroundColor: '#111' },
         lazy: true
       }}>
-      {tabsState.data.map((tab) => (
+      {tabsSwr.data.map((tab) => (
         <Tab.Screen
           key={tab.value}
           name={tab.value}
