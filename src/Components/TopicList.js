@@ -7,14 +7,7 @@ import TopicRow from '@/Components/TopicRow'
 import TopicRowSkeleton from '@/Components/Skeleton/TopicRowSkeleton'
 
 export default function TopicList(props) {
-  const listSwr = useSWR([
-    '/page/index/feed.json',
-    {
-      params: {
-        tab: props.type
-      }
-    }
-  ])
+  const listSwr = useSWR(`/page/index/feed.json?tab=${props.type}`)
   const renderItem = useCallback(({ item }) => {
     return <TopicRow data={item} />
   }, [])

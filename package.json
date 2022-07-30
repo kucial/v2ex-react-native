@@ -32,6 +32,7 @@
     "react-native-fast-image": "^8.5.11",
     "react-native-heroicons": "^2.2.0",
     "react-native-image-modal": "^2.0.4",
+    "react-native-mmkv": "^2.4.3",
     "react-native-nprogress": "^1.1.0",
     "react-native-pager-view": "^5.4.25",
     "react-native-render-html": "^6.3.4",

@@ -31,6 +31,7 @@ import CollectedTopicsScreen from './src/screens/CollectedTopicsScreen'
 import DebugScreen from './src/screens/DebugScreen'
 
 import fetcher, { FetcherWebView } from './src/utils/fetcher'
+import cache from './src/utils/cache'
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -153,7 +154,8 @@ export default function App() {
       <FetcherWebView />
       <SWRConfig
         value={{
-          fetcher: fetcher
+          fetcher: fetcher,
+          provider: cache
         }}>
         <TailwindProvider>
           <AlertService>
