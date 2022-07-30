@@ -15,7 +15,7 @@ const getMemberName = (href) => {
 }
 
 const getTopicId = (href) => {
-  const match = /https:\/\/v2ex.com\/t\/(\w*)$/.exec(href)
+  const match = /https:\/\/v2ex.com\/t\/(\w*)?(#\w+)?$/.exec(href)
   return match?.[1]
 }
 
@@ -49,27 +49,29 @@ export default function RenderHtml({ tagsStyles = {}, ...props }) {
           if (new RegExp('^https://v2ex.com').test(href)) {
             const memberName = getMemberName(href)
             if (memberName) {
-              navigation.navigate('member', {
+              navigation.push('member', {
                 username: memberName
               })
             }
+            console.log(href)
             const topicId = getTopicId(href)
+            console.log(topicId)
             if (topicId) {
-              navigation.navigate('topic', {
+              navigation.push('topic', {
                 id: topicId
               })
             }
           } else {
             // TODO: user preference
             // Linking.openURL(href)
-            navigation.navigate('browser', {
+            navigation.push('browser', {
               url: href
             })
           }
         }
       }
     }
-  })
+  }, [])
 
   return (
     <BaseRender

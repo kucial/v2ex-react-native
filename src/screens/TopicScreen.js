@@ -56,11 +56,11 @@ export default function TopicScreen({ navigation, route }) {
 
   const { width } = useWindowDimensions()
 
-  const topic = topicSwr.data?.[0] || brief || {}
+  const topic = topicSwr.data?.[0] || brief
   const isFallback = topic === brief
 
   useLayoutEffect(() => {
-    if (topic.title) {
+    if (topic?.title) {
       const title = maxLen(topic.title, 16)
       navigation.setOptions({
         title
