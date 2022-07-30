@@ -31,8 +31,8 @@ export default function ReplyRow(props) {
             </Text>
           </View>
           <View className="pr-2 space-x-2 justify-center">
-            <View className="bg-gray-300 px-[3px] rounded-full">
-              <Text className="text-xs text-white">{num}</Text>
+            <View className="px-[3px] rounded-full">
+              <Text className="text-xs text-gray-400">#{num}</Text>
             </View>
           </View>
         </View>

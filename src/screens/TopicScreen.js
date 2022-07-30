@@ -5,15 +5,18 @@ import {
   useWindowDimensions,
   Pressable,
   FlatList,
-  SafeAreaView
+  SafeAreaView,
+  RefreshControl
 } from 'react-native'
 import React, { useLayoutEffect, useMemo } from 'react'
+import useSWR from 'swr'
 // import { TagIcon } from 'react-native-heroicons/outline'
 
 import TimeAgo from '@/Components/TimeAgo'
 import RenderHtml from '@/Components/RenderHtml'
 import ReplyRow from '@/Components/ReplyRow'
-import useSWR from 'swr'
+import { BlockText } from '@/Components/Skeleton/Elements'
+import TopicSkeleton from '@/Components/Skeleton/TopicSkeleton'
 
 const maxLen = (str = '', limit = 0) => {
   if (limit && str.length > limit) {
@@ -75,17 +78,10 @@ export default function TopicScreen({ navigation, route }) {
   }, [])
 
   if (!topic) {
-    return (
-      <View>
-        <Text>LOADING</Text>
-      </View>
-    )
+    return <TopicSkeleton />
   }
 
   const { member, node } = topic
-
-  console.log('topic.content', topic)
-
   // return null
 
   const baseContent = (
@@ -139,7 +135,7 @@ export default function TopicScreen({ navigation, route }) {
         )}
         {isFallback && (
           <View className="mt-1">
-            <Text className="text-gray-400">LOADING....</Text>
+            <BlockText lines={[5, 10]} />
           </View>
         )}
       </View>
@@ -160,7 +156,7 @@ export default function TopicScreen({ navigation, route }) {
             <View className="flex flex-row justify-center py-4">
               <Text className="text-gray-400">
                 {topic.replies && repliesSwr.data && repliesSwr.data.length > 0
-                  ? '到底底部啦'
+                  ? '到达底部啦'
                   : ''}
               </Text>
             </View>
@@ -168,6 +164,19 @@ export default function TopicScreen({ navigation, route }) {
         )}
         renderItem={renderReply}
         keyExtractor={keyExtractor}
+        refreshControl={
+          <RefreshControl
+            refreshing={
+              ((repliesSwr.data || repliesSwr.error) &&
+                repliesSwr.isValidating) ||
+              topicSwr.isValidating
+            }
+            onRefresh={() => {
+              topicSwr.mutate()
+              repliesSwr.mutate()
+            }}
+          />
+        }
       />
     </View>
   )
