@@ -142,17 +142,16 @@ const CUSTOM_ENDPOINTS = {
             const replies = Number(d.querySelector('.count_livid')?.textContent.trim() || 0);
             const last_reply_by = d.querySelector('td:nth-child(3) .small strong').textContent;
             const metaText =  d.querySelector('td:nth-child(3) .small').textContent;
-            const characterMatch = new RegExp('(\\d+).*个字符').exec(metaText);
-            const clickMatch = new RegExp('(\\d+).*次点击').exec(metaText);
+            const characterMatch = /(\\d+)/.exec(metaText.split('•')?.[1] || '');
+            const clickMatch = /(\\d+)/.exec(metaText.split('•')?.[2] || '');
 
             return {
               id,
               title,
               replies,
               characters: characterMatch ? Number(characterMatch[1]) : undefined,
-              clicks: clickMatch ? Number(clickMatch[2]) : undefined,
+              clicks: clickMatch ? Number(clickMatch[1]) : undefined,
               last_reply_by,
-              metaText,
               member: { username, avatar_normal },
             }
           }).filter(Boolean);

@@ -35,17 +35,25 @@ export default function NodeTopicRow(props) {
         <Text className="text-base font-medium text-gray-700 mb-2 leading-none">
           {data.title}
         </Text>
-        <View className="flex flex-row space-x-1">
+        <View className="flex flex-row">
           <Text className="text-xs font-semibold text-gray-400">
             {member.username}
           </Text>
-          {data.clicks ? (
+          {!!data.characters && (
             <>
-              <Text className="text-gray-400">·</Text>
-              <Text className="text-gray-400">{data.clicks} 次点击</Text>
+              <Text className="text-xs text-gray-400 px-1">·</Text>
+              <Text className="text-xs text-gray-400">
+                {data.characters} 字符
+              </Text>
             </>
-          ) : (
-            <View />
+          )}
+          {!!data.clicks && (
+            <>
+              <Text className="text-xs text-gray-400 px-1">·</Text>
+              <Text className="text-xs text-gray-400">
+                {data.clicks} 次点击
+              </Text>
+            </>
           )}
         </View>
       </View>
