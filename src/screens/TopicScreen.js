@@ -20,6 +20,8 @@ import ErrorNotice from '@/Components/ErrorNotice'
 import { BlockText } from '@/Components/Skeleton/Elements'
 import TopicSkeleton from '@/Components/Skeleton/TopicSkeleton'
 
+import { isRefreshing } from '@/utils/swr'
+
 const maxLen = (str = '', limit = 0) => {
   if (limit && str.length > limit) {
     return str.slice(0, limit) + ' ...'
@@ -61,7 +63,8 @@ export default function TopicScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     if (topic?.title) {
-      const title = maxLen(topic.title, 16)
+      const title = maxLen(topic.title, 12)
+      // const title = maxLen(`#${topic.id} ${topic.title}`, 16)
       navigation.setOptions({
         title
       })
@@ -97,7 +100,15 @@ export default function TopicScreen({ navigation, route }) {
             />
             <View className="pl-2 flex flex-row items-center">
               <View className="py-[2px]">
-                <Text className="font-medium">{member.username}</Text>
+                <Pressable
+                  hitSlop={4}
+                  onPress={() => {
+                    navigation.push('member', {
+                      username: member.username
+                    })
+                  }}>
+                  <Text className="font-medium">{member.username}</Text>
+                </Pressable>
               </View>
               <View className="ml-2">
                 {topic.created && (
@@ -114,7 +125,7 @@ export default function TopicScreen({ navigation, route }) {
                 className="py-1 px-[6px] rounded bg-gray-100 active:opacity-50"
                 hitSlop={6}
                 onPress={() => {
-                  navigation.navigate('node', {
+                  navigation.push('node', {
                     name: node.name,
                     brief: node
                   })
@@ -171,14 +182,17 @@ export default function TopicScreen({ navigation, route }) {
         keyExtractor={keyExtractor}
         refreshControl={
           <RefreshControl
-            refreshing={
-              ((repliesSwr.data || repliesSwr.error) &&
-                repliesSwr.isValidating) ||
-              topicSwr.isValidating
-            }
+            refreshing={isRefreshing(repliesSwr) || isRefreshing(topicSwr)}
             onRefresh={() => {
-              topicSwr.mutate()
-              repliesSwr.mutate()
+              console.log('....refresh....')
+              if (!topicSwr.isValidating) {
+                console.log('....topicSwr....')
+                topicSwr.mutate()
+              }
+              if (!repliesSwr.isValidating) {
+                console.log('....repliesSwr....')
+                repliesSwr.mutate()
+              }
             }}
           />
         }

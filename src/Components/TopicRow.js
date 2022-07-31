@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import TimeAgo from '@/Components/TimeAgo'
 
 export default function TopicRow(props) {
+  const { data } = props
   const { node, member, title, replies, last_touched, formatted_time_ago } =
     props.data
   const navigation = useNavigation()
@@ -63,14 +64,34 @@ export default function TopicRow(props) {
         </View>
         <View className="pl-[34px]">
           <Text className="text-base text-gray-700">{title}</Text>
-          <View className="mt-2">
+          <View className="mt-2 flex flex-row items-center">
             <Text className="text-xs text-gray-400">
               {last_touched ? (
                 <TimeAgo date={last_touched * 1000} />
               ) : (
-                formatted_time_ago
+                data?.last_reply_time
               )}
             </Text>
+            {data?.last_reply_by && (
+              <>
+                <Text className="text-gray-400 text-xs px-2">•</Text>
+                <View className="flex flex-row items-center">
+                  <Text className="text-xs text-gray-400">最后回复来自</Text>
+                  <Pressable
+                    className="px-1 active:opacity-60"
+                    hitSlop={4}
+                    onPress={() => {
+                      navigation.push('member', {
+                        username: data.last_reply_by
+                      })
+                    }}>
+                    <Text className="text-xs font-bold text-gray-700">
+                      {data.last_reply_by}
+                    </Text>
+                  </Pressable>
+                </View>
+              </>
+            )}
           </View>
         </View>
       </View>

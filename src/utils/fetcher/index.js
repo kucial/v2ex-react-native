@@ -63,7 +63,7 @@ const CUSTOM_ENDPOINTS = {
             }
             const title = d.querySelector('.item_title a').textContent;
             const id = d.querySelector('.item_title a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0];
-            const formatted_time_ago = d.querySelector('td:nth-child(3) span:last-child').textContent.split('•')[0].trim();
+            const last_reply_time = d.querySelector('td:nth-child(3) span:last-child').textContent.split('•')[0].trim();
             const last_reply_by =  d.querySelector('td:nth-child(3) span:last-child a')?.textContent
             const replies = d.querySelector('.count_livid')?.textContent;
             return {
@@ -71,7 +71,7 @@ const CUSTOM_ENDPOINTS = {
               node,
               id,
               title,
-              formatted_time_ago,
+              last_reply_time,
               last_reply_by,
               replies
             }
@@ -176,6 +176,126 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
     `
+  },
+
+  '/page/member/:username/topics.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/member/:username/topics',
+    dataExtractor: `
+    (function() {
+      try {
+        const cells = document.querySelectorAll('#Wrapper .content .box .cell')
+        if (cells.length === 1 && cells[0].querySelector('img')?.src.indexOf('lock') > -1) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            code: 'member_locked',
+            message: cells[0].textContent.trim()
+          }))
+          return
+        }
+
+        const data = [...cells].map((d) => {
+          if (!d.querySelector('table')) {
+            return;
+          }
+
+          const member = {
+            username: d.querySelector('td:nth-child(1) strong a').getAttribute('href').replace('/member/', ''),
+          }
+          const node = {
+            name: d.querySelector('td:nth-child(1) .node').getAttribute('href').replace('/go/', ''),
+            title: d.querySelector('td:nth-child(1) .node').textContent,
+          }
+
+          const id = Number(d.querySelector('.topic-link').getAttribute('href').replace(new RegExp('.*\/t\/'), '').split('#')[0]);
+          const title = d.querySelector('.topic-link').textContent;
+          const last_reply_time = d.querySelector('td:nth-child(1) span:last-child').textContent.split('•')[0].trim();
+          const last_reply_by = d.querySelector('td:nth-child(1) span:last-child a')?.textContent;
+          const replies = Number(d.querySelector('.count_livid')?.textContent.trim() || 0);
+
+          return {
+            id,
+            title,
+            replies,
+            last_reply_by,
+            last_reply_time,
+            member,
+            node,
+          }
+        }).filter(Boolean);
+        const pageText = document.querySelector('#Wrapper .content > .box .inner td[align=center]')?.textContent
+        let pagination;
+        if (pageText) {
+          pagination = {
+            current: Number(pageText.split('/')[0]),
+            total: Number(pageText.split('/')[1])
+          }
+        }
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          data,
+          pagination,
+        }))
+      } catch (err) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          error: true,
+          message: err.message
+        }))
+      }
+    }());
+    `
+  },
+
+  '/page/member/:username/replies.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/member/:username/replies',
+    dataExtractor: `
+    (function() {
+      try {
+        const getUsername = (str) => {
+          const result = /\\s+(.*?)\\s+/.exec(str)
+          return result?.[1]
+        }
+        const docks = document.querySelectorAll('#Wrapper .content .box .dock_area')
+
+        const data = [...docks].map((d) => {
+
+          const topic = {
+            id: Number(d.querySelector('table td span.gray a').getAttribute('href').replace(new RegExp('.*\/t\/'), '').split('#')[0]),
+            title: d.querySelector('table td span.gray a').textContent,
+            member: {
+              username: getUsername(d.querySelector('table td span.gray').childNodes[0].textContent),
+            },
+          }
+
+          return {
+            topic_id: topic.id,
+            content_rendered: d.nextElementSibling.innerHTML.trim(),
+            topic,
+            reply_time: d.querySelector('table td span.fade').textContent
+          };
+
+
+        }).filter(Boolean);
+        const pageText = document.querySelector('#Wrapper .content > .box .inner td[align=center]')?.textContent
+        let pagination;
+        if (pageText) {
+          pagination = {
+            current: Number(pageText.split('/')[0]),
+            total: Number(pageText.split('/')[1])
+          }
+        }
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          data,
+          pagination,
+        }))
+      } catch (err) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          error: true,
+          message: err.message
+        }))
+      }
+    }());
+    `
   }
 }
 const request = async (url, config = {}) => {
@@ -267,6 +387,7 @@ export const FetcherWebView = () => {
               reject(new Error('Request Timeout'))
             }, 10000)
           })
+          console.log(getUrl(config))
           return (
             <WebView
               ref={ref}

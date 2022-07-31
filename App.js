@@ -10,7 +10,8 @@ import {
   UserIcon
 } from 'react-native-heroicons/outline'
 
-import MyHeader from './src/Components/MyHeader'
+import MainScreenHeader from './src/Components/MainScreenHeader'
+import MemberScreenHeader from './src/Components/MemberScreenHeader'
 
 import HomeScreen from './src/screens/HomeScreen'
 import NodesScreen from './src/screens/NodesScreen'
@@ -40,7 +41,7 @@ function MainTab() {
         options={{
           tabBarIcon: HomeIcon,
           tabBarLabel: '主题',
-          header: MyHeader
+          header: MainScreenHeader
         }}
       />
       <Tab.Screen
@@ -49,7 +50,7 @@ function MainTab() {
         options={{
           tabBarIcon: CollectionIcon,
           tabBarLabel: '节点',
-          header: MyHeader
+          header: MainScreenHeader
         }}
       />
       <Tab.Screen
@@ -100,7 +101,7 @@ function AppStack() {
         name="member"
         component={MemberScreen}
         options={{
-          title: '成员'
+          header: MemberScreenHeader
         }}
       />
     </Stack.Navigator>

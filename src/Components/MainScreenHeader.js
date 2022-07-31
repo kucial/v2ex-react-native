@@ -3,7 +3,7 @@ import { SearchIcon } from 'react-native-heroicons/outline'
 import Constants from 'expo-constants'
 import React from 'react'
 
-export default function Header({ navigation }) {
+export default function HomeScreenHeader({ navigation }) {
   return (
     <View
       className="bg-white w-full flex-row items-center pl-4 border-b border-solid border-b-gray-100"
@@ -19,7 +19,7 @@ export default function Header({ navigation }) {
         <Pressable
           className="w-[44px] h-[44px] flex items-center justify-center  rounded-full active:bg-gray-100 active:opacity-60"
           onPress={() => {
-            navigation.navigate('search')
+            navigation.push('search')
           }}>
           <SearchIcon size={24} color={'#333'} />
         </Pressable>

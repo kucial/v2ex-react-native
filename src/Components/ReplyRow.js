@@ -1,12 +1,14 @@
-import { View, Text, Image, useWindowDimensions } from 'react-native'
+import { View, Text, Image, Pressable, useWindowDimensions } from 'react-native'
 import React from 'react'
 import TimeAgo from '@/Components/TimeAgo'
 import RenderHtml from '@/Components/RenderHtml'
+import { useNavigation } from '@react-navigation/native'
 
 export default function ReplyRow(props) {
   const { width } = useWindowDimensions()
   const { data, num } = props
   const { member } = data
+  const navigation = useNavigation()
   return (
     <View className="bg-white border-b border-gray-200">
       <View className="flex-1 py-2 pl-1">
@@ -19,9 +21,18 @@ export default function ReplyRow(props) {
               className="w-[24px] h-[24px] rounded"
             />
             <View className="">
-              <Text className="font-bold text-xs text-gray-700">
-                {member.username}
-              </Text>
+              <Pressable
+                hitSlop={4}
+                className="active:opacity-60"
+                onPress={() => {
+                  navigation.push('member', {
+                    username: member.username
+                  })
+                }}>
+                <Text className="font-bold text-xs text-gray-700">
+                  {member.username}
+                </Text>
+              </Pressable>
             </View>
             <View className="relative top-[1px]">
               <Text className="text-gray-400">·</Text>

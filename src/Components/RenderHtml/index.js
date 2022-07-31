@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native'
 import { useCallback, useMemo } from 'react'
+import PropTypes from 'prop-types'
 import BaseRender, { useInternalRenderer } from 'react-native-render-html'
 import { useTailwind } from 'tailwindcss-react-native'
 import ImageElement from './ImageElement'
@@ -15,7 +16,7 @@ const getMemberName = (href) => {
 }
 
 const getTopicId = (href) => {
-  const match = /https:\/\/v2ex.com\/t\/(\w*)?(#\w+)?$/.exec(href)
+  const match = /https:\/\/(?:www\.)v2ex.com\/t\/(\w*)?(#\w+)?$/.exec(href)
   return match?.[1]
 }
 
@@ -23,7 +24,7 @@ const renderers = {
   img: ImageRenderer
 }
 
-export default function RenderHtml({ tagsStyles = {}, ...props }) {
+export default function RenderHtml({ tagsStyles, ...props }) {
   const tw = useTailwind()
   const navigation = useNavigation()
   const styles = useMemo(
@@ -38,7 +39,7 @@ export default function RenderHtml({ tagsStyles = {}, ...props }) {
         paddingLeft: 12
       },
       a: tw('no-underline'),
-      ...tagsStyles
+      ...(tagsStyles || {})
     }),
     [tagsStyles]
   )
@@ -46,7 +47,8 @@ export default function RenderHtml({ tagsStyles = {}, ...props }) {
     return {
       a: {
         onPress: (e, href) => {
-          if (new RegExp('^https://v2ex.com').test(href)) {
+          console.log('anchor href', e)
+          if (new RegExp('^https://(www.)?v2ex.com').test(href)) {
             const memberName = getMemberName(href)
             if (memberName) {
               navigation.push('member', {
@@ -81,4 +83,8 @@ export default function RenderHtml({ tagsStyles = {}, ...props }) {
       {...props}
     />
   )
+}
+
+RenderHtml.propTypes = {
+  tagsStyles: PropTypes.object
 }
