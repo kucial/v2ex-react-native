@@ -25,7 +25,8 @@ const CUSTOM_ENDPOINTS = {
   '/page/index/tabs.json': {
     host: 'https://www.v2ex.com',
     pathname: '/',
-    dataExtractor: `
+    scripts: [
+      `
       (function() {
         try {
           const tabAnchors = document.querySelectorAll('#Wrapper .content a.tab');
@@ -42,13 +43,15 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       })()
-    `
+      `
+    ]
   },
   // params: tab={tab}
   '/page/index/feed.json': {
     host: 'https://www.v2ex.com',
     pathname: '/',
-    dataExtractor: `
+    scripts: [
+      `
       (function() {
         try {
           const itemNodes = document.querySelectorAll('#Wrapper .content .cell.item')
@@ -85,12 +88,14 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
     `
+    ]
   },
 
   '/page/planes/node-groups.json': {
     host: 'https://www.v2ex.com',
     pathname: '/planes',
-    dataExtractor: `
+    scripts: [
+      `
     (function() {
       try {
         const boxes = document.querySelectorAll('#Wrapper .content > .box')
@@ -122,12 +127,14 @@ const CUSTOM_ENDPOINTS = {
       }
     }());
     `
+    ]
   },
 
   '/page/go/:name/feed.json': {
     host: 'https://www.v2ex.com',
     pathname: '/go/:name',
-    dataExtractor: `
+    scripts: [
+      `
       (function() {
         try {
           const cells = document.querySelectorAll('#Wrapper .content > .box:nth-child(2) .cell')
@@ -175,12 +182,14 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
     `
+    ]
   },
 
   '/page/member/:username/topics.json': {
     host: 'https://www.v2ex.com',
     pathname: '/member/:username/topics',
-    dataExtractor: `
+    scripts: [
+      `
     (function() {
       try {
         const cells = document.querySelectorAll('#Wrapper .content .box .cell')
@@ -242,12 +251,14 @@ const CUSTOM_ENDPOINTS = {
       }
     }());
     `
+    ]
   },
 
   '/page/member/:username/replies.json': {
     host: 'https://www.v2ex.com',
     pathname: '/member/:username/replies',
-    dataExtractor: `
+    scripts: [
+      `
     (function() {
       try {
         const getUsername = (str) => {
@@ -295,10 +306,86 @@ const CUSTOM_ENDPOINTS = {
       }
     }());
     `
+    ]
+  },
+
+  '/custom/auth/current-user.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/',
+    scripts: [
+      `
+    (function() {
+      try {
+        const username = document.querySelector('#menu-entry img.avatar')?.getAttribute('alt');
+        if (!username) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            code: 'not_authenticated',
+            message: '未登录'
+          }));
+        } else {
+          fetch('/api/members/show.json?username='+username)
+            .then((res) => res.json())
+            .then((user) => {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                data: user
+              }))
+            })
+          ;
+        }
+      } catch (err) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          error: true,
+          message: err.message
+        }))
+      }
+    }());
+    `
+    ]
+  },
+
+  '/custom/auth/login-form.json': {},
+
+  '/custom/auth/logout.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/',
+    scripts: [
+      // click logout
+      `
+      (function() {
+        try {
+          const logoutAnchor = document.querySelector('a[href^="/signout"]');
+          if (logoutAnchor) {
+            logoutAnchor.click();
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: 'Logout link not found',
+              code: 'PAGE_UNEXPECTED',
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }());
+    `,
+      // check if logout sccess
+      `(function() {
+        const logoutAnchor = document.querySelector('a[href^="/signout"]');
+        if (!logoutAnchor) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            success: true,
+          }))
+        }
+      }())`
+    ]
   }
 }
 const request = async (url, config = {}) => {
-  // console.log(url, config)
+  console.log('api request', url)
   if (OFFICIAL_ENDPOINTS.some((endpoint) => url.indexOf(endpoint) > -1)) {
     return instance({
       method: 'GET',
@@ -381,24 +468,39 @@ export const FetcherWebView = () => {
         function Wrapped(props) {
           const ref = useRef()
           const timerRef = useRef()
-          useEffect(() => {
-            timerRef.current = setTimeout(() => {
-              reject(new Error('Request Timeout'))
-            }, 10000)
-          })
-          console.log(getUrl(config))
+          const scriptsToInject = useRef([...config.scripts])
+          const url = getUrl(config)
           return (
             <WebView
               ref={ref}
-              source={{ uri: getUrl(config) }}
-              onLoad={() => {
+              source={{ uri: url }}
+              // sharedCookiesEnabled={true}
+              onLoadStart={() => {
+                console.log(`load start: ${url}`)
+                timerRef.current = setTimeout(() => {
+                  reject(new Error('Request Timeout'))
+                  setStack((prev) => {
+                    const newStack = { ...prev }
+                    delete newStack[key]
+                    return newStack
+                  })
+                }, 10000)
+              }}
+              onLoadEnd={() => {
+                console.log(`load end: ${url}`)
                 clearTimeout(timerRef.current)
-                // console.log(`${url} LOADED`)
-                ref.current.injectJavaScript(config.dataExtractor)
+              }}
+              onLoad={() => {
+                console.log(`load: ${url}`)
+                const script = scriptsToInject.current.shift()
+                if (script) {
+                  ref.current.injectJavaScript(script)
+                }
               }}
               onMessage={(event) => {
                 if (event.nativeEvent.data) {
                   const data = JSON.parse(event.nativeEvent.data)
+                  // console.log('response data', data)
                   if (data.error) {
                     reject(data)
                   } else {

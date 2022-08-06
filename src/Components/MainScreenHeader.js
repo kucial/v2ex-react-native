@@ -1,7 +1,8 @@
-import { Text, View, Pressable } from 'react-native'
+import { Image, View, Pressable } from 'react-native'
 import { SearchIcon } from 'react-native-heroicons/outline'
 import Constants from 'expo-constants'
 import React from 'react'
+import logoImage from '@/assets/logo.png'
 
 export default function HomeScreenHeader({ navigation }) {
   return (
@@ -12,7 +13,14 @@ export default function HomeScreenHeader({ navigation }) {
         paddingTop: Constants.statusBarHeight
       }}>
       <View className="flex-1">
-        <Text className="text-lg font-bold">V2EX</Text>
+        <Image
+          source={logoImage}
+          style={{
+            width: 47,
+            height: 15
+          }}
+        />
+        {/* <Text className="text-lg font-bold">V2EX</Text> */}
       </View>
 
       <View className="flex flex-row space-x-3 items-center justify-self-end pr-1">

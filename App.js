@@ -13,6 +13,8 @@ import {
 import MainScreenHeader from './src/Components/MainScreenHeader'
 import MemberScreenHeader from './src/Components/MemberScreenHeader'
 
+import AuthServiceProvider from './src/containers/AuthServiceProvider'
+
 import HomeScreen from './src/screens/HomeScreen'
 import NodesScreen from './src/screens/NodesScreen'
 import MyScreen from './src/screens/MyScreen'
@@ -21,6 +23,7 @@ import TopicScreen from './src/screens/TopicScreen'
 import NodeScreen from './src/screens/NodeScreen'
 import BrowserScreen from './src/screens/BrowserScreen'
 import MemberScreen from './src/screens/MemberScreen'
+import SigninScreen from './src/screens/SigninScreen'
 import DebugScreen from './src/screens/DebugScreen'
 
 import fetcher, { FetcherWebView } from './src/utils/fetcher'
@@ -72,38 +75,56 @@ function AppStack() {
         headerTintColor: '#111',
         headerBackTitleVisible: false
       }}>
-      <Stack.Screen
-        name="main"
-        component={MainTab}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="search"
-        component={SearchScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="topic"
-        component={TopicScreen}
-        options={{
-          title: '话题'
-        }}
-      />
-      <Stack.Screen name="node" component={NodeScreen} />
-      <Stack.Screen
-        name="browser"
-        component={BrowserScreen}
-        options={{
-          title: '内嵌网页'
-        }}
-      />
-      <Stack.Screen
-        name="member"
-        component={MemberScreen}
-        options={{
-          header: MemberScreenHeader
-        }}
-      />
+      <Stack.Group>
+        <Stack.Screen
+          name="main"
+          component={MainTab}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="search"
+          component={SearchScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="topic"
+          component={TopicScreen}
+          options={{
+            title: '话题'
+          }}
+        />
+        <Stack.Screen name="node" component={NodeScreen} />
+        <Stack.Screen
+          name="browser"
+          component={BrowserScreen}
+          options={{
+            title: '内嵌网页'
+          }}
+        />
+        <Stack.Screen
+          name="member"
+          component={MemberScreen}
+          options={{
+            header: MemberScreenHeader
+          }}
+        />
+      </Stack.Group>
+      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+        <Stack.Screen
+          name="signin"
+          component={SigninScreen}
+          options={{
+            headerShown: false
+          }}
+        />
+        {/* <Stack.Screen
+          name="signup"
+          component={SignupScreen}
+          options={{
+            headerShown: false
+          }}
+        /> */}
+      </Stack.Group>
     </Stack.Navigator>
   )
 }
@@ -118,7 +139,10 @@ export default function App() {
         }}>
         <TailwindProvider>
           <NavigationContainer>
-            <AppStack />
+            <AuthServiceProvider>
+              {/* <DebugScreen /> */}
+              <AppStack />
+            </AuthServiceProvider>
           </NavigationContainer>
         </TailwindProvider>
       </SWRConfig>
