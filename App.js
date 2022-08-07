@@ -25,6 +25,7 @@ import BrowserScreen from './src/screens/BrowserScreen'
 import MemberScreen from './src/screens/MemberScreen'
 import SigninScreen from './src/screens/SigninScreen'
 import NotificationScreen from './src/screens/NotificationScreen'
+import CollectedTopicsScreen from './src/screens/CollectedTopicsScreen'
 
 import DebugScreen from './src/screens/DebugScreen'
 
@@ -115,6 +116,13 @@ function AppStack() {
           component={NotificationScreen}
           options={{
             title: '消息'
+          }}
+        />
+        <Stack.Screen
+          name="collected-topics"
+          component={CollectedTopicsScreen}
+          options={{
+            title: '我收藏的内容'
           }}
         />
       </Stack.Group>

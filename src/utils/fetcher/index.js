@@ -362,6 +362,52 @@ const CUSTOM_ENDPOINTS = {
     ]
   },
 
+  '/page/my/topics.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/my/topics',
+    scripts: [
+      `(function() {
+        try {
+          const cells = document.querySelectorAll('#Wrapper .box .cell.item');
+          const data = [...cells].map((d) => {
+            const member = {
+              avatar_normal: d.querySelector('td:nth-child(1) img')?.src,
+              username: d.querySelector('td:nth-child(3) span strong a').textContent,
+            }
+            const node = {
+              title: d.querySelector('td:nth-child(3) a.node').textContent,
+              name: d.querySelector('td:nth-child(3) a.node').href.replace(new RegExp('.*\/go\/'), '')
+            }
+            const title = d.querySelector('.item_title a').textContent;
+            const id = Number(d.querySelector('.item_title a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0]);
+            const last_reply_time = d.querySelector('.topic_info span[title]').textContent.trim();
+            const last_reply_by = d.querySelector('.topic_info strong:last-child a')?.textContent
+            const replies = d.querySelector('.count_livid')?.textContent;
+            return {
+              member,
+              node,
+              id,
+              title,
+              last_reply_time,
+              last_reply_by,
+              votes: d.querySelector('.votes')?.textContent.trim(),
+              replies: Number(replies) || 0,
+            }
+          })
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            data: data,
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())
+      `
+    ]
+  },
+
   '/custom/auth/current-user.json': {
     host: 'https://www.v2ex.com',
     pathname: '/',

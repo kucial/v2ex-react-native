@@ -114,7 +114,7 @@ export default function MyScreen({ navigation }) {
           className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
           disabled={authStatus === 'loading'}
           onPress={composeAuthedNavigation(() => {
-            navigation.push('my-topics')
+            navigation.push('collected-topics')
           })}>
           <View className="mr-3">
             <DocumentIcon size={24} color="#111" />
