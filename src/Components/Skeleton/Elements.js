@@ -97,8 +97,12 @@ export function InlineBox(props) {
     }
   }, [props.width])
   return (
-    <Pressable style={[tw('bg-gray-100'), props.style, width && { width }]}>
+    <View style={[tw('bg-gray-100'), props.style, width && { width }]}>
       <Text> </Text>
-    </Pressable>
+    </View>
   )
+}
+
+export function Box(props) {
+  return <View className="bg-gray-100" style={props.style}></View>
 }

@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Loader from '@/Components/Loader'
+import { hasReachEnd } from '@/utils/swr'
 
 export default function CommonListFooter(props) {
   const { data: listSwr } = props
@@ -25,6 +26,11 @@ export default function CommonListFooter(props) {
               </Pressable>
             </View>
           )}
+        </View>
+      )}
+      {hasReachEnd(listSwr) && (
+        <View className="flex flex-row justify-center py-4">
+          <Text className="text-gray-400">到达底部啦</Text>
         </View>
       )}
     </View>

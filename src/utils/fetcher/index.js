@@ -309,6 +309,59 @@ const CUSTOM_ENDPOINTS = {
     ]
   },
 
+  '/page/notifications.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/notifications',
+    scripts: [
+      `(function() {
+        try {
+          const cells = document.querySelectorAll('#notifications .cell');
+          const data = [...cells].map((d) => {
+            const memberImage = d.querySelector('img.avatar')
+            if (!memberImage) { return null }
+            const member = {
+              username: memberImage.alt,
+              avatar_normal: memberImage.src,
+            }
+            const topicLink = d.querySelector('a[href^="/t/"]')
+            const topic = {
+              id: Number(topicLink.getAttribute('href').replace(new RegExp('.*\/t\/'), '').split('#')[0]),
+              title: topicLink.textContent.trim()
+            }
+            // topic_id
+            // content_rendered
+            // reply_time
+            return {
+              member,
+              topic,
+              topic_id: topic.id,
+              content_rendered: d.querySelector('.payload')?.innerHTML.trim(),
+              reply_time: d.querySelector('.snow')?.innerText,
+            }
+          });
+          const pageText = document.querySelector('#notifications')?.previousElementSibling?.querySelector('td[align="center"]')?.textContent
+          let pagination;
+          if (pageText) {
+            pagination = {
+              current: Number(pageText.split('/')[0]),
+              total: Number(pageText.split('/')[1])
+            }
+          }
+
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            data,
+            pagination
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }());`
+    ]
+  },
+
   '/custom/auth/current-user.json': {
     host: 'https://www.v2ex.com',
     pathname: '/',
@@ -343,8 +396,6 @@ const CUSTOM_ENDPOINTS = {
     `
     ]
   },
-
-  '/custom/auth/login-form.json': {},
 
   '/custom/auth/logout.json': {
     host: 'https://www.v2ex.com',

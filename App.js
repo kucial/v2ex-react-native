@@ -24,6 +24,8 @@ import NodeScreen from './src/screens/NodeScreen'
 import BrowserScreen from './src/screens/BrowserScreen'
 import MemberScreen from './src/screens/MemberScreen'
 import SigninScreen from './src/screens/SigninScreen'
+import NotificationScreen from './src/screens/NotificationScreen'
+
 import DebugScreen from './src/screens/DebugScreen'
 
 import fetcher, { FetcherWebView } from './src/utils/fetcher'
@@ -106,6 +108,13 @@ function AppStack() {
           component={MemberScreen}
           options={{
             header: MemberScreenHeader
+          }}
+        />
+        <Stack.Screen
+          name="notification"
+          component={NotificationScreen}
+          options={{
+            title: '消息'
           }}
         />
       </Stack.Group>
