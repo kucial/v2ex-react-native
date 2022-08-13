@@ -24,6 +24,8 @@ const renderers = {
   img: ImageRenderer
 }
 
+const defaultTextProps = { selectable: true }
+
 export default function RenderHtml({ tagsStyles, ...props }) {
   const tw = useTailwind()
   const navigation = useNavigation()
@@ -80,6 +82,7 @@ export default function RenderHtml({ tagsStyles, ...props }) {
       tagsStyles={styles}
       renderers={renderers}
       renderersProps={renderersProps}
+      defaultTextProps={defaultTextProps}
       {...props}
     />
   )

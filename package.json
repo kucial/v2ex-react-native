@@ -28,6 +28,7 @@
     "react-dom": "17.0.2",
     "react-hook-form": "^7.33.1",
     "react-native": "0.68.2",
+    "react-native-dropdownalert": "^4.5.1",
     "react-native-fast-image": "^8.5.11",
     "react-native-heroicons": "^2.2.0",
     "react-native-image-modal": "^2.0.4",

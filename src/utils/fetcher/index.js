@@ -91,6 +91,219 @@ const CUSTOM_ENDPOINTS = {
     ]
   },
 
+  '/page/t/:id/replies.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    scripts: [
+      `
+      (function() {
+        try {
+          const items = document.querySelectorAll('#Wrapper .content .box div[id^=r_]')
+          const data = [...items].map((d) => {
+            const member = {
+              username: d.querySelector('strong a[href^="/member/"]').textContent.trim(),
+              avatar_normal: d.querySelector('img.avatar').src
+            }
+            const content_rendered = d.querySelector('.reply_content').innerHTML;
+            const replyInfo = d.querySelector('td:nth-child(3) span.fade.small').textContent.trim();
+            let reply_time;
+            let reply_device;
+            [reply_time, reply_device] = replyInfo.split(' via ');
+            const heartImg = d.querySelector('td:nth-child(3) span.small.fade img[alt="❤️"]');
+            const thanks_count = heartImg ? Number(heartImg.nextSibling.textContent.trim()) : 0;
+            return {
+              id: Number(d.id.replace('r_', '')),
+              content_rendered,
+              member,
+              reply_time,
+              reply_device,
+              thanks_count,
+              thanked: !!d.querySelector('.thanked'),
+              num: Number(d.querySelector('.no').textContent)
+            }
+          }).filter(Boolean);
+
+          let pagination = { current: 1, total: 1 };
+          const paginationCell = document.querySelector('#Wrapper .box:nth-child(5) .cell:nth-child(2):not([id^=r_])')
+          if (paginationCell) {
+            pagination.current = Number(paginationCell.querySelector('.page_current')?.textContent);
+            const total = /\\d+/.exec(paginationCell.querySelector('div:nth-child(2)').textContent);
+            pagination.total = Number(total)
+          }
+
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            data,
+            pagination
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }());
+      `
+    ]
+  },
+
+  '/page/t/:id/thank-reply.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    getScripts: ({ data }) => {
+      return [
+        // post data
+        `(function() {
+          try {
+            const d = document.querySelector('#r_${data.replyId}');
+            if (!!d.querySelector('.thanked')) {
+              // just extract data;
+              const member = {
+                username: d.querySelector('strong a[href^="/member/"]').textContent.trim(),
+                avatar_normal: d.querySelector('img.avatar').src
+              }
+              const content_rendered = d.querySelector('.reply_content').innerHTML;
+              const replyInfo = d.querySelector('td:nth-child(3) span.fade.small').textContent.trim();
+              let reply_time;
+              let reply_device;
+              [reply_time, reply_device] = replyInfo.split(' via ');
+              const heartImg = d.querySelector('td:nth-child(3) span.small.fade img[alt="❤️"]');
+              const thanks_count = heartImg ? Number(heartImg.nextSibling.textContent.trim()) : 0;
+              const data =  {
+                id: Number(d.id.replace('r_', '')),
+                content_rendered,
+                member,
+                reply_time,
+                reply_device,
+                thanks_count,
+                thanked: !!d.querySelector('.thanked'),
+                num: Number(d.querySelector('.no').textContent)
+              }
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                data,
+              }))
+            } else {
+              const callback = function(mutationList, observer) {
+                if (mutationList.some((m) => m.target.classList.contains('thanked'))) {
+                  const member = {
+                    username: d.querySelector('strong a[href^="/member/"]').textContent.trim(),
+                    avatar_normal: d.querySelector('img.avatar').src
+                  }
+                  const content_rendered = d.querySelector('.reply_content').innerHTML;
+                  const replyInfo = d.querySelector('td:nth-child(3) span.fade.small').textContent.trim();
+                  let reply_time;
+                  let reply_device;
+                  [reply_time, reply_device] = replyInfo.split(' via ');
+                  const heartImg = d.querySelector('td:nth-child(3) span.small.fade img[alt="❤️"]');
+                  const thanks_count = heartImg ? Number(heartImg.nextSibling.textContent.trim()) : 0;
+                  const data =  {
+                    id: Number(d.id.replace('r_', '')),
+                    content_rendered,
+                    member,
+                    reply_time,
+                    reply_device,
+                    thanks_count: thanks_count + 1,
+                    thanked: !!d.querySelector('.thanked'),
+                    num: Number(d.querySelector('.no').textContent)
+                  }
+                  window.ReactNativeWebView.postMessage(JSON.stringify({
+                    data,
+                  }))
+                }
+              }
+
+              const observer = new MutationObserver(callback);
+              const config = {
+                attributes: true,
+                childList: true,
+                subtree: true
+              };
+              observer.observe(d, config);
+              thankReply(${data.replyId})
+            }
+          } catch (err) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: err.message
+            }))
+          }
+        }())`
+      ]
+    }
+  },
+
+  // post reply
+  '/page/t/:id/reply.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    getScripts: ({ data }) => {
+      return [
+        `
+        (function() {
+          try {
+            const data = ${JSON.stringify(data)};
+            const replyBox = document.getElementById('reply-box');
+            replyBox.querySelector('[name=content]').value = data.content;
+            replyBox.querySelector('input[type=submit]').click();
+          } catch (err) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: err.message
+            }))
+          }
+        }());
+        `,
+        `
+        (function() {
+          try {
+            const replyNum = window.location.hash.replace('#reply', '');
+            const d = [...document.querySelectorAll('.cell[id^=r_]')].find((d) => {
+              return d.querySelector('.no')?.textContent.trim() === replyNum
+            })
+            if (d) {
+              const member = {
+                username: d.querySelector('strong a[href^="/member/"]').textContent.trim(),
+                avatar_normal: d.querySelector('img.avatar').src
+              }
+              const content_rendered = d.querySelector('.reply_content').innerHTML;
+              const replyInfo = d.querySelector('td:nth-child(3) span.fade.small').textContent.trim();
+              let reply_time;
+              let reply_device;
+              [reply_time, reply_device] = replyInfo.split(' via ');
+              const heartImg = d.querySelector('td:nth-child(3) span.small.fade img[alt="❤️"]');
+              const thanks_count = heartImg ? Number(heartImg.nextSibling.textContent.trim()) : 0;
+              const data =  {
+                id: Number(d.id.replace('r_', '')),
+                content_rendered,
+                member,
+                reply_time,
+                reply_device,
+                thanks_count,
+                thanked: !!d.querySelector('.thanked'),
+                num: Number(d.querySelector('.no').textContent)
+              }
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                data,
+              }));
+            } else {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                error: true,
+                message: 'No reply found',
+                code: 'NO_REPLY_FOUND',
+              }))
+            }
+
+          } catch (err) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: err.message
+            }))
+          }
+        }())
+        `
+      ]
+    }
+  },
+
   '/page/planes/node-groups.json': {
     host: 'https://www.v2ex.com',
     pathname: '/planes',
@@ -513,7 +726,7 @@ const request = async (url, config = {}) => {
     ...parse(url.split('?')[1] || '')
   }
 
-  return manger.fetch({
+  return manager.fetch({
     ...config,
     ...requestEntry[1],
     params: {
@@ -525,7 +738,7 @@ const request = async (url, config = {}) => {
 
 export default request
 
-const manger = {
+const manager = {
   fetch: () => {
     const error = new Error('WebView Fetcher not initialized')
     return Promise.reject(error)
@@ -555,6 +768,16 @@ const getUrl = (config) => {
   return `${host}${parsedPath}`
 }
 
+const getScripts = (config) => {
+  if (config.getScripts) {
+    return config.getScripts(config)
+  }
+  if (Array.isArray(config.scripts)) {
+    return [...config.scripts]
+  }
+  return [config.scripts]
+}
+
 let counter = 0
 export const FetcherWebView = () => {
   const [stack, setStack] = useState({})
@@ -565,7 +788,7 @@ export const FetcherWebView = () => {
         function Wrapped(props) {
           const ref = useRef()
           const timerRef = useRef()
-          const scriptsToInject = useRef([...config.scripts])
+          const scriptsToInject = useRef(getScripts(config))
           const url = getUrl(config)
           return (
             <WebView
@@ -623,7 +846,7 @@ export const FetcherWebView = () => {
     },
     [setStack]
   )
-  manger.fetch = fetcher
+  manager.fetch = fetcher
 
   return (
     <View>

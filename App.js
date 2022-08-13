@@ -14,6 +14,7 @@ import MainScreenHeader from './src/Components/MainScreenHeader'
 import MemberScreenHeader from './src/Components/MemberScreenHeader'
 
 import AuthServiceProvider from './src/containers/AuthServiceProvider'
+import AlertService from './src/containers/AlertService'
 
 import HomeScreen from './src/screens/HomeScreen'
 import NodesScreen from './src/screens/NodesScreen'
@@ -155,12 +156,14 @@ export default function App() {
           fetcher: fetcher
         }}>
         <TailwindProvider>
-          <NavigationContainer>
-            <AuthServiceProvider>
-              {/* <DebugScreen /> */}
-              <AppStack />
-            </AuthServiceProvider>
-          </NavigationContainer>
+          <AlertService>
+            <NavigationContainer>
+              <AuthServiceProvider>
+                {/* <DebugScreen /> */}
+                <AppStack />
+              </AuthServiceProvider>
+            </NavigationContainer>
+          </AlertService>
         </TailwindProvider>
       </SWRConfig>
     </>
