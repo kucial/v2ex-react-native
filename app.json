@@ -14,19 +14,17 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kucial.ve2x"
+      "bundleIdentifier": "com.kucial.v2ex"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.kucial.ve2x"
+      "package": "com.kucial.v2ex"
     },
     "web": {
       "favicon": "./assets/favicon.png"

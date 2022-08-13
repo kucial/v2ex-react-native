@@ -78,7 +78,7 @@ export default function MemberScreen({ route, navigation }) {
           </View>
           <Text className="text-gray-500">
             {member.id
-              ? `VE2X 第 ${member.id} 号会员，加入于 ${new Date(
+              ? `V2EX 第 ${member.id} 号会员，加入于 ${new Date(
                   member.created * 1000
                 ).toLocaleString()}`
               : '    '}
