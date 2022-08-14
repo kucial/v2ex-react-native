@@ -14,12 +14,29 @@ export default function HomeScreen() {
     if (!tabsSwr.data) {
       return []
     }
-    return tabsSwr.data
+
+    return [
+      {
+        value: 'recent',
+        label: '最近'
+      },
+      ...tabsSwr.data
+    ]
       .filter((item) => item.value !== 'nodes')
+
       .map((tab) => ({
         ...tab,
         component: (props) => (
-          <TopicList key={tab.value} type={tab.value} {...props} />
+          <TopicList
+            key={tab.value}
+            type={tab.value}
+            getKey={
+              tab.value === 'recent'
+                ? (index) => `/page/recent/topics.json?p=${index + 1}`
+                : () => `/page/index/topics.json?tab=${tab.value}`
+            }
+            {...props}
+          />
         )
       }))
   }, [tabsSwr.data])

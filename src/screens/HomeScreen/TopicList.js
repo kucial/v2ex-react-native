@@ -1,15 +1,16 @@
 import { FlatList, RefreshControl, ScrollView } from 'react-native'
 import React, { useEffect, useMemo } from 'react'
 import { useIsFocused } from '@react-navigation/native'
-import useSWR from 'swr'
+import useSWRInfinite from 'swr/infinite'
+import { uniqBy } from 'lodash'
 
-import { isRefreshing, shouldInit } from '@/utils/swr'
+import { isRefreshing, shouldInit, hasReachEnd } from '@/utils/swr'
 import CommonListFooter from '@/components/CommonListFooter'
 
 import TopicRow from './TopicRow'
 
 export default function TopicList(props) {
-  const listSwr = useSWR(`/page/index/topics.json?tab=${props.type}`, {
+  const listSwr = useSWRInfinite(props.getKey, {
     revalidateOnMount: false
   })
   const { renderItem, keyExtractor } = useMemo(() => ({
@@ -25,21 +26,39 @@ export default function TopicList(props) {
     }
   }, [isFocused])
 
-  const data = useMemo(() => {
-    return listSwr.data || new Array(10)
-  }, [listSwr.data || '1'])
+  const listItems = useMemo(() => {
+    if (!listSwr.data && !listSwr.error) {
+      // initial loading
+      return new Array(10)
+    }
+    const items = listSwr.data?.reduce((combined, page) => {
+      if (page.data) {
+        return uniqBy([...combined, ...page.data], 'id')
+      }
+      return combined
+    }, [])
+    return items || []
+  }, [listSwr])
 
   return (
     <FlatList
+      data={listItems}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      onEndReachedThreshold={0.4}
+      onEndReached={() => {
+        if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+          listSwr.setSize((size) => size + 1)
+        }
+      }}
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing(listSwr)}
-          onRefresh={listSwr.mutate}
+          onRefresh={() => {
+            listSwr.setSize(1)
+          }}
         />
       }
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}

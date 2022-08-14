@@ -32,3 +32,10 @@ export const useCustomSwr = (
   }, [])
   return swr
 }
+
+export const isLoadingMore = (swr) => {
+  return swr.isValidating && !!swr.data
+}
+export const shouldShowError = (swr) => {
+  return swr.error && !swr.isValidating
+}

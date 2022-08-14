@@ -79,7 +79,9 @@ const CUSTOM_ENDPOINTS = {
               replies
             }
           });
-          window.ReactNativeWebView.postMessage(JSON.stringify(items))
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            data: items,
+          }))
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             error: true,
@@ -88,6 +90,58 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
     `
+    ]
+  },
+
+  '/page/recent/topics.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/recent',
+    scripts: [
+      `
+      (function() {
+        try {
+          const itemNodes = document.querySelectorAll('#Wrapper .content .cell.item')
+          const items = [...itemNodes].map((d) => {
+            const member = {
+              avatar_mini: d.querySelector('td:nth-child(1) img').src,
+              username: d.querySelector('td:nth-child(3) span strong a').textContent,
+            }
+            const node = {
+              title: d.querySelector('td:nth-child(3) a.node').textContent,
+              name: d.querySelector('td:nth-child(3) a.node').href.replace(new RegExp('.*\/go\/'), '')
+            }
+            const title = d.querySelector('.item_title a').textContent;
+            const id = d.querySelector('.item_title a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0];
+            const last_reply_time = d.querySelector('td:nth-child(3) span:last-child').textContent.split('•')[0].trim();
+            const last_reply_by =  d.querySelector('td:nth-child(3) > span:last-child a[href^="/member/"]')?.textContent;
+            const replies = d.querySelector('.count_livid')?.textContent;
+            return {
+              member,
+              node,
+              id: Number(id),
+              title,
+              last_reply_time,
+              last_reply_by,
+              replies: Number(replies || 0)
+            }
+          });
+          const paginationText = document.querySelector('#Wrapper .content .inner:last-child [align=center]').textContent;
+
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            data: items,
+            pagination: paginationText ? {
+              current:  Number(paginationText.split('/')[0])  || 1,
+              total:  Number(paginationText.split('/')[1])  || 1,
+            } : null
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }());
+      `
     ]
   },
 
