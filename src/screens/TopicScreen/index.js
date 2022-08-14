@@ -6,8 +6,7 @@ import {
   Pressable,
   FlatList,
   SafeAreaView,
-  RefreshControl,
-  Modal
+  RefreshControl
 } from 'react-native'
 import React, { useLayoutEffect, useMemo, useCallback, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
@@ -15,29 +14,26 @@ import useSWRInfinite from 'swr/infinite'
 import { HeartIcon, ShareIcon, StarIcon } from 'react-native-heroicons/outline'
 // import { TagIcon } from 'react-native-heroicons/outline'
 
-import TimeAgo from '@/Components/TimeAgo'
-import RenderHtml from '@/Components/RenderHtml'
-import ReplyRow from '@/Components/ReplyRow'
-import ErrorNotice from '@/Components/ErrorNotice'
-import { BlockText } from '@/Components/Skeleton/Elements'
-import TopicSkeleton from '@/Components/Skeleton/TopicSkeleton'
-import CommonListFooter from '@/Components/CommonListFooter'
-import SlideUp from '@/Components/SlideUp'
-import TopicReplyForm from '@/Components/TopicReplyForm'
+import TimeAgo from '@/components/TimeAgo'
+import RenderHtml from '@/components/RenderHtml'
+import ErrorNotice from '@/components/ErrorNotice'
+import { BlockText } from '@/components/Skeleton/Elements'
+import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
+import CommonListFooter from '@/components/CommonListFooter'
+import SlideUp from '@/components/SlideUp'
 
-import { hasReachEnd } from '@/utils/swr'
+import { hasReachEnd, useCustomSwr } from '@/utils/swr'
 import fetcher from '@/utils/fetcher'
 import { useAlertService } from '@/containers/AlertService'
+
+import TopicReplyForm from './TopicReplyForm'
+import ReplyRow from './ReplyRow'
 
 const maxLen = (str = '', limit = 0) => {
   if (limit && str.length > limit) {
     return str.slice(0, limit) + ' ...'
   }
   return str
-}
-
-const htmlBaseStyle = {
-  fontSize: 16
 }
 
 const REPLY_PAGE_SIZE = 100
@@ -51,7 +47,7 @@ export default function TopicScreen({ navigation, route }) {
   const { width } = useWindowDimensions()
   const alert = useAlertService()
 
-  const topicSwr = useSWR(`/api/topics/show.json?id=${id}`)
+  const topicSwr = useCustomSwr(`/api/topics/show.json?id=${id}`)
   const listSwr = useSWRInfinite(
     useCallback(
       (index) => {
@@ -87,6 +83,21 @@ export default function TopicScreen({ navigation, route }) {
       })
     }
   }, [topic?.title])
+
+  const htmlRenderProps = useMemo(() => {
+    if (!topic) {
+      return {}
+    }
+    return {
+      baseStyle: {
+        fontSize: 16
+      },
+      source: {
+        html: topic.content_rendered,
+        baseUrl: 'https://v2ex.com'
+      }
+    }
+  }, [topic?.content_rendered])
 
   const { mutate } = useSWRConfig()
   const [replyContext, setReplyContext] = useState(null)
@@ -226,14 +237,7 @@ export default function TopicScreen({ navigation, route }) {
           </Text>
         </View>
         {!!topic.content_rendered && (
-          <RenderHtml
-            contentWidth={width - 32}
-            source={{
-              html: topic.content_rendered,
-              baseUrl: 'https://v2ex.com'
-            }}
-            baseStyle={htmlBaseStyle}
-          />
+          <RenderHtml contentWidth={width - 32} {...htmlRenderProps} />
         )}
         {topicSwr.error && <ErrorNotice error={topicSwr.error} />}
         {isFallback && (
@@ -277,7 +281,7 @@ export default function TopicScreen({ navigation, route }) {
       />
       <SafeAreaView className="u-absolute bottom-0 left-0 w-full bg-white border-t border-t-gray-200">
         <View className="h-[44px] flex flex-row items-center pl-3 pr-1">
-          <View className="flex-1 mr-6">
+          <View className="flex-1 mr-2">
             <Pressable
               className="h-[32px] w-full justify-center px-3 bg-gray-100 rounded-full active:opacity-60"
               onPress={() => {
@@ -286,16 +290,16 @@ export default function TopicScreen({ navigation, route }) {
               <Text className="text-gray-800 text-sm">发表评论</Text>
             </Pressable>
           </View>
-          <View className="flex flex-row">
-            <Pressable className="w-[44px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
+          <View className="flex flex-row px-1">
+            <Pressable className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
               <StarIcon size={22} color="#333" />
               <Text className="text-gray-600 text-[9px] mt-[2px]">收藏</Text>
             </Pressable>
-            <Pressable className="w-[44px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
+            <Pressable className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
               <HeartIcon size={22} color="#333" />
               <Text className="text-gray-600 text-[9px] mt-[2px]">感谢</Text>
             </Pressable>
-            <Pressable className="w-[44px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
+            <Pressable className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
               <ShareIcon size={22} color="#333" />
               <Text className="text-gray-600 text-[9px] mt-[2px]">分享</Text>
             </Pressable>

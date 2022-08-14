@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import React, { useRef, useEffect } from 'react'
 import Constants from 'expo-constants'
-import BackButton from '@/Components/BackButton'
+import BackButton from '@/components/BackButton'
 import { useTailwind } from 'tailwindcss-react-native'
 
 export default function SearchScreen({ navigation }) {

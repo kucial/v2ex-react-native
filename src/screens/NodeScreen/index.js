@@ -5,7 +5,8 @@ import {
   FlatList,
   Pressable,
   useWindowDimensions,
-  RefreshControl
+  RefreshControl,
+  SafeAreaView
 } from 'react-native'
 import React, { useCallback, useLayoutEffect, useMemo } from 'react'
 import useSWR from 'swr'
@@ -13,9 +14,11 @@ import useSWRInfinite from 'swr/infinite'
 import { useTailwind } from 'tailwindcss-react-native'
 import PropTypes from 'prop-types'
 
-import Loader from '@/Components/Loader'
-import RenderHtml from '@/Components/RenderHtml'
-import NodeTopicRow from '@/Components/NodeTopicRow'
+import RenderHtml from '@/components/RenderHtml'
+import CommonListFooter from '@/components/CommonListFooter'
+import { hasReachEnd, isRefreshing } from '@/utils/swr'
+
+import NodeTopicRow from './NodeTopicRow'
 
 export default function NodeScreen({ route, navigation }) {
   const { name, brief } = route.params
@@ -63,13 +66,13 @@ export default function NodeScreen({ route, navigation }) {
       // initial loading
       return new Array(10)
     }
-    const items = feedSwr.data.reduce((combined, page) => {
+    const items = feedSwr.data?.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
     }, [])
-    return items
+    return items || []
   }, [feedSwr])
 
   const header = (
@@ -95,7 +98,7 @@ export default function NodeScreen({ route, navigation }) {
           </View>
         </View>
         <View>
-          {node.header && (
+          {!!node.header && (
             <RenderHtml
               contentWidth={width - 100}
               source={{ html: node.header }}
@@ -116,7 +119,7 @@ export default function NodeScreen({ route, navigation }) {
         keyExtractor={keyExtractor}
         onEndReachedThreshold={0.4}
         onEndReached={() => {
-          if (!feedSwr.isValidating) {
+          if (!feedSwr.isValidating && !hasReachEnd(feedSwr)) {
             feedSwr.setSize(feedSwr.size + 1)
           }
         }}
@@ -125,32 +128,12 @@ export default function NodeScreen({ route, navigation }) {
             onRefresh={() => {
               feedSwr.mutate()
             }}
-            refreshing={feedSwr.data && feedSwr.isValidating}
+            refreshing={isRefreshing(feedSwr)}
           />
         }
         ListHeaderComponent={header}
         ListFooterComponent={() => {
-          return (
-            <View className="min-h-[44px] py-4 flex flex-row items-center justify-center">
-              {feedSwr.isValidating && <Loader />}
-              {feedSwr.error && !feedSwr.isValidating && (
-                <View>
-                  <View className="my-4">
-                    <Text>{feedSwr.error.message}</Text>
-                  </View>
-                  <View className="flex flex-row justify-center">
-                    <Pressable
-                      className="px-4 h-[44px] w-[120px] rounded-full bg-gray-900 text-white items-center justify-center"
-                      onPress={() => {
-                        feedSwr.mutate()
-                      }}>
-                      <Text className="text-white">重试</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              )}
-            </View>
-          )
+          return <CommonListFooter data={feedSwr} />
         }}
       />
     </View>

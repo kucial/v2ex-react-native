@@ -2,11 +2,11 @@ import React from 'react'
 import { View, Text, Pressable, Image } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
-import NodeTopicRowSkeleton from '@/Components/Skeleton/NodeTopicRowSkeleton'
+import NodeTopicRowSkeleton from '@/components/Skeleton/NodeTopicRowSkeleton'
 
 export default function NodeTopicRow(props) {
-  const { data } = props
   const navigation = useNavigation()
+  const { data } = props
 
   if (!data) {
     return <NodeTopicRowSkeleton />

@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ScrollView } from 'react-native'
 import useSWR from 'swr'
-import { InlineText } from '@/Components/Skeleton/Elements'
+import { InlineText } from '@/components/Skeleton/Elements'
 import { localTime } from '@/utils/time'
 
 const LineItem = (props) => {

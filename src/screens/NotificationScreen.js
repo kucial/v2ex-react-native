@@ -9,10 +9,10 @@ import {
 import React, { useMemo } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import { useNavigation } from '@react-navigation/native'
-import CommonListFooter from '@/Components/CommonListFooter'
+import CommonListFooter from '@/components/CommonListFooter'
 import { hasReachEnd } from '@/utils/swr'
-import RenderHtml from '@/Components/RenderHtml'
-import { Box, BlockText } from '@/Components/Skeleton/Elements'
+import RenderHtml from '@/components/RenderHtml'
+import { Box, BlockText } from '@/components/Skeleton/Elements'
 
 const htmlBaseStyle = {
   lineHeight: 18

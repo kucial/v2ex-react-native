@@ -15,7 +15,7 @@ import { useForm, Controller } from 'react-hook-form'
 import colors from 'tailwindcss/colors'
 import classNames from 'classnames'
 import { useAuthService } from '@/containers/AuthServiceProvider'
-import BackButton from '@/Components/BackButton'
+import BackButton from '@/components/BackButton'
 import logoImage from '@/assets/logo.png'
 
 const extractImageCaptcha = `

@@ -6,14 +6,14 @@ import {
   Pressable,
   RefreshControl
 } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 
-import useSWR from 'swr'
-import ErrorNotice from '@/Components/ErrorNotice'
-import NodesSkeleton from '@/Components/Skeleton/NodesSkeleton'
+import ErrorNotice from '@/components/ErrorNotice'
+import NodesSkeleton from '@/components/Skeleton/NodesSkeleton'
+import { useCustomSwr } from '@/utils/swr'
 
 export default function NodesScreen({ navigation }) {
-  const nodesSwr = useSWR('/page/planes/node-groups.json')
+  const nodesSwr = useCustomSwr('/page/planes/node-groups.json')
 
   if (nodesSwr.error) {
     return (
@@ -61,7 +61,7 @@ export default function NodesScreen({ navigation }) {
             {g.nodes.map((node) => (
               <Pressable
                 key={node.name}
-                className="py-2 px-2 bg-white border border-gray-400 rounded-lg mr-2 mb-2"
+                className="py-2 px-2 bg-white border border-gray-400 rounded-lg mr-2 mb-2 active:opacity-60"
                 onPress={() => {
                   navigation.navigate('node', {
                     name: node.name

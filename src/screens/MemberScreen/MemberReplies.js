@@ -11,9 +11,9 @@ import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
 import { useNavigation } from '@react-navigation/native'
 
-import CommonListFooter from '@/Components/CommonListFooter'
-import RenderHtml from '@/Components/RenderHtml'
-import { BlockText, InlineText } from '@/Components/Skeleton/Elements'
+import CommonListFooter from '@/components/CommonListFooter'
+import RenderHtml from '@/components/RenderHtml'
+import { BlockText, InlineText } from '@/components/Skeleton/Elements'
 
 import { hasReachEnd } from '@/utils/swr'
 

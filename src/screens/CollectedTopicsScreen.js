@@ -10,8 +10,8 @@ import React, { useCallback, useMemo } from 'react'
 import useSWRInfinite from 'swr/infinite'
 
 import { useNavigation } from '@react-navigation/native'
-import { InlineBox, BlockText, Box } from '@/Components/Skeleton/Elements'
-import CommonListFooter from '@/Components/CommonListFooter'
+import { InlineBox, BlockText, Box } from '@/components/Skeleton/Elements'
+import CommonListFooter from '@/components/CommonListFooter'
 import { hasReachEnd } from '@/utils/swr'
 
 const CollectedTopicRow = (props) => {

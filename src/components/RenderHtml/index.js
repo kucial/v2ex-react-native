@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native'
-import { useCallback, useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import BaseRender, { useInternalRenderer } from 'react-native-render-html'
 import { useTailwind } from 'tailwindcss-react-native'
@@ -25,8 +25,12 @@ const renderers = {
 }
 
 const defaultTextProps = { selectable: true }
+const baseStyle = {
+  fontSize: 16,
+  lineHeight: 21
+}
 
-export default function RenderHtml({ tagsStyles, ...props }) {
+function RenderHtml({ tagsStyles, ...props }) {
   const tw = useTailwind()
   const navigation = useNavigation()
   const styles = useMemo(
@@ -83,6 +87,7 @@ export default function RenderHtml({ tagsStyles, ...props }) {
       renderers={renderers}
       renderersProps={renderersProps}
       defaultTextProps={defaultTextProps}
+      baseStyle={baseStyle}
       {...props}
     />
   )
@@ -91,3 +96,4 @@ export default function RenderHtml({ tagsStyles, ...props }) {
 RenderHtml.propTypes = {
   tagsStyles: PropTypes.object
 }
+export default memo(RenderHtml)

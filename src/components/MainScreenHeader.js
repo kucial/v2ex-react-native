@@ -5,7 +5,7 @@ import React from 'react'
 import logoImage from '@/assets/logo.png'
 import { useAuthService } from '@/containers/AuthServiceProvider'
 
-export default function HomeScreenHeader({ navigation }) {
+export default function MainScreenHeader({ navigation }) {
   const { composeAuthedNavigation } = useAuthService()
   return (
     <View

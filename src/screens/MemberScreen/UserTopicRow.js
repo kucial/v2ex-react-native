@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { InlineBox, BlockText } from '@/Components/Skeleton/Elements'
+import { InlineBox, BlockText } from '@/components/Skeleton/Elements'
 
 export default function UserTopicRow(props) {
   const { data } = props

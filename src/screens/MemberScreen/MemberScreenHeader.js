@@ -1,16 +1,15 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
 import Constants from 'expo-constants'
-import { useTailwind } from 'tailwindcss-react-native'
 
-import BackButton from '@/Components/BackButton'
+import BackButton from '@/components/BackButton'
+import classNames from 'classnames'
 
 export default function MemberScreenHeader({ route, navigation }) {
-  const tw = useTailwind()
   const { brief, username } = route.params
   return (
     <View
-      className="bg-white w-full pl-4"
+      className="bg-white w-full"
       style={[
         {
           paddingTop: Constants.statusBarHeight
@@ -20,7 +19,7 @@ export default function MemberScreenHeader({ route, navigation }) {
         style={{
           position: 'absolute',
           left: 4,
-          top: Constants.statusBarHeight + 8,
+          top: Constants.statusBarHeight + 3,
           zIndex: 10
         }}>
         <BackButton
@@ -30,12 +29,14 @@ export default function MemberScreenHeader({ route, navigation }) {
         />
       </View>
 
-      <View className="mt-7 mb-1 w-full flex flew-row items-center justify-center">
+      <View className="mt-6 mb-2 w-full flex flew-row items-center justify-center">
         <View
-          style={[
-            tw('w-[80px] h-[80px] rounded-full overflow-hidden'),
-            brief?.avatar_large ? null : tw('bg-gray-100')
-          ]}>
+          className={classNames(
+            'w-[80px] h-[80px] rounded-full overflow-hidden',
+            {
+              'bg-gray-100': !brief?.avatar_large
+            }
+          )}>
           <Image
             className="w-full h-full"
             source={{ uri: brief?.avatar_large }}

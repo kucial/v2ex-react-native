@@ -3,7 +3,7 @@ import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
 
-import CommonListFooter from '@/Components/CommonListFooter'
+import CommonListFooter from '@/components/CommonListFooter'
 
 import { hasReachEnd } from '@/utils/swr'
 import UserTopicRow from './UserTopicRow'

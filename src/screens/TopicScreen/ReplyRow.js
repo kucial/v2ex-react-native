@@ -6,8 +6,8 @@ import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 
-import RenderHtml from '@/Components/RenderHtml'
-import { InlineText, BlockText, Box } from '@/Components/Skeleton/Elements'
+import RenderHtml from '@/components/RenderHtml'
+import { InlineText, BlockText, Box } from '@/components/Skeleton/Elements'
 
 import { useAuthService } from '@/containers/AuthServiceProvider'
 
@@ -21,7 +21,7 @@ function ReplyRow(props) {
     return (
       <View className="bg-white border-b border-gray-200">
         <View className="flex-1 py-2 pl-1">
-          <View className="flex flex-row mb-1">
+          <View className="flex flex-row mb-2">
             <View className="flex flex-row items-center flex-1 pl-1 ">
               <Box className="w-[24px] h-[24px] rounded" />
               <View className="ml-2">
@@ -53,7 +53,7 @@ function ReplyRow(props) {
           />
         </View>
         <View className="flex-1">
-          <View className="flex flex-row mb-1">
+          <View className="flex flex-row mb-2">
             <View className="flex flex-row items-center flex-1">
               <View className="">
                 <Pressable
@@ -107,7 +107,7 @@ function ReplyRow(props) {
               }}
             />
           </View>
-          <View className="py-2 relative flex flex-row items-center">
+          <View className="py-[10px] relative flex flex-row items-center">
             <Pressable
               hitSlop={8}
               className={classNames(

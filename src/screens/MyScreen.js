@@ -8,7 +8,7 @@ import {
   PhotographIcon
 } from 'react-native-heroicons/outline'
 import { useAuthService } from '@/containers/AuthServiceProvider'
-import { InlineText } from '@/Components/Skeleton/Elements'
+import { InlineText } from '@/components/Skeleton/Elements'
 
 export default function MyScreen({ navigation }) {
   useEffect(() => {

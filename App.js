@@ -10,8 +10,7 @@ import {
   UserIcon
 } from 'react-native-heroicons/outline'
 
-import MainScreenHeader from './src/Components/MainScreenHeader'
-import MemberScreenHeader from './src/Components/MemberScreenHeader'
+import MainScreenHeader from './src/components/MainScreenHeader'
 
 import AuthServiceProvider from './src/containers/AuthServiceProvider'
 import AlertService from './src/containers/AlertService'
@@ -49,7 +48,7 @@ function MainTab() {
         options={{
           tabBarIcon: HomeIcon,
           tabBarLabel: '主题',
-          header: MainScreenHeader
+          header: (props) => <MainScreenHeader {...props} />
         }}
       />
       <Tab.Screen
@@ -58,7 +57,7 @@ function MainTab() {
         options={{
           tabBarIcon: CollectionIcon,
           tabBarLabel: '节点',
-          header: MainScreenHeader
+          header: (props) => <MainScreenHeader {...props} />
         }}
       />
       <Tab.Screen
@@ -110,7 +109,7 @@ function AppStack() {
           name="member"
           component={MemberScreen}
           options={{
-            header: MemberScreenHeader
+            headerShown: false
           }}
         />
         <Stack.Screen
@@ -148,15 +147,17 @@ function AppStack() {
   )
 }
 
+const swrConfig = {
+  fetcher: fetcher,
+  provider: cache,
+  refreshInterval: 5 * 60 * 1000 // 5min
+}
+
 export default function App() {
   return (
     <>
       <FetcherWebView />
-      <SWRConfig
-        value={{
-          fetcher: fetcher,
-          provider: cache
-        }}>
+      <SWRConfig value={swrConfig}>
         <TailwindProvider>
           <AlertService>
             <NavigationContainer>

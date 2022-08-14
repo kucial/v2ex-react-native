@@ -47,7 +47,7 @@ const CUSTOM_ENDPOINTS = {
     ]
   },
   // params: tab={tab}
-  '/page/index/feed.json': {
+  '/page/index/topics.json': {
     host: 'https://www.v2ex.com',
     pathname: '/',
     scripts: [
@@ -794,6 +794,7 @@ export const FetcherWebView = () => {
             <WebView
               ref={ref}
               source={{ uri: url }}
+              onShouldStartLoadWithRequest={() => true}
               // sharedCookiesEnabled={true}
               onLoadStart={() => {
                 console.log(`load start: ${url}`)

@@ -6,6 +6,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import MemberInfo from './MemberInfo'
 import MemberTopics from './MemberTopics'
 import MemberReplies from './MemberReplies'
+import MemberScreenHeader from './MemberScreenHeader'
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -20,71 +21,46 @@ export default function MemberScreen({ route, navigation }) {
     }
   }, [memberSwr.data])
 
-  const components = useMemo(() => {
-    return {
-      info: (props) => <MemberInfo {...props} username={username} />,
-      topics: (props) => <MemberTopics {...props} username={username} />,
-      replies: (props) => <MemberReplies {...props} username={username} />
-    }
+  const tabs = useMemo(() => {
+    return [
+      {
+        value: 'info',
+        label: '资料',
+        component: (props) => <MemberInfo {...props} username={username} />
+      },
+      {
+        value: 'topics',
+        label: '主题',
+        component: (props) => <MemberTopics {...props} username={username} />
+      },
+      {
+        value: 'replies',
+        label: '回复',
+        component: (props) => <MemberReplies {...props} username={username} />
+      }
+    ]
   }, [username])
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarScrollEnabled: false,
-        tabBarIndicatorStyle: { backgroundColor: '#111' },
-        lazy: true
-      }}>
-      <Tab.Screen
-        key="info"
-        name="info"
-        component={components.info}
-        options={{
-          tabBarLabel: '资料'
-        }}
-      />
-      <Tab.Screen
-        key="topics"
-        name="topics"
-        component={components.topics}
-        options={{
-          tabBarLabel: '主题'
-        }}
-      />
-      <Tab.Screen
-        key="replies"
-        name="replies"
-        component={components.replies}
-        options={{
-          tabBarLabel: '回复'
-        }}
-      />
-    </Tab.Navigator>
-  )
-
-  return (
-    <View>
-      <View className="px-4 py-3 bg-white flex flex-row shadow-sm">
-        <View className="mr-4">
-          <Image
-            className="w-[60px] h-[60px] rounded"
-            source={{ uri: member.avatar_large || member.avatar_mini }}></Image>
-        </View>
-        <View className="flex-1">
-          <View className="mb-1">
-            <Text className="text-xl font-semibold">
-              {member.username || ''}
-            </Text>
-          </View>
-          <Text className="text-gray-500">
-            {member.id
-              ? `V2EX 第 ${member.id} 号会员，加入于 ${new Date(
-                  member.created * 1000
-                ).toLocaleString()}`
-              : '    '}
-          </Text>
-        </View>
-      </View>
+    <View className="flex-1">
+      <MemberScreenHeader route={route} navigation={navigation} />
+      <Tab.Navigator
+        screenOptions={{
+          tabBarScrollEnabled: false,
+          tabBarIndicatorStyle: { backgroundColor: '#111' },
+          lazy: true
+        }}>
+        {tabs.map((tab) => (
+          <Tab.Screen
+            key={tab.value}
+            name={tab.value}
+            options={{
+              tabBarLabel: tab.label
+            }}>
+            {tab.component}
+          </Tab.Screen>
+        ))}
+      </Tab.Navigator>
     </View>
   )
 }
