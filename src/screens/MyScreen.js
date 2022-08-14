@@ -7,7 +7,7 @@ import {
   PencilAltIcon,
   PhotographIcon
 } from 'react-native-heroicons/outline'
-import { useAuthService } from '@/containers/AuthServiceProvider'
+import { useAuthService } from '@/containers/AuthService'
 import { InlineText } from '@/components/Skeleton/Elements'
 
 export default function MyScreen({ navigation }) {

@@ -693,9 +693,7 @@ const CUSTOM_ENDPOINTS = {
           fetch('/api/members/show.json?username='+username)
             .then((res) => res.json())
             .then((user) => {
-              window.ReactNativeWebView.postMessage(JSON.stringify({
-                data: user
-              }))
+              window.ReactNativeWebView.postMessage(JSON.stringify(user))
             })
           ;
         }

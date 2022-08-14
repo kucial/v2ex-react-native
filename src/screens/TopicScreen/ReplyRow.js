@@ -9,7 +9,7 @@ import PropTypes from 'prop-types'
 import RenderHtml from '@/components/RenderHtml'
 import { InlineText, BlockText, Box } from '@/components/Skeleton/Elements'
 
-import { useAuthService } from '@/containers/AuthServiceProvider'
+import { useAuthService } from '@/containers/AuthService'
 
 function ReplyRow(props) {
   const { width } = useWindowDimensions()

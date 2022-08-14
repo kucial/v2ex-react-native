@@ -12,7 +12,7 @@ import {
 
 import MainScreenHeader from './src/components/MainScreenHeader'
 
-import AuthServiceProvider from './src/containers/AuthServiceProvider'
+import AuthService from './src/containers/AuthService'
 import AlertService from './src/containers/AlertService'
 
 import HomeScreen from './src/screens/HomeScreen'
@@ -161,10 +161,10 @@ export default function App() {
         <TailwindProvider>
           <AlertService>
             <NavigationContainer>
-              <AuthServiceProvider>
+              <AuthService>
                 {/* <DebugScreen /> */}
                 <AppStack />
-              </AuthServiceProvider>
+              </AuthService>
             </NavigationContainer>
           </AlertService>
         </TailwindProvider>

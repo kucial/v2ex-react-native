@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react'
 import { Pressable } from 'react-native'
 import WebView from 'react-native-webview'
 import useSWR from 'swr'
-import { useAuthService } from '@/containers/AuthServiceProvider'
+import { useAuthService } from '@/containers/AuthService'
 import CookieManager from '@react-native-cookies/cookies'
 export default function DebugScreen() {
   const ref = useRef()

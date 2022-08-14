@@ -3,7 +3,7 @@ import { SearchIcon, MailIcon } from 'react-native-heroicons/outline'
 import Constants from 'expo-constants'
 import React from 'react'
 import logoImage from '@/assets/logo.png'
-import { useAuthService } from '@/containers/AuthServiceProvider'
+import { useAuthService } from '@/containers/AuthService'
 
 export default function MainScreenHeader({ navigation }) {
   const { composeAuthedNavigation } = useAuthService()

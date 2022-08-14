@@ -14,7 +14,7 @@ import WebView from 'react-native-webview'
 import { useForm, Controller } from 'react-hook-form'
 import colors from 'tailwindcss/colors'
 import classNames from 'classnames'
-import { useAuthService } from '@/containers/AuthServiceProvider'
+import { useAuthService } from '@/containers/AuthService'
 import BackButton from '@/components/BackButton'
 import logoImage from '@/assets/logo.png'
 
@@ -110,9 +110,11 @@ const getSubmitScripts = (values) => {
 export default function LoginScreen({ navigation }) {
   const [captchaImage, setCaptchaImage] = useState()
   const webviewRef = useRef()
+  const nameInput = useRef()
   const scriptsToInject = useRef([extractImageCaptcha])
   const { fetchCurrentUser, user: currentUser } = useAuthService()
   const [error, setError] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     if (currentUser) {
@@ -139,6 +141,7 @@ export default function LoginScreen({ navigation }) {
           fetchCurrentUser()
           break
         case 'login_error':
+          setIsSubmitting(false)
           setError(data.payload)
           webviewRef.current.injectJavaScript(extractImageCaptcha)
           break
@@ -151,6 +154,10 @@ export default function LoginScreen({ navigation }) {
   }, [])
 
   const submitLoginForm = useCallback((data) => {
+    if (isSubmitting) {
+      return
+    }
+    setIsSubmitting(true)
     const submitFormScript = getSubmitScripts(data)
     scriptsToInject.current.unshift(checkSubmitStatus)
     webviewRef.current.injectJavaScript(submitFormScript)
@@ -158,6 +165,10 @@ export default function LoginScreen({ navigation }) {
 
   const refreshCaptcha = useCallback(() => {
     webviewRef.current.injectJavaScript(triggerCaptchaRefresh)
+  }, [])
+
+  useEffect(() => {
+    nameInput.current?.focus()
   }, [])
 
   const values = watch()
@@ -202,6 +213,7 @@ export default function LoginScreen({ navigation }) {
                     spellCheck={false}
                     autoCorrect={false}
                     autoCapitalize="none"
+                    ref={nameInput}
                   />
                 )}
                 name="username"
@@ -269,6 +281,11 @@ export default function LoginScreen({ navigation }) {
                     spellCheck={false}
                     autoCorrect={false}
                     autoCapitalize="none"
+                    returnKeyLabel="登录"
+                    returnKeyType="go"
+                    onSubmitEditing={(e) => {
+                      handleSubmit(submitLoginForm)(e)
+                    }}
                   />
                 )}
                 name="captcha"
@@ -276,7 +293,13 @@ export default function LoginScreen({ navigation }) {
               />
 
               <Pressable
-                className="h-[44px] bg-gray-900 rounded-md flex items-center justify-center active:opacity-60 mt-4"
+                className={classNames(
+                  'h-[44px] bg-gray-900 rounded-md flex items-center justify-center active:opacity-60 mt-4',
+                  {
+                    'opacity-60': isSubmitting
+                  }
+                )}
+                disabled={isSubmitting}
                 onPress={handleSubmit(submitLoginForm)}>
                 <Text className="text-white text-base">登录</Text>
               </Pressable>
