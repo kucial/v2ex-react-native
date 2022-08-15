@@ -1,4 +1,4 @@
-rootProject.name = 'v2ex-react-native'
+rootProject.name = 'V2EX'
 
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
 useExpoModules()
