@@ -40,6 +40,10 @@ PODS:
   - libwebp/mux (1.2.1):
     - libwebp/demux
   - libwebp/webp (1.2.1)
+  - lottie-ios (3.4.1)
+  - lottie-react-native (5.1.4):
+    - lottie-ios (~> 3.4.0)
+    - React-Core
   - MMKV (1.2.13):
     - MMKVCore (~> 1.2.13)
   - MMKVCore (1.2.13)
@@ -362,6 +366,7 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - lottie-react-native (from `../node_modules/lottie-react-native`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -403,6 +408,7 @@ SPEC REPOS:
   trunk:
     - fmt
     - libwebp
+    - lottie-ios
     - MMKV
     - MMKVCore
     - SDWebImage
@@ -437,6 +443,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  lottie-react-native:
+    :path: "../node_modules/lottie-react-native"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -523,6 +531,8 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 476ee3e89abb49e07f822b48323c51c57124b572
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
+  lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
+  lottie-react-native: b702fab740cdb952a8e2354713d3beda63ff97b0
   MMKV: aac95d817a100479445633f2b3ed8961b4ac5043
   MMKVCore: 3388952ded307e41b3ed8a05892736a236ed1b8e
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
