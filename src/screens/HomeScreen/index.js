@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { ScrollView, RefreshControl } from 'react-native'
 import useSWR from 'swr'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
@@ -42,7 +43,18 @@ export default function HomeScreen() {
   }, [tabsSwr.data])
 
   if (tabsSwr.error) {
-    return <ErrorNotice error={tabsSwr.error} />
+    return (
+      <ScrollView
+        className="flex-1"
+        refreshControl={
+          <RefreshControl
+            refreshing={tabsSwr.isValidating}
+            onRefresh={tabsSwr.mutate}
+          />
+        }>
+        <ErrorNotice error={tabsSwr.error} />
+      </ScrollView>
+    )
   }
 
   if (!tabsSwr.data) {
