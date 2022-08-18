@@ -7,6 +7,7 @@ import { hasReachEnd, isLoadingMore, shouldShowError } from '@/utils/swr'
 
 export default function CommonListFooter(props) {
   const { data: listSwr } = props
+
   return (
     <View className="min-h-[52px] py-4 flex flex-row items-center justify-center">
       {isLoadingMore(listSwr) && (
@@ -20,7 +21,7 @@ export default function CommonListFooter(props) {
             <Text>{listSwr.error.message}</Text>
           </View>
           {listSwr.error.code !== 'member_locked' && (
-            <View className="flex flex-row justify-center">
+            <View className="flex flex-row justify-center mb-4">
               <Pressable
                 className="px-4 h-[44px] w-[120px] rounded-full bg-gray-900 text-white items-center justify-center active:opacity-60"
                 onPress={() => {

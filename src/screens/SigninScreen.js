@@ -14,8 +14,11 @@ import WebView from 'react-native-webview'
 import { useForm, Controller } from 'react-hook-form'
 import colors from 'tailwindcss/colors'
 import classNames from 'classnames'
+
 import { useAuthService } from '@/containers/AuthService'
 import BackButton from '@/components/BackButton'
+import Loader from '@/components/Loader'
+
 import logoImage from '@/assets/logo.png'
 
 const extractImageCaptcha = `
@@ -301,7 +304,11 @@ export default function LoginScreen({ navigation }) {
                 )}
                 disabled={isSubmitting}
                 onPress={handleSubmit(submitLoginForm)}>
-                <Text className="text-white text-base">登录</Text>
+                {isSubmitting ? (
+                  <Loader size={20} color="#ffffffbc" />
+                ) : (
+                  <Text className="text-white text-base">登录</Text>
+                )}
               </Pressable>
 
               {error && (

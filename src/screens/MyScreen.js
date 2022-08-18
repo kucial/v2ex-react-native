@@ -1,4 +1,4 @@
-import { Image, Text, View, Pressable } from 'react-native'
+import { Image, Text, View, Pressable, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import {
   ClockIcon,
@@ -25,14 +25,14 @@ export default function MyScreen({ navigation }) {
   } = useAuthService()
 
   useEffect(() => {
-    if (authStatus === 'failed') {
+    if (authStatus === 'visitor') {
       goToSigninSreen()
     }
   }, [authStatus])
 
   let header
   switch (authStatus) {
-    case 'loaded':
+    case 'authed':
       header = (
         <Pressable
           className="flex flex-row py-3 px-4 bg-white active:opacity-60"
@@ -58,8 +58,8 @@ export default function MyScreen({ navigation }) {
         </Pressable>
       )
       break
-    case 'failed':
-    case 'reset':
+    case 'visitor':
+    case 'logout':
       header = (
         <Pressable
           className="flex flex-row py-3 px-4 bg-white items-center active:opacity-60"
@@ -147,9 +147,18 @@ export default function MyScreen({ navigation }) {
       {currentUser && (
         <View className="px-4 py-6">
           <Pressable
-            className="flex flex-row items-center justify-center active:opacity-60 active:bg-red-100 h-[44px] rounded"
+            className="flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60 active:bg-red-100 "
             onPress={() => {
-              logout()
+              Alert.alert('确认要退出登录吗?', '', [
+                {
+                  text: '确认',
+                  onPress: () => logout()
+                },
+                {
+                  text: '取消',
+                  style: 'cancel'
+                }
+              ])
             }}>
             <Text className="text-red-700">退出登录</Text>
           </Pressable>

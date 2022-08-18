@@ -149,8 +149,8 @@ function AppStack() {
 
 const swrConfig = {
   fetcher: fetcher,
-  provider: cache,
-  refreshInterval: 5 * 60 * 1000 // 5min
+  provider: cache
+  // refreshInterval: 5 * 60 * 1000 // 5min
 }
 
 export default function App() {

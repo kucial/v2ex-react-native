@@ -675,6 +675,36 @@ const CUSTOM_ENDPOINTS = {
     ]
   },
 
+  // <input type="button" class="super special button" value="2 条未读提醒" onclick="location.href = '/notifications';" style="margin: 0 10px 0 2px; flex: 1 1 1px; line-height: 18px;">
+  '/custom/notification-count.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/',
+    scripts: [
+      `
+      (function() {
+        try {
+          const d = document.querySelector('input.special.super.button');
+          if (d) {
+            const match = /\\d+/.exec(d.value);
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              data: Number(match[0]),
+            }))
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              data:0,
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())
+      `
+    ]
+  },
+
   '/custom/auth/current-user.json': {
     host: 'https://www.v2ex.com',
     pathname: '/',
@@ -685,15 +715,27 @@ const CUSTOM_ENDPOINTS = {
         const username = document.querySelector('#menu-entry img.avatar')?.getAttribute('alt');
         if (!username) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
-            error: true,
-            code: 'not_authenticated',
-            message: '未登录'
+            data: null,
+            meta: null,
           }));
         } else {
+          const d = document.querySelector('input.special.super.button');
+          let unread_count = 0;
+          if (d) {
+            const match = /\\d+/.exec(d.value);
+            if (match) {
+              unread_count = Number(match[0])
+            }
+          }
           fetch('/api/members/show.json?username='+username)
             .then((res) => res.json())
             .then((user) => {
-              window.ReactNativeWebView.postMessage(JSON.stringify(user))
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                data: user,
+                meta: {
+                  unread_count,
+                }
+              }))
             })
           ;
         }

@@ -1,4 +1,4 @@
-import { Image, View, Pressable } from 'react-native'
+import { Image, View, Pressable, Text } from 'react-native'
 import { SearchIcon, MailIcon } from 'react-native-heroicons/outline'
 import Constants from 'expo-constants'
 import React from 'react'
@@ -6,7 +6,7 @@ import logoImage from '@/assets/logo.png'
 import { useAuthService } from '@/containers/AuthService'
 
 export default function MainScreenHeader({ navigation }) {
-  const { composeAuthedNavigation } = useAuthService()
+  const { composeAuthedNavigation, meta } = useAuthService()
   return (
     <View
       className="bg-white w-full flex-row items-center pl-4 border-b border-solid border-b-gray-100"
@@ -31,7 +31,16 @@ export default function MainScreenHeader({ navigation }) {
           onPress={composeAuthedNavigation(() => {
             navigation.push('notification')
           })}>
-          <MailIcon size={24} color={'#333'} />
+          <View className="relative w-[24px] h-[24px]">
+            <MailIcon size={24} color={'#333'} />
+            {!!meta?.unread_count && (
+              <View className="absolute bg-gray-700 top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-white border-solid">
+                <Text className="text-white text-[10px]">
+                  {meta.unread_count}
+                </Text>
+              </View>
+            )}
+          </View>
         </Pressable>
 
         <Pressable

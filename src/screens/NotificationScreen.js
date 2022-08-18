@@ -13,6 +13,7 @@ import CommonListFooter from '@/components/CommonListFooter'
 import { hasReachEnd } from '@/utils/swr'
 import RenderHtml from '@/components/RenderHtml'
 import { Box, BlockText } from '@/components/Skeleton/Elements'
+import { useAuthService } from '@/containers/AuthService'
 
 const htmlBaseStyle = {
   lineHeight: 18
@@ -96,8 +97,16 @@ const NotificationRow = (props) => {
 }
 
 export default function NotificationScreen() {
+  const { updateMeta } = useAuthService()
   const listSwr = useSWRInfinite(
-    (index) => `/page/notifications.json?p=${index + 1}`
+    (index) => `/page/notifications.json?p=${index + 1}`,
+    {
+      onSuccess: () => {
+        updateMeta({
+          unread_count: 0
+        })
+      }
+    }
   )
   const listItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {

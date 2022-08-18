@@ -11,7 +11,8 @@ import TopicRow from './TopicRow'
 
 export default function TopicList(props) {
   const listSwr = useSWRInfinite(props.getKey, {
-    revalidateOnMount: false
+    revalidateOnMount: false,
+    shouldRetryOnError: false
   })
   const { renderItem, keyExtractor } = useMemo(() => ({
     renderItem: ({ item }) => <TopicRow data={item} />,

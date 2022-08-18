@@ -1,10 +1,11 @@
-import { createContext, useEffect, useMemo, useContext } from 'react'
+import { createContext, useEffect, useMemo, useContext, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import useSWR from 'swr'
 import fetcher from '@/utils/fetcher'
+import { useAlertService } from './AlertService'
 export const AuthServiceContext = createContext({
   user: null,
-  status: 'none', // none | loading | loaded | failed | reset
+  status: 'none', // none | loading | authed | failed | failed | logout
   fetchCurrentUser: () => Promise.reject(new Error('no initialized')),
   logout: () => Promise.resolve(),
   composeAuthedNavigation: (callback) => {
@@ -17,14 +18,18 @@ const mapStatus = (swr) => {
     return 'loading'
   }
   if (swr.data) {
-    onceLogined = true
-    return 'loaded'
+    if (swr.data?.data) {
+      onceLogined = true
+      return 'authed'
+    }
+
+    return 'visitor'
   }
   if (swr.error) {
     return 'failed'
   }
   if (onceLogined) {
-    return 'reset'
+    return 'logout'
   }
   return 'none'
 }
@@ -33,15 +38,19 @@ export default function AuthService(props) {
   const userSwr = useSWR('/custom/auth/current-user.json', {
     revalidateIfStale: false,
     revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateOnMount: false
+    revalidateOnReconnect: false
   })
-  console.log(userSwr)
+  const nextAction = useRef()
+  const alert = useAlertService()
+
   const service = useMemo(() => {
-    let nextAction
+    const user = userSwr.data?.data
+    const meta = userSwr.data?.meta
+    const status = mapStatus(userSwr)
     return {
-      user: userSwr.error ? null : userSwr.data,
-      status: mapStatus(userSwr),
+      user,
+      meta,
+      status,
       fetchCurrentUser: userSwr.mutate,
       logout: async function () {
         try {
@@ -57,10 +66,14 @@ export default function AuthService(props) {
       },
       composeAuthedNavigation: (callback) => {
         return (...args) => {
-          if (!userSwr.data) {
+          if (status === 'loading') {
+            alert.alertWithType('info', '提示', '正在验证登录状态，请稍候')
+            return
+          }
+          if (!user) {
             navigation.navigate('signin')
             if (callback) {
-              nextAction = () => {
+              nextAction.current = () => {
                 callback(...args)
               }
             }
@@ -71,18 +84,26 @@ export default function AuthService(props) {
       },
       getNextAction: () => {
         if (nextAction) {
-          const action = nextAction
-          nextAction = undefined
+          const action = nextAction.current
+          nextAction.current = undefined
           return action
         }
         return undefined
+      },
+      updateMeta: (patch) => {
+        userSwr.mutate(
+          (data) => ({
+            ...data,
+            meta: {
+              ...data.meta,
+              ...patch
+            }
+          }),
+          false
+        )
       }
     }
   }, [userSwr])
-
-  useEffect(() => {
-    userSwr.mutate()
-  }, [])
 
   return (
     <AuthServiceContext.Provider value={service}>

@@ -21,7 +21,8 @@ export const shouldInit = (swr) => !swr.data && !swr.isValidating
 export const useCustomSwr = (
   key,
   options = {
-    revalidateOnMount: false
+    revalidateOnMount: false,
+    revalidateOnFailed: false
   }
 ) => {
   const swr = useSWR(key, options)

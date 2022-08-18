@@ -1,15 +1,19 @@
 import React, { useMemo } from 'react'
-import { ScrollView, RefreshControl } from 'react-native'
+import { ScrollView, RefreshControl, View, Text, Pressable } from 'react-native'
 import useSWR from 'swr'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
-import ErrorNotice from '@/components/ErrorNotice'
+import Loader from '@/components/Loader'
+
 import TopicList from './TopicList'
 
 const Tab = createMaterialTopTabNavigator()
 
 export default function HomeScreen() {
-  const tabsSwr = useSWR('/page/index/tabs.json')
+  const tabsSwr = useSWR('/page/index/tabs.json', {
+    revalidateIfStale: false,
+    shouldRetryOnError: false
+  })
 
   const tabs = useMemo(() => {
     if (!tabsSwr.data) {
@@ -44,16 +48,26 @@ export default function HomeScreen() {
 
   if (tabsSwr.error) {
     return (
-      <ScrollView
-        className="flex-1"
-        refreshControl={
-          <RefreshControl
-            refreshing={tabsSwr.isValidating}
-            onRefresh={tabsSwr.mutate}
-          />
-        }>
-        <ErrorNotice error={tabsSwr.error} />
-      </ScrollView>
+      <View className="flex-1 flex flex-row items-center justify-center bg-white">
+        <View className="px-4 flex items-center justify-center">
+          <Text>
+            {tabsSwr.error?.message ||
+              'Elit veniam laboris sunt esse aliqua dolore aliquip laborum proident ea velit nisi consectetur velit. Officia aliquip enim officia nostrud dolor mollit duis culpa. Et aliquip fugiat veniam aliquip excepteur consectetur Lorem labore aliqua qui sint. Elit ea duis adipisicing culpa anim. Lorem Lorem consequat ad occaecat ut minim veniam. Adipisicing culpa duis laboris duis duis laborum.'}
+          </Text>
+          <Pressable
+            disabled={tabsSwr.isValidating}
+            className="mt-4 px-4 h-[44px] w-[200px] rounded-full bg-gray-900 text-white items-center justify-center active:opacity-60"
+            onPress={() => {
+              tabsSwr.mutate()
+            }}>
+            {tabsSwr.isValidating ? (
+              <Loader size={20} color="#ffffffbc" />
+            ) : (
+              <Text className="text-white">重试</Text>
+            )}
+          </Pressable>
+        </View>
+      </View>
     )
   }
 
