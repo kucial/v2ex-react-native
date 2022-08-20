@@ -1,23 +1,15 @@
-import { useNavigation } from '@react-navigation/native'
 import { memo, useMemo } from 'react'
 import PropTypes from 'prop-types'
+import { useNavigation } from '@react-navigation/native'
 import BaseRender, { useInternalRenderer } from 'react-native-render-html'
 import { useTailwind } from 'tailwindcss-react-native'
+import { isAppLink, getScreenInfo } from '@/utils/url'
+
 import ImageElement from './ImageElement'
 
 const ImageRenderer = (props) => {
   const { rendererProps } = useInternalRenderer('img', props)
   return <ImageElement {...rendererProps} />
-}
-
-const getMemberName = (href) => {
-  const match = /\/member\/(\w*)$/.exec(href)
-  return match?.[1]
-}
-
-const getTopicId = (href) => {
-  const match = /https:\/\/(?:www\.)?v2ex.com\/t\/(\w*)(#\w+)?$/.exec(href)
-  return match?.[1]
 }
 
 const renderers = {
@@ -33,6 +25,7 @@ const baseStyle = {
 function RenderHtml({ tagsStyles, ...props }) {
   const tw = useTailwind()
   const navigation = useNavigation()
+
   const styles = useMemo(
     () => ({
       body: tw('text-gray-700'),
@@ -54,27 +47,17 @@ function RenderHtml({ tagsStyles, ...props }) {
       a: {
         onPress: (e, href) => {
           console.log('anchor href', e, href)
-          if (new RegExp('^https://(www.)?v2ex.com').test(href)) {
-            const memberName = getMemberName(href)
-            if (memberName) {
-              navigation.push('member', {
-                username: memberName
-              })
+          if (isAppLink(href)) {
+            const screen = getScreenInfo(href)
+            if (screen) {
+              navigation.push(screen.name, screen.params)
+              return
             }
-            const topicId = getTopicId(href)
-            console.log(topicId)
-            if (topicId) {
-              navigation.push('topic', {
-                id: topicId
-              })
-            }
-          } else {
-            // TODO: user preference
-            // Linking.openURL(href)
-            navigation.push('browser', {
-              url: href
-            })
           }
+          // TODO: user preference
+          navigation.push('browser', {
+            url: href
+          })
         }
       }
     }
