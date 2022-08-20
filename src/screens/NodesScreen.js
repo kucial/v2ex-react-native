@@ -10,10 +10,10 @@ import React, { useEffect } from 'react'
 
 import ErrorNotice from '@/components/ErrorNotice'
 import NodesSkeleton from '@/components/Skeleton/NodesSkeleton'
-import { useCustomSwr } from '@/utils/swr'
+import { useSWR } from '@/utils/swr'
 
 export default function NodesScreen({ navigation }) {
-  const nodesSwr = useCustomSwr('/page/planes/node-groups.json')
+  const nodesSwr = useSWR('/page/planes/node-groups.json')
 
   if (nodesSwr.error) {
     return (

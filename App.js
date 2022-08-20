@@ -10,10 +10,13 @@ import {
   UserIcon
 } from 'react-native-heroicons/outline'
 
+import { ActionSheetProvider } from '@expo/react-native-action-sheet'
+
 import MainScreenHeader from './src/components/MainScreenHeader'
 
 import AuthService from './src/containers/AuthService'
 import AlertService from './src/containers/AlertService'
+import ActivityIndicator from './src/containers/ActivityIndicator'
 
 import HomeScreen from './src/screens/HomeScreen'
 import NodesScreen from './src/screens/NodesScreen'
@@ -160,12 +163,16 @@ export default function App() {
       <SWRConfig value={swrConfig}>
         <TailwindProvider>
           <AlertService>
-            <NavigationContainer>
-              <AuthService>
-                {/* <DebugScreen /> */}
-                <AppStack />
-              </AuthService>
-            </NavigationContainer>
+            <ActionSheetProvider>
+              <ActivityIndicator>
+                <NavigationContainer>
+                  <AuthService>
+                    {/* <DebugScreen /> */}
+                    <AppStack />
+                  </AuthService>
+                </NavigationContainer>
+              </ActivityIndicator>
+            </ActionSheetProvider>
           </AlertService>
         </TailwindProvider>
       </SWRConfig>

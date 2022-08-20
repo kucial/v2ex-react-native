@@ -55,24 +55,35 @@ function ReplyRow(props) {
         <View className="flex-1">
           <View className="flex flex-row mb-2">
             <View className="flex flex-row items-center flex-1">
-              <View className="">
-                <Pressable
-                  hitSlop={4}
-                  className="active:opacity-60"
-                  onPress={() => {
-                    navigation.push('member', {
-                      username: member.username
-                    })
-                  }}>
-                  <Text className="font-bold text-xs text-gray-700">
-                    {member.username}
+              <Pressable
+                hitSlop={4}
+                className="active:opacity-60"
+                onPress={() => {
+                  navigation.push('member', {
+                    username: member.username
+                  })
+                }}>
+                <Text className="font-bold text-xs text-gray-700">
+                  {member.username}
+                </Text>
+              </Pressable>
+              {data.member_is_op && (
+                <View className="ml-2 px-1 rounded border border-blue-600">
+                  <Text className="text-[10px] font-medium leading-[17px] text-blue-600">
+                    OP
                   </Text>
-                </Pressable>
+                </View>
+              )}
+              {data.member_is_mod && (
+                <View className="ml-2 px-1 rounded border border-blue-600 bg-blue-600">
+                  <Text className="text-[10px] font-medium leading-[17px] text-white">
+                    MOD
+                  </Text>
+                </View>
+              )}
+              <View className="ml-2">
+                <Text className="text-xs text-gray-400">{data.reply_time}</Text>
               </View>
-              <View className="relative top-[1px] mx-1">
-                <Text className="text-gray-400">·</Text>
-              </View>
-              <Text className="text-xs text-gray-400">{data.reply_time}</Text>
               {data.reply_device && (
                 <Text className="text-xs text-gray-400 ml-2">
                   {data.reply_device}

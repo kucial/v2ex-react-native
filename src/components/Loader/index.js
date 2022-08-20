@@ -3,7 +3,7 @@ import LottieView from 'lottie-react-native'
 import loadingAnimation from './loading.json'
 
 const Loader = (
-  { style, color = '#333333', size = 28, speed = 1.5, ...props },
+  { style, color = '#333333', size = 28, speed = 1.8, ...props },
   ref
 ) => {
   return (

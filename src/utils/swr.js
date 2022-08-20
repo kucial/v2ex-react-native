@@ -1,9 +1,15 @@
 import { useEffect } from 'react'
-import useSWR from 'swr'
+import useSWRBase from 'swr'
 
 export const isRefreshing = (swrState) => {
   // once fetched  && isValidating
-  return (swrState.data || swrState.error) && swrState.isValidating
+  return (
+    (swrState.data || swrState.error) &&
+    swrState.isValidating &&
+    (!swrState.size ||
+      swrState.size === 1 ||
+      swrState.size === swrState.data?.length)
+  )
 }
 
 export const hasReachEnd = (listSwr) => {
@@ -18,14 +24,14 @@ export const hasReachEnd = (listSwr) => {
 }
 
 export const shouldInit = (swr) => !swr.data && !swr.isValidating
-export const useCustomSwr = (
+export const useSWR = (
   key,
   options = {
     revalidateOnMount: false,
-    revalidateOnFailed: false
+    shouldRetryOnError: false
   }
 ) => {
-  const swr = useSWR(key, options)
+  const swr = useSWRBase(key, options)
   useEffect(() => {
     if (options.revalidateOnMount === false && shouldInit(swr)) {
       swr.mutate()
@@ -37,6 +43,11 @@ export const useCustomSwr = (
 export const isLoadingMore = (swr) => {
   return swr.isValidating && !!swr.data
 }
+export const isLoading = (swr) => swr.isValidating
 export const shouldShowError = (swr) => {
   return swr.error && !swr.isValidating
+}
+
+export const isEmptyList = (swr) => {
+  return Array.isArray(swr.data) && swr.data.every((p) => p.data?.length === 0)
 }

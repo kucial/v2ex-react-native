@@ -6,15 +6,34 @@ import {
   Pressable,
   FlatList,
   SafeAreaView,
-  RefreshControl
+  RefreshControl,
+  Share,
+  Linking
 } from 'react-native'
-import React, { useLayoutEffect, useMemo, useCallback, useState } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
+import React, {
+  useLayoutEffect,
+  useMemo,
+  useCallback,
+  useState,
+  memo,
+  useRef
+} from 'react'
+import { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import { HeartIcon, ShareIcon, StarIcon } from 'react-native-heroicons/outline'
-// import { TagIcon } from 'react-native-heroicons/outline'
+import {
+  HeartIcon,
+  ShareIcon,
+  StarIcon,
+  DotsHorizontalIcon
+} from 'react-native-heroicons/outline'
+import {
+  HeartIcon as FilledHeartIcon,
+  StarIcon as FilledStarIcon
+} from 'react-native-heroicons/solid'
 
-import TimeAgo from '@/components/TimeAgo'
+// import { TagIcon } from 'react-native-heroicons/outline'
+import { useActionSheet } from '@expo/react-native-action-sheet'
+
 import RenderHtml from '@/components/RenderHtml'
 import ErrorNotice from '@/components/ErrorNotice'
 import { BlockText } from '@/components/Skeleton/Elements'
@@ -22,12 +41,14 @@ import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import CommonListFooter from '@/components/CommonListFooter'
 import SlideUp from '@/components/SlideUp'
 
-import { hasReachEnd, useCustomSwr } from '@/utils/swr'
+import { hasReachEnd, isLoading, useSWR, isRefreshing } from '@/utils/swr'
 import fetcher from '@/utils/fetcher'
 import { useAlertService } from '@/containers/AlertService'
+import { useActivityIndicator } from '@/containers/ActivityIndicator'
 
 import TopicReplyForm from './TopicReplyForm'
 import ReplyRow from './ReplyRow'
+import { useAuthService } from '@/containers/AuthService'
 
 const maxLen = (str = '', limit = 0) => {
   if (limit && str.length > limit) {
@@ -38,16 +59,21 @@ const maxLen = (str = '', limit = 0) => {
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num) => Math.ceil(num / REPLY_PAGE_SIZE)
+const getTopicLink = (id) => `https://v2ex.com/t/${id}`
 
-export default function TopicScreen({ navigation, route }) {
+function TopicScreen({ navigation, route }) {
   const {
     params: { brief, id }
   } = route
-
-  const { width } = useWindowDimensions()
+  const { showActionSheetWithOptions } = useActionSheet()
   const alert = useAlertService()
 
-  const topicSwr = useCustomSwr(`/api/topics/show.json?id=${id}`)
+  const listRef = useRef()
+  const { width } = useWindowDimensions()
+  const { composeAuthedNavigation } = useAuthService()
+  const aIndicator = useActivityIndicator()
+
+  const topicSwr = useSWR(`/page/t/${id}/topic.json`)
   const listSwr = useSWRInfinite(
     useCallback(
       (index) => {
@@ -71,8 +97,70 @@ export default function TopicScreen({ navigation, route }) {
     return items
   }, [listSwr])
 
-  const topic = topicSwr.data?.[0] || brief
+  const topic = topicSwr.data?.data || brief
   const isFallback = topic === brief
+  console.log(topicSwr)
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: (props) => (
+        <Pressable
+          className="h-[44px] w-[44px] items-center justify-center -mr-3 active:opacity-60"
+          onPress={() => {
+            // actionsheet
+            showActionSheetWithOptions(
+              {
+                title: `#${topic.id}`,
+                options: [
+                  '取消',
+                  '在内部 WebView 打开',
+                  '在外部浏览器中打开',
+                  topic?.blocked ? '取消忽略主题' : '忽略主题'
+                ],
+                cancelButtonIndex: 0,
+                destructiveButtonIndex: 3
+              },
+              (buttonIndex) => {
+                if (buttonIndex === 1) {
+                  navigation.push('browser', {
+                    url: getTopicLink(id)
+                  })
+                } else if (buttonIndex === 2) {
+                  Linking.openURL(getTopicLink(id))
+                } else if (buttonIndex === 3) {
+                  const endpoint = topic?.blocked
+                    ? `/page/t/${id}/unblock.json`
+                    : `/page/t/${id}/block.json`
+                  aIndicator.show()
+                  fetcher(endpoint)
+                    .then((result) => {
+                      topicSwr.data &&
+                        topicSwr.mutate((prev) => ({
+                          data: {
+                            ...prev.data,
+                            ...result
+                          }
+                        }))
+                      alert.alertWithType(
+                        'success',
+                        '操作成功',
+                        result.blocked ? '已忽略主题' : '已撤销主题忽略'
+                      )
+                    })
+                    .catch((err) => {
+                      alert.alertWithType('error', '错误', err.message)
+                    })
+                    .finally(() => {
+                      aIndicator.hide()
+                    })
+                }
+              }
+            )
+          }}>
+          <DotsHorizontalIcon size={24} color="#333" />
+        </Pressable>
+      )
+    })
+  }, [id, topic?.blocked])
 
   useLayoutEffect(() => {
     if (topic?.title) {
@@ -130,7 +218,7 @@ export default function TopicScreen({ navigation, route }) {
           }, false)
         })
         .catch((err) => {
-          alert.alertWithType?.('error', 'Error', err)
+          alert.alertWithType?.('error', '错误', err.message)
         })
     },
     [id]
@@ -153,9 +241,13 @@ export default function TopicScreen({ navigation, route }) {
         }, false)
         const cacheKey = getReplyFormCacheKey(replyContext)
         setReplyContext(null)
-        // cleanup cache after reply form unmount
+
         setTimeout(() => {
+          // cleanup cache after reply form unmount
           mutate(cacheKey, undefined)
+          // scrollTo reply
+          // NOTE: MAY HAVE BUG if listIsNot Loaded.
+          listRef.current?.scrollToIndex(reply.num - 1)
         }, 400)
       })
     },
@@ -191,7 +283,7 @@ export default function TopicScreen({ navigation, route }) {
         <View className="flex flex-row mb-2">
           <View className="flex flex-row flex-1">
             <Image
-              source={{ uri: member.avatar_normal }}
+              source={{ uri: member.avatar_large }}
               className="w-[32px] h-[32px] rounded"
             />
             <View className="pl-2 flex flex-row items-center">
@@ -207,11 +299,9 @@ export default function TopicScreen({ navigation, route }) {
                 </Pressable>
               </View>
               <View className="ml-2">
-                {topic.created && (
-                  <Text className="text-gray-400 text-xs">
-                    <TimeAgo date={topic.created * 1000} />
-                  </Text>
-                )}
+                <Text className="text-gray-400 text-xs">
+                  {topic.created_time}
+                </Text>
               </View>
             </View>
           </View>
@@ -236,11 +326,14 @@ export default function TopicScreen({ navigation, route }) {
             {topic.title}
           </Text>
         </View>
+
         {!!topic.content_rendered && (
           <RenderHtml contentWidth={width - 32} {...htmlRenderProps} />
         )}
-        {topicSwr.error && <ErrorNotice error={topicSwr.error} />}
-        {isFallback && (
+        {topicSwr.error && !isLoading(topicSwr) && (
+          <ErrorNotice error={topicSwr.error} />
+        )}
+        {isFallback && isLoading(topicSwr) && (
           <View className="mt-1">
             <BlockText lines={[5, 10]} />
           </View>
@@ -255,12 +348,15 @@ export default function TopicScreen({ navigation, route }) {
   return (
     <View className="flex-1">
       <FlatList
+        ref={listRef}
         className="flex-1"
         data={listItems}
         renderItem={renderReply}
         keyExtractor={keyExtractor}
         ListHeaderComponent={() => baseContent}
-        ListFooterComponent={<CommonListFooter data={listSwr} />}
+        ListFooterComponent={
+          <CommonListFooter data={listSwr} emptyMessage="目前尚无回复" />
+        }
         onEndReachedThreshold={0.4}
         onEndReached={() => {
           if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
@@ -274,8 +370,11 @@ export default function TopicScreen({ navigation, route }) {
                 return
               }
               listSwr.mutate()
+              if (!topicSwr.data && topicSwr.error) {
+                topicSwr.mutate()
+              }
             }}
-            refreshing={listSwr.data && listSwr.isValidating}
+            refreshing={isRefreshing(listSwr)}
           />
         }
       />
@@ -291,15 +390,121 @@ export default function TopicScreen({ navigation, route }) {
             </Pressable>
           </View>
           <View className="flex flex-row px-1">
-            <Pressable className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
-              <StarIcon size={22} color="#333" />
+            <Pressable
+              className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              onPress={composeAuthedNavigation(() => {
+                if (topic.collected) {
+                  topicSwr.mutate(
+                    (data) => ({
+                      data: {
+                        ...data.data,
+                        collected: false
+                      }
+                    }),
+                    false
+                  )
+                  fetcher(`/page/t/${id}/uncollect.json`)
+                    .then(() => {
+                      alert.alertWithType('success', '操作成功', '已取消收藏')
+                    })
+                    .catch((err) => {
+                      topicSwr.mutate(
+                        (data) => ({
+                          data: {
+                            ...data.data,
+                            collected: true
+                          }
+                        }),
+                        false
+                      )
+                      alert.alertWithType('error', '错误', err.message)
+                    })
+                } else {
+                  topicSwr.mutate(
+                    (data) => ({
+                      data: {
+                        ...data.data,
+                        collected: true
+                      }
+                    }),
+                    false
+                  )
+                  fetcher(`/page/t/${id}/collect.json`)
+                    .then(() => {
+                      alert.alertWithType('success', '操作成功', '已加入收藏')
+                    })
+                    .catch((err) => {
+                      topicSwr.mutate(
+                        (data) => ({
+                          data: {
+                            ...data.data,
+                            collected: false
+                          }
+                        }),
+                        false
+                      )
+                      alert.alertWithType('error', '错误', err.message)
+                    })
+                }
+              })}>
+              {topic.collected ? (
+                <FilledStarIcon size={22} color="#FFC100" />
+              ) : (
+                <StarIcon size={22} color="#333" />
+              )}
               <Text className="text-gray-600 text-[9px] mt-[2px]">收藏</Text>
             </Pressable>
-            <Pressable className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
-              <HeartIcon size={22} color="#333" />
+            <Pressable
+              className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              onPress={composeAuthedNavigation(() => {
+                if (topic.thanked) {
+                  // TODO: SHOW MESSAGE
+                  return
+                }
+                fetcher(`/page/t/${id}/thank.json`)
+                  .then((res) => {
+                    console.log(res)
+                    topicSwr.mutate(
+                      (data) => ({
+                        ...data,
+                        thanked: true
+                      }),
+                      false
+                    )
+                  })
+                  .catch((err) => {
+                    alert.alertWithType('error', '错误', err.message)
+                  })
+              })}>
+              {topic.thanked ? (
+                <FilledHeartIcon size={22} color="#cc0000" />
+              ) : (
+                <HeartIcon size={22} color="#333" />
+              )}
               <Text className="text-gray-600 text-[9px] mt-[2px]">感谢</Text>
             </Pressable>
-            <Pressable className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60">
+            <Pressable
+              className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              disabled={!topicSwr.data}
+              onPress={async () => {
+                try {
+                  const result = await Share.share({
+                    message: topic.title,
+                    url: `https://v2ex.com/t/${topic.id}`
+                  })
+                  if (result.action === Share.sharedAction) {
+                    if (result.activityType) {
+                      // shared with activity type of result.activityType
+                    } else {
+                      // shared
+                    }
+                  } else if (result.action === Share.dismissedAction) {
+                    // dismissed
+                  }
+                } catch (error) {
+                  console.log(error.message)
+                }
+              }}>
               <ShareIcon size={22} color="#333" />
               <Text className="text-gray-600 text-[9px] mt-[2px]">分享</Text>
             </Pressable>
@@ -322,3 +527,5 @@ export default function TopicScreen({ navigation, route }) {
     </View>
   )
 }
+
+export default memo(TopicScreen)

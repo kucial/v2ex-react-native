@@ -16,7 +16,7 @@ const getMemberName = (href) => {
 }
 
 const getTopicId = (href) => {
-  const match = /https:\/\/(?:www\.)v2ex.com\/t\/(\w*)?(#\w+)?$/.exec(href)
+  const match = /https:\/\/(?:www\.)?v2ex.com\/t\/(\w*)(#\w+)?$/.exec(href)
   return match?.[1]
 }
 
@@ -53,7 +53,7 @@ function RenderHtml({ tagsStyles, ...props }) {
     return {
       a: {
         onPress: (e, href) => {
-          console.log('anchor href', e)
+          console.log('anchor href', e, href)
           if (new RegExp('^https://(www.)?v2ex.com').test(href)) {
             const memberName = getMemberName(href)
             if (memberName) {
@@ -61,7 +61,6 @@ function RenderHtml({ tagsStyles, ...props }) {
                 username: memberName
               })
             }
-            console.log(href)
             const topicId = getTopicId(href)
             console.log(topicId)
             if (topicId) {

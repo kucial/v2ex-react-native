@@ -2,8 +2,14 @@ import { View, Text, Pressable } from 'react-native'
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import {
+  hasReachEnd,
+  isLoadingMore,
+  shouldShowError,
+  isEmptyList
+} from '@/utils/swr'
+
 import Loader from './Loader'
-import { hasReachEnd, isLoadingMore, shouldShowError } from '@/utils/swr'
 
 export default function CommonListFooter(props) {
   const { data: listSwr } = props
@@ -16,7 +22,7 @@ export default function CommonListFooter(props) {
         </View>
       )}
       {shouldShowError(listSwr) && (
-        <View className="w-full px-4 text-center">
+        <View className="w-full px-4 items-center">
           <View className="my-4">
             <Text>{listSwr.error.message}</Text>
           </View>
@@ -33,15 +39,23 @@ export default function CommonListFooter(props) {
           )}
         </View>
       )}
-      {hasReachEnd(listSwr) && (
-        <View className="w-full flex flex-row justify-center py-4">
-          <Text className="text-gray-400">到达底部啦</Text>
-        </View>
-      )}
+      {hasReachEnd(listSwr) &&
+        (isEmptyList(listSwr) ? (
+          <View className="w-full flex flex-row justify-center py-4">
+            <Text className="text-gray-400">
+              {props.emptyMessage || '还没有内容哦'}
+            </Text>
+          </View>
+        ) : (
+          <View className="w-full flex flex-row justify-center py-4">
+            <Text className="text-gray-400">到达底部啦</Text>
+          </View>
+        ))}
     </View>
   )
 }
 
 CommonListFooter.propTypes = {
-  data: PropTypes.object
+  data: PropTypes.object,
+  emptyMessage: PropTypes.string
 }

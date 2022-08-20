@@ -145,6 +145,73 @@ const CUSTOM_ENDPOINTS = {
     ]
   },
 
+  '/page/t/:id/topic.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    scripts: [
+      `(function() {
+        try {
+          const member = {}
+          const memberImg = document.querySelector('#Wrapper .header a[href^="/member"] img')
+          member.username = memberImg.alt;
+          member.avatar_large = memberImg.src;
+          const node = {};
+          const nodeAnchor = document.querySelector('#Wrapper .header a[href^="/go"]');
+          node.name = nodeAnchor.href.replace(new RegExp('.*\/go\/'), '');
+          node.title = nodeAnchor.textContent.trim();
+
+          const rDom = document.querySelector('.cell[id^=r_]');
+          let replies = 0;
+          let last_reply_time;
+          if (rDom) {
+            const infoDom = rDom.parentElement.children[0]
+            const compos = infoDom.textContent.trim().split('•');
+            replies = Number(compos[0].replace('条回复', ''))
+            last_reply_time = compos[1]?.trim();
+          }
+          const metaDom = document.querySelector('#Wrapper .header > small.gray');
+          const metaMatch = /at(.*)/.exec(metaDom.textContent.trim())
+          const created_time = metaMatch ? metaMatch[1].split('·')[0].trim() : '';
+          const clicks = metaMatch ? Number(/\\d+/.exec(metaMatch[1].split('·')[1])[0]) : 0;
+
+          const subtles = [];
+          [...document.querySelectorAll('#Wrapper .content .subtle')].forEach((d, index) => {
+            subtles.push({
+              meta: d.querySelector('.fade').textContent.trim(),
+              content_rendered: d.querySelector('.topic_content').innerHTML.trim()
+            })
+          })
+
+          const data = {
+            id: Number(window.location.pathname.replace('/t/', '')),
+            title: document.querySelector('#Wrapper .header h1').textContent.trim(),
+            content_rendered: document.querySelector('#Wrapper .cell .topic_content').innerHTML.trim(),
+            replies,
+            last_reply_time,
+            created_time,
+            clicks,
+            node,
+            member,
+            subtles,
+            collected: !!document.querySelector('a.op[href^="/unfavorite"]'),
+            thanked: !!document.querySelector('#topic_thank .topic_thanked'),
+            blocked: !![...document.querySelectorAll('a.tb')].find((a) => a.innerText === '取消忽略')
+          };
+
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            data
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())
+      `
+    ]
+  },
+
   '/page/t/:id/replies.json': {
     host: 'https://www.v2ex.com',
     pathname: '/t/:id',
@@ -173,7 +240,9 @@ const CUSTOM_ENDPOINTS = {
               reply_device,
               thanks_count,
               thanked: !!d.querySelector('.thanked'),
-              num: Number(d.querySelector('.no').textContent)
+              num: Number(d.querySelector('.no').textContent),
+              member_is_op: !!d.querySelector('.badge.op'),
+              member_is_mod: !!d.querySelector('.badge.mod'),
             }
           }).filter(Boolean);
 
@@ -356,6 +425,169 @@ const CUSTOM_ENDPOINTS = {
         `
       ]
     }
+  },
+
+  // post collect
+  '/page/t/:id/collect.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    scripts: [
+      `(function() {
+        try {
+          const anchor = document.querySelector('a.op[href^="/favorite"]');
+          if (anchor) {
+            anchor.click();
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())
+      `,
+      `(function() {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            collected: !!document.querySelector('a.op[href^="/unfavorite"]'),
+          }))
+        }())`
+    ]
+  },
+
+  // post uncollect
+  '/page/t/:id/uncollect.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    scripts: [
+      `(function() {
+        try {
+          const anchor = document.querySelector('a.op[href^="/unfavorite"]');
+          if (anchor) {
+            anchor.click();
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())
+      `,
+      `(function() {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            collected: !!document.querySelector('a.op[href^="/unfavorite"]'),
+          }))
+        }())`
+    ]
+  },
+
+  // post thank
+  '/page/t/:id/thank.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    scripts: [
+      `(function() {
+        try {
+          const thankScript = document.querySelector('#topic_thank a')?.getAttribute('onclick');
+          const scriptMatch = /thankTopic\\((\\d+),'(.*)'\\)/.exec(thankScript)
+          if (onceMatch) {
+            thankTopic(scriptMatch[0], scriptMatch[1])
+          }
+          setTimeout(() => {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              thanked: !!document.querySelector('#topic_thank .topic_thanked')
+            }))
+          }, 500)
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())
+      `
+    ]
+  },
+
+  '/page/t/:id/block.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    getScripts: ({ params }) => [
+      `(function() {
+        try {
+          const anchor = [...document.querySelectorAll('a.op')].find((a) => a.innerText === '忽略主题')
+          if (anchor) {
+            const scriptMatch = /href = '(.*)';/.exec(anchor.getAttribute('onclick'))
+            if (scriptMatch) {
+              location.href = scriptMatch[1]
+            }
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              blocked: true,
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())
+      `,
+      `(function() {
+          try {
+            const message = document.querySelector('#Wrapper .box .message')
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              blocked: message && message.innerText.indexOf('已完成对 ${params.id} 号主题的忽略') > -1,
+            }))
+          } catch (err) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: err.message
+            }))
+          }
+        }())`
+    ]
+  },
+
+  '/page/t/:id/unblock.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    getScripts: ({ params }) => [
+      `(function() {
+        try {
+          const anchor = [...document.querySelectorAll('a.tb')].find((a) => a.innerText === '取消忽略')
+          if (anchor) {
+            const scriptMatch = /href = '(.*)';/.exec(anchor.getAttribute('onclick'))
+            if (scriptMatch) {
+              location.href = scriptMatch[1]
+            }
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              blocked: false,
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const message = document.querySelector('#Wrapper .box .message')
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            blocked: !message && message.innerText.indexOf('已撤销对 ${params.id} 号主题的忽略') > -1,
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`
+    ]
   },
 
   '/page/planes/node-groups.json': {

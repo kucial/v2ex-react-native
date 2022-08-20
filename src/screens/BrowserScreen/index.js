@@ -27,7 +27,7 @@ export default function BrowserScreen({ route, navigation }) {
         style={{ flex: 1 }}
         source={{ uri: route.params.url }}
         onLoadStart={() => setLoading(true)}
-        onLoad={() => setLoading(false)}
+        onLoadEnd={() => setLoading(false)}
       />
       <View className="absolute w-full top-0">
         <NProgress backgroundColor="#111" height={3} enabled={loading} />
