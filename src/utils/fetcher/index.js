@@ -629,6 +629,39 @@ const CUSTOM_ENDPOINTS = {
     ]
   },
 
+  '/page/go/:name/node.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/go/:name',
+    scripts: [
+      `(function() {
+        try {
+          const d = document.querySelector('.node-header');
+          if (!d) {
+            throw new Error('资源解析遇到问题了')
+          }
+          const headerDom =  d.querySelector('.page-content-header')
+          const data = {
+            title: document.title,
+            header: d.querySelector('.intro').innerHTML,
+            topics: Number(d.querySelector('.topic-count strong').textContent) || 0,
+            avatar_large: d.querySelector('.page-content-header img')?.src,
+            collected: !!d.querySelector('a[href^="/unfavorite/node"]'),
+            theme: {
+              backgroundColor: window.getComputedStyle(headerDom)['background-color'],
+              textColor: window.getComputedStyle(headerDom)['color'],
+            }
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify(data))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`
+    ]
+  },
+
   '/page/go/:name/feed.json': {
     host: 'https://www.v2ex.com',
     pathname: '/go/:name',
@@ -681,6 +714,96 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
     `
+    ]
+  },
+
+  '/page/go/:name/collect.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/go/:name',
+    scripts: [
+      `(function() {
+        try {
+          const anchor = document.querySelector('a[href^="/favorite/node"]')
+          if (anchor) {
+            anchor.click();
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: '未找到相关操作',
+              code: 'ACTION_NOT_FOUND',
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const anchor = document.querySelector('a[href^="/unfavorite/node"]')
+          if (anchor) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              collected: true
+            }))
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              collected: false
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`
+    ]
+  },
+
+  '/page/go/:name/uncollect.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/go/:name',
+    scripts: [
+      `(function() {
+        try {
+          const anchor = document.querySelector('a[href^="/unfavorite/node"]')
+          if (anchor) {
+            anchor.click();
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: '未找到相关操作',
+              code: 'ACTION_NOT_FOUND',
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const anchor = document.querySelector('a[href^="/unfavorite/node"]')
+          if (anchor) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              collected: true
+            }))
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              collected: false
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`
     ]
   },
 

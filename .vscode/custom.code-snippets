@@ -29,5 +29,24 @@
     "scope": "javascript,typescript",
     "prefix": "uindicator",
     "body": ["const aIndicator = useActivityIndicator()"]
+  },
+  "Fetcher Script Template": {
+    "scope": "javascript,typescript",
+    "prefix": "fscript",
+    "body": [
+      "`(function() {",
+      "  try {",
+      "    $1",
+      "    window.ReactNativeWebView.postMessage(JSON.stringify({",
+      "      data",
+      "    }))",
+      "  } catch (err) {",
+      "    window.ReactNativeWebView.postMessage(JSON.stringify({",
+      "      error: true,",
+      "      message: err.message",
+      "    }))",
+      "  }",
+      "}())`"
+    ]
   }
 }

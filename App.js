@@ -100,7 +100,13 @@ function AppStack() {
             title: '话题'
           }}
         />
-        <Stack.Screen name="node" component={NodeScreen} />
+        <Stack.Screen
+          name="node"
+          component={NodeScreen}
+          options={{
+            title: '节点'
+          }}
+        />
         <Stack.Screen
           name="browser"
           component={BrowserScreen}

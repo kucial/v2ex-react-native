@@ -5,10 +5,9 @@ import {
   FlatList,
   Pressable,
   useWindowDimensions,
-  RefreshControl,
-  SafeAreaView
+  RefreshControl
 } from 'react-native'
-import React, { useCallback, useLayoutEffect, useMemo } from 'react'
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import { useTailwind } from 'tailwindcss-react-native'
@@ -16,24 +15,25 @@ import PropTypes from 'prop-types'
 
 import RenderHtml from '@/components/RenderHtml'
 import CommonListFooter from '@/components/CommonListFooter'
+import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { hasReachEnd, isRefreshing } from '@/utils/swr'
+import fetcher from '@/utils/fetcher'
 
 import NodeTopicRow from './NodeTopicRow'
+import { useAlertService } from '@/containers/AlertService'
 
 export default function NodeScreen({ route, navigation }) {
   const { name, brief } = route.params
+  const [collecting, setCollecting] = useState(false)
 
   const { width } = useWindowDimensions()
   const tw = useTailwind()
+  const aIndicator = useActivityIndicator()
+  const alert = useAlertService()
 
-  const nodeSwr = useSWR([
-    '/api/nodes/show.json',
-    {
-      params: {
-        name
-      }
-    }
-  ])
+  const nodeSwr = useSWR(`/page/go/${name}/node.json`, {
+    shouldRetryOnError: false
+  })
   const getKey = useCallback(
     (index) => {
       return `/page/go/${name}/feed.json?p=${index + 1}`
@@ -49,6 +49,13 @@ export default function NodeScreen({ route, navigation }) {
       title: node.title
     })
   }, [node.title])
+
+  const htmlProps = useMemo(() => {
+    return {
+      source: { html: node.header },
+      baseStyle: tw('text-sm')
+    }
+  }, [node])
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
@@ -76,35 +83,63 @@ export default function NodeScreen({ route, navigation }) {
   }, [feedSwr])
 
   const header = (
-    <View className="bg-white flex flex-row p-2 mb-3">
-      <Image
-        style={[
-          tw('w-[60px] h-[60px] mr-3'),
-          !node.avatar_normal && tw('bg-gray-100')
-        ]}
-        source={{
-          uri: node.avatar_normal
-        }}></Image>
-      <View className="flex-1">
-        <View className="flex flex-row justify-between items-center mb-[6px]">
-          <View>
-            <Text className="text-lg font-semibold">{node.title}</Text>
+    <View className="mb-3 p-2 bg-white">
+      <View className="bg-white rounded-lg">
+        <View className="flex flex-row">
+          <Image
+            style={[
+              tw('w-[60px] h-[60px] mr-3'),
+              !node.avatar_large && tw('bg-gray-100')
+            ]}
+            source={{
+              uri: node.avatar_large
+            }}></Image>
+          <View className="flex-1">
+            <View className="flex flex-row justify-between items-center mb-[6px]">
+              <View>
+                <Text className="text-lg font-semibold">{node.title}</Text>
+              </View>
+              <View className="flex flex-row pr-2">
+                <Text className="text-sm text-gray-600 mr-1">主题总数</Text>
+                <Text className="text-sm text-gray-600 font-medium">
+                  {node.topics || '--'}
+                </Text>
+              </View>
+            </View>
+            <View>
+              {!!node.header && (
+                <RenderHtml contentWidth={width - 100} {...htmlProps} />
+              )}
+            </View>
+            <View className="flex flex-row mt-3 mb-2">
+              <Pressable
+                className="h-[40px] rounded-lg border border-gray-500 px-3 items-center justify-center active:opacity-60"
+                disabled={collecting}
+                onPress={() => {
+                  const endpoint = node.collected
+                    ? `/page/go/${name}/uncollect.json`
+                    : `/page/go/${name}/collect.json`
+                  aIndicator.show()
+                  setCollecting(true)
+                  fetcher(endpoint)
+                    .then((result) => {
+                      nodeSwr.mutate((data) => ({
+                        ...data,
+                        ...result
+                      }))
+                    })
+                    .catch((err) => {
+                      alert.alertWithType('error', '错误', err.message)
+                    })
+                    .finally(() => {
+                      aIndicator.hide()
+                      setCollecting(false)
+                    })
+                }}>
+                <Text>{node.collected ? '取消收藏' : '加入收藏'}</Text>
+              </Pressable>
+            </View>
           </View>
-          <View className="flex flex-row pr-2">
-            <Text className="text-sm text-gray-600 mr-1">主题总数</Text>
-            <Text className="text-sm text-gray-600 font-medium">
-              {node.topics || '--'}
-            </Text>
-          </View>
-        </View>
-        <View>
-          {!!node.header && (
-            <RenderHtml
-              contentWidth={width - 100}
-              source={{ html: node.header }}
-              baseStyle={tw('text-sm')}
-            />
-          )}
         </View>
       </View>
     </View>
