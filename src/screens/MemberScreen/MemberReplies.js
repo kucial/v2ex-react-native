@@ -12,7 +12,7 @@ import useSWRInfinite from 'swr/infinite'
 import { useNavigation } from '@react-navigation/native'
 
 import CommonListFooter from '@/components/CommonListFooter'
-import RenderHtml from '@/components/RenderHtml'
+import HtmlRender from '@/components/HtmlRender'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
 
 import { hasReachEnd } from '@/utils/swr'
@@ -45,7 +45,7 @@ const MemberReplyRow = (props) => {
           </View>
         </View>
         <View className="pt-1 pb-2 px-3">
-          <RenderHtml
+          <HtmlRender
             contentWidth={width - 24}
             source={{
               html: data.content_rendered,

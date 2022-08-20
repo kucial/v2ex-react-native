@@ -11,7 +11,7 @@ import useSWRInfinite from 'swr/infinite'
 import { useNavigation } from '@react-navigation/native'
 import CommonListFooter from '@/components/CommonListFooter'
 import { hasReachEnd } from '@/utils/swr'
-import RenderHtml from '@/components/RenderHtml'
+import HtmlRender from '@/components/HtmlRender'
 import { Box, BlockText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
 
@@ -81,7 +81,7 @@ const NotificationRow = (props) => {
         </View>
         {data.content_rendered && (
           <View className="bg-gray-100 mt-1 p-1 rounded">
-            <RenderHtml
+            <HtmlRender
               contentWidth={width - 24 - 8 - 8 - 8}
               source={{
                 html: data.content_rendered,

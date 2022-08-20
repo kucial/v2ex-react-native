@@ -13,7 +13,7 @@ import useSWRInfinite from 'swr/infinite'
 import { useTailwind } from 'tailwindcss-react-native'
 import PropTypes from 'prop-types'
 
-import RenderHtml from '@/components/RenderHtml'
+import HtmlRender from '@/components/HtmlRender'
 import CommonListFooter from '@/components/CommonListFooter'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { hasReachEnd, isRefreshing } from '@/utils/swr'
@@ -108,7 +108,7 @@ export default function NodeScreen({ route, navigation }) {
             </View>
             <View>
               {!!node.header && (
-                <RenderHtml contentWidth={width - 100} {...htmlProps} />
+                <HtmlRender contentWidth={width - 100} {...htmlProps} />
               )}
             </View>
             <View className="flex flex-row mt-3 mb-2">

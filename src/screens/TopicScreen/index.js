@@ -34,9 +34,9 @@ import {
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 
-import RenderHtml from '@/components/RenderHtml'
+import HtmlRender from '@/components/HtmlRender'
 import ErrorNotice from '@/components/ErrorNotice'
-import { BlockText } from '@/components/Skeleton/Elements'
+import { BlockText, Box } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import CommonListFooter from '@/components/CommonListFooter'
 import SlideUp from '@/components/SlideUp'
@@ -282,10 +282,14 @@ function TopicScreen({ navigation, route }) {
       <View className="bg-white py-3 px-4 mb-2 shadow-sm">
         <View className="flex flex-row mb-2">
           <View className="flex flex-row flex-1">
-            <Image
-              source={{ uri: member.avatar_large }}
-              className="w-[32px] h-[32px] rounded"
-            />
+            {member.avatar_large ? (
+              <Image
+                source={{ uri: member.avatar_large }}
+                className="w-[32px] h-[32px] rounded"
+              />
+            ) : (
+              <Box className="w-[32px] h-[32px] rounded" />
+            )}
             <View className="pl-2 flex flex-row items-center">
               <View className="py-[2px]">
                 <Pressable
@@ -326,12 +330,24 @@ function TopicScreen({ navigation, route }) {
             {topic.title}
           </Text>
         </View>
-
         {!!topic.content_rendered && (
-          <RenderHtml contentWidth={width - 32} {...htmlRenderProps} />
+          <HtmlRender contentWidth={width - 32} {...htmlRenderProps} />
         )}
         {topicSwr.error && !isLoading(topicSwr) && (
-          <ErrorNotice error={topicSwr.error} />
+          <ErrorNotice
+            error={topicSwr.error}
+            extra={
+              <View className="mt-2 flex flex-row justify-center">
+                <Pressable
+                  className="px-4 h-[44px] w-[120px] rounded-full bg-gray-900 text-white items-center justify-center active:opacity-60"
+                  onPress={() => {
+                    topicSwr.mutate()
+                  }}>
+                  <Text className="text-white">重试</Text>
+                </Pressable>
+              </View>
+            }
+          />
         )}
         {isFallback && isLoading(topicSwr) && (
           <View className="mt-1">
@@ -339,6 +355,12 @@ function TopicScreen({ navigation, route }) {
           </View>
         )}
       </View>
+      {!!topic.replies && (
+        <View className="bg-white px-3 py-2 border-b border-gray-300">
+          <Text className="text-gray-700">回复 {topic.replies}</Text>
+        </View>
+      )}
+
       {/* <View className="bg-white p-4 mb-2">
         <TagIcon size={18} color={'#444'} />
       </View> */}

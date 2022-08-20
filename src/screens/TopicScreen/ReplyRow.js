@@ -6,7 +6,7 @@ import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 
-import RenderHtml from '@/components/RenderHtml'
+import HtmlRender from '@/components/HtmlRender'
 import { InlineText, BlockText, Box } from '@/components/Skeleton/Elements'
 
 import { useAuthService } from '@/containers/AuthService'
@@ -110,7 +110,7 @@ function ReplyRow(props) {
             </View>
           </View>
           <View className="pr-2">
-            <RenderHtml
+            <HtmlRender
               contentWidth={width - 24 - 8 - 8 - 16}
               source={{
                 html: data.content_rendered,

@@ -185,7 +185,7 @@ const CUSTOM_ENDPOINTS = {
           const data = {
             id: Number(window.location.pathname.replace('/t/', '')),
             title: document.querySelector('#Wrapper .header h1').textContent.trim(),
-            content_rendered: document.querySelector('#Wrapper .cell .topic_content').innerHTML.trim(),
+            content_rendered: document.querySelector('#Wrapper .cell .topic_content')?.innerHTML.trim(),
             replies,
             last_reply_time,
             created_time,
