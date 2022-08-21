@@ -1277,12 +1277,19 @@ export const FetcherWebView = () => {
               onLoadStart={() => {
                 console.log(`load start: ${url}`)
                 timerRef.current = setTimeout(() => {
-                  reject(new Error('Request Timeout'))
-                  setStack((prev) => {
-                    const newStack = { ...prev }
-                    delete newStack[key]
-                    return newStack
-                  })
+                  try {
+                    const script = scriptsToInject.current.shift()
+                    if (script) {
+                      ref.current.injectJavaScript(script)
+                    }
+                  } catch (err) {
+                    reject(new Error('Request Timeout'))
+                    setStack((prev) => {
+                      const newStack = { ...prev }
+                      delete newStack[key]
+                      return newStack
+                    })
+                  }
                 }, REQUEST_TIMEOUT)
               }}
               onLoadEnd={() => {

@@ -245,9 +245,9 @@ function TopicScreen({ navigation, route }) {
         setTimeout(() => {
           // cleanup cache after reply form unmount
           mutate(cacheKey, undefined)
-          // scrollTo reply
+          // TODO scrollTo reply
           // NOTE: MAY HAVE BUG if listIsNot Loaded.
-          listRef.current?.scrollToIndex(reply.num - 1)
+          // listRef.current?.scrollToIndex(reply.num - 1)
         }, 400)
       })
     },
