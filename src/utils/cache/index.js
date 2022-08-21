@@ -29,6 +29,9 @@ const cache = (cache) => {
       if (typeof key === 'string' && storage.contains(key)) {
         storage.delete(key)
       }
+    },
+    flush: () => {
+      storage.clearAll()
     }
   }
 

@@ -28,6 +28,9 @@
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
+    },
+    "hooks": {
+      "postPublish": []
     }
   }
 }

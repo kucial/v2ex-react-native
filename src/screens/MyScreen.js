@@ -42,6 +42,7 @@ export default function MyScreen({ navigation }) {
           onPress={() => {
             navigation.push('member', {
               username: currentUser.username
+              // username: 'Livid'
             })
           }}>
           <Image

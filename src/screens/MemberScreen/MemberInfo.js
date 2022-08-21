@@ -25,7 +25,7 @@ const LineItem = (props) => {
 
 export default function MemberInfo(props) {
   const memberSwr = useSWR(`/api/members/show.json?username=${props.username}`)
-  console.log(memberSwr.data)
+  return null
   return (
     <ScrollView>
       <LineItem

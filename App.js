@@ -1,8 +1,10 @@
+import * as Sentry from '@sentry/react-native'
 import { TailwindProvider } from 'tailwindcss-react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { SWRConfig } from 'swr'
+import { SENTRY_DSN } from '@env'
 
 import {
   CollectionIcon,
@@ -13,6 +15,7 @@ import {
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 
 import MainScreenHeader from './src/components/MainScreenHeader'
+import ErrorBoundary from './src/components/ErrorBoundary'
 
 import AuthService from './src/containers/AuthService'
 import AlertService from './src/containers/AlertService'
@@ -36,6 +39,13 @@ import DebugScreen from './src/screens/DebugScreen'
 
 import fetcher, { FetcherWebView } from './src/utils/fetcher'
 import cache from './src/utils/cache'
+
+Sentry.init({
+  dsn: SENTRY_DSN,
+  enableInExpoDevelopment: false,
+  debug: false,
+  tracesSampleRate: 1.0
+})
 
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -178,9 +188,9 @@ const swrConfig = {
   // refreshInterval: 5 * 60 * 1000 // 5min
 }
 
-export default function App() {
+function App() {
   return (
-    <>
+    <ErrorBoundary>
       <FetcherWebView />
       <SWRConfig value={swrConfig}>
         <TailwindProvider>
@@ -198,6 +208,8 @@ export default function App() {
           </AlertService>
         </TailwindProvider>
       </SWRConfig>
-    </>
+    </ErrorBoundary>
   )
 }
+
+export default Sentry.wrap(App)

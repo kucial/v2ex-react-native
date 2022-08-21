@@ -1,6 +1,6 @@
 import { createContext, useEffect, useMemo, useContext, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import useSWR from 'swr'
+import { useSWR } from '@/utils/swr'
 import fetcher from '@/utils/fetcher'
 import { useAlertService } from './AlertService'
 export const AuthServiceContext = createContext({
@@ -36,17 +36,16 @@ const mapStatus = (swr) => {
 export default function AuthService(props) {
   const navigation = useNavigation()
   const userSwr = useSWR('/custom/auth/current-user.json', {
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false
+    revalidateOnMount: true
   })
   const nextAction = useRef()
   const alert = useAlertService()
-
+  console.log(userSwr)
   const service = useMemo(() => {
     const user = userSwr.data?.data
     const meta = userSwr.data?.meta
     const status = mapStatus(userSwr)
+
     return {
       user,
       meta,
@@ -56,9 +55,9 @@ export default function AuthService(props) {
         try {
           await fetcher('/custom/auth/logout.json')
         } catch (err) {
-          console.log(err)
+          alert.alertWithType('error', '错误', err.message)
         } finally {
-          userSwr.mutate(undefined)
+          userSwr.mutate()
         }
       },
       goToSigninSreen() {

@@ -110,8 +110,6 @@ export default function MemberReplies(props) {
     }
   }, [])
 
-  console.log(listItems)
-
   return (
     <FlatList
       className="flex-1"

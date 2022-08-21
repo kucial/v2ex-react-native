@@ -54,6 +54,7 @@ local.properties
 node_modules/
 npm-debug.log
 yarn-error.log
+.npmrc
 
 # BUCK
 buck-out/
@@ -75,3 +76,5 @@ dist/
 credentials.json
 
 # @end expo-cli
+
+.env

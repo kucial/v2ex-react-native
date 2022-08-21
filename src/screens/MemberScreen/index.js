@@ -1,7 +1,8 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, ScrollView } from 'react-native'
 import React, { useEffect, useMemo } from 'react'
-import useSWR from 'swr'
+
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import { useSWR } from '@/utils/swr'
 
 import MemberInfo from './MemberInfo'
 import MemberTopics from './MemberTopics'
@@ -13,21 +14,16 @@ const Tab = createMaterialTopTabNavigator()
 export default function MemberScreen({ route, navigation }) {
   const { username } = route.params
   const memberSwr = useSWR(`/api/members/show.json?username=${username}`)
-  useEffect(() => {
-    if (memberSwr.data) {
-      navigation.setParams({
-        brief: memberSwr.data
-      })
-    }
-  }, [memberSwr.data])
+  // useEffect(() => {
+  //   if (memberSwr.data) {
+  //     navigation.setParams({
+  //       brief: memberSwr.data
+  //     })
+  //   }
+  // }, [memberSwr.data])
 
   const tabs = useMemo(() => {
     return [
-      {
-        value: 'info',
-        label: '资料',
-        component: (props) => <MemberInfo {...props} username={username} />
-      },
       {
         value: 'topics',
         label: '主题',
@@ -43,7 +39,11 @@ export default function MemberScreen({ route, navigation }) {
 
   return (
     <View className="flex-1">
-      <MemberScreenHeader route={route} navigation={navigation} />
+      <MemberScreenHeader
+        route={route}
+        swr={memberSwr}
+        navigation={navigation}
+      />
       <Tab.Navigator
         screenOptions={{
           tabBarScrollEnabled: false,

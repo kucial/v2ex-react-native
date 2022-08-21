@@ -1,5 +1,5 @@
-module.exports = function(api) {
-  api.cache(true);
+module.exports = function (api) {
+  api.cache(true)
   return {
     presets: ['babel-preset-expo'],
     plugins: [
@@ -8,7 +8,7 @@ module.exports = function(api) {
         {
           root: ['./'],
           alias: {
-            '^@\/(.+)': './src/\\1',
+            '^@/(.+)': './src/\\1'
           },
           extensions: [
             '.ios.js',
@@ -18,11 +18,26 @@ module.exports = function(api) {
             '.json',
             '.tsx',
             '.ts',
-            '.native.js',
-          ],
+            '.native.js'
+          ]
         }
       ],
-      "tailwindcss-react-native/babel",
-    ],
-  };
-};
+      'tailwindcss-react-native/babel',
+      [
+        'module:react-native-dotenv',
+        {
+          envName: 'APP_ENV',
+          moduleName: '@env',
+          path: '.env',
+          blocklist: null,
+          allowlist: null,
+          blacklist: null, // DEPRECATED
+          whitelist: null, // DEPRECATED
+          safe: false,
+          allowUndefined: true,
+          verbose: false
+        }
+      ]
+    ]
+  }
+}

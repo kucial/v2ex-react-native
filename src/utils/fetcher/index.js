@@ -7,9 +7,10 @@ import { parse as pathParse } from 'path-to-regexp'
 import pathMatch from 'path-match'
 import { OFFICIAL_ENDPOINTS } from './constants'
 
+const REQUEST_TIMEOUT = 1000 * 30
 const instance = axios.create({
   baseURL: 'https://www.v2ex.com',
-  timeout: 10000
+  timeout: REQUEST_TIMEOUT
 })
 
 instance.interceptors.response.use(
@@ -1282,7 +1283,7 @@ export const FetcherWebView = () => {
                     delete newStack[key]
                     return newStack
                   })
-                }, 10000)
+                }, REQUEST_TIMEOUT)
               }}
               onLoadEnd={() => {
                 console.log(`load end: ${url}`)
