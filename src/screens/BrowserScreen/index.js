@@ -1,13 +1,24 @@
-import { View } from 'react-native'
+import { SafeAreaView, View, ScrollView } from 'react-native'
 import { WebView } from 'react-native-webview'
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 import { Pressable } from 'react-native'
-import { ExternalLinkIcon } from 'react-native-heroicons/outline'
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ExternalLinkIcon
+} from 'react-native-heroicons/outline'
 import { Linking } from 'react-native'
 import { NProgress } from 'react-native-nprogress'
+import classNames from 'classnames'
 
 export default function BrowserScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false)
+  const webviewRef = useRef()
+  const [historyState, setHistoryState] = useState({
+    canGoBack: false,
+    canGoForward: false
+  })
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: (props) => (
@@ -23,15 +34,55 @@ export default function BrowserScreen({ route, navigation }) {
   }, [])
   return (
     <View style={{ flex: 1 }}>
+      <View className="absolute w-full top-0">
+        <NProgress backgroundColor="#333" height={3} enabled={loading} />
+      </View>
       <WebView
+        pullToRefreshEnabled
+        ref={webviewRef}
         style={{ flex: 1 }}
         source={{ uri: route.params.url }}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
+        onNavigationStateChange={(navState) => {
+          setHistoryState({
+            canGoBack: navState.canGoBack,
+            canGoForward: navState.canGoForward
+          })
+        }}
       />
-      <View className="absolute w-full top-0">
-        <NProgress backgroundColor="#111" height={3} enabled={loading} />
-      </View>
+      {(historyState.canGoBack || historyState.canGoForward) && (
+        <SafeAreaView className="bg-gray-100">
+          <View className="h-[44px] flex flex-row items-center justify-center">
+            <Pressable
+              className={classNames(
+                'basis-1/2 h-[44px] items-center justify-center active:opacity-60 active:bg-white',
+                {
+                  'opacity-50': !historyState.canGoBack
+                }
+              )}
+              disabled={!historyState.canGoBack}
+              onPress={() => {
+                webviewRef.current?.goBack()
+              }}>
+              <ChevronLeftIcon color="#333" size={20} />
+            </Pressable>
+            <Pressable
+              className={classNames(
+                'basis-1/2 h-[44px] items-center justify-center active:opacity-60 active:bg-white',
+                {
+                  'opacity-50': !historyState.canGoForward
+                }
+              )}
+              disabled={!historyState.canGoForward}
+              onPress={() => {
+                webviewRef.current?.goForward()
+              }}>
+              <ChevronRightIcon color="#333" size={20} />
+            </Pressable>
+          </View>
+        </SafeAreaView>
+      )}
     </View>
   )
 }
