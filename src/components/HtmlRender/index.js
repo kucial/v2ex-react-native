@@ -46,7 +46,7 @@ function RenderHtml({ tagsStyles, ...props }) {
     return {
       a: {
         onPress: (e, href) => {
-          console.log('anchor href', e, href)
+          console.log('anchor href', href)
           if (isAppLink(href)) {
             const screen = getScreenInfo(href)
             if (screen) {

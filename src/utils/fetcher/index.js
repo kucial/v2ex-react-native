@@ -7,7 +7,7 @@ import { parse as pathParse } from 'path-to-regexp'
 import pathMatch from 'path-match'
 import { OFFICIAL_ENDPOINTS } from './constants'
 
-const REQUEST_TIMEOUT = 1000 * 30
+const REQUEST_TIMEOUT = 1000 * 10
 const instance = axios.create({
   baseURL: 'https://www.v2ex.com',
   timeout: REQUEST_TIMEOUT
