@@ -5,13 +5,14 @@
 - react-native
 - react-navigation -- 页面导航
 - tailwindcss-react-native -- 样式系统
-<!-- - MMKV -- 存储 -->
+- MMKV -- 存储
 - swr -- 请求管理
   - fetcher -- V2EX V1 API + 自定义 webview 封装接口
   - cacheProvider -- MMKV storage
 - react-native-render-html -- 内容渲染
 - react-native-image-modal -- 图片预览
 - react-hook-form -- 表单
+- slatejs -- 富文本编辑
 
 ## 关于用户身份认证
 

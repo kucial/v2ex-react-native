@@ -6,22 +6,26 @@ import { withHistory } from 'slate-history';
 import {
   withBaseExtend,
   withHtml,
+  withMarkdown,
   withRichText,
   withHr,
-  withMarkdown,
+  withMarkdownShortcut,
   withBlockquote,
   withList,
+  withImage
 } from './plugins';
 
 const myCreateEditor = () => {
   return [
     withBaseExtend,
     withHtml,
+    withMarkdown,
     withRichText,
     withList,
     withBlockquote,
+    withImage,
     withHr,
-    withMarkdown,
+    withMarkdownShortcut,
     withHistory,
   ].reduce((base, plugin) => plugin(base), withReact(createEditor()));
 };
@@ -35,7 +39,6 @@ const SimpleRichEditor = forwardRef((props, ref) => {
   if (!props.value) {
     return null;
   }
-
   return (
     <Slate editor={editor} value={props.value} onChange={props.onChange}>
       <Editable

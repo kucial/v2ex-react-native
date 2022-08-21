@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "V2EX",
+    "name": "\\V2EX/",
     "slug": "v2ex-react-native",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "light",
@@ -32,6 +32,18 @@
     "hooks": {
       "postPublish": []
     },
-    "extra": {}
+    "extra": {},
+    "plugins": [
+      "expo-image-picker",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.6.10"
+          }
+        }
+      ]
+    ],
+    "scheme": "kucial.v2ex"
   }
 }

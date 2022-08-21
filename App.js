@@ -1,6 +1,4 @@
 import * as Sentry from '@sentry/react-native'
-import { AppState } from 'react-native'
-import NetInfo from '@react-native-community/netinfo'
 import { TailwindProvider } from 'tailwindcss-react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -10,7 +8,6 @@ import { SENTRY_DSN } from '@env'
 
 import { FolderIcon, HomeIcon, UserIcon } from 'react-native-heroicons/outline'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
-
 import { headerLeft } from './src/components/BackButton'
 
 import MainScreenHeader from './src/components/MainScreenHeader'
@@ -18,6 +15,7 @@ import ErrorBoundary from './src/components/ErrorBoundary'
 
 import AuthService from './src/containers/AuthService'
 import AlertService from './src/containers/AlertService'
+import ImgurService from './src/containers/ImgurService'
 import ActivityIndicator from './src/containers/ActivityIndicator'
 
 import HomeScreen from './src/screens/HomeScreen'
@@ -31,8 +29,9 @@ import MemberScreen from './src/screens/MemberScreen'
 import SigninScreen from './src/screens/SigninScreen'
 import NotificationScreen from './src/screens/NotificationScreen'
 import CollectedTopicsScreen from './src/screens/CollectedTopicsScreen'
-import SettingsScreen from './src/screens/SettingsScreen'
+import { SettingsLanding, ImgurSettings } from './src/screens/SettingsScreen'
 import AboutScreen from './src/screens/AboutScreen'
+import NewTopicScreen from './src/screens/NewTopicScreen'
 
 import DebugScreen from './src/screens/DebugScreen'
 
@@ -147,18 +146,35 @@ function AppStack() {
             title: '我收藏的内容'
           }}
         />
-        <Stack.Screen
-          name="settings"
-          component={SettingsScreen}
-          options={{
-            title: '设置'
-          }}
-        />
+        <Stack.Group>
+          <Stack.Screen
+            name="settings"
+            component={SettingsLanding}
+            options={{
+              title: '设置'
+            }}
+          />
+          <Stack.Screen
+            name="imgur-settings"
+            component={ImgurSettings}
+            options={{
+              title: 'Imgur 设置'
+            }}
+          />
+        </Stack.Group>
         <Stack.Screen
           name="about"
           component={AboutScreen}
           options={{
             title: '关于'
+          }}
+        />
+        <Stack.Screen
+          name="new-topic"
+          component={NewTopicScreen}
+          options={{
+            title: '新主题',
+            animation: 'slide_from_bottom'
           }}
         />
       </Stack.Group>
@@ -260,8 +276,10 @@ function App() {
               <ActivityIndicator>
                 <NavigationContainer>
                   <AuthService>
-                    <DebugScreen />
-                    {/* <AppStack /> */}
+                    <ImgurService>
+                      {/* <DebugScreen /> */}
+                      <AppStack />
+                    </ImgurService>
                   </AuthService>
                 </NavigationContainer>
               </ActivityIndicator>

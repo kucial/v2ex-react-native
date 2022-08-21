@@ -14,34 +14,16 @@ import {
   EditorDismiss
 } from '@/components/SlateEditor'
 import KeyboardAwareView from '@/components/KeyboardAwareView'
+import ImgurPicker from '@/components/ImgurPicker'
+import { useState } from 'react'
+import SlideUp from '@/components/SlideUp'
 
 export default function DebugScreen() {
-  const authService = useAuthService()
-  const navigation = useNavigation()
-
-  console.log(navigation)
-  useEffect(() => {
-    CookieManager.get('http://www.v2ex.com').then((cookies) => {
-      console.log('cookies....', cookies)
-    })
-  }, [])
+  const [open, setOpen] = useState(true)
 
   return (
     <View className="flex-1">
-      <KeyboardAwareView animated={false}>
-        <SafeAreaView>
-          <EditorProvider>
-            <EditorDismiss className="flex-1 h-full">
-              <View className="p-2 bg-blue-200">
-                <EditorRender placeholder="输入内容" />
-              </View>
-              <View className="absolute bottom-0 left-0 width-full">
-                <EditorToolbar showOnFocus />
-              </View>
-            </EditorDismiss>
-          </EditorProvider>
-        </SafeAreaView>
-      </KeyboardAwareView>
+      <ImgurPicker />
     </View>
   )
 }

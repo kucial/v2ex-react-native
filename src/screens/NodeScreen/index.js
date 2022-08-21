@@ -22,6 +22,7 @@ import fetcher from '@/utils/fetcher'
 
 import NodeTopicRow from './NodeTopicRow'
 import { useAlertService } from '@/containers/AlertService'
+import { useAuthService } from '@/containers/AuthService'
 
 export default function NodeScreen({ route, navigation }) {
   const { name, brief } = route.params
@@ -32,6 +33,7 @@ export default function NodeScreen({ route, navigation }) {
   const tw = useTailwind()
   const aIndicator = useActivityIndicator()
   const alert = useAlertService()
+  const { composeAuthedNavigation } = useAuthService()
 
   const nodeSwr = useSWR(`/page/go/${name}/node.json`, {
     shouldRetryOnError: false
@@ -42,8 +44,6 @@ export default function NodeScreen({ route, navigation }) {
     },
     [name]
   )
-
-  console.log(name, nodeSwr)
 
   const feedSwr = useSWRInfinite(getKey)
 
@@ -124,7 +124,7 @@ export default function NodeScreen({ route, navigation }) {
                   }
                 )}
                 disabled={collecting}
-                onPress={() => {
+                onPress={composeAuthedNavigation(() => {
                   const endpoint = node.collected
                     ? `/page/go/${name}/uncollect.json`
                     : `/page/go/${name}/collect.json`
@@ -145,8 +145,19 @@ export default function NodeScreen({ route, navigation }) {
                       aIndicator.hide()
                       setCollecting(false)
                     })
-                }}>
+                })}>
                 <Text>{node.collected ? '取消收藏' : '加入收藏'}</Text>
+              </Pressable>
+              <Pressable
+                className={classNames(
+                  'ml-2 h-[38px] rounded-lg border border-gray-500 px-3 items-center justify-center active:opacity-60'
+                )}
+                onPress={composeAuthedNavigation(() => {
+                  navigation.push('new-topic', {
+                    node
+                  })
+                })}>
+                <Text>创建新主题</Text>
               </Pressable>
             </View>
           </View>

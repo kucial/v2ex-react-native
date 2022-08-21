@@ -24,7 +24,7 @@ const elAttrsFromEl = (el, contextName) => {
   if (ELEMENT_TAGS[contextName]) {
     return ELEMENT_TAGS[contextName](el);
   }
-  if (el.nodeName === 'DIV' && el.dataSet.elementType) {
+  if (el.nodeName === 'DIV' && el.dataSet?.elementType) {
     return { type: el.dataSet.elementType}
   }
   return null;

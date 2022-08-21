@@ -1,14 +1,20 @@
 import { useMemo, useRef, useState } from 'react'
 import { forwardRef } from 'react'
-import { nanoid } from 'nanoid'
 import { captureMessage } from '@sentry/react-native'
 import { EditorContext } from './context'
+import { useImperativeHandle } from 'react'
+
+let count = 0
+const uniqId = () => {
+  return `${Date.now()}-${count++}`
+}
 
 const EditorProvider = forwardRef((props, ref) => {
   const webviewRef = useRef()
   const requests = useRef({})
   const setInitialConfig = useRef({})
   const [state, setState] = useState({
+    isReady: false,
     meta: {},
     hasFocus: false,
     viewport: {} // size
@@ -22,7 +28,7 @@ const EditorProvider = forwardRef((props, ref) => {
             return Promise.reject(new Error('EditorWebView not ref...'))
           }
           return new Promise((resolve, reject) => {
-            const requestId = nanoid()
+            const requestId = `${method}-${uniqId()}`
             requests.current[requestId] = { resolve, reject }
             webviewRef.current.postMessage(
               JSON.stringify({
@@ -42,6 +48,7 @@ const EditorProvider = forwardRef((props, ref) => {
       'blur',
       // 'setHTML',
       'getHTML',
+      'getMarkdown',
       'toggleBlock',
       'toggleMark',
       'listIndent',
@@ -51,10 +58,12 @@ const EditorProvider = forwardRef((props, ref) => {
       'redo'
     ])
   }, [])
-  console.log(state)
   const editor = useMemo(() => {
     return {
       viewport: state.viewport,
+      isReady() {
+        return state.isReady
+      },
       hasFocus() {
         return state.hasFocus
       },
@@ -82,7 +91,7 @@ const EditorProvider = forwardRef((props, ref) => {
       webview: webviewRef,
       handleMessage: (e) => {
         const data = JSON.parse(e.nativeEvent.data)
-        console.log(data)
+        console.log('editor webview', data)
         if (data.requestId) {
           const { requestId, result } = data
           const { resolve, reject } = requests.current[requestId] || {}
@@ -97,9 +106,19 @@ const EditorProvider = forwardRef((props, ref) => {
         if (data.type === 'event') {
           switch (data.name) {
             case 'ready':
-              operations.init(setInitialConfig.current).catch((err) => {
-                captureMessage(err)
-              })
+              operations
+                .init(setInitialConfig.current)
+                .then(() => {
+                  setState((prev) => ({
+                    ...prev,
+                    isReady: true
+                  }))
+                })
+                .catch((err) => {
+                  console.log(err)
+                  captureMessage(err)
+                })
+
               break
             case 'meta':
               setState((prev) => ({
@@ -133,6 +152,7 @@ const EditorProvider = forwardRef((props, ref) => {
       ...operations
     }
   }, [state, operations])
+  useImperativeHandle(ref, () => editor)
 
   return (
     <EditorContext.Provider value={editor}>

@@ -149,7 +149,7 @@ export const withBaseExtend = (editor) => {
   const { normalizeNode } = editor;
   editor.normalizeNode = (entry) => {
     const [node, path] = entry;
-    // log(normalizeNode, node, path);
+    log(node, path);
     if (node.__SHOULD_REMOVE__) {
       Transforms.removeNodes(editor, {
         at: path,
@@ -168,14 +168,23 @@ export const withBaseExtend = (editor) => {
         });
       }
     }
+    // fix empty children
+    if (Editor.isEditor(node) && node.children.length === 0) {
+      Editor.withoutNormalizing(editor, () => {
+        Transforms.insertNodes(editor, {
+          type: 'paragraph',
+          children: [
+            { text: ''}
+          ]
+        })
+      })
+    }
   };
 
   editor.handleKeyDown = (e) => {
     const { nativeEvent } = e;
-    console.log('handleKeyDown');
     if (isKeyHotkey('cmd+enter')(nativeEvent)) {
-    console.log('exit block');
-    editor.exitBlock?.();
+      editor.exitBlock?.();
       return true;
     }
   }

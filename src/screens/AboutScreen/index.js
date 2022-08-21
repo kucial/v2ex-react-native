@@ -4,6 +4,7 @@ import Constants from 'expo-constants'
 
 import RNRestart from 'react-native-restart'
 import storage from '@/utils/storage'
+import { clearStateCache } from '@/utils/swr'
 
 export default function AboutScreen() {
   return (
@@ -37,10 +38,28 @@ export default function AboutScreen() {
             justifyContent: 'center'
           })}
           onPress={() => {
+            // storage.clearAll()
+            clearStateCache()
+            RNRestart.Restart()
+          }}>
+          <Text style={{ color: 'white' }}>清除状态缓存</Text>
+        </Pressable>
+      </View>
+      <View className="px-4 py-4">
+        <Pressable
+          style={({ pressed }) => ({
+            height: 50,
+            backgroundColor: '#121222',
+            borderRadius: 12,
+            opacity: pressed ? 0.6 : 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          })}
+          onPress={() => {
             storage.clearAll()
             RNRestart.Restart()
           }}>
-          <Text style={{ color: 'white' }}>清除缓存</Text>
+          <Text style={{ color: 'white' }}>清除所有缓存</Text>
         </Pressable>
       </View>
     </SafeAreaView>

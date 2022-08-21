@@ -11,10 +11,10 @@ import { useTailwind } from 'tailwindcss-react-native'
 import WebView from 'react-native-webview'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
-import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
 import { getScreenInfo } from '@/utils/url'
+import { getJSON, setJSON } from '@/utils/storage'
 
 const topicLinkCapture = `(function() {
   try {
@@ -41,20 +41,21 @@ const topicLinkCapture = `(function() {
   }
 }())`
 
+const CACHE_KEY = '$app$/ui/search-keyword'
+
 export default function SearchScreen({ navigation }) {
   const searchInput = useRef()
   const tw = useTailwind()
-  const keywordSwr = useSWR('app:search-keyword', () => '', {
-    revalidateOnMount: false
-  })
+  const [keyword, setKeyword] = useState(getJSON(CACHE_KEY))
   const [loading, setLoading] = useState(false)
   useEffect(() => {
-    setTimeout(() => {
-      InteractionManager.runAfterInteractions(() => {
-        searchInput.current?.focus()
-      })
-    }, 300)
+    InteractionManager.runAfterInteractions(() => {
+      searchInput.current?.focus()
+    })
   }, [])
+  useEffect(() => {
+    setJSON(CACHE_KEY, keyword)
+  }, [keyword])
 
   return (
     <View className="flex-1">
@@ -78,20 +79,20 @@ export default function SearchScreen({ navigation }) {
                 ...tw('bg-gray-100 rounded-lg flex-1 px-2 text-base'),
                 lineHeight: 20
               }}
-              defaultValue={keywordSwr.data || ''}
+              defaultValue={keyword || ''}
               ref={searchInput}
               placeholder="输入关键词"
               returnKeyType="search"
               onSubmitEditing={({ nativeEvent }) => {
-                keywordSwr.mutate(nativeEvent.text, false)
+                setKeyword(nativeEvent.text)
               }}
             />
-            {!!keywordSwr.data && (
+            {!!keyword && (
               <View className="absolute right-0 top-2 h-full flex flex-row items-center justify-center">
                 <Pressable
                   className="rounded-full w-[40px] h-[40px] active:bg-gray-100 active:opacity-60 items-center justify-center"
                   onPress={() => {
-                    keywordSwr.mutate('', false)
+                    setKeyword('')
                     searchInput.current?.clear()
                     searchInput.current?.focus()
                   }}>
@@ -110,12 +111,12 @@ export default function SearchScreen({ navigation }) {
         </View>
       </View>
       <View className="flex-1 relative">
-        {!!keywordSwr.data?.trim() && (
+        {!!keyword?.trim() && (
           <WebView
             injectedJavaScript={topicLinkCapture}
             source={{
               uri: `https://google.com/search?q=${encodeURIComponent(
-                'site:v2ex.com/t ' + keywordSwr.data
+                'site:v2ex.com/t ' + keyword
               )}`
             }}
             onLoadStart={() => setLoading(true)}

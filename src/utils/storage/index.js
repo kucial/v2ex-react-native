@@ -1,25 +1,46 @@
-// import { MMKV } from 'react-native-mmkv'
+import { MMKV } from 'react-native-mmkv'
 
-// const mmkv = new MMKV()
+const storage = new MMKV()
 
-// export default mmkv
+// Mock MMKV storage to enable remote debug
+// let data = {}
+// const storage = {
+//   contains(key) {
+//     return data[key] !== undefined
+//   },
+//   getString(key) {
+//     return data[key]
+//   },
+//   delete(key) {
+//     delete data[key]
+//   },
+//   set(key, value) {
+//     data[key] = value
+//   },
+//   clearAll() {
+//     data = {}
+//   },
+//   getAllKeys() {
+//     return Object.keys(data);
+//   }
+// }
 
-// FOR REMOTE_DEBUG
-let data = {}
-export default {
-  contains(key) {
-    return data[key] !== undefined
-  },
-  getString(key) {
-    return data[key]
-  },
-  delete(key) {
-    delete data[key]
-  },
-  set(key, value) {
-    data[key] = value
-  },
-  clearAll() {
-    data = {}
+export default storage
+
+export const getJSON = (key, fallback) => {
+  const str = storage.getString(key)
+  if (typeof str !== 'string') {
+    return fallback || undefined
+  }
+  return JSON.parse(str)
+}
+
+export const setJSON = (key, value) => {
+  if (value === undefined) {
+    storage.delete(key)
+  } else {
+    const str = JSON.stringify(value)
+    console.log(str)
+    storage.set(key, str)
   }
 }

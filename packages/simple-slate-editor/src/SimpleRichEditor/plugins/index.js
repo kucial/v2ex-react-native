@@ -6,3 +6,4 @@ export * from './markdown';
 export * from './list';
 export * from './blockquote';
 export * from './hr';
+export * from './image'

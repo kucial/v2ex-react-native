@@ -587,6 +587,55 @@ const CUSTOM_ENDPOINTS = {
     ]
   },
 
+  '/page/write.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/write',
+    getScripts: ({ data }) => [
+      `(function() {
+        try {
+          const data = ${JSON.stringify(data)};
+          // set title
+          const titleTextarea = document.getElementById('topic_title')
+          titleTextarea.value = data.title;
+          // set content
+          editor.setValue(data.content);
+          // select syntax
+          const syntax = document.querySelector('#compose input[name=syntax][value=${
+            data.syntax
+          }]')
+          syntax?.click();
+          // publishTopic
+          publishTopic();
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          if (/^\/t\/\d+/.test(window.location.pathname)) {
+            const id = d.querySelector('h1 a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0];
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              id,
+            }))
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: 'redirect location is not expected'
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`
+    ]
+  },
+
   '/page/t/:id/unblock.json': {
     host: 'https://www.v2ex.com',
     pathname: '/t/:id',
@@ -669,7 +718,7 @@ const CUSTOM_ENDPOINTS = {
   '/page/go/:name/node.json': {
     host: 'https://www.v2ex.com',
     pathname: '/go/:name',
-    scripts: [
+    getScripts: ({ params }) => [
       `(function() {
         try {
           const d = document.querySelector('.node-header');
@@ -679,6 +728,7 @@ const CUSTOM_ENDPOINTS = {
           const headerDom =  d.querySelector('.page-content-header')
           const data = {
             title: document.title,
+            name: ${JSON.stringify(params.name)},
             header: d.querySelector('.intro')?.innerHTML,
             topics: Number(d.querySelector('.topic-count strong').textContent) || 0,
             avatar_large: d.querySelector('.page-content-header img')?.src,

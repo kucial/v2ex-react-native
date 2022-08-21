@@ -1,4 +1,5 @@
 import { Pressable, View } from 'react-native'
+import PropTypes from 'prop-types'
 import { useEffect } from 'react'
 import WebView from 'react-native-webview'
 import { useEditor } from './context'
@@ -9,10 +10,24 @@ export default function EditorRender(props) {
   useEffect(() => {
     editor.setInitialConfig({
       placeholder: props.placeholder,
-      html: props.html
+      html: props.html,
+      containerStyle: props.containerStyle
     })
+    // if (props.onBlur) {
+    //   editor.subscribe('blur', props.onBlur)
+    // }
+    // if (props.onChange) {
+    //   editor.subscribe('change', props.onChange)
+    // }
+    // return () => {
+    //   if (props.onBlur) {
+    //     editor.unsubscribe('blur', props.onBlur)
+    //   }
+    //   if (props.onChange) {
+    //     editor.unsubscribe('change', props.onChange)
+    //   }
+    // }
   }, [])
-  console.log(editor.viewport)
   return (
     // <View style={{ height: 300 }}>
     <Pressable
@@ -26,7 +41,17 @@ export default function EditorRender(props) {
         source={editorHtml}
         ref={editor.webview}
         onMessage={editor.handleMessage}
+        style={{
+          opacity: editor.isReady() ? 1 : 0,
+          backgroundColor: props.containerStyle?.backgroundColor,
+          minHeight: props.containerStyle?.minHeight
+        }}
+        scrollEnabled={false}
       />
     </Pressable>
   )
+}
+
+EditorRender.propTypes = {
+  minHeight: PropTypes.number
 }

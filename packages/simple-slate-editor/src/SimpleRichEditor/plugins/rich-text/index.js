@@ -11,17 +11,22 @@ import { log } from './helper';
 
 const isBlockActive = (editor, blockType, options = {}) => {
   const { at = editor.selection, typeKey = 'type' } = options;
-
+  console.log('isBlockActive', editor.children)
   if (!at) {
     return false;
   }
   const [match] = Array.from(
     Editor.nodes(editor, {
       at: Editor.unhangRange(editor, at),
-      match: (n) =>
-        !Editor.isEditor(n) &&
+      match: (n) => {
+        console.log(n)
+        return (
+          !Editor.isEditor(n) &&
         SlateElement.isElement(n) &&
-        n[typeKey] === blockType,
+        n[typeKey] === blockType
+        )
+      }
+        ,
     })
   );
   return !!match
@@ -29,7 +34,6 @@ const isBlockActive = (editor, blockType, options = {}) => {
 
 const toggleBlock = (editor, blockType, options = {}) => {
   const isActive = isBlockActive(editor, blockType, options);
-
   Transforms.setNodes(
     editor,
     {

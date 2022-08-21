@@ -13,7 +13,10 @@ import {
   UnorderedListIcon,
   OrderedListIcon,
   IndentIcon,
-  OutdentIcon
+  OutdentIcon,
+  TextQuoteIcon,
+  CodeBlockIcon,
+  Base64Icon
 } from './EditorIcons'
 import { useAlertService } from '@/containers/AlertService'
 
@@ -48,7 +51,7 @@ export default function EditorToolbar(props) {
   }
 
   return (
-    <View>
+    <View style={props.style}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -95,6 +98,13 @@ export default function EditorToolbar(props) {
           }}
           Icon={UnderlineIcon}
         />
+        <ToolbarButton
+          active={false}
+          onPress={() => {
+            // TODO...
+          }}
+          Icon={Base64Icon}
+        />
         <Divider />
         <ToolbarButton
           active={editor.isBlockActive('heading-two')}
@@ -103,14 +113,30 @@ export default function EditorToolbar(props) {
           }}
           Icon={TitleIcon}
         />
+        {props.onOpenImageSelect && (
+          <ToolbarButton
+            active={editor.isBlockActive('image')}
+            onPress={() => {
+              // TODO: open image select modal
+              props.onOpenImageSelect()
+            }}
+            Icon={ImageIcon}
+          />
+        )}
         <ToolbarButton
-          active={editor.isBlockActive('image')}
+          active={editor.isBlockActive('blockquote')}
           onPress={() => {
-            // TODO: open image select modal
-            alert.alertWithType('error', '错误', '待开发')
+            editor.toggleBlock('blockquote')
           }}
-          Icon={ImageIcon}
+          Icon={TextQuoteIcon}
         />
+        {/* <ToolbarButton
+          active={editor.isBlockActive('code-block')}
+          onPress={() => {
+            editor.toggleBlock('code-block')
+          }}
+          Icon={CodeBlockIcon}
+        /> */}
         <ToolbarButton
           active={editor.isBlockActive('unordered-list')}
           onPress={() => {

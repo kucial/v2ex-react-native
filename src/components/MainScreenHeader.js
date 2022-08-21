@@ -1,8 +1,10 @@
 import { Image, View, Pressable, Text } from 'react-native'
 import {
   MagnifyingGlassIcon,
-  EnvelopeIcon
+  EnvelopeIcon,
+  DocumentPlusIcon
 } from 'react-native-heroicons/outline'
+
 import Constants from 'expo-constants'
 import React from 'react'
 import logoImage from '@/assets/logo.png'
@@ -29,6 +31,13 @@ export default function MainScreenHeader({ navigation }) {
       </View>
 
       <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">
+        <Pressable
+          className="w-[44px] h-[44px] flex items-center justify-center  rounded-full active:bg-gray-100 active:opacity-60"
+          onPress={composeAuthedNavigation(() => {
+            navigation.push('new-topic')
+          })}>
+          <DocumentPlusIcon size={24} color={'#333'} />
+        </Pressable>
         <Pressable
           className="w-[44px] h-[44px] flex items-center justify-center  rounded-full active:bg-gray-100 active:opacity-60"
           onPress={composeAuthedNavigation(() => {

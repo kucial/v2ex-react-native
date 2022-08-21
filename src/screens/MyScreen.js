@@ -10,6 +10,7 @@ import {
 } from 'react-native-heroicons/outline'
 import { useAuthService } from '@/containers/AuthService'
 import { InlineText } from '@/components/Skeleton/Elements'
+import { LineItem, LineItemGroup } from '@/components/LineItem'
 import { useAlertService } from '@/containers/AlertService'
 
 export default function MyScreen({ navigation }) {
@@ -98,102 +99,79 @@ export default function MyScreen({ navigation }) {
   }
 
   return (
-    <View className="flex flex-col flex-1">
-      <View className="divide-y divide-gray-300 shadow-sm mb-3">{header}</View>
+    <View className="flex flex-col flex-1 py-2">
+      <LineItemGroup>{header}</LineItemGroup>
 
-      <View className="divide-y divide-gray-300 shadow-sm mb-3">
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+      <LineItemGroup>
+        <LineItem
+          title="收藏的主题"
+          icon={<DocumentIcon size={24} color="#111" />}
           disabled={authStatus === 'loading'}
           onPress={composeAuthedNavigation(() => {
             navigation.push('collected-topics')
-          })}>
-          <View className="mr-3">
-            <DocumentIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">收藏的主题</Text>
-        </Pressable>
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          })}
+        />
+        <LineItem
+          title="回复的主题"
+          icon={<DocumentIcon size={24} color="#111" />}
           disabled={authStatus === 'loading'}
           onPress={composeAuthedNavigation(() => {
             navigation.push('replied-topics')
-          })}>
-          <View className="mr-3">
-            <DocumentIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">回复的主题</Text>
-        </Pressable>
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          })}
+        />
+        <LineItem
+          title="浏览的主题"
+          icon={<DocumentIcon size={24} color="#111" />}
           disabled={authStatus === 'loading'}
           onPress={composeAuthedNavigation(() => {
             navigation.push('viewed-topics')
-          })}>
-          <View className="mr-3">
-            <DocumentIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">浏览的主题</Text>
-        </Pressable>
-      </View>
+          })}
+        />
+      </LineItemGroup>
 
-      <View className="shadow-sm divide-y divide-gray-300 mb-3">
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+      <LineItemGroup>
+        <LineItem
+          title="图片库"
+          icon={<PhotoIcon size={24} color="#111" />}
           onPress={() => {
             alert.alertWithType('error', '错误', '未开发完成')
-          }}>
-          <View className="mr-3">
-            <PhotoIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">图片库</Text>
-        </Pressable>
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          }}
+        />
+        <LineItem
+          title="记事本"
+          icon={<PencilSquareIcon size={24} color="#111" />}
           onPress={() => {
             alert.alertWithType('error', '错误', '未开发完成')
-          }}>
-          <View className="mr-3">
-            <PencilSquareIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">记事本</Text>
-        </Pressable>
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          }}
+        />
+        <LineItem
+          title="时间轴"
+          icon={<ClockIcon size={24} color="#111" />}
+          isLast
           onPress={() => {
             alert.alertWithType('error', '错误', '未开发完成')
-          }}>
-          <View className="mr-3">
-            <ClockIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">时间轴</Text>
-        </Pressable>
-      </View>
+          }}
+        />
+      </LineItemGroup>
 
-      <View className="divide-y divide-gray-300 shadow-sm mb-3">
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+      <LineItemGroup>
+        <LineItem
           disabled={authStatus === 'loading'}
           onPress={() => {
             navigation.push('settings')
-          }}>
-          <View className="mr-3">
-            <Cog6ToothIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">设置</Text>
-        </Pressable>
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
-          disabled={authStatus === 'loading'}
+          }}
+          icon={<Cog6ToothIcon size={24} color="#111" />}
+          title="设置"
+        />
+        <LineItem
           onPress={() => {
             navigation.push('about')
-          }}>
-          <View className="mr-3">
-            <InformationCircleIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">关于</Text>
-        </Pressable>
-      </View>
+          }}
+          icon={<InformationCircleIcon size={24} color="#111" />}
+          title="关于"
+          isLast
+        />
+      </LineItemGroup>
 
       {currentUser && (
         <View className="px-4 py-8 flex-1 justify-end">

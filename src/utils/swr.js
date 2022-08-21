@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import useSWRBase from 'swr'
+import storage from './storage'
 
 export const isRefreshing = (swrState) => {
   // once fetched  && isValidating
@@ -24,17 +25,23 @@ export const hasReachEnd = (listSwr) => {
 export const shouldInit = (swr) => !swr.data && !swr.isValidating
 
 // 自定义 revalidateOnMount 行为。
-export const useSWR = (
-  key,
-  options = {
+export const useSWR = (...args) => {
+  let options = {
     revalidateOnMount: false,
     shouldRetryOnError: false,
     initOnMount: true
   }
-) => {
-  const swr = useSWRBase(key, options)
+  const key = args[0]
+  const lastArg = args[args.length - 1]
+  let swr
+  if (typeof lastArg === 'object') {
+    options = args[1]
+    swr = useSWRBase(...args)
+  } else {
+    swr = useSWRBase(...args, options)
+  }
+
   useEffect(() => {
-    console.log(key, shouldInit(swr))
     if (
       key &&
       options.revalidateOnMount === false &&
@@ -60,4 +67,13 @@ export const shouldShowError = (swr) => {
 
 export const isEmptyList = (swr) => {
   return Array.isArray(swr.data) && swr.data.every((p) => p.data?.length === 0)
+}
+
+export const clearStateCache = () => {
+  const keys = storage.getAllKeys()
+  keys.forEach((key) => {
+    if (/^\$swr\$/.test(key)) {
+      storage.delete(key)
+    }
+  })
 }

@@ -4,7 +4,6 @@
   },
   "build": {
     "development": {
-      "distribution": "internal",
       "android": {
         "gradleCommand": ":app:assembleDebug"
       },
@@ -13,10 +12,10 @@
       }
     },
     "preview": {
-      "distribution": "internal",
       "credentialsSource": "local",
       "env": {
-        "SENTRY_DSN": "https://7580d23586fd42838e4c0eb78a17d165@sentry.kongkx.com/6"
+        "SENTRY_DSN": "https://7580d23586fd42838e4c0eb78a17d165@sentry.kongkx.com/6",
+        "IMGUR_CLIENT_ID": "eb2dd6d8927e275"
       }
     },
     "production": {

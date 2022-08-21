@@ -42,7 +42,6 @@ describe('rich-text', () => {
         },
       ]);
       Transforms.select(editor, Editor.end(editor, [0]));
-      console.log(editor.selection);
       editor.insertBreak();
       const blockEntry = Editor.above(editor, {
         match: (n) => Editor.isBlock(editor, n),

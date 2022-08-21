@@ -116,7 +116,11 @@ export default function LoginScreen({ navigation }) {
   const webviewRef = useRef()
   const nameInput = useRef()
   const scriptsToInject = useRef([extractImageCaptcha])
-  const { fetchCurrentUser, user: currentUser } = useAuthService()
+  const {
+    fetchCurrentUser,
+    user: currentUser,
+    getNextAction
+  } = useAuthService()
   const [error, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const alert = useAlertService()
@@ -124,6 +128,10 @@ export default function LoginScreen({ navigation }) {
   useEffect(() => {
     if (currentUser) {
       navigation.goBack()
+      const nextAction = getNextAction()
+      if (nextAction) {
+        nextAction()
+      }
     }
   }, [currentUser])
 
@@ -199,7 +207,7 @@ export default function LoginScreen({ navigation }) {
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             className="flex-1 w-full items-center">
-            <View className="p-4 w-full max-w-[332px]">
+            <View className="py-4 px-8 w-full">
               <Text
                 className={classNames('text-xs pl-2 pb-[2px]', {
                   'opacity-0': !values.username
@@ -345,6 +353,7 @@ export default function LoginScreen({ navigation }) {
           <View style={{ height: 0 }}>
             <WebView
               ref={webviewRef}
+              originWhitelist={['*']}
               source={{ uri: 'https://www.v2ex.com/signin' }}
               onLoad={() => {
                 const toInject = scriptsToInject.current.shift()

@@ -19,6 +19,10 @@ class App extends React.Component {
       refreshKey: undefined,
       value: undefined,
       placeholder: undefined,
+      focus: false,
+      containerStyle: {
+        overflow: 'hidden',
+      }
     }
     this.domRef = createRef();
     this.viewport = {};
@@ -28,27 +32,33 @@ class App extends React.Component {
     // FOR DEBUG
     window._editor = this;
     window.addEventListener('message', this.handleMessage)
+    // window.addEventListener('blur', this.watchWindowBlur)
     this.postMessage({
       type: 'event',
       name: 'ready'
     })
   }
 
+
   componentDidUpdate() {
     if (!this.domRef.current) { return; }
-    const {scrollHeight, scrollWidth} = this.domRef.current;
-    if (scrollHeight === this.viewport.height && scrollWidth === this.viewport.width) {
+    const {scrollHeight, clientWidth} = this.domRef.current;
+    if (scrollHeight === this.viewport.height && clientWidth === this.viewport.width) {
       return;
     }
     this.viewport = {
       height: scrollHeight,
-      width: scrollWidth,
+      width: clientWidth,
     }
     this.postMessage({
       type: 'event',
       name: 'viewport',
       payload: this.viewport,
     })
+  }
+
+  watchWindowBlur = (e) => {
+    ReactEditor.blur(this.editor);
   }
 
   handleMessage = (e) => {
@@ -68,6 +78,12 @@ class App extends React.Component {
         this.postMessage({
           requestId: data.requestId,
           result: this.getHTML(),
+        })
+        break;
+      case 'getMarkdown':
+        this.postMessage({
+          requestId: data.requestId,
+          result: this.getMarkdown(),
         })
         break;
       case 'undo':
@@ -113,7 +129,7 @@ class App extends React.Component {
         })
         break;
       case 'insertImage':
-        this.editor.inserImage(...data.args);
+        this.editor.insertImage(...data.args);
         this.postMessage({
           requestId: data.requestId,
           result: true,
@@ -145,7 +161,9 @@ class App extends React.Component {
   }
 
   handleFocus = () => {
-    console.log('focus.....')
+    this.setState({
+      focus: true,
+    })
     this.postMessage({
       type: 'event',
       name: 'focus'
@@ -153,6 +171,13 @@ class App extends React.Component {
   }
 
   handleBlur = () => {
+    this.shouldSkipFocus = true;
+    setTimeout(() => {
+      this.shouldSkipFocus = false;
+    }, 500);
+    this.setState({
+      focus: false,
+    })
     this.postMessage({
       type: 'event',
       name: 'blur'
@@ -190,7 +215,7 @@ class App extends React.Component {
       ...Editor.marks(this.editor)
     }
   }
-d
+
   getActiveBlockTypes() {
     const { editor } = this;
     if (!editor.children) {
@@ -211,21 +236,28 @@ d
     return this.editor.html.htmlFromFragment(this.state.value)
   }
 
+  getMarkdown = () => {
+    return this.editor.md.mdFromFragment(this.state.value)
+  }
+
   init = (config = {}) => {
-    const { data, html, placeholder } = config;
+    const { data, html, placeholder, containerStyle } = config;
     if (data) {
       this.setState({
         value: data,
         placeholder,
+        containerStyle,
         refreshKey: Date.now(),
       })
       return;
     }
     if (html) {
       const value = this.editor.html.fragmentFromHtml(html);
+      console.log(value);
       this.setState({
         value,
         placeholder,
+        containerStyle,
         refreshKey: Date.now(),
       })
       return
@@ -238,14 +270,23 @@ d
           children: [{ text: '' }]
         }
       ],
+      containerStyle,
       refreshKey: Date.now(),
     })
+    // set `editor.selection` for init focus.
+    this.editor.selection = {anchor: {path: [0, 0], offset: 0}, focus: {path: [0, 0], offset: 0}}
   }
 
 
   render() {
     return (
-      <div style={{ overflow: 'hidden', caretColor: '#111' }} ref={this.domRef}>
+      <div style={this.state.containerStyle} ref={this.domRef}
+        onClick={() => {
+          if (!this.shouldSkipFocus && this.editor.selection) {
+            ReactEditor.focus(this.editor)
+          }
+        }}
+      >
         <SimpleRichEditor
           key={this.state.refreshKey}
           ref={(n) => {

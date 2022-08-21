@@ -4,13 +4,14 @@ import {
   Pressable,
   SafeAreaView,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  useWindowDimensions
 } from 'react-native'
 import React, { cloneElement } from 'react'
-import classNames from 'classnames'
 import AlertService from '@/containers/AlertService'
 
 export default function SlideUp(props) {
+  const { height } = useWindowDimensions()
   return (
     <Modal
       animationType="fade"
@@ -22,12 +23,23 @@ export default function SlideUp(props) {
         <Pressable
           className="u-flex-1 justify-end items-center absolute w-full h-full backdrop-opacity-10 bg-gray-900/20"
           onPress={props.onRequestClose}></Pressable>
+
         <KeyboardAvoidingView
           style={styles.safeArea}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <SafeAreaView style={styles.modalView}>
+          <SafeAreaView
+            style={[
+              styles.modalView,
+              {
+                maxHeight: height - 100
+              }
+            ]}>
             {cloneElement(props.children, {
-              onRequestClose: props.onRequestClose
+              onRequestClose: props.onRequestClose,
+              style: [
+                props.children.props.style,
+                props.fullHeight && { height: '100%' }
+              ]
             })}
           </SafeAreaView>
         </KeyboardAvoidingView>
