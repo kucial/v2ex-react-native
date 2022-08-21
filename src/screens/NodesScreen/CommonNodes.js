@@ -1,18 +1,12 @@
-import {
-  Image,
-  Text,
-  View,
-  ScrollView,
-  Pressable,
-  RefreshControl
-} from 'react-native'
-import React, { useEffect } from 'react'
+import { View, Text, ScrollView, Pressable, RefreshControl } from 'react-native'
+import React from 'react'
 
 import ErrorNotice from '@/components/ErrorNotice'
 import NodesSkeleton from '@/components/Skeleton/NodesSkeleton'
 import { useSWR } from '@/utils/swr'
+import classNames from 'classnames'
 
-export default function NodesScreen({ navigation }) {
+export default function Nodes({ navigation, filter }) {
   const nodesSwr = useSWR('/page/planes/node-groups.json')
 
   if (nodesSwr.error) {
@@ -34,13 +28,7 @@ export default function NodesScreen({ navigation }) {
   }
 
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl
-          refreshing={nodesSwr.isValidating}
-          onRefresh={nodesSwr.mutate}
-        />
-      }>
+    <View>
       {nodesSwr.data.map((g) => (
         <View
           className="bg-white mx-1 mt-1 mb-4 rounded-sm shadow"
@@ -58,21 +46,31 @@ export default function NodesScreen({ navigation }) {
             </View>
           </View>
           <View className="flex flex-row flex-wrap py-2 px-3">
-            {g.nodes.map((node) => (
-              <Pressable
-                key={node.name}
-                className="py-2 px-2 bg-white border border-gray-400 rounded-lg mr-2 mb-2 active:opacity-60"
-                onPress={() => {
-                  navigation.navigate('node', {
-                    name: node.name
-                  })
-                }}>
-                <Text>{node.title}</Text>
-              </Pressable>
-            ))}
+            {g.nodes.map((node) => {
+              return (
+                <Pressable
+                  key={node.name}
+                  className={classNames(
+                    'py-2 px-2 bg-white border border-gray-400 rounded-lg mr-2 mb-2 active:opacity-60',
+                    {
+                      hidden:
+                        filter &&
+                        !node.name.match(new RegExp(filter, 'i')) &&
+                        !node.title.match(new RegExp(filter, 'i'))
+                    }
+                  )}
+                  onPress={() => {
+                    navigation.navigate('node', {
+                      name: node.name
+                    })
+                  }}>
+                  <Text>{node.title}</Text>
+                </Pressable>
+              )
+            })}
           </View>
         </View>
       ))}
-    </ScrollView>
+    </View>
   )
 }

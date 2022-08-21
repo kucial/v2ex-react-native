@@ -17,6 +17,6 @@ export default mmkv
 //     delete data[key]
 //   },
 //   set(key, value) {
-//     data[key] = JSON.stringify(value)
+//     data[key] = value
 //   }
 // }

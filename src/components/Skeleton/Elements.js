@@ -104,5 +104,9 @@ export function InlineBox(props) {
 }
 
 export function Box(props) {
-  return <View className="bg-gray-100" style={props.style}></View>
+  return (
+    <View className="bg-gray-100" style={props.style}>
+      {props.children}
+    </View>
+  )
 }

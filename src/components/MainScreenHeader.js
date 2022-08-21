@@ -9,7 +9,7 @@ export default function MainScreenHeader({ navigation }) {
   const { composeAuthedNavigation, meta } = useAuthService()
   return (
     <View
-      className="bg-white w-full flex-row items-center pl-4 border-b border-solid border-b-gray-100"
+      className="bg-white w-full flex-row items-center pl-4"
       style={{
         height: 48 + Constants.statusBarHeight,
         paddingTop: Constants.statusBarHeight

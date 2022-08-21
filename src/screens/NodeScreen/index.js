@@ -8,10 +8,11 @@ import {
   RefreshControl
 } from 'react-native'
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import useSWR from 'swr'
+import useSWR, { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
 import { useTailwind } from 'tailwindcss-react-native'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import HtmlRender from '@/components/HtmlRender'
 import CommonListFooter from '@/components/CommonListFooter'
@@ -25,6 +26,7 @@ import { useAlertService } from '@/containers/AlertService'
 export default function NodeScreen({ route, navigation }) {
   const { name, brief } = route.params
   const [collecting, setCollecting] = useState(false)
+  const { mutate } = useSWRConfig()
 
   const { width } = useWindowDimensions()
   const tw = useTailwind()
@@ -40,6 +42,8 @@ export default function NodeScreen({ route, navigation }) {
     },
     [name]
   )
+
+  console.log(name, nodeSwr)
 
   const feedSwr = useSWRInfinite(getKey)
 
@@ -113,7 +117,12 @@ export default function NodeScreen({ route, navigation }) {
             </View>
             <View className="flex flex-row mt-3 mb-2">
               <Pressable
-                className="h-[40px] rounded-lg border border-gray-500 px-3 items-center justify-center active:opacity-60"
+                className={classNames(
+                  'h-[40px] rounded-lg border border-gray-500 px-3 items-center justify-center active:opacity-60',
+                  {
+                    'opacity-60': collecting
+                  }
+                )}
                 disabled={collecting}
                 onPress={() => {
                   const endpoint = node.collected
@@ -127,6 +136,7 @@ export default function NodeScreen({ route, navigation }) {
                         ...data,
                         ...result
                       }))
+                      mutate('/page/my/nodes.json')
                     })
                     .catch((err) => {
                       alert.alertWithType('error', '错误', err.message)

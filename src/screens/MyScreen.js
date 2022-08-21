@@ -2,13 +2,15 @@ import { Image, Text, View, Pressable, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import {
   ClockIcon,
-  CollectionIcon,
+  CogIcon,
   DocumentIcon,
   PencilAltIcon,
-  PhotographIcon
+  PhotographIcon,
+  InformationCircleIcon
 } from 'react-native-heroicons/outline'
 import { useAuthService } from '@/containers/AuthService'
 import { InlineText } from '@/components/Skeleton/Elements'
+import { useAlertService } from '@/containers/AlertService'
 
 export default function MyScreen({ navigation }) {
   useEffect(() => {
@@ -23,6 +25,7 @@ export default function MyScreen({ navigation }) {
     composeAuthedNavigation,
     goToSigninSreen
   } = useAuthService()
+  const alert = useAlertService()
 
   useEffect(() => {
     if (authStatus === 'visitor') {
@@ -94,22 +97,10 @@ export default function MyScreen({ navigation }) {
   }
 
   return (
-    <View>
-      <View className="shadow-sm divide-y divide-gray-300 mb-3">
-        <View className="mb-3">{header}</View>
-        <Pressable
-          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
-          disabled={authStatus === 'loading'}
-          onPress={() => {
-            if (!currentUser) {
-              // TODO....
-            }
-          }}>
-          <View className="mr-3">
-            <CollectionIcon size={24} color="#111" />
-          </View>
-          <Text className="text-base">节点收藏</Text>
-        </Pressable>
+    <View className="flex flex-col flex-1">
+      <View className="divide-y divide-gray-300 shadow-sm mb-3">{header}</View>
+
+      <View className="divide-y divide-gray-300 shadow-sm mb-3">
         <Pressable
           className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
           disabled={authStatus === 'loading'}
@@ -119,24 +110,36 @@ export default function MyScreen({ navigation }) {
           <View className="mr-3">
             <DocumentIcon size={24} color="#111" />
           </View>
-          <Text className="text-base">主题收藏</Text>
+          <Text className="text-base">收藏的主题</Text>
         </Pressable>
       </View>
 
       <View className="shadow-sm divide-y divide-gray-300 mb-3">
-        <Pressable className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white">
+        <Pressable
+          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          onPress={() => {
+            alert.alertWithType('error', '错误', '未开发完成')
+          }}>
           <View className="mr-3">
             <PhotographIcon size={24} color="#111" />
           </View>
           <Text className="text-base">图片库</Text>
         </Pressable>
-        <Pressable className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white">
+        <Pressable
+          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          onPress={() => {
+            alert.alertWithType('error', '错误', '未开发完成')
+          }}>
           <View className="mr-3">
             <PencilAltIcon size={24} color="#111" />
           </View>
           <Text className="text-base">记事本</Text>
         </Pressable>
-        <Pressable className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white">
+        <Pressable
+          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          onPress={() => {
+            alert.alertWithType('error', '错误', '未开发完成')
+          }}>
           <View className="mr-3">
             <ClockIcon size={24} color="#111" />
           </View>
@@ -144,8 +147,33 @@ export default function MyScreen({ navigation }) {
         </Pressable>
       </View>
 
+      <View className="divide-y divide-gray-300 shadow-sm mb-3">
+        <Pressable
+          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          disabled={authStatus === 'loading'}
+          onPress={composeAuthedNavigation(() => {
+            navigation.push('settings')
+          })}>
+          <View className="mr-3">
+            <CogIcon size={24} color="#111" />
+          </View>
+          <Text className="text-base">设置</Text>
+        </Pressable>
+        <Pressable
+          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          disabled={authStatus === 'loading'}
+          onPress={composeAuthedNavigation(() => {
+            navigation.push('about')
+          })}>
+          <View className="mr-3">
+            <InformationCircleIcon size={24} color="#111" />
+          </View>
+          <Text className="text-base">关于</Text>
+        </Pressable>
+      </View>
+
       {currentUser && (
-        <View className="px-4 py-6">
+        <View className="px-4 py-8 flex-1 justify-end">
           <Pressable
             className="flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60 active:bg-red-100 "
             onPress={() => {

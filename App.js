@@ -29,6 +29,8 @@ import MemberScreen from './src/screens/MemberScreen'
 import SigninScreen from './src/screens/SigninScreen'
 import NotificationScreen from './src/screens/NotificationScreen'
 import CollectedTopicsScreen from './src/screens/CollectedTopicsScreen'
+import SettingsScreen from './src/screens/SettingsScreen'
+import AboutScreen from './src/screens/AboutScreen'
 
 import DebugScreen from './src/screens/DebugScreen'
 
@@ -133,6 +135,20 @@ function AppStack() {
           component={CollectedTopicsScreen}
           options={{
             title: '我收藏的内容'
+          }}
+        />
+        <Stack.Screen
+          name="settings"
+          component={SettingsScreen}
+          options={{
+            title: '设置'
+          }}
+        />
+        <Stack.Screen
+          name="about"
+          component={AboutScreen}
+          options={{
+            title: '关于'
           }}
         />
       </Stack.Group>

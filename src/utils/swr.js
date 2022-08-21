@@ -24,26 +24,39 @@ export const hasReachEnd = (listSwr) => {
 }
 
 export const shouldInit = (swr) => !swr.data && !swr.isValidating
+
+// 自定义 revalidateOnMount 行为。
 export const useSWR = (
   key,
   options = {
     revalidateOnMount: false,
-    shouldRetryOnError: false
+    shouldRetryOnError: false,
+    initOnMount: true
   }
 ) => {
   const swr = useSWRBase(key, options)
   useEffect(() => {
-    if (options.revalidateOnMount === false && shouldInit(swr)) {
+    console.log(key, shouldInit(swr))
+    if (
+      key &&
+      options.revalidateOnMount === false &&
+      options.initOnMount &&
+      shouldInit(swr)
+    ) {
+      console.log('....call....')
       swr.mutate()
     }
-  }, [])
+  }, [key])
   return swr
 }
 
 export const isLoadingMore = (swr) => {
-  return swr.isValidating && !!swr.data
+  return swr.isValidating && !!swr.data && swr.size > swr.data.length
 }
 export const isLoading = (swr) => swr.isValidating
+export const isInitLoading = (swr) =>
+  swr.data === undefined && swr.error === undefined && swr.isValidating
+
 export const shouldShowError = (swr) => {
   return swr.error && !swr.isValidating
 }

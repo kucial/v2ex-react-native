@@ -642,7 +642,7 @@ const CUSTOM_ENDPOINTS = {
           const headerDom =  d.querySelector('.page-content-header')
           const data = {
             title: document.title,
-            header: d.querySelector('.intro').innerHTML,
+            header: d.querySelector('.intro')?.innerHTML,
             topics: Number(d.querySelector('.topic-count strong').textContent) || 0,
             avatar_large: d.querySelector('.page-content-header img')?.src,
             collected: !!d.querySelector('a[href^="/unfavorite/node"]'),
@@ -1027,6 +1027,34 @@ const CUSTOM_ENDPOINTS = {
         }
       }())
       `
+    ]
+  },
+
+  '/page/my/nodes.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/my/nodes',
+    scripts: [
+      `(function() {
+        try {
+          const nodes = document.querySelectorAll('#my-nodes .fav-node');
+          const data = [...nodes].map((d) => {
+            return {
+              name: d.querySelector('img').getAttribute('alt'),
+              title: d.querySelector('.fav-node-name').textContent,
+              avatar_large: d.querySelector('img').src,
+              topics: Number(d.querySelector('.fade').textContent) || 0
+            }
+          })
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            data
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`
     ]
   },
 
