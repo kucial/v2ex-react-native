@@ -40,7 +40,6 @@ export default function AuthService(props) {
   })
   const nextAction = useRef()
   const alert = useAlertService()
-  console.log(userSwr)
   const service = useMemo(() => {
     const user = userSwr.data?.data
     const meta = userSwr.data?.meta

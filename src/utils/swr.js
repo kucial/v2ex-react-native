@@ -6,9 +6,7 @@ export const isRefreshing = (swrState) => {
   return (
     (swrState.data || swrState.error) &&
     swrState.isValidating &&
-    (!swrState.size ||
-      swrState.size === 1 ||
-      swrState.size === swrState.data?.length)
+    (!swrState.size || swrState.size === 1)
   )
 }
 
@@ -51,7 +49,7 @@ export const useSWR = (
 }
 
 export const isLoadingMore = (swr) => {
-  return swr.isValidating && !!swr.data && swr.size > swr.data.length
+  return swr.isValidating && !!swr.data && swr.size > 1
 }
 export const isLoading = (swr) => swr.isValidating
 export const isInitLoading = (swr) =>

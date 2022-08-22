@@ -4,7 +4,12 @@ import { useIsFocused } from '@react-navigation/native'
 import useSWRInfinite from 'swr/infinite'
 import { uniqBy } from 'lodash'
 
-import { isRefreshing, shouldInit, hasReachEnd } from '@/utils/swr'
+import {
+  isRefreshing,
+  shouldInit,
+  hasReachEnd,
+  isLoadingMore
+} from '@/utils/swr'
 import CommonListFooter from '@/components/CommonListFooter'
 
 import TopicRow from './TopicRow'
@@ -56,7 +61,9 @@ export default function TopicList(props) {
         <RefreshControl
           refreshing={isRefreshing(listSwr)}
           onRefresh={() => {
-            listSwr.setSize(1)
+            if (!listSwr.isValidating) {
+              listSwr.setSize(1)
+            }
           }}
         />
       }
