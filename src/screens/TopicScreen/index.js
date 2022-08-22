@@ -97,9 +97,9 @@ function TopicScreen({ navigation, route }) {
     return items
   }, [listSwr])
 
-  const topic = topicSwr.data?.data || brief
+  const topic = topicSwr.data || brief
   const isFallback = topic === brief
-  console.log(topicSwr)
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: (props) => (
@@ -135,10 +135,8 @@ function TopicScreen({ navigation, route }) {
                     .then((result) => {
                       topicSwr.data &&
                         topicSwr.mutate((prev) => ({
-                          data: {
-                            ...prev.data,
-                            ...result
-                          }
+                          ...prev,
+                          ...result
                         }))
                       alert.alertWithType(
                         'success',
@@ -187,7 +185,7 @@ function TopicScreen({ navigation, route }) {
     }
   }, [topic?.content_rendered])
 
-  const { mutate } = useSWRConfig()
+  const { cache } = useSWRConfig()
   const [replyContext, setReplyContext] = useState(null)
   const initReply = useCallback(
     (reply) => {
@@ -226,30 +224,31 @@ function TopicScreen({ navigation, route }) {
 
   const handleSubmitReply = useCallback(
     (values) => {
+      setReplyContext(null)
+      aIndicator.show()
       return fetcher(`/page/t/${id}/reply.json`, {
         data: values
-      }).then(({ data: reply }) => {
-        const p = getPageNum(reply.num)
-        listSwr.mutate((currentData) => {
-          const pageData = currentData[p - 1]
-          if (pageData?.data.length === 100 || !pageData) {
-            listSwr.setSize(p)
-          } else {
-            pageData.data.push(reply)
-          }
-          return currentData
-        }, false)
-        const cacheKey = getReplyFormCacheKey(replyContext)
-        setReplyContext(null)
-
-        setTimeout(() => {
-          // cleanup cache after reply form unmount
-          mutate(cacheKey, undefined)
-          // TODO scrollTo reply
-          // NOTE: MAY HAVE BUG if listIsNot Loaded.
-          // listRef.current?.scrollToIndex(reply.num - 1)
-        }, 400)
       })
+        .then(({ data: reply }) => {
+          const p = getPageNum(reply.num)
+          listSwr.mutate((currentData) => {
+            const pageData = currentData[p - 1]
+            if (pageData?.data.length === 100 || !pageData) {
+              listSwr.setSize(p)
+            } else {
+              pageData.data.push(reply)
+            }
+            return currentData
+          }, false)
+          const cacheKey = getReplyFormCacheKey(replyContext)
+          cache.delete(cacheKey)
+        })
+        .catch((err) => {
+          alert.alertWithType('error', '错误', err.message)
+        })
+        .finally(() => {
+          aIndicator.hide()
+        })
     },
     [id, replyContext]
   )
@@ -333,6 +332,26 @@ function TopicScreen({ navigation, route }) {
         {!!topic.content_rendered && (
           <HtmlRender contentWidth={width - 32} {...htmlRenderProps} />
         )}
+        {!!topic.subtles?.length && (
+          <View className="mt-2">
+            {topic.subtles.map((subtle, index) => (
+              <View
+                className="-mx-2 pl-4 pr-2 py-2 border-t border-gray-300 bg-[#ffff0008]"
+                key={index}>
+                <View className="mb-1">
+                  <Text className="text-xs text-gray-500">{subtle.meta}</Text>
+                </View>
+                <HtmlRender
+                  contentWidth={width - 32}
+                  {...htmlRenderProps}
+                  source={{
+                    html: subtle.content_rendered
+                  }}
+                />
+              </View>
+            ))}
+          </View>
+        )}
         {topicSwr.error && !isLoading(topicSwr) && (
           <ErrorNotice
             error={topicSwr.error}
@@ -357,7 +376,7 @@ function TopicScreen({ navigation, route }) {
       </View>
       {!!topic.replies && (
         <View className="bg-white px-3 py-2 border-b border-gray-300">
-          <Text className="text-gray-700">回复 {topic.replies}</Text>
+          <Text className="text-gray-600">{topic.replies} 条回复</Text>
         </View>
       )}
 
@@ -417,11 +436,9 @@ function TopicScreen({ navigation, route }) {
               onPress={composeAuthedNavigation(() => {
                 if (topic.collected) {
                   topicSwr.mutate(
-                    (data) => ({
-                      data: {
-                        ...data.data,
-                        collected: false
-                      }
+                    (prev) => ({
+                      ...prev,
+                      collected: false
                     }),
                     false
                   )
@@ -431,11 +448,9 @@ function TopicScreen({ navigation, route }) {
                     })
                     .catch((err) => {
                       topicSwr.mutate(
-                        (data) => ({
-                          data: {
-                            ...data.data,
-                            collected: true
-                          }
+                        (prev) => ({
+                          ...prev,
+                          collected: true
                         }),
                         false
                       )
@@ -443,11 +458,9 @@ function TopicScreen({ navigation, route }) {
                     })
                 } else {
                   topicSwr.mutate(
-                    (data) => ({
-                      data: {
-                        ...data.data,
-                        collected: true
-                      }
+                    (prev) => ({
+                      ...prev,
+                      collected: true
                     }),
                     false
                   )
@@ -457,11 +470,9 @@ function TopicScreen({ navigation, route }) {
                     })
                     .catch((err) => {
                       topicSwr.mutate(
-                        (data) => ({
-                          data: {
-                            ...data.data,
-                            collected: false
-                          }
+                        (prev) => ({
+                          ...prev,
+                          collected: false
                         }),
                         false
                       )
@@ -487,8 +498,8 @@ function TopicScreen({ navigation, route }) {
                   .then((res) => {
                     console.log(res)
                     topicSwr.mutate(
-                      (data) => ({
-                        ...data,
+                      (prev) => ({
+                        ...prev,
                         thanked: true
                       }),
                       false

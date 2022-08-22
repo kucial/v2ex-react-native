@@ -4,12 +4,10 @@ import { useForm, Controller } from 'react-hook-form'
 import { PhotographIcon } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
 import useSWR from 'swr'
-import { useAlertService } from '@/containers/AlertService'
 
 // NEXT: reply cache.
 export default function TopicReplyForm(props) {
   const { context } = props
-  const [loading, setLoading] = useState(false)
   const [contentHeight, setContentHeight] = useState(60)
   // Use SWR as cache.
   const cacheSwr = useSWR(props.cacheKey, () => Promise.resolve(), {
@@ -26,8 +24,6 @@ export default function TopicReplyForm(props) {
     }
     // defaultValues: cacheSwr.data
   })
-
-  const alert = useAlertService()
 
   useEffect(() => {
     return () => {
@@ -83,19 +79,11 @@ export default function TopicReplyForm(props) {
         <View className="pr-1">
           <Pressable
             className={classNames(
-              'h-[40px] min-w-[80px] items-center justify-center bg-gray-900 px-3 rounded-md active:opacity-60',
-              {
-                'opacity-60': loading
-              }
+              'h-[40px] min-w-[80px] items-center justify-center bg-gray-900 px-3 rounded-md active:opacity-60'
             )}
-            disabled={loading}
             onPress={(e) => {
               Keyboard.dismiss()
-              setLoading(true)
-              handleSubmit(props.onSubmit)(e).catch((err) => {
-                setLoading(false)
-                alert.alertWithType?.('error', 'Error', err)
-              })
+              handleSubmit(props.onSubmit)(e)
             }}>
             <Text className="text-white">提交</Text>
           </Pressable>

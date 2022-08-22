@@ -3,7 +3,7 @@ import { View, Text, SafeAreaView, StyleSheet, Pressable } from 'react-native'
 import { InformationCircleIcon } from 'react-native-heroicons/outline'
 import * as Sentry from '@sentry/react-native'
 import RNRestart from 'react-native-restart'
-import cache from '@/utils/cache'
+import storage from '@/utils/storage'
 
 const styles = StyleSheet.create({
   container: {
@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component {
 
   handleReset = async () => {
     // clear cache
-    cache.flush();
+    storage.clearAll();
     // restart app
     RNRestart.Restart()
   }

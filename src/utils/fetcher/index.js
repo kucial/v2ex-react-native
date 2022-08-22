@@ -199,9 +199,7 @@ const CUSTOM_ENDPOINTS = {
             blocked: !![...document.querySelectorAll('a.tb')].find((a) => a.innerText === '取消忽略')
           };
 
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            data
-          }))
+          window.ReactNativeWebView.postMessage(JSON.stringify(data))
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             error: true,

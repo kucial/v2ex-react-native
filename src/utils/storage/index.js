@@ -5,7 +5,7 @@ const mmkv = new MMKV()
 export default mmkv
 
 // FOR REMOTE_DEBUG
-// const data = {}
+// let data = {}
 // export default {
 //   contains(key) {
 //     return data[key] !== undefined
@@ -18,5 +18,8 @@ export default mmkv
 //   },
 //   set(key, value) {
 //     data[key] = value
+//   }
+//   clearAll() {
+//     data = {}
 //   }
 // }
