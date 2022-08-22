@@ -34,9 +34,6 @@ export default function BrowserScreen({ route, navigation }) {
   }, [])
   return (
     <View style={{ flex: 1 }}>
-      <View className="absolute w-full top-0">
-        <NProgress backgroundColor="#333" height={3} enabled={loading} />
-      </View>
       <WebView
         pullToRefreshEnabled
         ref={webviewRef}
@@ -51,6 +48,9 @@ export default function BrowserScreen({ route, navigation }) {
           })
         }}
       />
+      <View className="absolute w-full top-0">
+        <NProgress backgroundColor="#333" height={3} enabled={loading} />
+      </View>
       {(historyState.canGoBack || historyState.canGoForward) && (
         <SafeAreaView className="bg-gray-100">
           <View className="h-[44px] flex flex-row items-center justify-center">

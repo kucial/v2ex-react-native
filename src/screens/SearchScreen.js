@@ -7,10 +7,12 @@ import {
 } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import Constants from 'expo-constants'
-import BackButton from '@/components/BackButton'
 import { useTailwind } from 'tailwindcss-react-native'
 import WebView from 'react-native-webview'
 import { XIcon } from 'react-native-heroicons/outline'
+import { NProgress } from 'react-native-nprogress'
+
+import BackButton from '@/components/BackButton'
 import { getScreenInfo } from '@/utils/url'
 
 const topicLinkCapture = `(function() {
@@ -42,10 +44,13 @@ export default function SearchScreen({ navigation }) {
   const searchInput = useRef()
   const tw = useTailwind()
   const [keyword, setKeyword] = useState('')
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      searchInput.current?.focus()
-    })
+    setTimeout(() => {
+      InteractionManager.runAfterInteractions(() => {
+        searchInput.current?.focus()
+      })
+    }, 300)
   }, [])
 
   return (
@@ -100,7 +105,7 @@ export default function SearchScreen({ navigation }) {
           </Pressable>
         </View>
       </View>
-      <View className="flex-1">
+      <View className="flex-1 relative">
         {!!keyword?.trim() && (
           <WebView
             injectedJavaScript={topicLinkCapture}
@@ -109,6 +114,8 @@ export default function SearchScreen({ navigation }) {
                 'site:v2ex.com/t ' + keyword
               )}`
             }}
+            onLoadStart={() => setLoading(true)}
+            onLoadEnd={() => setLoading(false)}
             onMessage={(event) => {
               if (event.nativeEvent.data) {
                 const data = JSON.parse(event.nativeEvent.data)
@@ -121,6 +128,9 @@ export default function SearchScreen({ navigation }) {
               }
             }}></WebView>
         )}
+        <View className="absolute w-full top-0">
+          <NProgress backgroundColor="#333" height={3} enabled={loading} />
+        </View>
       </View>
     </View>
   )
