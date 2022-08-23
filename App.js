@@ -184,7 +184,15 @@ function AppStack() {
 
 const swrConfig = {
   fetcher: fetcher,
-  provider: cache
+  provider: cache,
+  onError(err, key, config) {
+    Sentry.captureException(err, {
+      extra: {
+        key,
+        config
+      }
+    })
+  }
   // refreshInterval: 5 * 60 * 1000 // 5min
 }
 
