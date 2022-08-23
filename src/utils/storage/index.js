@@ -18,7 +18,7 @@ export default mmkv
 //   },
 //   set(key, value) {
 //     data[key] = value
-//   }
+//   },
 //   clearAll() {
 //     data = {}
 //   }

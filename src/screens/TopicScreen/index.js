@@ -281,14 +281,22 @@ function TopicScreen({ navigation, route }) {
       <View className="bg-white py-3 px-4 mb-2 shadow-sm">
         <View className="flex flex-row mb-2">
           <View className="flex flex-row flex-1">
-            {member.avatar_large ? (
-              <Image
-                source={{ uri: member.avatar_large }}
-                className="w-[32px] h-[32px] rounded"
-              />
-            ) : (
-              <Box className="w-[32px] h-[32px] rounded" />
-            )}
+            <Pressable
+              hitSlop={4}
+              onPress={() => {
+                navigation.push('member', {
+                  username: member.username
+                })
+              }}>
+              {member.avatar_large ? (
+                <Image
+                  source={{ uri: member.avatar_large }}
+                  className="w-[32px] h-[32px] rounded"
+                />
+              ) : (
+                <Box className="w-[32px] h-[32px] rounded" />
+              )}
+            </Pressable>
             <View className="pl-2 flex flex-row items-center">
               <View className="py-[2px]">
                 <Pressable
@@ -420,9 +428,10 @@ function TopicScreen({ navigation, route }) {
         }
       />
       <SafeAreaView className="u-absolute bottom-0 left-0 w-full bg-white border-t border-t-gray-200">
-        <View className="h-[44px] flex flex-row items-center pl-3 pr-1">
+        <View className="h-[48px] flex flex-row items-center pl-3 pr-1">
           <View className="flex-1 mr-2">
             <Pressable
+              hitSlop={5}
               className="h-[32px] w-full justify-center px-3 bg-gray-100 rounded-full active:opacity-60"
               onPress={() => {
                 initReply()
@@ -432,7 +441,7 @@ function TopicScreen({ navigation, route }) {
           </View>
           <View className="flex flex-row px-1">
             <Pressable
-              className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              className="w-[46px] h-[48px] items-center justify-center active:bg-gray-100 active:opacity-60"
               onPress={composeAuthedNavigation(() => {
                 if (topic.collected) {
                   topicSwr.mutate(
@@ -480,15 +489,17 @@ function TopicScreen({ navigation, route }) {
                     })
                 }
               })}>
-              {topic.collected ? (
-                <FilledStarIcon size={22} color="#FFC100" />
-              ) : (
-                <StarIcon size={22} color="#333" />
-              )}
-              <Text className="text-gray-600 text-[9px] mt-[2px]">收藏</Text>
+              <View className="my-1">
+                {topic.collected ? (
+                  <FilledStarIcon size={24} color="#FFC100" />
+                ) : (
+                  <StarIcon size={24} color="#333" />
+                )}
+              </View>
+              <Text className="text-gray-600 text-[10px]">收藏</Text>
             </Pressable>
             <Pressable
-              className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              className="w-[46px] h-[48px] items-center justify-center active:bg-gray-100 active:opacity-60"
               onPress={composeAuthedNavigation(() => {
                 if (topic.thanked) {
                   // TODO: SHOW MESSAGE
@@ -509,15 +520,17 @@ function TopicScreen({ navigation, route }) {
                     alert.alertWithType('error', '错误', err.message)
                   })
               })}>
-              {topic.thanked ? (
-                <FilledHeartIcon size={22} color="#cc0000" />
-              ) : (
-                <HeartIcon size={22} color="#333" />
-              )}
-              <Text className="text-gray-600 text-[9px] mt-[2px]">感谢</Text>
+              <View className="my-1">
+                {topic.thanked ? (
+                  <FilledHeartIcon size={24} color="#cc0000" />
+                ) : (
+                  <HeartIcon size={24} color="#333" />
+                )}
+              </View>
+              <Text className="text-gray-600 text-[9px]">感谢</Text>
             </Pressable>
             <Pressable
-              className="w-[46px] h-[44px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              className="w-[46px] h-[48px] items-center justify-center active:bg-gray-100 active:opacity-60"
               disabled={!topicSwr.data}
               onPress={async () => {
                 try {
@@ -538,8 +551,10 @@ function TopicScreen({ navigation, route }) {
                   console.log(error.message)
                 }
               }}>
-              <ShareIcon size={22} color="#333" />
-              <Text className="text-gray-600 text-[9px] mt-[2px]">分享</Text>
+              <View className="my-1">
+                <ShareIcon size={24} color="#333" />
+              </View>
+              <Text className="text-gray-600 text-[9px]">分享</Text>
             </Pressable>
           </View>
         </View>

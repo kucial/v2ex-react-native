@@ -91,6 +91,7 @@ export default function TopicRow(props) {
           <View className="relative top-[1px]">
             <FixedPressable
               className="active:opacity-60"
+              hitSlop={5}
               onPress={() => {
                 navigation.navigate('member', {
                   username: member.username,

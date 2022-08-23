@@ -52,10 +52,18 @@ const CollectedTopicRow = (props) => {
       }}>
       <View className="self-start">
         {data.member.avatar_normal ? (
-          <Image
-            className="w-[36px] h-[36px] rounded"
-            source={{ uri: data.member.avatar_normal }}
-          />
+          <Pressable
+            onPress={() => {
+              navigation.push('member', {
+                username: data.member.username,
+                brief: data.member
+              })
+            }}>
+            <Image
+              className="w-[36px] h-[36px] rounded"
+              source={{ uri: data.member.avatar_normal }}
+            />
+          </Pressable>
         ) : (
           <Box className="w-[36px] h-[36px] rounded" />
         )}

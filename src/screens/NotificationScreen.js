@@ -4,7 +4,8 @@ import {
   View,
   Text,
   Image,
-  useWindowDimensions
+  useWindowDimensions,
+  Pressable
 } from 'react-native'
 import React, { useMemo } from 'react'
 import useSWRInfinite from 'swr/infinite'
@@ -44,12 +45,22 @@ const NotificationRow = (props) => {
   return (
     <View className="border-b border-b-gray-300 bg-white flex flex-row items-start active:opacity-60 p-2">
       <View className="mr-2">
-        <Image
-          source={{
-            uri: data.member.avatar_normal
-          }}
-          className="w-[24px] h-[24px] rounded"
-        />
+        <Pressable
+          hitSlop={4}
+          className="active:opacity-60"
+          onPress={() => {
+            navigation.push('member', {
+              username: data.member.username,
+              brief: data.member
+            })
+          }}>
+          <Image
+            source={{
+              uri: data.member.avatar_normal
+            }}
+            className="w-[24px] h-[24px] rounded"
+          />
+        </Pressable>
       </View>
       <View className="flex-1">
         <View className="flex flex-row">

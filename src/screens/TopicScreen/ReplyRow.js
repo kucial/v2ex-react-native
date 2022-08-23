@@ -45,12 +45,20 @@ function ReplyRow(props) {
     <View className="bg-white border-b border-gray-200 pt-2">
       <View className="flex flex-row pl-2">
         <View className="mr-2">
-          <Image
-            source={{
-              uri: member.avatar_normal
-            }}
-            className="w-[24px] h-[24px] rounded"
-          />
+          <Pressable
+            hitSlop={3}
+            onPress={() => {
+              navigation.push('member', {
+                username: member.username
+              })
+            }}>
+            <Image
+              source={{
+                uri: member.avatar_normal
+              }}
+              className="w-[24px] h-[24px] rounded"
+            />
+          </Pressable>
         </View>
         <View className="flex-1">
           <View className="flex flex-row mb-2">
@@ -120,7 +128,7 @@ function ReplyRow(props) {
           </View>
           <View className="py-[10px] relative flex flex-row items-center">
             <Pressable
-              hitSlop={8}
+              hitSlop={2}
               className={classNames(
                 'h-[36px] px-2',
                 '-m-2 flex flex-row items-center justify-center rounded-full',
@@ -135,12 +143,12 @@ function ReplyRow(props) {
                 <Text className="text-xs text-gray-500">回复</Text>
               </View>
             </Pressable>
-            <View className="w-3"></View>
+            <View className="w-4"></View>
             {data.thanked ? (
               <Text className="text-xs text-gray-500">已感谢</Text>
             ) : (
               <Pressable
-                hitSlop={8}
+                hitSlop={2}
                 className={classNames(
                   'h-[36px] px-2',
                   '-m-2 flex flex-row items-center justify-center rounded-full',
