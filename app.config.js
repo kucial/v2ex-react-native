@@ -9,6 +9,8 @@ export default ({ config }) => {
     }
   }
 
+  config.revisionId = new Date().toISOString()
+
   config.hooks.postPublish.push(sentryRelease)
 
   return config
