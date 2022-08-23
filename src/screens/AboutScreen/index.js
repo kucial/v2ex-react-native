@@ -20,7 +20,7 @@ export default function AboutScreen() {
           </View>
           <View className="mt-1 ">
             <Text className="text-sm text-gray-600 text-center">
-              版本: {Constants.manifest.revisionId}
+              版本: {Constants.manifest.extra.revisionId}
             </Text>
           </View>
         </View>

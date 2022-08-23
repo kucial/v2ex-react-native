@@ -152,9 +152,9 @@ export default function MyScreen({ navigation }) {
         <Pressable
           className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
           disabled={authStatus === 'loading'}
-          onPress={composeAuthedNavigation(() => {
+          onPress={() => {
             navigation.push('settings')
-          })}>
+          }}>
           <View className="mr-3">
             <CogIcon size={24} color="#111" />
           </View>
@@ -163,9 +163,9 @@ export default function MyScreen({ navigation }) {
         <Pressable
           className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
           disabled={authStatus === 'loading'}
-          onPress={composeAuthedNavigation(() => {
+          onPress={() => {
             navigation.push('about')
-          })}>
+          }}>
           <View className="mr-3">
             <InformationCircleIcon size={24} color="#111" />
           </View>
