@@ -20,6 +20,7 @@ import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
 
 import logoImage from '@/assets/logo.png'
+import { useAlertService } from '@/containers/AlertService'
 
 const extractImageCaptcha = `
 (function() {
@@ -118,6 +119,7 @@ export default function LoginScreen({ navigation }) {
   const { fetchCurrentUser, user: currentUser } = useAuthService()
   const [error, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const alert = useAlertService()
 
   useEffect(() => {
     if (currentUser) {
@@ -141,6 +143,7 @@ export default function LoginScreen({ navigation }) {
           setCaptchaImage(data.payload)
           break
         case 'login_success':
+          alert.alertWithType('success', '成功', '登录成功')
           fetchCurrentUser()
           break
         case 'login_error':
@@ -302,8 +305,12 @@ export default function LoginScreen({ navigation }) {
                     'opacity-60': isSubmitting
                   }
                 )}
-                disabled={isSubmitting}
-                onPress={handleSubmit(submitLoginForm)}>
+                onPress={(e) => {
+                  if (isSubmitting) {
+                    return
+                  }
+                  handleSubmit(submitLoginForm)(e)
+                }}>
                 {isSubmitting ? (
                   <Loader size={20} color="#ffffffbc" />
                 ) : (

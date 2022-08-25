@@ -17,8 +17,8 @@
   // }
   "Alert Success": {
     "scope": "javascript,typescript",
-    "prefix": "alc",
-    "body": ["alert.alertWithType('success', '$1', '$2')"]
+    "prefix": "als",
+    "body": ["alert.alertWithType('success', '成功', '$1')"]
   },
   "Alert Error": {
     "scope": "javascript,typescript",
