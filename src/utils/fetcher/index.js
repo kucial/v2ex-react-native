@@ -224,10 +224,17 @@ const CUSTOM_ENDPOINTS = {
               username: d.querySelector('strong a[href^="/member/"]').textContent.trim(),
               avatar_normal: d.querySelector('img.avatar').src
             }
+
             const contentDom =  d.querySelector('.reply_content');
             const content_rendered = contentDom.innerHTML;
+            const members_mentioned = [];
+            [...contentDom.querySelectorAll('a[href^="/member"]')].forEach((a) => {
+              members_mentioned.push(a.textContent.trim())
+            });
+
             contentDom.style.whiteSpace = 'pre';
             const content = contentDom.innerText;
+
             const replyInfo = d.querySelector('td:nth-child(3) span.fade.small').textContent.trim();
             let reply_time;
             let reply_device;
@@ -246,6 +253,7 @@ const CUSTOM_ENDPOINTS = {
               num: Number(d.querySelector('.no').textContent),
               member_is_op: !!d.querySelector('.badge.op'),
               member_is_mod: !!d.querySelector('.badge.mod'),
+              members_mentioned,
             }
           }).filter(Boolean);
 

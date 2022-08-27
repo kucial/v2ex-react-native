@@ -49,6 +49,7 @@ import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import TopicReplyForm from './TopicReplyForm'
 import ReplyRow from './ReplyRow'
 import { useAuthService } from '@/containers/AuthService'
+import Converation from './Conversation'
 
 const maxLen = (str = '', limit = 0) => {
   if (limit && str.length > limit) {
@@ -61,11 +62,93 @@ const REPLY_PAGE_SIZE = 100
 const getPageNum = (num) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id) => `https://v2ex.com/t/${id}`
 
+const hasRelatedMessages = (reply, replyList) => {
+  if (!reply) {
+    return false
+  }
+  const memberName = reply.member.username
+  return (
+    !!reply.members_mentioned.length ||
+    replyList.some((r) => r.members_mentioned.includes(memberName))
+  )
+}
+const isIntersected = (arrA, arrB) =>
+  new Set([...arrA, ...arrB]).size < new Set(arrA).size + new Set(arrB).size
+
+const getRelatedReplies = (pivot, replyList) => {
+  const list = [pivot]
+  const beforePivotReplies = replyList.slice(0, pivot.num - 1)
+  const afterPivotReplies = replyList.slice(pivot.num)
+
+  console.log(
+    pivot.num,
+    replyList.length,
+    beforePivotReplies.length,
+    afterPivotReplies.length
+  )
+
+  /**
+   * Pivot 之前的回复
+   * 沿路查查中 被 mention 相关的回复，如果被 mention 的回复为 `root` 回复，则继续查找 回复作者的其他 `root` 回复
+   */
+  //
+  const beforeMetionInWay = new Set(pivot.members_mentioned)
+  const rootReplyUsers = new Set()
+  if (!pivot.members_mentioned.length) {
+    rootReplyUsers.add(pivot.member.username)
+  }
+  beforePivotReplies.reverse().forEach((r) => {
+    if (rootReplyUsers.has(r.member.username) && !r.members_mentioned.length) {
+      list.unshift(r)
+      return
+    }
+
+    if (beforeMetionInWay.has(r.member.username)) {
+      beforeMetionInWay.delete(r.member.username)
+      if (r.members_mentioned.length) {
+        r.members_mentioned.forEach((username) =>
+          beforeMetionInWay.add(username)
+        )
+      } else {
+        rootReplyUsers.add(r.member.username)
+      }
+      list.unshift(r)
+      return
+    }
+  })
+
+  // Pivot 之后的回复
+  // 1. pivot 有 members_mentioned 用户， 则只包含 pivot member 与 members_mentioned 之间回复
+  // 2. pivot 没有 members_mentioned 用户，则包含后续 向 pivot member 进行的回复
+  const afterMentionInWay = new Set(pivot.members_mentioned)
+  afterPivotReplies.forEach((r) => {
+    if (
+      r.members_mentioned.includes(pivot.member.username) &&
+      !pivot.members_mentioned.length
+    ) {
+      afterMentionInWay.add(r.member)
+      list.push(r)
+      return
+    }
+    if (
+      (r.member.username === pivot.member.username &&
+        isIntersected(r.members_mentioned, pivot.members_mentioned)) ||
+      (afterMentionInWay.has(r.member.username) &&
+        r.members_mentioned.includes(pivot.member.username))
+    ) {
+      list.push(r)
+    }
+  })
+
+  return list
+}
+
 function TopicScreen({ navigation, route }) {
   const {
     params: { brief, id }
   } = route
   const { showActionSheetWithOptions } = useActionSheet()
+  const [conversationContext, setConversationContext] = useState(null)
   const alert = useAlertService()
 
   const listRef = useRef()
@@ -83,7 +166,7 @@ function TopicScreen({ navigation, route }) {
     )
   )
 
-  const listItems = useMemo(() => {
+  const replyItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
       // initial loading
       return new Array(10)
@@ -253,6 +336,10 @@ function TopicScreen({ navigation, route }) {
     [id, replyContext]
   )
 
+  const showConversation = useCallback((reply) => {
+    setConversationContext(reply)
+  }, [])
+
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
       renderReply({ item }) {
@@ -261,6 +348,8 @@ function TopicScreen({ navigation, route }) {
             data={item}
             onReply={initReply}
             onThank={handleThankToReply}
+            hasConversation={hasRelatedMessages(item, replyItems)}
+            onShowConversation={showConversation}
           />
         )
       },
@@ -268,7 +357,14 @@ function TopicScreen({ navigation, route }) {
         return item?.id || `index-${index}`
       }
     }
-  }, [id])
+  }, [id, replyItems])
+
+  const conversation = useMemo(() => {
+    if (!conversationContext) {
+      return null
+    }
+    return getRelatedReplies(conversationContext, replyItems)
+  }, [conversationContext, replyItems])
 
   if (!topic) {
     return <TopicSkeleton />
@@ -399,7 +495,7 @@ function TopicScreen({ navigation, route }) {
       <FlatList
         ref={listRef}
         className="flex-1"
-        data={listItems}
+        data={replyItems}
         renderItem={renderReply}
         keyExtractor={keyExtractor}
         ListHeaderComponent={() => baseContent}
@@ -569,6 +665,20 @@ function TopicScreen({ navigation, route }) {
             cacheKey={getReplyFormCacheKey(replyContext)}
             context={replyContext}
             onSubmit={handleSubmitReply}
+          />
+        </SlideUp>
+      )}
+      {conversationContext && !replyContext && (
+        <SlideUp
+          visible={!!conversationContext}
+          onRequestClose={() => {
+            setConversationContext(null)
+          }}>
+          <Converation
+            data={conversation}
+            pivot={conversationContext}
+            onReply={initReply}
+            onThank={handleThankToReply}
           />
         </SlideUp>
       )}

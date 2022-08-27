@@ -2,7 +2,10 @@ import { View, Text, Image, Pressable, useWindowDimensions } from 'react-native'
 import React, { memo, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { marked } from 'marked'
-import { HeartIcon } from 'react-native-heroicons/outline'
+import {
+  HeartIcon,
+  ChatBubbleLeftRightIcon
+} from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 
 import classNames from 'classnames'
@@ -19,12 +22,9 @@ import { useAuthService } from '@/containers/AuthService'
 function ReplyRow(props) {
   const { width } = useWindowDimensions()
   const navigation = useNavigation()
-  const { data } = props
+  const { data, isPivot } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
-  if (showMarkdown) {
-    console.log(data.content)
-  }
 
   if (!data) {
     return (
@@ -51,7 +51,11 @@ function ReplyRow(props) {
 
   const { member } = data
   return (
-    <View className="bg-white border-b border-gray-200 pt-2">
+    <View
+      className={classNames(
+        'border-b border-gray-200 pt-2',
+        isPivot ? 'bg-yellow-50' : 'bg-white'
+      )}>
       <View className="flex flex-row pl-2">
         <View className="mr-2">
           <Pressable
@@ -126,7 +130,15 @@ function ReplyRow(props) {
               </View>
             </View>
           </View>
-          <View className="pr-2">
+          <View
+            className="pr-2"
+            style={
+              showMarkdown
+                ? {
+                    marginVertical: -14
+                  }
+                : undefined
+            }>
             <HtmlRender
               contentWidth={width - 24 - 8 - 8 - 16}
               source={{
@@ -178,14 +190,33 @@ function ReplyRow(props) {
                   </View>
                 </Pressable>
               )}
+              <View className="w-4"></View>
+              {props.hasConversation && (
+                <Pressable
+                  hitSlop={2}
+                  className={classNames(
+                    'h-[36px] px-2',
+                    '-m-2 flex flex-row items-center justify-center rounded-full',
+                    'active:bg-gray-200 active:opacity-60',
+                    'relative z-10'
+                  )}
+                  onPress={() => {
+                    props.onShowConversation(data)
+                  }}>
+                  <ChatBubbleLeftRightIcon size={14} color="#666" />
+                  <View className="ml-1">
+                    <Text className="text-xs text-gray-500">会话</Text>
+                  </View>
+                </Pressable>
+              )}
             </View>
 
-            <View className="mr-2">
+            <View className="mr-1 flex flex-row">
               <Pressable
                 hitSlop={2}
                 className={classNames(
-                  'h-[36px] px-2',
-                  '-m-2 flex flex-row items-center justify-center rounded-full',
+                  'h-[36px] w-[36px]',
+                  '-my-2 flex flex-row items-center justify-center rounded-full',
                   'active:bg-gray-200 active:opacity-60',
                   'relative z-10'
                 )}
@@ -209,7 +240,9 @@ function ReplyRow(props) {
 ReplyRow.propTypes = {
   data: PropTypes.object,
   onThank: PropTypes.func,
-  onReply: PropTypes.func
+  onReply: PropTypes.func,
+  hasConversation: PropTypes.bool,
+  onShowConversation: PropTypes.func
 }
 
 export default memo(ReplyRow)
