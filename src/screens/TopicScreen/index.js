@@ -109,7 +109,7 @@ function TopicScreen({ navigation, route }) {
             // actionsheet
             showActionSheetWithOptions(
               {
-                title: `#${topic.id}`,
+                title: `#${id}`,
                 options: [
                   '取消',
                   '在内部 WebView 打开',

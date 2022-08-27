@@ -18,8 +18,8 @@ const renderers = {
 
 const defaultTextProps = { selectable: true }
 const baseStyle = {
-  fontSize: 16,
-  lineHeight: 21
+  fontSize: 16
+  // lineHeight: 21
 }
 
 function RenderHtml({ tagsStyles, ...props }) {

@@ -224,7 +224,10 @@ const CUSTOM_ENDPOINTS = {
               username: d.querySelector('strong a[href^="/member/"]').textContent.trim(),
               avatar_normal: d.querySelector('img.avatar').src
             }
-            const content_rendered = d.querySelector('.reply_content').innerHTML;
+            const contentDom =  d.querySelector('.reply_content');
+            const content_rendered = contentDom.innerHTML;
+            contentDom.style.whiteSpace = 'pre';
+            const content = contentDom.innerText;
             const replyInfo = d.querySelector('td:nth-child(3) span.fade.small').textContent.trim();
             let reply_time;
             let reply_device;
@@ -233,6 +236,7 @@ const CUSTOM_ENDPOINTS = {
             const thanks_count = heartImg ? Number(heartImg.nextSibling.textContent.trim()) : 0;
             return {
               id: Number(d.id.replace('r_', '')),
+              content,
               content_rendered,
               member,
               reply_time,
@@ -1093,6 +1097,7 @@ const CUSTOM_ENDPOINTS = {
     scripts: [
       `
     (function() {
+      if (!window.ReactNativeWebView) { return; }
       try {
         const username = document.querySelector('#menu-entry img.avatar')?.getAttribute('alt');
         if (!username) {

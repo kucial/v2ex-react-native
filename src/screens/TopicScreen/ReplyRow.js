@@ -1,6 +1,7 @@
 import { View, Text, Image, Pressable, useWindowDimensions } from 'react-native'
-import React, { memo } from 'react'
+import React, { memo, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import { marked } from 'marked'
 import { HeartIcon } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 
@@ -8,6 +9,8 @@ import classNames from 'classnames'
 import PropTypes from 'prop-types'
 
 import ReplyIcon from '@/components/ReplyIcon'
+import MarkdownIcon from '@/components/MarkdownIcon'
+import MarkdownFilledIcon from '@/components/MarkdownFilledIcon'
 import HtmlRender from '@/components/HtmlRender'
 import { InlineText, BlockText, Box } from '@/components/Skeleton/Elements'
 
@@ -18,6 +21,10 @@ function ReplyRow(props) {
   const navigation = useNavigation()
   const { data } = props
   const { composeAuthedNavigation } = useAuthService()
+  const [showMarkdown, setMarkdownVisible] = useState(false)
+  if (showMarkdown) {
+    console.log(data.content)
+  }
 
   if (!data) {
     return (
@@ -123,32 +130,17 @@ function ReplyRow(props) {
             <HtmlRender
               contentWidth={width - 24 - 8 - 8 - 16}
               source={{
-                html: data.content_rendered,
+                html: showMarkdown
+                  ? marked(data.content, (err, result) =>
+                      err ? err.message : `<div>${result}</div>`
+                    )
+                  : data.content_rendered,
                 baseUrl: 'https://v2ex.com'
               }}
             />
           </View>
-          <View className="py-[10px] relative flex flex-row items-center">
-            <Pressable
-              hitSlop={2}
-              className={classNames(
-                'h-[36px] px-2',
-                '-m-2 flex flex-row items-center justify-center rounded-full',
-                'active:bg-gray-200 active:opacity-60',
-                'relative z-10'
-              )}
-              onPress={composeAuthedNavigation(() => {
-                props.onReply(data)
-              })}>
-              <ReplyIcon size={14} color="#666" />
-              <View className="ml-1">
-                <Text className="text-xs text-gray-500">回复</Text>
-              </View>
-            </Pressable>
-            <View className="w-4"></View>
-            {data.thanked ? (
-              <Text className="text-xs text-gray-500">已感谢</Text>
-            ) : (
+          <View className="py-[10px] relative flex flex-row ">
+            <View className="flex flex-row items-center flex-1">
               <Pressable
                 hitSlop={2}
                 className={classNames(
@@ -158,14 +150,55 @@ function ReplyRow(props) {
                   'relative z-10'
                 )}
                 onPress={composeAuthedNavigation(() => {
-                  props.onThank(data)
+                  props.onReply(data)
                 })}>
-                <HeartIcon size={14} color="#666" />
+                <ReplyIcon size={14} color="#666" />
                 <View className="ml-1">
-                  <Text className="text-xs text-gray-500">感谢</Text>
+                  <Text className="text-xs text-gray-500">回复</Text>
                 </View>
               </Pressable>
-            )}
+              <View className="w-4"></View>
+              {data.thanked ? (
+                <Text className="text-xs text-gray-500">已感谢</Text>
+              ) : (
+                <Pressable
+                  hitSlop={2}
+                  className={classNames(
+                    'h-[36px] px-2',
+                    '-m-2 flex flex-row items-center justify-center rounded-full',
+                    'active:bg-gray-200 active:opacity-60',
+                    'relative z-10'
+                  )}
+                  onPress={composeAuthedNavigation(() => {
+                    props.onThank(data)
+                  })}>
+                  <HeartIcon size={14} color="#666" />
+                  <View className="ml-1">
+                    <Text className="text-xs text-gray-500">感谢</Text>
+                  </View>
+                </Pressable>
+              )}
+            </View>
+
+            <View className="mr-2">
+              <Pressable
+                hitSlop={2}
+                className={classNames(
+                  'h-[36px] px-2',
+                  '-m-2 flex flex-row items-center justify-center rounded-full',
+                  'active:bg-gray-200 active:opacity-60',
+                  'relative z-10'
+                )}
+                onPress={() => {
+                  setMarkdownVisible((prev) => !prev)
+                }}>
+                {showMarkdown ? (
+                  <MarkdownFilledIcon size={20} color="#29ab30" />
+                ) : (
+                  <MarkdownIcon size={20} color="#666" />
+                )}
+              </Pressable>
+            </View>
           </View>
         </View>
       </View>
