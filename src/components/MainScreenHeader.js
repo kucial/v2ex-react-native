@@ -1,5 +1,8 @@
 import { Image, View, Pressable, Text } from 'react-native'
-import { SearchIcon, MailIcon } from 'react-native-heroicons/outline'
+import {
+  MagnifyingGlassIcon,
+  EnvelopeIcon
+} from 'react-native-heroicons/outline'
 import Constants from 'expo-constants'
 import React from 'react'
 import logoImage from '@/assets/logo.png'
@@ -32,7 +35,7 @@ export default function MainScreenHeader({ navigation }) {
             navigation.push('notification')
           })}>
           <View className="relative w-[24px] h-[24px]">
-            <MailIcon size={24} color={'#333'} />
+            <EnvelopeIcon size={24} color={'#333'} />
             {!!meta?.unread_count && (
               <View className="absolute bg-gray-700 top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-white border-solid">
                 <Text className="text-white text-[10px]">
@@ -48,7 +51,7 @@ export default function MainScreenHeader({ navigation }) {
           onPress={() => {
             navigation.push('search')
           }}>
-          <SearchIcon size={24} color={'#333'} />
+          <MagnifyingGlassIcon size={24} color={'#333'} />
         </Pressable>
       </View>
     </View>

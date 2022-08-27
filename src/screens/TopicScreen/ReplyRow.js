@@ -1,11 +1,13 @@
 import { View, Text, Image, Pressable, useWindowDimensions } from 'react-native'
 import React, { memo } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { HeartIcon, ReplyIcon } from 'react-native-heroicons/outline'
+import { HeartIcon } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
+
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 
+import ReplyIcon from '@/components/ReplyIcon'
 import HtmlRender from '@/components/HtmlRender'
 import { InlineText, BlockText, Box } from '@/components/Skeleton/Elements'
 

@@ -1,7 +1,7 @@
 import { View, Pressable, Text, TextInput, Keyboard } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { PhotographIcon } from 'react-native-heroicons/outline'
+import { PhotoIcon } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
 import useSWR from 'swr'
 
@@ -72,7 +72,7 @@ export default function TopicReplyForm(props) {
       <View className="h-[48px] flex flex-row items-center">
         <View className="flex-1">
           <Pressable className="w-[40px] h-[40px] items-center justify-center rounded-full active:bg-gray-200 active:opacity-60">
-            <PhotographIcon size={22} color="#333" />
+            <PhotoIcon size={22} color="#333" />
           </Pressable>
         </View>
 

@@ -5,7 +5,7 @@ import { Pressable } from 'react-native'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-  ExternalLinkIcon
+  ArrowTopRightOnSquareIcon
 } from 'react-native-heroicons/outline'
 import { Linking } from 'react-native'
 import { NProgress } from 'react-native-nprogress'
@@ -27,7 +27,7 @@ export default function BrowserScreen({ route, navigation }) {
           onPress={() => {
             Linking.openURL(route.params.url)
           }}>
-          <ExternalLinkIcon size={24} color={props.tintColor} />
+          <ArrowTopRightOnSquareIcon size={24} color={props.tintColor} />
         </Pressable>
       )
     })

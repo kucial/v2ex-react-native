@@ -1268,6 +1268,7 @@ export const FetcherWebView = () => {
           const url = getUrl(config)
           return (
             <WebView
+              // style={{ flex: 1 }}
               ref={ref}
               source={{ uri: url }}
               onShouldStartLoadWithRequest={() => true}
@@ -1333,7 +1334,9 @@ export const FetcherWebView = () => {
   manager.fetch = fetcher
 
   return (
-    <View>
+    <View
+    // style={{ flex: 1 }}
+    >
       {Object.entries(stack).map(([key, Compo]) => (
         <Compo key={key} />
       ))}

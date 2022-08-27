@@ -24,7 +24,7 @@ import {
   HeartIcon,
   ShareIcon,
   StarIcon,
-  DotsHorizontalIcon
+  EllipsisHorizontalIcon
 } from 'react-native-heroicons/outline'
 import {
   HeartIcon as FilledHeartIcon,
@@ -104,7 +104,7 @@ function TopicScreen({ navigation, route }) {
     navigation.setOptions({
       headerRight: (props) => (
         <Pressable
-          className="h-[44px] w-[44px] items-center justify-center -mr-3 active:opacity-60"
+          className="h-[44px] w-[44px] items-center justify-center -mr-4 active:opacity-60"
           onPress={() => {
             // actionsheet
             showActionSheetWithOptions(
@@ -154,7 +154,7 @@ function TopicScreen({ navigation, route }) {
               }
             )
           }}>
-          <DotsHorizontalIcon size={24} color="#333" />
+          <EllipsisHorizontalIcon size={24} color="#333" />
         </Pressable>
       )
     })

@@ -41,7 +41,7 @@
     "react-native-dotenv": "^3.3.1",
     "react-native-dropdownalert": "^4.5.1",
     "react-native-fast-image": "^8.5.11",
-    "react-native-heroicons": "^2.2.0",
+    "react-native-heroicons": "^3.0.0",
     "react-native-image-modal": "^2.0.4",
     "react-native-mmkv": "^2.4.3",
     "react-native-nprogress": "^1.1.0",

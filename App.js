@@ -6,13 +6,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { SWRConfig } from 'swr'
 import { SENTRY_DSN } from '@env'
 
-import {
-  CollectionIcon,
-  HomeIcon,
-  UserIcon
-} from 'react-native-heroicons/outline'
+import { FolderIcon, HomeIcon, UserIcon } from 'react-native-heroicons/outline'
 
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
+
+import { headerLeft } from './src/components/BackButton'
 
 import MainScreenHeader from './src/components/MainScreenHeader'
 import ErrorBoundary from './src/components/ErrorBoundary'
@@ -70,7 +68,7 @@ function MainTab() {
         name="nodes"
         component={NodesScreen}
         options={{
-          tabBarIcon: CollectionIcon,
+          tabBarIcon: FolderIcon,
           tabBarLabel: '节点',
           header: (props) => <MainScreenHeader {...props} />
         }}
@@ -92,7 +90,8 @@ function AppStack() {
     <Stack.Navigator
       screenOptions={{
         headerTintColor: '#111',
-        headerBackTitleVisible: false
+        headerBackTitleVisible: false,
+        headerLeft
       }}>
       <Stack.Group>
         <Stack.Screen

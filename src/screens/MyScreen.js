@@ -2,10 +2,10 @@ import { Image, Text, View, Pressable, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import {
   ClockIcon,
-  CogIcon,
+  Cog6ToothIcon,
   DocumentIcon,
-  PencilAltIcon,
-  PhotographIcon,
+  PencilSquareIcon,
+  PhotoIcon,
   InformationCircleIcon
 } from 'react-native-heroicons/outline'
 import { useAuthService } from '@/containers/AuthService'
@@ -122,7 +122,7 @@ export default function MyScreen({ navigation }) {
             alert.alertWithType('error', '错误', '未开发完成')
           }}>
           <View className="mr-3">
-            <PhotographIcon size={24} color="#111" />
+            <PhotoIcon size={24} color="#111" />
           </View>
           <Text className="text-base">图片库</Text>
         </Pressable>
@@ -132,7 +132,7 @@ export default function MyScreen({ navigation }) {
             alert.alertWithType('error', '错误', '未开发完成')
           }}>
           <View className="mr-3">
-            <PencilAltIcon size={24} color="#111" />
+            <PencilSquareIcon size={24} color="#111" />
           </View>
           <Text className="text-base">记事本</Text>
         </Pressable>
@@ -156,7 +156,7 @@ export default function MyScreen({ navigation }) {
             navigation.push('settings')
           }}>
           <View className="mr-3">
-            <CogIcon size={24} color="#111" />
+            <Cog6ToothIcon size={24} color="#111" />
           </View>
           <Text className="text-base">设置</Text>
         </Pressable>
