@@ -41,7 +41,6 @@ export const useSWR = (
       options.initOnMount &&
       shouldInit(swr)
     ) {
-      console.log('....call....')
       swr.mutate()
     }
   }, [key])

@@ -1268,6 +1268,11 @@ const getScripts = (config) => {
 }
 
 let counter = 0
+const domReadyMessage = `(function() {
+  window.ReactNativeWebView.postMessage(JSON.stringify({
+    event: 'DocumentReady'
+  }))
+}())`
 export const FetcherWebView = () => {
   const [stack, setStack] = useState({})
   const fetcher = useCallback(
@@ -1279,12 +1284,18 @@ export const FetcherWebView = () => {
           const timerRef = useRef()
           const scriptsToInject = useRef(getScripts(config))
           const url = getUrl(config)
+          useEffect(() => {
+            console.log('mount', url)
+            return () => {
+              console.log('unmount', url)
+            }
+          }, [url])
           return (
             <WebView
               // style={{ flex: 1 }}
               ref={ref}
               source={{ uri: url }}
-              onShouldStartLoadWithRequest={() => true}
+              injectedJavaScript={domReadyMessage}
               // sharedCookiesEnabled={true}
               onLoadStart={() => {
                 console.log(`load start: ${url}`)
@@ -1318,17 +1329,27 @@ export const FetcherWebView = () => {
               onMessage={(event) => {
                 if (event.nativeEvent.data) {
                   const data = JSON.parse(event.nativeEvent.data)
-                  // console.log('response data', data)
-                  if (data.error) {
-                    reject(data)
+                  if (data.event) {
+                    console.log(`event message: ${url}`)
+                    if (data.event === 'DocumentReady') {
+                      const script = scriptsToInject.current.shift()
+                      if (script) {
+                        ref.current.injectJavaScript(script)
+                      }
+                    }
                   } else {
-                    resolve(data)
+                    console.log('data success:', !data.error)
+                    if (data.error) {
+                      reject(data)
+                    } else {
+                      resolve(data)
+                    }
+                    setStack((prev) => {
+                      const newStack = { ...prev }
+                      delete newStack[key]
+                      return newStack
+                    })
                   }
-                  setStack((prev) => {
-                    const newStack = { ...prev }
-                    delete newStack[key]
-                    return newStack
-                  })
                 } else {
                   console.log('event', event)
                 }
