@@ -11,6 +11,7 @@ import { useTailwind } from 'tailwindcss-react-native'
 import WebView from 'react-native-webview'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
+import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
 import { getScreenInfo } from '@/utils/url'
@@ -43,7 +44,9 @@ const topicLinkCapture = `(function() {
 export default function SearchScreen({ navigation }) {
   const searchInput = useRef()
   const tw = useTailwind()
-  const [keyword, setKeyword] = useState('')
+  const keywordSwr = useSWR('app:search-keyword', () => '', {
+    revalidateOnMount: false
+  })
   const [loading, setLoading] = useState(false)
   useEffect(() => {
     setTimeout(() => {
@@ -75,19 +78,20 @@ export default function SearchScreen({ navigation }) {
                 ...tw('bg-gray-100 rounded-lg flex-1 px-2 text-base'),
                 lineHeight: 20
               }}
+              defaultValue={keywordSwr.data || ''}
               ref={searchInput}
               placeholder="输入关键词"
               returnKeyType="search"
               onSubmitEditing={({ nativeEvent }) => {
-                setKeyword(nativeEvent.text)
+                keywordSwr.mutate(nativeEvent.text, false)
               }}
             />
-            {!!keyword && (
+            {!!keywordSwr.data && (
               <View className="absolute right-0 top-2 h-full flex flex-row items-center justify-center">
                 <Pressable
                   className="rounded-full w-[40px] h-[40px] active:bg-gray-100 active:opacity-60 items-center justify-center"
                   onPress={() => {
-                    setKeyword('')
+                    keywordSwr.mutate('', false)
                     searchInput.current?.clear()
                     searchInput.current?.focus()
                   }}>
@@ -106,12 +110,12 @@ export default function SearchScreen({ navigation }) {
         </View>
       </View>
       <View className="flex-1 relative">
-        {!!keyword?.trim() && (
+        {!!keywordSwr.data?.trim() && (
           <WebView
             injectedJavaScript={topicLinkCapture}
             source={{
               uri: `https://google.com/search?q=${encodeURIComponent(
-                'site:v2ex.com/t ' + keyword
+                'site:v2ex.com/t ' + keywordSwr.data
               )}`
             }}
             onLoadStart={() => setLoading(true)}
