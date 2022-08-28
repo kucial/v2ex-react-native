@@ -9,7 +9,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import Constants from 'expo-constants'
 import { useTailwind } from 'tailwindcss-react-native'
 import WebView from 'react-native-webview'
-import { XIcon } from 'react-native-heroicons/outline'
+import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
 
 import BackButton from '@/components/BackButton'
@@ -91,7 +91,7 @@ export default function SearchScreen({ navigation }) {
                     searchInput.current?.clear()
                     searchInput.current?.focus()
                   }}>
-                  <XIcon size={18} color="#333" />
+                  <XMarkIcon size={18} color="#333" />
                 </Pressable>
               </View>
             )}

@@ -131,7 +131,7 @@ function ReplyRow(props) {
             </View>
           </View>
           <View
-            className="pr-2"
+            className="pr-2 min-h-[28px]"
             style={
               showMarkdown
                 ? {
