@@ -185,12 +185,20 @@ const swrConfig = {
   fetcher: fetcher,
   provider: cache,
   onError(err, key, config) {
-    Sentry.captureException(err, {
-      extra: {
+    if (err instanceof Error) {
+      Sentry.captureException(err, {
+        extra: {
+          key,
+          config
+        }
+      })
+    } else {
+      Sentry.captureMessage('SWR_EROR', {
+        err,
         key,
         config
-      }
-    })
+      })
+    }
   }
   // refreshInterval: 5 * 60 * 1000 // 5min
 }
