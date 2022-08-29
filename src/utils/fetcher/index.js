@@ -398,7 +398,17 @@ const CUSTOM_ENDPOINTS = {
                 username: d.querySelector('strong a[href^="/member/"]').textContent.trim(),
                 avatar_normal: d.querySelector('img.avatar').src
               }
-              const content_rendered = d.querySelector('.reply_content').innerHTML;
+
+              const contentDom =  d.querySelector('.reply_content');
+              const content_rendered = contentDom.innerHTML;
+              const members_mentioned = [];
+              [...contentDom.querySelectorAll('a[href^="/member"]')].forEach((a) => {
+                members_mentioned.push(a.textContent.trim())
+              });
+
+              contentDom.style.whiteSpace = 'pre';
+              const content = contentDom.innerText;
+
               const replyInfo = d.querySelector('td:nth-child(3) span.fade.small').textContent.trim();
               let reply_time;
               let reply_device;
@@ -407,13 +417,17 @@ const CUSTOM_ENDPOINTS = {
               const thanks_count = heartImg ? Number(heartImg.nextSibling.textContent.trim()) : 0;
               const data =  {
                 id: Number(d.id.replace('r_', '')),
+                content,
                 content_rendered,
                 member,
                 reply_time,
                 reply_device,
                 thanks_count,
                 thanked: !!d.querySelector('.thanked'),
-                num: Number(d.querySelector('.no').textContent)
+                num: Number(d.querySelector('.no').textContent),
+                member_is_op: !!d.querySelector('.badge.op'),
+                member_is_mod: !!d.querySelector('.badge.mod'),
+                members_mentioned,
               }
               window.ReactNativeWebView.postMessage(JSON.stringify({
                 data,
