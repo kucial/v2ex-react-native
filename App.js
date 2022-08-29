@@ -260,8 +260,8 @@ function App() {
               <ActivityIndicator>
                 <NavigationContainer>
                   <AuthService>
-                    {/* <DebugScreen /> */}
-                    <AppStack />
+                    <DebugScreen />
+                    {/* <AppStack /> */}
                   </AuthService>
                 </NavigationContainer>
               </ActivityIndicator>

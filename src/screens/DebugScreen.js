@@ -7,6 +7,8 @@ import { useAuthService } from '@/containers/AuthService'
 import CookieManager from '@react-native-cookies/cookies'
 import Loader from '@/components/Loader'
 import { useNavigation } from '@react-navigation/native'
+import SlateEditor from '@/components/SlateEditor'
+
 export default function DebugScreen() {
   const authService = useAuthService()
   const navigation = useNavigation()
@@ -19,18 +21,9 @@ export default function DebugScreen() {
   }, [])
 
   return (
-    <View className="flex-1 justify-center items-center">
-      <View className="bg-gray-50">
-        <Loader />
-        <Pressable
-          onPress={() => {
-            navigation.navigate('member', {
-              username: 'kongkx'
-            })
-          }}>
-          <Text>Throw Error</Text>
-        </Pressable>
-      </View>
+    <View className="flex-1">
+      <View style={{ height: 50 }}></View>
+      <SlateEditor className="flex-1" placeholder="测试" />
     </View>
   )
 }
