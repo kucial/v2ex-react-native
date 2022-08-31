@@ -21,7 +21,27 @@ export default function AlertService(props) {
   return (
     <AlterService.Provider value={service}>
       {props.children}
-      <DropdownAlert ref={ref} />
+      <DropdownAlert
+        ref={ref}
+        renderImage={() => null}
+        closeInterval={3000}
+        defaultContainer={{
+          paddingHorizontal: 6
+        }}
+        defaultTextContainer={{
+          paddingTop: 6,
+          paddingHorizontal: 6,
+          paddingBottom: 8
+        }}
+        titleStyle={{
+          fontSize: 16,
+          textAlign: 'left',
+          fontWeight: 'bold',
+          color: 'white',
+          backgroundColor: 'transparent',
+          marginBottom: 2
+        }}
+      />
     </AlterService.Provider>
   )
 }

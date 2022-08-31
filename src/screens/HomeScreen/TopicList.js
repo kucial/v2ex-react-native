@@ -4,20 +4,20 @@ import { useIsFocused } from '@react-navigation/native'
 import useSWRInfinite from 'swr/infinite'
 import { uniqBy } from 'lodash'
 
-import {
-  isRefreshing,
-  shouldInit,
-  hasReachEnd,
-  isLoadingMore
-} from '@/utils/swr'
+import { isRefreshing, shouldInit, hasReachEnd } from '@/utils/swr'
 import CommonListFooter from '@/components/CommonListFooter'
 
 import TopicRow from './TopicRow'
+import { useAlertService } from '@/containers/AlertService'
 
 export default function TopicList(props) {
+  const alert = useAlertService()
   const listSwr = useSWRInfinite(props.getKey, {
     revalidateOnMount: false,
-    shouldRetryOnError: false
+    shouldRetryOnError: false,
+    onError(err) {
+      alert.alertWithType('error', '错误', err.message || '请求资源失败')
+    }
   })
   const { renderItem, keyExtractor } = useMemo(() => ({
     renderItem: ({ item }) => <TopicRow data={item} />,

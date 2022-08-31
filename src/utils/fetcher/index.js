@@ -1284,9 +1284,13 @@ const getScripts = (config) => {
 
 let counter = 0
 const domReadyMessage = `(function() {
-  window.ReactNativeWebView.postMessage(JSON.stringify({
-    event: 'DocumentReady'
-  }))
+  try {
+    window.ReactNativeWebView.postMessage(JSON.stringify({
+      event: 'DocumentReady'
+    }))
+  } catch (err) {
+    // do nothing
+  }
 }())`
 export const FetcherWebView = () => {
   const [stack, setStack] = useState({})
@@ -1368,6 +1372,20 @@ export const FetcherWebView = () => {
                 } else {
                   console.log('event', event)
                 }
+              }}
+              onError={(err) => {
+                // hack for JSON.stringify
+                err.toJSON = function () {
+                  return {
+                    message: this.message
+                  }
+                }
+                reject(err)
+                setStack((prev) => {
+                  const newStack = { ...prev }
+                  delete newStack[key]
+                  return newStack
+                })
               }}
             />
           )
