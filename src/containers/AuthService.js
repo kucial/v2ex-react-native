@@ -1,6 +1,6 @@
 import { createContext, useEffect, useMemo, useContext, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { useSWR } from '@/utils/swr'
+import useSWR from 'swr'
 import fetcher from '@/utils/fetcher'
 import { useAlertService } from './AlertService'
 export const AuthServiceContext = createContext({
@@ -36,7 +36,8 @@ const mapStatus = (swr) => {
 export default function AuthService(props) {
   const navigation = useNavigation()
   const userSwr = useSWR('/custom/auth/current-user.json', {
-    revalidateOnMount: true
+    revalidateOnMount: true,
+    revalidateOnFocus: true
   })
   const nextAction = useRef()
   const alert = useAlertService()

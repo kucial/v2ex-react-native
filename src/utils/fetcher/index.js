@@ -259,7 +259,8 @@ const CUSTOM_ENDPOINTS = {
 
           let pagination = { current: 1, total: 1 };
           const paginationCell = document.querySelector('#Wrapper .box:nth-child(5) .cell:nth-child(2):not([id^=r_])')
-          if (paginationCell) {
+          const cell2 = items[0]?.previousElementSibling;
+          if (paginationCell && cell2 === paginationCell) {
             pagination.current = Number(paginationCell.querySelector('.page_current')?.textContent);
             const total = /\\d+/.exec(paginationCell.querySelector('div:nth-child(2)').textContent);
             pagination.total = Number(total)

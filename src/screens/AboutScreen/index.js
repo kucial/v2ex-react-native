@@ -11,7 +11,7 @@ export default function AboutScreen() {
       <View className="flex-1 px-4 py-4 items-center justify-center">
         <View>
           <View className="mb-2">
-            <Text className="text-2xl font-bold text-center">\V/2EX</Text>
+            <Text className="text-2xl font-bold text-center">V2EX</Text>
           </View>
           <View className="my-2">
             <Text className="text-base text-center">
@@ -40,7 +40,7 @@ export default function AboutScreen() {
             storage.clearAll()
             RNRestart.Restart()
           }}>
-          <Text style={{ color: 'white' }}>重置APP</Text>
+          <Text style={{ color: 'white' }}>清除缓存</Text>
         </Pressable>
       </View>
     </SafeAreaView>

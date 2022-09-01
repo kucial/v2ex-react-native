@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.13.0",
+    "@react-native-community/netinfo": "^9.3.0",
     "@react-native-cookies/cookies": "^6.2.1",
     "@react-navigation/bottom-tabs": "^6.3.2",
     "@react-navigation/material-top-tabs": "^6.2.2",

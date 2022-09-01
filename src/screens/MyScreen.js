@@ -113,6 +113,28 @@ export default function MyScreen({ navigation }) {
           </View>
           <Text className="text-base">收藏的主题</Text>
         </Pressable>
+        <Pressable
+          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          disabled={authStatus === 'loading'}
+          onPress={composeAuthedNavigation(() => {
+            navigation.push('replied-topics')
+          })}>
+          <View className="mr-3">
+            <DocumentIcon size={24} color="#111" />
+          </View>
+          <Text className="text-base">回复的主题</Text>
+        </Pressable>
+        <Pressable
+          className="py-4 px-4 flex flex-row items-center active:opacity-60 bg-white"
+          disabled={authStatus === 'loading'}
+          onPress={composeAuthedNavigation(() => {
+            navigation.push('viewed-topics')
+          })}>
+          <View className="mr-3">
+            <DocumentIcon size={24} color="#111" />
+          </View>
+          <Text className="text-base">浏览的主题</Text>
+        </Pressable>
       </View>
 
       <View className="shadow-sm divide-y divide-gray-300 mb-3">

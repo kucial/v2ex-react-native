@@ -1,4 +1,6 @@
 import * as Sentry from '@sentry/react-native'
+import { AppState } from 'react-native'
+import NetInfo from '@react-native-community/netinfo'
 import { TailwindProvider } from 'tailwindcss-react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -7,7 +9,6 @@ import { SWRConfig } from 'swr'
 import { SENTRY_DSN } from '@env'
 
 import { FolderIcon, HomeIcon, UserIcon } from 'react-native-heroicons/outline'
-
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 
 import { headerLeft } from './src/components/BackButton'
@@ -198,6 +199,51 @@ const swrConfig = {
         key,
         config
       })
+    }
+  },
+  isOnline() {
+    return true
+  },
+  isVisible() {
+    return true
+  },
+  initFocus(callback) {
+    let appState = AppState.currentState
+
+    const onAppStateChange = (nextAppState) => {
+      /* If it's resuming from background or inactive mode to active one */
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        callback()
+      }
+      appState = nextAppState
+    }
+
+    // Subscribe to the app state change events
+    const subscription = AppState.addEventListener('change', onAppStateChange)
+
+    return () => {
+      subscription.remove()
+    }
+  },
+  initReconnect(callback) {
+    let netState
+    NetInfo.fetch().then((state) => {
+      if (state.isConnected) {
+        callback()
+      }
+      netState = state
+    })
+    const onNetworkChange = NetInfo.addEventListener((nextNetState) => {
+      if (!netState?.isConnected && nextNetState.isConnected) {
+        callback()
+      }
+      netState = nextNetState
+    })
+
+    const unsubscribe = NetInfo.addEventListener(onNetworkChange)
+
+    return () => {
+      unsubscribe()
     }
   }
   // refreshInterval: 5 * 60 * 1000 // 5min
