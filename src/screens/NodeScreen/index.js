@@ -115,10 +115,10 @@ export default function NodeScreen({ route, navigation }) {
                 <HtmlRender contentWidth={width - 100} {...htmlProps} />
               )}
             </View>
-            <View className="flex flex-row mt-3 mb-2">
+            <View className="flex flex-row mt-3 mb-2 justify-end mr-1">
               <Pressable
                 className={classNames(
-                  'h-[40px] rounded-lg border border-gray-500 px-3 items-center justify-center active:opacity-60',
+                  'h-[38px] rounded-lg border border-gray-500 px-3 items-center justify-center active:opacity-60',
                   {
                     'opacity-60': collecting
                   }
