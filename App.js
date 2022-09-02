@@ -200,52 +200,52 @@ const swrConfig = {
         config
       })
     }
-  },
-  isOnline() {
-    return true
-  },
-  isVisible() {
-    return true
-  },
-  initFocus(callback) {
-    let appState = AppState.currentState
-
-    const onAppStateChange = (nextAppState) => {
-      /* If it's resuming from background or inactive mode to active one */
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
-        callback()
-      }
-      appState = nextAppState
-    }
-
-    // Subscribe to the app state change events
-    const subscription = AppState.addEventListener('change', onAppStateChange)
-
-    return () => {
-      subscription.remove()
-    }
-  },
-  initReconnect(callback) {
-    let netState
-    NetInfo.fetch().then((state) => {
-      if (state.isConnected) {
-        callback()
-      }
-      netState = state
-    })
-    const onNetworkChange = NetInfo.addEventListener((nextNetState) => {
-      if (!netState?.isConnected && nextNetState.isConnected) {
-        callback()
-      }
-      netState = nextNetState
-    })
-
-    const unsubscribe = NetInfo.addEventListener(onNetworkChange)
-
-    return () => {
-      unsubscribe()
-    }
   }
+  // isOnline() {
+  //   return true
+  // },
+  // isVisible() {
+  //   return true
+  // },
+  // initFocus(callback) {
+  //   let appState = AppState.currentState
+
+  //   const onAppStateChange = (nextAppState) => {
+  //     /* If it's resuming from background or inactive mode to active one */
+  //     if (appState.match(/inactive|background/) && nextAppState === 'active') {
+  //       callback()
+  //     }
+  //     appState = nextAppState
+  //   }
+
+  //   // Subscribe to the app state change events
+  //   const subscription = AppState.addEventListener('change', onAppStateChange)
+
+  //   return () => {
+  //     subscription.remove()
+  //   }
+  // },
+  // initReconnect(callback) {
+  //   let netState
+  //   NetInfo.fetch().then((state) => {
+  //     if (state.isConnected) {
+  //       callback()
+  //     }
+  //     netState = state
+  //   })
+  //   const onNetworkChange = NetInfo.addEventListener((nextNetState) => {
+  //     if (!netState?.isConnected && nextNetState.isConnected) {
+  //       callback()
+  //     }
+  //     netState = nextNetState
+  //   })
+
+  //   const unsubscribe = NetInfo.addEventListener(onNetworkChange)
+
+  //   return () => {
+  //     unsubscribe()
+  //   }
+  // }
   // refreshInterval: 5 * 60 * 1000 // 5min
 }
 
