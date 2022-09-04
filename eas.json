@@ -15,7 +15,9 @@
     "preview": {
       "distribution": "internal",
       "credentialsSource": "local",
-      "env": {}
+      "env": {
+        "SENTRY_DSN": "https://7580d23586fd42838e4c0eb78a17d165@sentry.kongkx.com/6"
+      }
     },
     "production": {
       "extends": "preview"

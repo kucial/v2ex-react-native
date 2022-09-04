@@ -130,15 +130,7 @@ function ReplyRow(props) {
               </View>
             </View>
           </View>
-          <View
-            className="pr-2 min-h-[28px]"
-            style={
-              showMarkdown
-                ? {
-                    marginVertical: -14
-                  }
-                : undefined
-            }>
+          <View className="pr-2 min-h-[28px]">
             <HtmlRender
               contentWidth={width - 24 - 8 - 8 - 16}
               source={{
