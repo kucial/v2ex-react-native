@@ -2,6 +2,7 @@ import { View } from 'react-native'
 import { useEffect } from 'react'
 import WebView from 'react-native-webview'
 import { useEditor } from './context'
+import editorHtml from './assets/editor.html'
 
 export default function EditorRender(props) {
   const editor = useEditor()
@@ -13,11 +14,13 @@ export default function EditorRender(props) {
   }, [])
   console.log(editor.viewport)
   return (
-    <View style={editor.viewport}>
+    <View style={{ height: 300 }}>
+      {/* <View style={editor.viewport}> */}
       <WebView
+        originWhitelist={['*']}
+        // source={{ uri: 'http://192.168.1.102:3000/editor.html' }}
+        source={editorHtml}
         ref={editor.webview}
-        source={{ uri: 'http://192.168.1.102:3001' }}
-        // source={editorHtml}
         onMessage={editor.handleMessage}
       />
     </View>
