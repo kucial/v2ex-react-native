@@ -46,6 +46,7 @@
     "react-native-fast-image": "^8.5.11",
     "react-native-heroicons": "^3.0.0",
     "react-native-image-modal": "^2.0.4",
+    "react-native-keyboard-aware-view": "^0.0.14",
     "react-native-mmkv": "^2.4.3",
     "react-native-nprogress": "^1.1.0",
     "react-native-pager-view": "^5.4.25",

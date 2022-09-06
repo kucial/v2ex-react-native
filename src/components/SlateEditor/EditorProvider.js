@@ -118,13 +118,13 @@ const EditorProvider = forwardRef((props, ref) => {
                 ...prev,
                 hasFocus: true
               }))
-            // TODO: may trigger blur
+              break
             case 'blur':
               setState((prev) => ({
                 ...prev,
                 hasFocus: false
               }))
-            // TODO: may trigger blur
+              break
             default:
               console.log('NOT_HANDLED EVENT', data)
           }

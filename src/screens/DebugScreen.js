@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, SafeAreaView, Keyboard } from 'react-native'
 import React, { useRef, useEffect } from 'react'
 import { Pressable } from 'react-native'
 import WebView from 'react-native-webview'
@@ -10,9 +10,10 @@ import { useNavigation } from '@react-navigation/native'
 import {
   EditorProvider,
   EditorRender,
-  EditorToolbar
+  EditorToolbar,
+  EditorDismiss
 } from '@/components/SlateEditor'
-import { SafeAreaView } from 'react-native'
+import KeyboardAwareView from '@/components/KeyboardAwareView'
 
 export default function DebugScreen() {
   const authService = useAuthService()
@@ -27,13 +28,20 @@ export default function DebugScreen() {
 
   return (
     <View className="flex-1">
-      <View style={{ height: 50 }}></View>
-      <EditorProvider>
-        <View className="flex flex-col flex-1">
-          <EditorRender placeholder="输入内容" />
-          <EditorToolbar />
-        </View>
-      </EditorProvider>
+      <KeyboardAwareView animated={false}>
+        <SafeAreaView>
+          <EditorProvider>
+            <EditorDismiss className="flex-1 h-full">
+              <View className="p-2 bg-blue-200">
+                <EditorRender placeholder="输入内容" />
+              </View>
+              <View className="absolute bottom-0 left-0 width-full">
+                <EditorToolbar showOnFocus />
+              </View>
+            </EditorDismiss>
+          </EditorProvider>
+        </SafeAreaView>
+      </KeyboardAwareView>
     </View>
   )
 }

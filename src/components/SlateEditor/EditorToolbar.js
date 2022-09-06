@@ -40,9 +40,13 @@ function Divider() {
   return <View className="h-[18px] mx-1 w-[1px] bg-gray-300"></View>
 }
 
-export default function EditorToolbar() {
+export default function EditorToolbar(props) {
   const editor = useEditor()
   const alert = useAlertService()
+  if (props.showOnFocus && !editor.hasFocus()) {
+    return null
+  }
+
   return (
     <View>
       <ScrollView

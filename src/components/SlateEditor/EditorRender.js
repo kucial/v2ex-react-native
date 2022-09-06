@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { useEffect } from 'react'
 import WebView from 'react-native-webview'
 import { useEditor } from './context'
@@ -14,8 +14,12 @@ export default function EditorRender(props) {
   }, [])
   console.log(editor.viewport)
   return (
-    <View style={{ height: 300 }}>
-      {/* <View style={editor.viewport}> */}
+    // <View style={{ height: 300 }}>
+    <Pressable
+      style={editor.viewport}
+      onPress={(e) => {
+        e.stopPropagation()
+      }}>
       <WebView
         originWhitelist={['*']}
         // source={{ uri: 'http://192.168.1.102:3000/editor.html' }}
@@ -23,6 +27,6 @@ export default function EditorRender(props) {
         ref={editor.webview}
         onMessage={editor.handleMessage}
       />
-    </View>
+    </Pressable>
   )
 }

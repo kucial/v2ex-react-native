@@ -145,6 +145,7 @@ class App extends React.Component {
   }
 
   handleFocus = () => {
+    console.log('focus.....')
     this.postMessage({
       type: 'event',
       name: 'focus'

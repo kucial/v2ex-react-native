@@ -41,12 +41,14 @@ const SimpleRichEditor = forwardRef((props, ref) => {
       <Editable
         renderElement={editor.renderElement}
         renderLeaf={editor.renderLeaf}
-        placeholder={props.placeholder}
+        onKeyDown={editor.handleKeyDown}
         spellCheck
-        autoFocus
+        autoFocus={props.autoFocus}
         readOnly={props.readOnly}
         decorate={props.decorate}
-        onKeyDown={editor.handleKeyDown}
+        onFocus={props.onFocus}
+        placeholder={props.placeholder}
+        onBlur={props.onBlur}
       />
     </Slate>
   );
