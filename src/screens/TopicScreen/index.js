@@ -325,9 +325,10 @@ function TopicScreen({ navigation, route }) {
           }, false)
           const cacheKey = getReplyFormCacheKey(replyContext)
           cache.delete(cacheKey)
+          alert.alertWithType('success', '', '回复成功')
         })
         .catch((err) => {
-          alert.alertWithType('error', '错误', err.message)
+          alert.alertWithType('error', '', err.message)
         })
         .finally(() => {
           aIndicator.hide()
