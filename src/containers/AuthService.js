@@ -1,5 +1,6 @@
 import { createContext, useEffect, useMemo, useContext, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import { AppState } from 'react-native'
 import useSWR from 'swr'
 import fetcher from '@/utils/fetcher'
 import { useAlertService } from './AlertService'
@@ -103,6 +104,22 @@ export default function AuthService(props) {
       }
     }
   }, [userSwr])
+
+  useEffect(() => {
+    let appState = AppState.currentState
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        fetcher('/custom/auth/current-user.json').then((res) => {
+          userSwr.mutate(res, false)
+        })
+        appState = nextAppState
+      }
+    })
+
+    return () => {
+      subscription.remove()
+    }
+  }, [userSwr.mutate])
 
   return (
     <AuthServiceContext.Provider value={service}>
