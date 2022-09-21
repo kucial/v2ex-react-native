@@ -1,29 +1,35 @@
 import { MMKV } from 'react-native-mmkv'
 
-const storage = new MMKV()
+const isDebuggingRemotelyActive = () => typeof importScripts === 'function'
 
-// Mock MMKV storage to enable remote debug
-// let data = {}
-// const storage = {
-//   contains(key) {
-//     return data[key] !== undefined
-//   },
-//   getString(key) {
-//     return data[key]
-//   },
-//   delete(key) {
-//     delete data[key]
-//   },
-//   set(key, value) {
-//     data[key] = value
-//   },
-//   clearAll() {
-//     data = {}
-//   },
-//   getAllKeys() {
-//     return Object.keys(data);
-//   }
-// }
+let storage
+if (isDebuggingRemotelyActive()) {
+  let data = {}
+  console.log('Memory storage')
+  storage = {
+    contains(key) {
+      return data[key] !== undefined
+    },
+    getString(key) {
+      return data[key]
+    },
+    delete(key) {
+      delete data[key]
+    },
+    set(key, value) {
+      data[key] = value
+    },
+    clearAll() {
+      data = {}
+    },
+    getAllKeys() {
+      return Object.keys(data)
+    }
+  }
+} else {
+  console.log('MMKV storage')
+  storage = new MMKV()
+}
 
 export default storage
 
