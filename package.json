@@ -8,6 +8,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "build:ios": "eas build --platform ios --local",
+    "submit:ios": "eas submit --platform ios",
     "test": "jest",
     "test:watch": "jest --watch"
   },

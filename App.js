@@ -36,7 +36,7 @@ import NewTopicScreen from './src/screens/NewTopicScreen'
 import DebugScreen from './src/screens/DebugScreen'
 
 import fetcher, { FetcherWebView } from './src/utils/fetcher'
-import cache from './src/utils/cache'
+import { cacheProvider } from './src/utils/swr'
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -200,7 +200,7 @@ function AppStack() {
 
 const swrConfig = {
   fetcher: fetcher,
-  provider: cache,
+  provider: cacheProvider,
   onError(err, key, config) {
     if (err instanceof Error) {
       Sentry.captureException(err, {

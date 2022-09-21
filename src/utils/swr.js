@@ -69,11 +69,40 @@ export const isEmptyList = (swr) => {
   return Array.isArray(swr.data) && swr.data.every((p) => p.data?.length === 0)
 }
 
-export const clearStateCache = () => {
-  const keys = storage.getAllKeys()
-  keys.forEach((key) => {
-    if (/^\$swr\$/.test(key)) {
-      storage.delete(key)
+export const cacheProvider = (cache) => {
+  const swrCache = {
+    get: (key) => {
+      const valueFromMap = cache.get(key)
+
+      if (valueFromMap) {
+        return valueFromMap
+      }
+
+      if (typeof key === 'string' && storage.contains(key)) {
+        const value = storage.getString(key)
+        return value ? JSON.parse(value) : undefined
+      }
+
+      return undefined
+    },
+    set: (key, value) => {
+      cache.set(key, value)
+      // skip swr state info cache
+      if (typeof key === 'string' && !/^\$swr\$/.test(key)) {
+        storage.set(key, JSON.stringify(value))
+      }
+    },
+    delete: (key) => {
+      cache.delete(key)
+
+      if (typeof key === 'string' && storage.contains(key)) {
+        storage.delete(key)
+      }
+    },
+    flush: () => {
+      storage.clearAll()
     }
-  })
+  }
+
+  return swrCache
 }
