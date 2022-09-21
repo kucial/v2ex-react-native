@@ -49,9 +49,11 @@ export default function SearchScreen({ navigation }) {
   const [keyword, setKeyword] = useState(getJSON(CACHE_KEY))
   const [loading, setLoading] = useState(false)
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      searchInput.current?.focus()
-    })
+    setTimeout(() => {
+      InteractionManager.runAfterInteractions(() => {
+        searchInput.current?.focus()
+      })
+    }, 500)
   }, [])
   useEffect(() => {
     setJSON(CACHE_KEY, keyword)
