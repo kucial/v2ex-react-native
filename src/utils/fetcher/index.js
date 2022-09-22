@@ -1103,8 +1103,15 @@ const CUSTOM_ENDPOINTS = {
               replies: Number(replies) || 0,
             }
           })
+          let pagination = { current: 1, total: 1 };
+          const pageInput = document.querySelector('.page_input');
+          if (pageInput) {
+            pagination.total = Number(pageInput.getAttribute('max')) || 1;
+            pagination.current  = Number(document.querySelector('a.page_current').innerText) || 1;
+          }
           window.ReactNativeWebView.postMessage(JSON.stringify({
             data: data,
+            pagination,
           }))
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
