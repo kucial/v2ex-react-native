@@ -1,10 +1,9 @@
-import { View, Text } from 'react-native'
 import React from 'react'
+import { useAuthService } from '@/containers/AuthService'
+import MemberTopics from '../MemberScreen/MemberTopics'
 
 export default function CreatedTopicsScreen() {
-  return (
-    <View>
-      <Text>CreatedTopicsScreen</Text>
-    </View>
-  )
+  const { user } = useAuthService()
+
+  return <MemberTopics username={user.username} />
 }
