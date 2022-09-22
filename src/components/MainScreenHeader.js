@@ -10,7 +10,8 @@ import React from 'react'
 import logoImage from '@/assets/logo.png'
 import { useAuthService } from '@/containers/AuthService'
 
-export default function MainScreenHeader({ navigation }) {
+export default function MainScreenHeader(props) {
+  const { navigation } = props
   const { composeAuthedNavigation, meta } = useAuthService()
   return (
     <View
@@ -20,13 +21,20 @@ export default function MainScreenHeader({ navigation }) {
         paddingTop: Constants.statusBarHeight
       }}>
       <View className="flex-1">
-        <Image
-          source={logoImage}
-          style={{
-            width: 47,
-            height: 15
-          }}
-        />
+        {props.title ? (
+          <View className="pl-1">
+            <Text className="font-bold text-[17px]">{props.title}</Text>
+          </View>
+        ) : (
+          <Image
+            source={logoImage}
+            style={{
+              width: 47,
+              height: 15
+            }}
+          />
+        )}
+
         {/* <Text className="text-lg font-bold">V2EX</Text> */}
       </View>
 

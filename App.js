@@ -20,18 +20,30 @@ import ActivityIndicator from './src/containers/ActivityIndicator'
 
 import HomeScreen from './src/screens/HomeScreen'
 import NodesScreen from './src/screens/NodesScreen'
-import MyScreen from './src/screens/MyScreen'
 import SearchScreen from './src/screens/SearchScreen'
 import TopicScreen from './src/screens/TopicScreen'
 import NodeScreen from './src/screens/NodeScreen'
 import BrowserScreen from './src/screens/BrowserScreen'
 import MemberScreen from './src/screens/MemberScreen'
 import SigninScreen from './src/screens/SigninScreen'
-import NotificationScreen from './src/screens/NotificationScreen'
-import CollectedTopicsScreen from './src/screens/CollectedTopicsScreen'
-import { SettingsLanding, ImgurSettings } from './src/screens/SettingsScreen'
 import AboutScreen from './src/screens/AboutScreen'
 import NewTopicScreen from './src/screens/NewTopicScreen'
+
+import {
+  SettingsLanding,
+  ImgurSettings,
+  HomeTabsSettings
+} from './src/screens/SettingsScreen'
+
+import {
+  MyScreen,
+  NotificationScreen,
+  ProfileScreen,
+  CreatedTopicsScreen,
+  CollectedTopicsScreen,
+  RepliedTopicsScreen,
+  ViewedTopicsScreen
+} from './src/screens/MyScreen'
 
 import DebugScreen from './src/screens/DebugScreen'
 
@@ -78,7 +90,8 @@ function MainTab() {
         component={MyScreen}
         options={{
           tabBarIcon: UserIcon,
-          tabBarLabel: '我的'
+          tabBarLabel: '我的',
+          header: (props) => <MainScreenHeader {...props} title={'我的'} />
         }}
       />
     </Tab.Navigator>
@@ -132,36 +145,7 @@ function AppStack() {
             headerShown: false
           }}
         />
-        <Stack.Screen
-          name="notification"
-          component={NotificationScreen}
-          options={{
-            title: '消息'
-          }}
-        />
-        <Stack.Screen
-          name="collected-topics"
-          component={CollectedTopicsScreen}
-          options={{
-            title: '我收藏的内容'
-          }}
-        />
-        <Stack.Group>
-          <Stack.Screen
-            name="settings"
-            component={SettingsLanding}
-            options={{
-              title: '设置'
-            }}
-          />
-          <Stack.Screen
-            name="imgur-settings"
-            component={ImgurSettings}
-            options={{
-              title: 'Imgur 设置'
-            }}
-          />
-        </Stack.Group>
+
         <Stack.Screen
           name="about"
           component={AboutScreen}
@@ -178,6 +162,75 @@ function AppStack() {
           }}
         />
       </Stack.Group>
+      <Stack.Group>
+        <Stack.Screen
+          name="notification"
+          component={NotificationScreen}
+          options={{
+            title: '消息'
+          }}
+        />
+        <Stack.Screen
+          name="profile"
+          component={ProfileScreen}
+          options={{
+            title: '用户档案'
+          }}
+        />
+        <Stack.Screen
+          name="created-topics"
+          component={CreatedTopicsScreen}
+          options={{
+            title: '收藏的主题'
+          }}
+        />
+        <Stack.Screen
+          name="collected-topics"
+          component={CollectedTopicsScreen}
+          options={{
+            title: '收藏的主题'
+          }}
+        />
+        <Stack.Screen
+          name="replied-topics"
+          component={RepliedTopicsScreen}
+          options={{
+            title: '回复的主题'
+          }}
+        />
+        <Stack.Screen
+          name="viewed-topics"
+          component={ViewedTopicsScreen}
+          options={{
+            title: '浏览的主题'
+          }}
+        />
+      </Stack.Group>
+
+      <Stack.Group>
+        <Stack.Screen
+          name="settings"
+          component={SettingsLanding}
+          options={{
+            title: '设置'
+          }}
+        />
+        <Stack.Screen
+          name="imgur-settings"
+          component={ImgurSettings}
+          options={{
+            title: 'Imgur 设置'
+          }}
+        />
+        <Stack.Screen
+          name="home-tabs"
+          component={HomeTabsSettings}
+          options={{
+            title: '首页标签排序'
+          }}
+        />
+      </Stack.Group>
+
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen
           name="signin"

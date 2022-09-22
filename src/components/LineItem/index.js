@@ -24,7 +24,11 @@ export const LineItem = (props) => {
           {props.icon && <View className="mr-3">{props.icon}</View>}
           <Text className="text-base">{props.title}</Text>
         </View>
-        {props.extra}
+        {props.extra && (
+          <View className="h-full flex flex-row items-center pr-3">
+            {props.extra}
+          </View>
+        )}
       </View>
     </Pressable>
   )

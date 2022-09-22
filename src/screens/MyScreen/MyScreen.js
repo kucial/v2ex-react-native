@@ -11,7 +11,6 @@ import {
 import { useAuthService } from '@/containers/AuthService'
 import { InlineText } from '@/components/Skeleton/Elements'
 import { LineItem, LineItemGroup } from '@/components/LineItem'
-import { useAlertService } from '@/containers/AlertService'
 
 export default function MyScreen({ navigation }) {
   useEffect(() => {
@@ -26,7 +25,6 @@ export default function MyScreen({ navigation }) {
     composeAuthedNavigation,
     goToSigninSreen
   } = useAuthService()
-  const alert = useAlertService()
 
   useEffect(() => {
     if (authStatus === 'visitor') {
@@ -41,10 +39,7 @@ export default function MyScreen({ navigation }) {
         <Pressable
           className="flex flex-row py-3 px-4 bg-white active:opacity-60"
           onPress={() => {
-            navigation.push('member', {
-              username: currentUser.username
-              // username: 'Livid'
-            })
+            navigation.push('profile')
           }}>
           <Image
             source={{ uri: currentUser.avatar_normal }}
@@ -104,6 +99,14 @@ export default function MyScreen({ navigation }) {
 
       <LineItemGroup>
         <LineItem
+          title="创建的主题"
+          icon={<DocumentIcon size={24} color="#111" />}
+          disabled={authStatus === 'loading'}
+          onPress={composeAuthedNavigation(() => {
+            navigation.push('created-topics')
+          })}
+        />
+        <LineItem
           title="收藏的主题"
           icon={<DocumentIcon size={24} color="#111" />}
           disabled={authStatus === 'loading'}
@@ -123,13 +126,18 @@ export default function MyScreen({ navigation }) {
           title="浏览的主题"
           icon={<DocumentIcon size={24} color="#111" />}
           disabled={authStatus === 'loading'}
+          extra={
+            <View className="bg-gray-100 px-1 py-1 rounded">
+              <Text className="text-xs text-gray-500">本地缓存</Text>
+            </View>
+          }
           onPress={composeAuthedNavigation(() => {
             navigation.push('viewed-topics')
           })}
         />
       </LineItemGroup>
 
-      <LineItemGroup>
+      {/* <LineItemGroup>
         <LineItem
           title="图片库"
           icon={<PhotoIcon size={24} color="#111" />}
@@ -152,7 +160,7 @@ export default function MyScreen({ navigation }) {
             alert.alertWithType('error', '错误', '未开发完成')
           }}
         />
-      </LineItemGroup>
+      </LineItemGroup> */}
 
       <LineItemGroup>
         <LineItem
@@ -176,7 +184,7 @@ export default function MyScreen({ navigation }) {
       {currentUser && (
         <View className="px-4 py-8 flex-1 justify-end">
           <Pressable
-            className="flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60 active:bg-red-100 "
+            className="flex flex-row items-center justify-center h-[44px] rounded-md bg-gray-50 active:opacity-60 active:bg-red-100 "
             onPress={() => {
               Alert.alert('确认要退出登录吗?', '', [
                 {

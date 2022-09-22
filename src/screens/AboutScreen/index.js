@@ -11,12 +11,10 @@ export default function AboutScreen() {
       <View className="flex-1 px-4 py-4 items-center justify-center">
         <View>
           <View className="mb-2">
-            <Text className="text-2xl font-bold text-center">V2EX</Text>
+            <Text className="text-2xl font-bold text-center">\V2EX/</Text>
           </View>
           <View className="my-2">
-            <Text className="text-base text-center">
-              又一个 V2EX 第三方客户端
-            </Text>
+            <Text className="text-base text-center">V2EX 第三方客户端</Text>
           </View>
           <View className="mt-1 ">
             <Text className="text-sm text-gray-600 text-center">
