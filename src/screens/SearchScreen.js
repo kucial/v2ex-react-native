@@ -95,6 +95,7 @@ export default function SearchScreen({ navigation }) {
                   className="rounded-full w-[40px] h-[40px] active:bg-gray-100 active:opacity-60 items-center justify-center"
                   onPress={() => {
                     setKeyword('')
+                    setLoading(false)
                     searchInput.current?.clear()
                     searchInput.current?.focus()
                   }}>
