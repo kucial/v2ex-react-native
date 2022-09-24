@@ -250,10 +250,8 @@ function TopicScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     if (topic?.title) {
-      const title = maxLen(topic.title, 12)
-      // const title = maxLen(`#${topic.id} ${topic.title}`, 16)
       navigation.setOptions({
-        title
+        title: topic.title
       })
     }
   }, [topic?.title])
@@ -698,4 +696,4 @@ function TopicScreen({ navigation, route }) {
   )
 }
 
-export default memo(TopicScreen)
+export default TopicScreen
