@@ -17,6 +17,7 @@ import AuthService from './src/containers/AuthService'
 import AlertService from './src/containers/AlertService'
 import ImgurService from './src/containers/ImgurService'
 import ActivityIndicator from './src/containers/ActivityIndicator'
+import ViewedTopicsService from './src/containers/ViewedTopicsService'
 
 import HomeScreen from './src/screens/HomeScreen'
 import NodesScreen from './src/screens/NodesScreen'
@@ -181,7 +182,7 @@ function AppStack() {
           name="created-topics"
           component={CreatedTopicsScreen}
           options={{
-            title: '收藏的主题'
+            title: '创建的主题'
           }}
         />
         <Stack.Screen
@@ -320,27 +321,29 @@ const swrConfig = {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <FetcherWebView />
-      <SWRConfig value={swrConfig}>
-        <TailwindProvider>
+    <TailwindProvider>
+      <ErrorBoundary>
+        <FetcherWebView />
+        <SWRConfig value={swrConfig}>
           <AlertService>
             <ActionSheetProvider>
               <ActivityIndicator>
                 <NavigationContainer>
                   <AuthService>
-                    <ImgurService>
-                      {/* <DebugScreen /> */}
-                      <AppStack />
-                    </ImgurService>
+                    <ViewedTopicsService>
+                      <ImgurService>
+                        {/* <DebugScreen /> */}
+                        <AppStack />
+                      </ImgurService>
+                    </ViewedTopicsService>
                   </AuthService>
                 </NavigationContainer>
               </ActivityIndicator>
             </ActionSheetProvider>
           </AlertService>
-        </TailwindProvider>
-      </SWRConfig>
-    </ErrorBoundary>
+        </SWRConfig>
+      </ErrorBoundary>
+    </TailwindProvider>
   )
 }
 

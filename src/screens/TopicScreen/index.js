@@ -16,7 +16,8 @@ import React, {
   useCallback,
   useState,
   memo,
-  useRef
+  useRef,
+  useEffect
 } from 'react'
 import { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
@@ -43,12 +44,14 @@ import SlideUp from '@/components/SlideUp'
 
 import { hasReachEnd, isLoading, useSWR, isRefreshing } from '@/utils/swr'
 import fetcher from '@/utils/fetcher'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
+import { useAuthService } from '@/containers/AuthService'
+import { useViewedTopics } from '@/containers/ViewedTopicsService'
 
 import TopicReplyForm from './TopicReplyForm'
 import ReplyRow from './ReplyRow'
-import { useAuthService } from '@/containers/AuthService'
 import Converation from './Conversation'
 
 const maxLen = (str = '', limit = 0) => {
@@ -148,8 +151,10 @@ function TopicScreen({ navigation, route }) {
     params: { brief, id }
   } = route
   const { showActionSheetWithOptions } = useActionSheet()
-  const [conversationContext, setConversationContext] = useState(null)
   const alert = useAlertService()
+  const { touchViewed } = useViewedTopics()
+
+  const [conversationContext, setConversationContext] = useState(null)
 
   const listRef = useRef()
   const { width } = useWindowDimensions()
@@ -252,6 +257,12 @@ function TopicScreen({ navigation, route }) {
       })
     }
   }, [topic?.title])
+
+  useEffect(() => {
+    if (topicSwr.data) {
+      touchViewed(topicSwr.data)
+    }
+  }, [topicSwr.data])
 
   const htmlRenderProps = useMemo(() => {
     if (!topic) {

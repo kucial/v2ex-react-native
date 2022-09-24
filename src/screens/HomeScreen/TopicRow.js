@@ -1,5 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
+import classNames from 'classnames'
+
 import { useNavigation } from '@react-navigation/native'
 import {
   BlockText,
@@ -58,22 +60,24 @@ export default function TopicRow(props) {
           brief: props.data
         })
       }}>
-      <View className="flex-1 py-2 pl-1">
-        <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
-          <FixedPressable
-            onPress={() => {
-              navigation.navigate('member', {
-                username: member.username,
-                brief: member
-              })
-            }}>
-            <Image
-              source={{
-                uri: member.avatar_mini
-              }}
-              className="w-[24px] h-[24px] rounded"
-            />
-          </FixedPressable>
+      <View className="px-2 py-2 self-start">
+        <FixedPressable
+          onPress={() => {
+            navigation.navigate('member', {
+              username: member.username,
+              brief: member
+            })
+          }}>
+          <Image
+            source={{
+              uri: member.avatar_mini
+            }}
+            className="w-[24px] h-[24px] rounded"
+          />
+        </FixedPressable>
+      </View>
+      <View className={classNames('flex-1 py-2', props.viewed && 'opacity-80')}>
+        <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
           <View>
             <FixedPressable
               hitSlop={4}
@@ -104,7 +108,7 @@ export default function TopicRow(props) {
             </FixedPressable>
           </View>
         </View>
-        <View className="pl-[34px]">
+        <View>
           <Text className="text-base text-gray-700">{title}</Text>
           <View className="mt-2 flex flex-row items-center">
             <Text className="text-xs text-gray-400">

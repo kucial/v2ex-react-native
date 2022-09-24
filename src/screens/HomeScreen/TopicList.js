@@ -9,9 +9,11 @@ import CommonListFooter from '@/components/CommonListFooter'
 
 import TopicRow from './TopicRow'
 import { useAlertService } from '@/containers/AlertService'
+import { useViewedTopics } from '@/containers/ViewedTopicsService'
 
 export default function TopicList(props) {
   const alert = useAlertService()
+  const { hasViewed } = useViewedTopics()
   const listSwr = useSWRInfinite(props.getKey, {
     revalidateOnMount: false,
     shouldRetryOnError: false,
@@ -19,10 +21,15 @@ export default function TopicList(props) {
       alert.alertWithType('error', '错误', err.message || '请求资源失败')
     }
   })
-  const { renderItem, keyExtractor } = useMemo(() => ({
-    renderItem: ({ item }) => <TopicRow data={item} />,
-    keyExtractor: (item, index) => item?.id || `index-${index}`
-  }))
+  const { renderItem, keyExtractor } = useMemo(
+    () => ({
+      renderItem: ({ item }) => (
+        <TopicRow data={item} viewed={hasViewed(item?.id)} />
+      ),
+      keyExtractor: (item, index) => item?.id || `index-${index}`
+    }),
+    [hasViewed]
+  )
 
   const isFocused = useIsFocused()
 

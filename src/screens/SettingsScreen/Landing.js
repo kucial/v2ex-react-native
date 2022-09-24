@@ -24,6 +24,15 @@ export function SettingsLanding({ navigation }) {
       </LineItemGroup>
       <LineItemGroup>
         <LineItem
+          title="显示设置"
+          onPress={() => {
+            // TODO... UPDATE SETTINGS
+          }}
+          isLast
+        />
+      </LineItemGroup>
+      <LineItemGroup>
+        <LineItem
           title="Imgur 图床设置"
           onPress={() => {
             navigation.push('imgur-settings')
