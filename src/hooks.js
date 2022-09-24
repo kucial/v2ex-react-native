@@ -1,8 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { getScreenInfo } from './utils/url'
 import { getJSON, setJSON } from './utils/storage'
-import { useEffect } from 'react'
 
 export const useAppLinkHandler = () => {
   const navigation = useNavigation()
@@ -37,15 +36,18 @@ function useStateCallback(initialState) {
 }
 
 export const useCachedState = (cacheKey, initialState = null) => {
-  const [state, setState] = useStateCallback(() => {
-    return getJSON(cacheKey, initialState)
+  const cacheInit = useRef(null)
+  const [state, setState] = useState(() => {
+    const cache = getJSON(cacheKey, initialState)
+    cacheInit.current = cache
+    return cache
   })
 
-  const setStateThenCache = useCallback(
-    (updater) => {
-      setState(updater, (updated) => setJSON(cacheKey, updated))
-    },
-    [cacheKey]
-  )
-  return [state, setStateThenCache]
+  useEffect(() => {
+    if (cacheInit.current !== state) {
+      setJSON(cacheKey, state)
+    }
+  }, [state])
+
+  return [state, setState]
 }

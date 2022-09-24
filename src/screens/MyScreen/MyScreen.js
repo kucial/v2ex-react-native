@@ -131,9 +131,9 @@ export default function MyScreen({ navigation }) {
               <Text className="text-xs text-gray-500">本地缓存</Text>
             </View>
           }
-          onPress={composeAuthedNavigation(() => {
+          onPress={() => {
             navigation.push('viewed-topics')
-          })}
+          }}
         />
       </LineItemGroup>
 

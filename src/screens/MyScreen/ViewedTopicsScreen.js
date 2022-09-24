@@ -1,13 +1,16 @@
-import { View, Text, Image, FlatList } from 'react-native'
-import { useMemo } from 'react'
+import { View, Text, Image, FlatList, Pressable } from 'react-native'
+import { useMemo, useLayoutEffect } from 'react'
 import classNames from 'classnames'
+import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
+import { useActionSheet } from '@expo/react-native-action-sheet'
 
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import FixedPressable from '@/components/FixedPressable'
 import TimeAgo from '@/components/TimeAgo'
 
 export default function ViewedTopicsScreen({ navigation }) {
-  const { items } = useViewedTopics()
+  const { items, clear } = useViewedTopics()
+  const { showActionSheetWithOptions } = useActionSheet()
   const { renderItem, keyExtractor } = useMemo(
     () => ({
       renderItem: ({ item }) => {
@@ -86,6 +89,32 @@ export default function ViewedTopicsScreen({ navigation }) {
     }),
     []
   )
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: (props) => (
+        <Pressable
+          className="h-[44px] w-[44px] items-center justify-center -mr-4 active:opacity-60"
+          onPress={() => {
+            // actionsheet
+            showActionSheetWithOptions(
+              {
+                options: ['取消', '清除缓存'],
+                cancelButtonIndex: 0,
+                destructiveButtonIndex: 1
+              },
+              (buttonIndex) => {
+                if (buttonIndex === 1) {
+                  clear()
+                }
+              }
+            )
+          }}>
+          <EllipsisHorizontalIcon size={24} color="#333" />
+        </Pressable>
+      )
+    })
+  }, [])
 
   return (
     <FlatList
