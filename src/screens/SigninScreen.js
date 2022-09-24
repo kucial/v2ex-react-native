@@ -151,8 +151,9 @@ export default function LoginScreen({ navigation }) {
           setCaptchaImage(data.payload)
           break
         case 'login_success':
-          alert.alertWithType('success', '成功', '登录成功')
-          fetchCurrentUser()
+          fetchCurrentUser().then(() => {
+            alert.alertWithType('success', '成功', '登录成功')
+          })
           break
         case 'login_error':
           setIsSubmitting(false)
