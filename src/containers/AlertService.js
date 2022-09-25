@@ -12,7 +12,9 @@ export default function AlertService(props) {
           if (ref.current) {
             return ref.current[prop]
           }
-          console.warn('alert service instance not ref...')
+          if (typeof prop !== 'symbol') {
+            console.warn('alert service instance not ref...')
+          }
           return null
         }
       }
