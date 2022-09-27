@@ -54,7 +54,11 @@ export function InlineText(props) {
       }}>
       <View
         style={[
-          tw(`${textColor ? '' : 'bg-gray-100'} rounded w-full animate-pulse`),
+          tw(
+            `${
+              textColor ? '' : 'bg-neutral-100 dark:bg-neutral-750'
+            } rounded w-full animate-pulse`
+          ),
           {
             height: getStyleValue(props.style, 'fontSize') || 16
           },
@@ -97,7 +101,12 @@ export function InlineBox(props) {
     }
   }, [props.width])
   return (
-    <View style={[tw('bg-gray-100'), props.style, width && { width }]}>
+    <View
+      style={[
+        tw('bg-neutral-100 dark:bg-neutral-750'),
+        props.style,
+        width && { width }
+      ]}>
       <Text> </Text>
     </View>
   )
@@ -105,7 +114,7 @@ export function InlineBox(props) {
 
 export function Box(props) {
   return (
-    <View className="bg-gray-100" style={props.style}>
+    <View className="bg-neutral-100 dark:bg-neutral-750" style={props.style}>
       {props.children}
     </View>
   )

@@ -8,14 +8,14 @@ const LineItem = (props) => {
   return (
     <View
       className={`pl-4 bg-white ${
-        props.isLast ? 'border-b border-b-gray-300' : ''
+        props.isLast ? 'border-b border-b-neutral-300' : ''
       }`}>
       <View
         className={`flex flex-row flex-1 items-start py-4 ${
-          props.isLast ? '' : 'border-b border-b-gray-300 '
+          props.isLast ? '' : 'border-b border-b-neutral-300 '
         }}`}>
         <View className="w-[80px]">
-          <Text className="text-gray-500">{props.label}</Text>
+          <Text className="text-neutral-500">{props.label}</Text>
         </View>
         <View>{props.value}</View>
       </View>

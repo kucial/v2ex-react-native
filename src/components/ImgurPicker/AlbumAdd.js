@@ -21,7 +21,7 @@ export default function AlbumCard(props) {
         })
       }}>
       <View className="w-full pt-[100%] rounded-lg overflow-hidden ">
-        <View className="absolute inset-0 w-full">
+        <View className="absolute inset-0 w-full dark:bg-neutral-500">
           <ImageBackground
             source={albumAdd}
             resizeMode="cover"
@@ -32,7 +32,7 @@ export default function AlbumCard(props) {
         </View>
       </View>
       <Text
-        className="text-center text-sm mt-1"
+        className="text-center text-sm mt-1 dark:text-neutral-300"
         numberOfLines={1}
         ellipsizeMode="tail">
         新建相册

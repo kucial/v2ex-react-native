@@ -12,7 +12,7 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAlbum } from './context'
 import { USER_ROOT_ALBUM } from './constants'
 
-export default function UploadButton() {
+export default function UploadButton(props) {
   const imgur = useImgurService()
   const album = useAlbum()
   const { mutate } = useSWRConfig()
@@ -22,7 +22,7 @@ export default function UploadButton() {
   }
   return (
     <Pressable
-      className="h-[44px] w-[44px] items-center justify-center rounded-full active:bg-gray-100"
+      className="h-[44px] w-[44px] items-center justify-center rounded-full active:bg-neutral-100"
       onPress={async () => {
         const permissionRes =
           await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -58,8 +58,8 @@ export default function UploadButton() {
           Sentry.captureException(err)
         }
       }}>
-      <ArrowUpTrayIcon size={22} color="#111" />
-      {/* <Text className="text-gray-900 font-medium text-base text-tracking-whider">
+      <ArrowUpTrayIcon size={22} color={props.tintColor} />
+      {/* <Text className="text-neutral-900 font-medium text-base text-tracking-whider">
         上传
       </Text> */}
     </Pressable>

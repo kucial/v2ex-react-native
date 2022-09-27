@@ -3,21 +3,19 @@ import {
   Text,
   KeyboardAvoidingView,
   TextInput,
-  Pressable,
-  Image
+  Pressable
 } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import classNames from 'classnames'
-import { useForm, Controller } from 'react-hook-form'
 import * as Clipboard from 'expo-clipboard'
 import * as Linking from 'expo-linking'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 import { IMGUR_CLIENT_ID } from '@env'
-import Loader from '@/components/Loader'
-import { LineItemGroup } from '@/components/LineItem'
 import { useAlertService } from '@/containers/AlertService'
-import imgurLogo from '@/assets/imgur_logo.png'
+import ImgurLogo from '@/components/ImgurLogo'
+
 import { getJSON } from '@/utils/storage'
 import { useImgurService } from '@/containers/ImgurService'
 
@@ -25,6 +23,7 @@ const CACHE_KEY = `$app$/settings/imgur`
 
 export function ImgurSettings(props) {
   const { route, navigation } = props
+  const { colorScheme } = useColorScheme()
   const alert = useAlertService()
   const imgurService = useImgurService()
   const [clientInfo, setClientInfo] = useState(
@@ -58,59 +57,78 @@ export function ImgurSettings(props) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <LineItemGroup className="bg-white p-3">
+      <View className="p-3 mt-5 mx-4 rounded-lg bg-white dark:bg-neutral-900">
         <View className="flex flex-row justify-center mt-2 mb-3">
-          <Image
-            source={imgurLogo}
+          <ImgurLogo
             style={{ width: 80, height: (80 / 220) * 79 }}
+            color={
+              colorScheme === 'dark' ? colors.neutral[200] : colors.neutral[900]
+            }
           />
         </View>
         {imgurService.credentials ? (
           <View>
             <View>
-              <Text className={classNames('text-sm pl-2 pb-[2px]')}>
+              <Text
+                className={classNames(
+                  'text-sm pl-2 pb-[2px] dark:text-neutral-300'
+                )}>
                 Client ID
               </Text>
-              <View className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md flex flex-row items-center">
-                <Text>{imgurService.credentials.client_id}</Text>
+              <View className="h-[44px] px-2 bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md flex flex-row items-center">
+                <Text className="dark:text-neutral-300">
+                  {imgurService.credentials.client_id}
+                </Text>
               </View>
             </View>
             <View>
-              <Text className={classNames('text-sm pl-2 pb-[2px]')}>
+              <Text
+                className={classNames(
+                  'text-sm pl-2 pb-[2px] dark:text-neutral-300'
+                )}>
                 Account Username
               </Text>
-              <View className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md flex flex-row items-center">
-                <Text>{imgurService.credentials.account_username}</Text>
+              <View className="h-[44px] px-2 bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md flex flex-row items-center">
+                <Text className="dark:text-neutral-300">
+                  {imgurService.credentials.account_username}
+                </Text>
               </View>
             </View>
             <View>
-              <Text className={classNames('text-sm pl-2 pb-[2px]')}>
+              <Text
+                className={classNames(
+                  'text-sm pl-2 pb-[2px] dark:text-neutral-300'
+                )}>
                 Access Token
               </Text>
               <TextInput
                 secureTextEntry
                 editable={false}
-                className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md flex flex-row items-center"
+                className="h-[44px] px-2 bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md flex flex-row items-center dark:text-neutral-300"
                 value={imgurService.credentials.access_token}
               />
             </View>
             <Pressable
               className={classNames(
-                'h-[44px] bg-gray-900 rounded-md flex items-center justify-center active:opacity-60 mt-4 mb-4'
+                'h-[44px] rounded-md flex items-center justify-center active:opacity-60 mt-4 mb-4',
+                'bg-neutral-900',
+                'dark:bg-amber-50'
               )}
               onPress={() => {
                 imgurService.updateCredentials()
               }}>
-              <Text className="text-white text-sm">重置</Text>
+              <Text className="text-white text-sm dark:text-neutral-900">
+                重置
+              </Text>
             </Pressable>
           </View>
         ) : (
           <View>
-            <View className="px-3 py-1 border-l-2 border-gray-900">
-              <Text className="text-gray-500 leading-[20px]">
+            <View className="px-3 py-1 border-l-2 border-neutral-900 dark:border-neutral-300">
+              <Text className="text-neutral-500 dark:text-neutral-300 leading-[20px]">
                 由于 Imgur 服务的资源限制，您可能需要在 imgur 上{' '}
                 <Text
-                  className="underline text-gray-800"
+                  className="underline text-neutral-800 dark:text-amber-200"
                   onPress={() => {
                     Linking.openURL('https://api.imgur.com/oauth2/addclient')
                   }}>
@@ -119,23 +137,36 @@ export function ImgurSettings(props) {
                 ，并将 Authorization callback URL 设置为
               </Text>
               <Pressable
-                className="h-[33px] mt-1 bg-gray-100 flex flex-row items-center px-1 rounded active:opacity-60"
+                className="h-[33px] mt-1 bg-neutral-100 dark:bg-neutral-800 flex flex-row items-center px-1 rounded active:opacity-60"
                 onPress={async () => {
                   await Clipboard.setStringAsync(REDIRECT_URI)
                   alert.alertWithType('success', '', 'URL 已复制到剪切板')
                 }}>
-                <Text>{REDIRECT_URI}</Text>
+                <Text className="dark:text-neutral-300">{REDIRECT_URI}</Text>
               </Pressable>
             </View>
             <View className="mt-2">
               <Text
-                className={classNames('text-sm pl-2 pb-[2px]', {
-                  'opacity-0': !clientInfo.clientId
-                })}>
+                className={classNames(
+                  'text-sm pl-2 pb-[2px] dark:text-neutral-300',
+                  {
+                    'opacity-0': !clientInfo.clientId
+                  }
+                )}>
                 clientId
               </Text>
               <TextInput
-                className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md"
+                className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-800 dark:text-neutral-300"
+                selectionColor={
+                  colorScheme === 'dark'
+                    ? colors.amber[50]
+                    : colors.neutral[600]
+                }
+                placeholderTextColor={
+                  colorScheme === 'dark'
+                    ? colors.neutral[500]
+                    : colors.neutral[400]
+                }
                 placeholder="Client Id"
                 onChangeText={(value) =>
                   setClientInfo((prev) => ({
@@ -144,7 +175,6 @@ export function ImgurSettings(props) {
                   }))
                 }
                 value={clientInfo.clientId}
-                selectionColor={colors.gray[600]}
                 spellCheck={false}
                 autoCorrect={false}
                 autoCapitalize="none"
@@ -152,7 +182,9 @@ export function ImgurSettings(props) {
             </View>
             <Pressable
               className={classNames(
-                'h-[44px] bg-gray-900 rounded-md flex items-center justify-center active:opacity-60 mt-4 mb-4'
+                'h-[44px] rounded-md flex items-center justify-center active:opacity-60 mt-4 mb-4',
+                'bg-neutral-900',
+                'dark:bg-amber-50'
               )}
               onPress={() => {
                 if (!clientInfo.clientId) {
@@ -162,11 +194,13 @@ export function ImgurSettings(props) {
                   `https://api.imgur.com/oauth2/authorize?client_id=${clientInfo.clientId}&response_type=token`
                 )
               }}>
-              <Text className="text-white text-sm">授权</Text>
+              <Text className="text-white text-sm dark:text-neutral-900">
+                授权
+              </Text>
             </Pressable>
           </View>
         )}
-      </LineItemGroup>
+      </View>
     </KeyboardAvoidingView>
   )
 }

@@ -15,10 +15,10 @@ export default function CollectedNodes() {
   const nodesSwr = useSWR('/page/my/nodes.json')
 
   return (
-    <View className="bg-white mx-1 mt-1 mb-4 rounded-sm shadow">
-      <View className="flex flex-row justify-between items-center border-b border-b-gray-400 px-3">
+    <View className="bg-white mx-1 mt-1 mb-4 rounded-sm dark:bg-neutral-900">
+      <View className="flex flex-row justify-between items-center border-b border-b-neutral-400 px-3 dark:border-neutral-600">
         <View className="py-2">
-          <Text className="font-medium">收藏的节点</Text>
+          <Text className="font-medium dark:text-neutral-300">收藏的节点</Text>
         </View>
       </View>
 
@@ -28,11 +28,11 @@ export default function CollectedNodes() {
           extra={
             <View className="mt-4 flex flex-row justify-center">
               <Pressable
-                className="px-4 h-[44px] w-[120px] rounded-full bg-gray-900 text-white items-center justify-center active:opacity-60"
+                className="px-4 h-[44px] w-[120px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60 dark:bg-amber-50"
                 onPress={() => {
                   nodesSwr.mutate()
                 }}>
-                <Text className="text-white">重试</Text>
+                <Text className="text-white dark:text-neutral-900">重试</Text>
               </Pressable>
             </View>
           }
@@ -50,7 +50,8 @@ export default function CollectedNodes() {
                 <View key={node.name} className="basis-1/2 px-1 py-1">
                   <Pressable
                     className={classNames(
-                      'py-2 px-2 bg-white border border-gray-400 rounded-lg',
+                      'py-2 px-2 bg-white border border-neutral-400 rounded-lg',
+                      'dark:bg-neutral-800 dark:border-neutral-700',
                       'flex flex-row items-center',
                       'active:opacity-60'
                     )}
@@ -63,12 +64,14 @@ export default function CollectedNodes() {
                       className="w-[44px] h-[44px]"
                       source={{ uri: node.avatar_large }}></Image>
                     <View className="ml-3 pt-1">
-                      <Text>{node.title}</Text>
+                      <Text className="text-neutral-900 dark:text-neutral-300">
+                        {node.title}
+                      </Text>
                       <View className="mt-1 flex flex-row items-center">
                         <View className="mr-1">
                           <DocumentIcon size={12} color="#9ca3af" />
                         </View>
-                        <Text className="text-xs text-gray-400">
+                        <Text className="text-xs text-neutral-400">
                           {node.topics}
                         </Text>
                       </View>

@@ -12,14 +12,16 @@ function NodeSection(props) {
   }, [props.nodes])
 
   return (
-    <View className="bg-white mx-1 mt-1 mb-4 rounded-sm shadow">
-      <View className="flex flex-row justify-between items-center border-b border-b-gray-400 px-3">
+    <View className="bg-white dark:bg-neutral-900 mx-1 mt-1 mb-4 rounded-sm shadow">
+      <View className="flex flex-row justify-between items-center border-b border-b-neutral-400 px-3">
         <View className="py-2">
           <InlineText className="font-medium" width={[56, 80]} />
         </View>
         <View className="flex flex-row">
           <InlineText className="text-xs" width={[56, 80]} />
-          <Text className="color-gray-200 px-1 text-xs">•</Text>
+          <Text className="color-neutral-200 px-1 text-xs dark:color-neutral-400">
+            •
+          </Text>
           <InlineText className="text-xs" width={64} />
         </View>
       </View>
@@ -27,7 +29,7 @@ function NodeSection(props) {
         {[...new Array(nodes)].map((_, index) => (
           <InlineBox
             key={index}
-            className="py-2 px-2 border-gray-400 rounded-lg mr-2 mb-2"
+            className="py-2 px-2 border-neutral-400 rounded-lg mr-2 mb-2"
             width={[56, 80]}></InlineBox>
         ))}
       </View>

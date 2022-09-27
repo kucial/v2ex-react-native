@@ -8,11 +8,16 @@ import {
 } from 'react-native'
 import React from 'react'
 import { useState, useCallback, useMemo } from 'react'
+import { useColorScheme } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
+import classNames from 'classnames'
+
 import { useSWR } from '@/utils/swr'
 import SlideUp from '@/components/SlideUp'
 
 export default function NodeSelect(props) {
   const nodesSwr = useSWR('/api/nodes/all.json')
+  const { colorScheme } = useColorScheme()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
 
@@ -28,7 +33,9 @@ export default function NodeSelect(props) {
         (key) => n[key].indexOf(filter) > -1
       )
     )
-  }, [nodesSwr.data])
+  }, [nodesSwr.data, filter])
+
+  console.log(filtered)
 
   const renderItem = useCallback(
     ({ item }) => {
@@ -39,7 +46,12 @@ export default function NodeSelect(props) {
             props.onChange(item)
             setOpen(false)
           }}>
-          <View className="h-[44px] flex flex-row items-center border-b border-gray-300 pr-3">
+          <View
+            className={classNames(
+              'h-[50px] flex flex-row items-center border-b pr-3',
+              'border-neutral-300',
+              'dark:border-neutral-600'
+            )}>
             {props.renderLabel(item)}
           </View>
         </Pressable>
@@ -59,7 +71,7 @@ export default function NodeSelect(props) {
         {props.value ? (
           <Text className="text-[16px]">{props.renderLabel(props.value)}</Text>
         ) : (
-          <Text className="text-gray-900 text-[16px] opacity-30">
+          <Text className="text-neutral-400 dark:text-neutral-500 text-[16px]">
             {props.placeholder}
           </Text>
         )}
@@ -71,10 +83,20 @@ export default function NodeSelect(props) {
           onRequestClose={() => {
             setOpen(false)
           }}>
-          <View className="flex-1 w-full">
+          <View className="flex-1 w-full bg-white dark:bg-[#333333]">
             <View className="p-3">
               <TextInput
-                className="bg-gray-100 rounded-lg flex-1 px-2 h-[36px] text-[16px] leading-[20px]"
+                className="h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-800 dark:text-neutral-300"
+                selectionColor={
+                  colorScheme === 'dark'
+                    ? colors.amber[50]
+                    : colors.neutral[600]
+                }
+                placeholderTextColor={
+                  colorScheme === 'dark'
+                    ? colors.neutral[500]
+                    : colors.neutral[400]
+                }
                 placeholder={props.filterPlaceholder}
                 returnKeyType="search"
                 value={filter}

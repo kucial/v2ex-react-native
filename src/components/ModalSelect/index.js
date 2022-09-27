@@ -17,7 +17,9 @@ export default function ModalSelect(props) {
         {value ? (
           props.renderLabel(value)
         ) : (
-          <Text className="text-gray-400 text-[16px]">{props.placeholder}</Text>
+          <Text className="text-neutral-400 text-[16px]">
+            {props.placeholder}
+          </Text>
         )}
       </Pressable>
       {open && (

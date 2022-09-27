@@ -52,7 +52,7 @@ export default function BrowserScreen({ route, navigation }) {
         <NProgress backgroundColor="#333" height={3} enabled={loading} />
       </View>
       {(historyState.canGoBack || historyState.canGoForward) && (
-        <SafeAreaView className="bg-gray-100">
+        <SafeAreaView className="bg-neutral-100">
           <View className="h-[44px] flex flex-row items-center justify-center">
             <Pressable
               className={classNames(

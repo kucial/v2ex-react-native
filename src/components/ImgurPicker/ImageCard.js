@@ -11,7 +11,7 @@ export default function ImageCard(props) {
   return (
     <Pressable className="active:opacity-50 relative" onPress={props.onPress}>
       <View className="w-full pt-[100%] overflow-hidden">
-        <View className="absolute inset-0 w-full bg-gray-100">
+        <View className="absolute inset-0 w-full bg-neutral-100">
           <ImageBackground
             source={
               data?.link
@@ -35,7 +35,7 @@ export default function ImageCard(props) {
         <View
           className={classNames(
             'w-[18px] h-[18px] rounded-full items-center justify-center',
-            selected ? 'bg-gray-800' : 'border'
+            selected ? 'bg-neutral-800' : 'border'
           )}>
           {selected && <CheckIcon size={12} color="white" />}
         </View>

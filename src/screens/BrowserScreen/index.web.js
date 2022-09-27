@@ -18,7 +18,7 @@ export default function BrowserScreen({ route, navigation }) {
           <Text>{url}</Text>
         </View>
         <Pressable
-          className="h-[44px] rounded-md bg-gray-800 px-3 items-center justify-center active:opacity-60"
+          className="h-[44px] rounded-md bg-neutral-800 px-3 items-center justify-center active:opacity-60"
           onPress={() => {
             Linking.openURL(url)
           }}>

@@ -2,6 +2,8 @@ import { FlatList, View, Text, Pressable, RefreshControl } from 'react-native'
 import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
+import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 
@@ -9,6 +11,7 @@ import { hasReachEnd } from '@/utils/swr'
 import UserTopicRow from './UserTopicRow'
 
 export default function MemberTopics(props) {
+  const { colorScheme } = useColorScheme()
   const getKey = useCallback(
     (index) => {
       return `/page/member/${props.username}/topics.json?p=${index + 1}`
@@ -59,6 +62,9 @@ export default function MemberTopics(props) {
       }}
       refreshControl={
         <RefreshControl
+          tintColor={
+            colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+          }
           onRefresh={() => {
             if (listSwr.isValidating) {
               return

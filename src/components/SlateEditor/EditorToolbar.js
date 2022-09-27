@@ -19,28 +19,37 @@ import {
   Base64Icon
 } from './EditorIcons'
 import { useAlertService } from '@/containers/AlertService'
+import { useTailwind } from 'tailwindcss-react-native'
 
 function ToolbarButton({ active, disabled, onPress, Icon, iconProps }) {
+  const tw = useTailwind()
+  const { color } = tw(
+    active
+      ? 'text-white dark:text-amber-50'
+      : 'text-neutral-800 dark:text-neutral-200'
+  )
   return (
     <Pressable
       disabled={disabled}
       className={classNames(
-        'w-[42px] h-[42px] rounded-md bg-white flex items-center justify-center',
+        'w-[42px] h-[42px] rounded-md bg-white dark:bg-neutral-750 flex items-center justify-center',
         {
-          'bg-gray-900 text-white': active,
-          'active:bg-gray-100': !active,
+          'bg-neutral-900 text-white dark:bg-neutral-600': active,
+          'active:bg-neutral-100': !active,
           'active:opacity-60': !disabled,
           'opacity-50': disabled
         }
       )}
       onPress={onPress}>
-      <Icon size={22} color={active ? 'white' : '#444'} {...iconProps} />
+      <Icon size={22} color={color} {...iconProps} />
     </Pressable>
   )
 }
 
 function Divider() {
-  return <View className="h-[18px] mx-1 w-[1px] bg-gray-300"></View>
+  return (
+    <View className="h-[18px] mx-1 w-[1px] bg-neutral-300 dark:bg-neutral-600"></View>
+  )
 }
 
 export default function EditorToolbar(props) {
@@ -51,7 +60,9 @@ export default function EditorToolbar(props) {
   }
 
   return (
-    <View style={props.style}>
+    <View
+      style={props.style}
+      className="bg-white border-t border-neutral-300 dark:bg-neutral-750 dark:border-neutral-600">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

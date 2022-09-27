@@ -1,6 +1,8 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
 import Constants from 'expo-constants'
+import colors from 'tailwindcss/colors'
+
 import { Box } from '@/components/Skeleton/Elements'
 import BackButton from '@/components/BackButton'
 import { localTime } from '@/utils/time'
@@ -12,7 +14,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
   const { brief, username } = route.params
   const data = swr.data || brief || { username }
   return (
-    <View className="bg-white w-full">
+    <View className="bg-white w-full dark:bg-neutral-900">
       <View
         style={{
           position: 'absolute',
@@ -21,6 +23,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           zIndex: 10
         }}>
         <BackButton
+          tintColor={colors.neutral[900]}
           onPress={() => {
             navigation.goBack()
           }}
@@ -28,7 +31,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
       </View>
       <View className="relative">
         <View
-          className="bg-gray-100 flex flex-row items-end"
+          className="bg-neutral-100 flex flex-row items-end dark:bg-neutral-900"
           style={{
             height: Constants.statusBarHeight + HEADER_CANVAS_HEIGHT
           }}>
@@ -53,13 +56,11 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           }}>
           {data.avatar_large ? (
             <Image
-              className="w-full h-full rounded-full"
+              className="w-full h-full rounded-full bg-white border-white dark:border-neutral-900"
               style={{
                 width: AVATAR_SIZE,
                 height: AVATAR_SIZE,
-                borderWidth: 3,
-                borderColor: 'white',
-                backgroundColor: 'white'
+                borderWidth: 3
               }}
               source={{ uri: data.avatar_large }}
             />
@@ -80,7 +81,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           minHeight: AVATAR_SIZE / 2,
           paddingVertical: 4
         }}>
-        <Text className="text-gray-500 text-sm">
+        <Text className="text-neutral-500 text-sm">
           {data.created && (
             <Text className="mb-1">{localTime(data.created * 1000)} 加入</Text>
           )}

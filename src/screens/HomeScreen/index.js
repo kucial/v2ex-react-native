@@ -6,6 +6,8 @@ import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
 import Loader from '@/components/Loader'
 
 import TopicList from './TopicList'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
 
 const Tab = createMaterialTopTabNavigator()
 
@@ -14,6 +16,9 @@ export default function HomeScreen() {
     revalidateIfStale: false,
     shouldRetryOnError: false
   })
+  const { colorScheme } = useColorScheme()
+
+  const tw = useTailwind()
 
   const tabs = useMemo(() => {
     if (!tabsSwr.data) {
@@ -56,7 +61,7 @@ export default function HomeScreen() {
           </Text>
           <Pressable
             disabled={tabsSwr.isValidating}
-            className="mt-4 px-4 h-[44px] w-[200px] rounded-full bg-gray-900 text-white items-center justify-center active:opacity-60"
+            className="mt-4 px-4 h-[44px] w-[200px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60"
             onPress={() => {
               tabsSwr.mutate()
             }}>
@@ -79,15 +84,14 @@ export default function HomeScreen() {
     <Tab.Navigator
       screenOptions={{
         tabBarScrollEnabled: true,
-        tabBarItemStyle: {
-          paddingHorizontal: 6,
-          flexGrow: 0,
-          flexShrink: 0,
-          minWidth: 0,
-          width: 62,
-          minHeight: 42
-        },
-        tabBarIndicatorStyle: { backgroundColor: '#111' },
+        tabBarItemStyle: tw(
+          'px-[6px] flex-grow-0 flex-shrink-0 min-w-0 w-[62px] min-h-[42px]'
+        ),
+        tabBarLabelStyle: tw('text-neutral-900 dark:text-neutral-200'),
+        tabBarStyle: tw('bg-white dark:bg-neutral-900'),
+        tabBarActiveTintColor:
+          colorScheme === 'dark' ? colors.amber[50] : colors.neutral[900],
+        // tabBarContentContainerStyle: tw('dark:bg-neutral-900'),
         lazy: true
       }}>
       {tabs.map((tab) => (

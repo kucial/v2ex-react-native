@@ -6,7 +6,7 @@ import { Switch } from 'react-native'
 export function SettingsLanding({ navigation }) {
   return (
     <View className="py-2">
-      <LineItemGroup>
+      {/* <LineItemGroup>
         <LineItem
           title="首页标签排序"
           onPress={() => {
@@ -30,7 +30,7 @@ export function SettingsLanding({ navigation }) {
           }}
           isLast
         />
-      </LineItemGroup>
+      </LineItemGroup> */}
       <LineItemGroup>
         <LineItem
           title="Imgur 图床设置"

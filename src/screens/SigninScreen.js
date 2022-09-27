@@ -21,6 +21,8 @@ import Loader from '@/components/Loader'
 
 import logoImage from '@/assets/logo.png'
 import { useAlertService } from '@/containers/AlertService'
+import Logo from '@/components/Logo'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 const extractImageCaptcha = `
 (function() {
@@ -112,6 +114,7 @@ const getSubmitScripts = (values) => {
 }
 
 export default function LoginScreen({ navigation }) {
+  const { colorScheme } = useColorScheme()
   const [captchaImage, setCaptchaImage] = useState()
   const webviewRef = useRef()
   const nameInput = useRef()
@@ -187,10 +190,14 @@ export default function LoginScreen({ navigation }) {
   }, [])
 
   const values = watch()
+
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-white dark:bg-neutral-800">
       <View className="u-absolute left-1 top-1">
         <BackButton
+          tintColor={
+            colorScheme === 'dark' ? colors.neutral['400'] : colors.neutral[800]
+          }
           onPress={() => {
             navigation.goBack()
           }}
@@ -198,7 +205,12 @@ export default function LoginScreen({ navigation }) {
       </View>
       <ScrollView className="flex-1 w-full ">
         <View className="flex flex-row justify-center mt-1">
-          <Image style={{ width: 94, height: 30 }} source={logoImage} />
+          <Logo
+            style={{ width: 94, height: 30 }}
+            color={
+              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[800]
+            }
+          />
         </View>
         <Pressable
           className="w-full"
@@ -210,21 +222,33 @@ export default function LoginScreen({ navigation }) {
             className="flex-1 w-full items-center">
             <View className="py-4 px-8 w-full">
               <Text
-                className={classNames('text-xs pl-2 pb-[2px]', {
-                  'opacity-0': !values.username
-                })}>
+                className={classNames(
+                  'text-xs pl-2 pb-[2px] dark:text-neutral-300',
+                  {
+                    'opacity-0': !values.username
+                  }
+                )}>
                 用户名
               </Text>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md"
+                    className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-900 dark:text-neutral-300"
+                    selectionColor={
+                      colorScheme === 'dark'
+                        ? colors.amber[50]
+                        : colors.neutral[600]
+                    }
+                    placeholderTextColor={
+                      colorScheme === 'dark'
+                        ? colors.neutral[500]
+                        : colors.neutral[400]
+                    }
                     onBlur={onBlur}
                     placeholder="用户名"
                     onChangeText={(value) => onChange(value)}
                     value={value}
-                    selectionColor={colors.gray[600]}
                     spellCheck={false}
                     autoCorrect={false}
                     autoCapitalize="none"
@@ -235,21 +259,33 @@ export default function LoginScreen({ navigation }) {
                 rules={{ required: true }}
               />
               <Text
-                className={classNames('text-xs pl-2 pb-[2px]', {
-                  'opacity-0': !values.password
-                })}>
+                className={classNames(
+                  'text-xs pl-2 pb-[2px] dark:text-neutral-300',
+                  {
+                    'opacity-0': !values.password
+                  }
+                )}>
                 密码
               </Text>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md"
+                    className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-900 dark:text-neutral-300"
+                    selectionColor={
+                      colorScheme === 'dark'
+                        ? colors.amber[50]
+                        : colors.neutral[600]
+                    }
+                    placeholderTextColor={
+                      colorScheme === 'dark'
+                        ? colors.neutral[500]
+                        : colors.neutral[400]
+                    }
                     onBlur={onBlur}
                     placeholder="密码"
                     onChangeText={(value) => onChange(value)}
                     secureTextEntry
-                    selectionColor={colors.gray[600]}
                     value={value}
                     autoCorrect={false}
                     autoCapitalize="none"
@@ -273,22 +309,34 @@ export default function LoginScreen({ navigation }) {
                 </Pressable>
               ) : (
                 <View
-                  style={{ wdith: 300, height: 75 }}
-                  className="rounded-md mb-2 mt-1 bg-gray-100"
+                  style={{ width: 300, height: 75 }}
+                  className="rounded-md mb-2 mt-1 bg-neutral-100 dark:bg-neutral-900"
                 />
               )}
               <Text
-                className={classNames('text-xs pl-2 pb-[2px]', {
-                  'opacity-0': !values.captcha
-                })}>
+                className={classNames(
+                  'text-xs pl-2 pb-[2px] dark:text-neutral-300',
+                  {
+                    'opacity-0': !values.captcha
+                  }
+                )}>
                 验证码
               </Text>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md"
-                    selectionColor={colors.gray[600]}
+                    className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-900 dark:text-neutral-300"
+                    selectionColor={
+                      colorScheme === 'dark'
+                        ? colors.amber[50]
+                        : colors.neutral[600]
+                    }
+                    placeholderTextColor={
+                      colorScheme === 'dark'
+                        ? colors.neutral[500]
+                        : colors.neutral[400]
+                    }
                     onBlur={onBlur}
                     placeholder="验证码"
                     onChangeText={(value) => onChange(value)}
@@ -309,7 +357,9 @@ export default function LoginScreen({ navigation }) {
 
               <Pressable
                 className={classNames(
-                  'h-[44px] bg-gray-900 rounded-md flex items-center justify-center active:opacity-60 mt-4',
+                  'h-[44px] rounded-md flex items-center justify-center mt-4',
+                  'bg-neutral-900 active:opacity-60',
+                  'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
                   {
                     'opacity-60': isSubmitting
                   }
@@ -321,9 +371,18 @@ export default function LoginScreen({ navigation }) {
                   handleSubmit(submitLoginForm)(e)
                 }}>
                 {isSubmitting ? (
-                  <Loader size={20} color="#ffffffbc" />
+                  <Loader
+                    size={20}
+                    color={
+                      colorScheme === 'dark'
+                        ? colors.neutral[900]
+                        : colors.neutral[100]
+                    }
+                  />
                 ) : (
-                  <Text className="text-white text-base">登录</Text>
+                  <Text className="text-white text-base dark:text-neutral-900">
+                    登录
+                  </Text>
                 )}
               </Pressable>
 
@@ -337,9 +396,9 @@ export default function LoginScreen({ navigation }) {
                 </View>
               )}
 
-              {/* <View className="h-[1px] w-full bg-gray-100 mt-8 mb-4"></View>
+              {/* <View className="h-[1px] w-full bg-neutral-100 mt-8 mb-4"></View>
               <Pressable
-                className="h-[44px] rounded-md flex items-center justify-center active:bg-gray-200 active:opacity-60"
+                className="h-[44px] rounded-md flex items-center justify-center active:bg-neutral-200 active:opacity-60"
                 onPress={() => {
                   console.log('pressed.....')
 

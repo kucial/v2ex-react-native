@@ -25,7 +25,7 @@ const Image = ({ attributes, children, element }) => {
           src={element.data.url}
           width={element.data.width}
           height={element.data.height}
-          className={`block max-w-full h-auto mx-auto ${selected && focused ? 'outline-2 outline outline-gray-800' : ''}`}
+          className={`block max-w-full h-auto mx-auto ${selected && focused ? 'outline-2 outline outline-neutral-800' : ''}`}
         />
         <button
           className={`btn w-[44px] h-[44px] absolute top-2 right-2 bg-white rounded-lg ${ selected && focused ? 'flex': '!hidden'}`}

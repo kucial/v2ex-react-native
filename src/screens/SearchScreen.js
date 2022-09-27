@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import Constants from 'expo-constants'
-import { useTailwind } from 'tailwindcss-react-native'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 import WebView from 'react-native-webview'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
@@ -15,6 +15,7 @@ import { NProgress } from 'react-native-nprogress'
 import BackButton from '@/components/BackButton'
 import { getScreenInfo } from '@/utils/url'
 import { getJSON, setJSON } from '@/utils/storage'
+import colors from 'tailwindcss/colors'
 
 const topicLinkCapture = `(function() {
   try {
@@ -45,7 +46,7 @@ const CACHE_KEY = '$app$/ui/search-keyword'
 
 export default function SearchScreen({ navigation }) {
   const searchInput = useRef()
-  const tw = useTailwind()
+  const { colorScheme } = useColorScheme()
   const [keyword, setKeyword] = useState(getJSON(CACHE_KEY))
   const [loading, setLoading] = useState(false)
   useEffect(() => {
@@ -62,25 +63,34 @@ export default function SearchScreen({ navigation }) {
   return (
     <View className="flex-1">
       <View
-        className="bg-white w-full flex-row items-center pl-1"
+        className="bg-white w-full flex-row items-center pl-1 dark:bg-neutral-900"
         style={{
           height: 48 + Constants.statusBarHeight,
           paddingTop: Constants.statusBarHeight
         }}>
         <View className="mr-1">
           <BackButton
+            tintColor={
+              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+            }
             onPress={() => {
               navigation.goBack()
             }}
           />
         </View>
         <View className="flex flex-row flex-1 pr-3 items-center">
-          <View className="relative flex-1 py-2">
+          <View className="relative flex-1 py-[6px]">
             <TextInput
-              style={{
-                ...tw('bg-gray-100 rounded-lg flex-1 px-2 text-base'),
-                lineHeight: 20
-              }}
+              className="bg-neutral-100 rounded-lg flex-1 px-2 text-base dark:bg-neutral-800 dark:text-neutral-200"
+              placeholderTextColor={
+                colorScheme === 'dark'
+                  ? colors.neutral[500]
+                  : colors.neutral[400]
+              }
+              selectionColor={
+                colorScheme === 'dark' ? colors.amber[50] : colors.neutral[600]
+              }
+              style={{ lineHeight: 20 }}
               defaultValue={keyword || ''}
               ref={searchInput}
               placeholder="输入关键词"
@@ -90,24 +100,31 @@ export default function SearchScreen({ navigation }) {
               }}
             />
             {!!keyword && (
-              <View className="absolute right-0 top-2 h-full flex flex-row items-center justify-center">
+              <View className="absolute right-0 top-[6px] h-full flex flex-row items-center justify-center">
                 <Pressable
-                  className="rounded-full w-[40px] h-[40px] active:bg-gray-100 active:opacity-60 items-center justify-center"
+                  className="rounded-full w-[40px] h-[40px] active:bg-neutral-100 active:opacity-60 items-center justify-center dark:active:bg-neutral-600"
                   onPress={() => {
                     setKeyword('')
                     setLoading(false)
                     searchInput.current?.clear()
                     searchInput.current?.focus()
                   }}>
-                  <XMarkIcon size={18} color="#333" />
+                  <XMarkIcon
+                    size={18}
+                    color={
+                      colorScheme === 'dark'
+                        ? colors.neutral[500]
+                        : colors.neutral[400]
+                    }
+                  />
                 </Pressable>
               </View>
             )}
           </View>
           <Pressable
             hitSlop={6}
-            className="rounded px-3 py-2 ml-2 active:bg-gray-100 active:opacity-60">
-            <Text className="text-gray-900 font-medium tracking-wide text-md">
+            className="rounded px-3 py-[10px] ml-2 active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600">
+            <Text className="text-neutral-900 font-medium tracking-wide text-md dark:text-amber-50">
               搜索
             </Text>
           </Pressable>

@@ -10,7 +10,7 @@ import {
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import { useTailwind } from 'tailwindcss-react-native'
+import { useTailwind, useColorScheme } from 'tailwindcss-react-native'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
@@ -23,11 +23,13 @@ import fetcher from '@/utils/fetcher'
 import NodeTopicRow from './NodeTopicRow'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
+import colors from 'tailwindcss/colors'
 
 export default function NodeScreen({ route, navigation }) {
   const { name, brief } = route.params
   const [collecting, setCollecting] = useState(false)
   const { mutate } = useSWRConfig()
+  const { colorScheme } = useColorScheme()
 
   const { width } = useWindowDimensions()
   const tw = useTailwind()
@@ -87,13 +89,13 @@ export default function NodeScreen({ route, navigation }) {
   }, [feedSwr])
 
   const header = (
-    <View className="mb-3 p-2 bg-white">
-      <View className="bg-white rounded-lg">
+    <View className="mb-3 p-2 bg-white dark:bg-neutral-900">
+      <View className="rounded-lg">
         <View className="flex flex-row">
           <Image
             style={[
               tw('w-[60px] h-[60px] mr-3'),
-              !node.avatar_large && tw('bg-gray-100')
+              !node.avatar_large && tw('bg-neutral-100 dark:bg-neutral-750')
             ]}
             source={{
               uri: node.avatar_large
@@ -101,11 +103,15 @@ export default function NodeScreen({ route, navigation }) {
           <View className="flex-1">
             <View className="flex flex-row justify-between items-center mb-[6px]">
               <View>
-                <Text className="text-lg font-semibold">{node.title}</Text>
+                <Text className="text-lg font-semibold dark:text-neutral-200">
+                  {node.title}
+                </Text>
               </View>
               <View className="flex flex-row pr-2">
-                <Text className="text-sm text-gray-600 mr-1">主题总数</Text>
-                <Text className="text-sm text-gray-600 font-medium">
+                <Text className="text-sm text-neutral-600 mr-1 dark:text-neutral-500">
+                  主题总数
+                </Text>
+                <Text className="text-sm text-neutral-600 font-medium dark:text-neutral-500">
                   {node.topics || '--'}
                 </Text>
               </View>
@@ -118,7 +124,7 @@ export default function NodeScreen({ route, navigation }) {
             <View className="flex flex-row mt-3 mb-2 justify-end mr-1">
               <Pressable
                 className={classNames(
-                  'h-[38px] rounded-lg border border-gray-500 px-3 items-center justify-center active:opacity-60',
+                  'h-[38px] rounded-lg border border-neutral-500 px-3 items-center justify-center active:opacity-60',
                   {
                     'opacity-60': collecting
                   }
@@ -146,18 +152,20 @@ export default function NodeScreen({ route, navigation }) {
                       setCollecting(false)
                     })
                 })}>
-                <Text>{node.collected ? '取消收藏' : '加入收藏'}</Text>
+                <Text className="dark:text-neutral-300">
+                  {node.collected ? '取消收藏' : '加入收藏'}
+                </Text>
               </Pressable>
               <Pressable
                 className={classNames(
-                  'ml-2 h-[38px] rounded-lg border border-gray-500 px-3 items-center justify-center active:opacity-60'
+                  'ml-2 h-[38px] rounded-lg border border-neutral-500 px-3 items-center justify-center active:opacity-60'
                 )}
                 onPress={composeAuthedNavigation(() => {
                   navigation.push('new-topic', {
                     node
                   })
                 })}>
-                <Text>创建新主题</Text>
+                <Text className="dark:text-neutral-300">创建新主题</Text>
               </Pressable>
             </View>
           </View>
@@ -181,6 +189,9 @@ export default function NodeScreen({ route, navigation }) {
         }}
         refreshControl={
           <RefreshControl
+            tintColor={
+              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+            }
             onRefresh={() => {
               feedSwr.mutate()
             }}

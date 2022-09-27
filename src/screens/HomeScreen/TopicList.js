@@ -3,6 +3,7 @@ import React, { useEffect, useMemo } from 'react'
 import { useIsFocused } from '@react-navigation/native'
 import useSWRInfinite from 'swr/infinite'
 import { uniqBy } from 'lodash'
+import colors from 'tailwindcss/colors'
 
 import { isRefreshing, shouldInit, hasReachEnd } from '@/utils/swr'
 import CommonListFooter from '@/components/CommonListFooter'
@@ -10,8 +11,10 @@ import CommonListFooter from '@/components/CommonListFooter'
 import TopicRow from './TopicRow'
 import { useAlertService } from '@/containers/AlertService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 export default function TopicList(props) {
+  const { colorScheme } = useColorScheme()
   const alert = useAlertService()
   const { hasViewed } = useViewedTopics()
   const listSwr = useSWRInfinite(props.getKey, {
@@ -66,6 +69,9 @@ export default function TopicList(props) {
       }}
       refreshControl={
         <RefreshControl
+          tintColor={
+            colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+          }
           refreshing={isRefreshing(listSwr)}
           onRefresh={() => {
             if (!listSwr.isValidating) {

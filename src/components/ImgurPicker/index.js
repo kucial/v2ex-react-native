@@ -8,6 +8,7 @@ import SubmitButton from './SubmitButton'
 import { AlbumContext } from './context'
 import { useNavigation } from '@react-navigation/native'
 import { getJSON, setJSON } from '@/utils/storage'
+import classNames from 'classnames'
 
 const CACHE_KEY = '$app$/ui/imgur-picker-stack'
 
@@ -48,18 +49,16 @@ export default function ImgurPicker(props) {
         className="flex flex-1 p-8 items-center justify-center w-full"
         style={props.style}>
         <View className="my-5">
-          <Text className="text-[16px]">Imgur 服务还未设置</Text>
+          <Text className="text-[16px] dark:text-neutral-200">
+            Imgur 服务还未设置
+          </Text>
         </View>
         <Pressable
-          style={({ pressed }) => ({
-            height: 50,
-            backgroundColor: '#121222',
-            borderRadius: 12,
-            opacity: pressed ? 0.6 : 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 200
-          })}
+          className={classNames(
+            'h-[44px] w-[200px] rounded-md flex items-center justify-center mt-4',
+            'bg-neutral-900 active:opacity-60',
+            'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
+          )}
           onPress={() => {
             if (props.onRequestClose) {
               props.onRequestClose()
@@ -68,7 +67,7 @@ export default function ImgurPicker(props) {
               autoBack: true
             })
           }}>
-          <Text className="text-white">前往设置</Text>
+          <Text className="text-white dark:text-neutral-900">前往设置</Text>
         </Pressable>
       </View>
     )

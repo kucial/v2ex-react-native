@@ -16,9 +16,13 @@ import { isRefreshing } from '@/utils/swr'
 import CollectedNodes from './CollectedNodes'
 import CommonNodes from './CommonNodes'
 import SearchInput from '@/components/SearchInput'
+import { useColorScheme } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
 
 export default function NodesScreen({ navigation }) {
   const { status } = useAuthService()
+  const { colorScheme } = useColorScheme()
+
   const hasAuthed = status === 'authed'
   const collectedNodesSwr = useSwr(hasAuthed ? '/page/my/nodes.json' : null, {
     revalidateOnMount: false
@@ -32,11 +36,9 @@ export default function NodesScreen({ navigation }) {
 
   const filterInput = useRef()
 
-  console.log(nodeFilterSwr)
-
   return (
     <View className="flex-1">
-      <View className="bg-white">
+      <View className="bg-white dark:bg-neutral-900">
         <SearchInput
           placeholder="查询"
           initialValue={nodeFilterSwr.data || ''}
@@ -53,6 +55,9 @@ export default function NodesScreen({ navigation }) {
         className="flex-1"
         refreshControl={
           <RefreshControl
+            tintColor={
+              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+            }
             refreshing={
               isRefreshing(commonNodesSwr) ||
               (hasAuthed && isRefreshing(collectedNodesSwr))

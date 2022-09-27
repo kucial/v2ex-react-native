@@ -1,5 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react'
+import { Appearance } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { debounce, throttle } from 'lodash'
 import { getScreenInfo } from './utils/url'
 import { getJSON, setJSON } from './utils/storage'
 
@@ -37,6 +39,13 @@ function useStateCallback(initialState) {
 
 export const useCachedState = (cacheKey, initialState = null) => {
   const cacheInit = useRef(null)
+  const updateCache = useCallback(
+    debounce((value) => {
+      console.log('update cache', cacheKey)
+      setJSON(cacheKey, value)
+    }, 600),
+    [cacheKey]
+  )
   const [state, setState] = useState(() => {
     const cache = getJSON(cacheKey, initialState)
     cacheInit.current = cache
@@ -45,9 +54,33 @@ export const useCachedState = (cacheKey, initialState = null) => {
 
   useEffect(() => {
     if (cacheInit.current !== state) {
-      setJSON(cacheKey, state)
+      updateCache(state)
     }
   }, [state])
 
   return [state, setState]
+}
+
+export const useColorScheme = (delay = 250) => {
+  const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme())
+  const onColorSchemeChange = useCallback(
+    throttle(
+      ({ colorScheme }) => {
+        setColorScheme(colorScheme)
+      },
+      delay,
+      {
+        leading: false
+      }
+    ),
+    []
+  )
+  useEffect(() => {
+    Appearance.addChangeListener(onColorSchemeChange)
+    return () => {
+      onColorSchemeChange.cancel()
+      Appearance.removeChangeListener(onColorSchemeChange)
+    }
+  }, [])
+  return colorScheme
 }

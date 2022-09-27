@@ -15,6 +15,7 @@ import { hasReachEnd } from '@/utils/swr'
 import HtmlRender from '@/components/HtmlRender'
 import { Box, BlockText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
+import classNames from 'classnames'
 
 const htmlBaseStyle = {
   lineHeight: 18
@@ -26,7 +27,12 @@ const NotificationRow = (props) => {
   const { width } = useWindowDimensions()
   if (!data) {
     return (
-      <View className="border-b border-b-gray-300 bg-white flex flex-row items-start active:opacity-60 p-2">
+      <View
+        className={classNames(
+          'border-b flex flex-row items-start active:opacity-60 p-2',
+          'border-b-neutral-300 bg-white',
+          'dark:bg-neutral-900 dark:border-neutral-600'
+        )}>
         <View className="mr-2">
           <Box className="w-[24px] h-[24px] rounded" />
         </View>
@@ -34,8 +40,11 @@ const NotificationRow = (props) => {
           <View className="flex flex-row">
             <BlockText lines={2} className="leading-5" />
           </View>
-          <View className="bg-gray-100 mt-1 p-1 rounded">
-            <BlockText lines={[1, 3]} className="leading-5 text-gray-200" />
+          <View className="bg-neutral-100 dark:bg-neutral-800 mt-1 p-1 rounded">
+            <BlockText
+              lines={[1, 3]}
+              className="leading-5 text-neutral-200 dark:text-neutral-700"
+            />
           </View>
         </View>
       </View>
@@ -43,7 +52,12 @@ const NotificationRow = (props) => {
   }
 
   return (
-    <View className="border-b border-b-gray-300 bg-white flex flex-row items-start active:opacity-60 p-2">
+    <View
+      className={classNames(
+        'border-b flex flex-row items-start active:opacity-60 p-2',
+        'border-b-neutral-300 bg-white',
+        'dark:bg-neutral-900 dark:border-neutral-600'
+      )}>
       <View className="mr-2">
         <Pressable
           hitSlop={4}
@@ -64,9 +78,9 @@ const NotificationRow = (props) => {
       </View>
       <View className="flex-1">
         <View className="flex flex-row">
-          <Text className="leading-5 text-gray-400">
+          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
             <Text
-              className="text-gray-600 font-medium"
+              className="text-neutral-600 font-medium dark:text-neutral-400"
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
@@ -77,7 +91,7 @@ const NotificationRow = (props) => {
             </Text>
             <Text className="">{' 在 '}</Text>
             <Text
-              className="text-gray-600"
+              className="text-neutral-600 dark:text-neutral-400"
               style={{ paddingHorizontal: 8 }}
               onPress={() => {
                 navigation.push('topic', {
@@ -87,11 +101,11 @@ const NotificationRow = (props) => {
               {data.topic.title}
             </Text>
             <Text>{' 里回复了你 '}</Text>
-            <Text className="text-gray-300">{data.reply_time}</Text>
+            <Text className="text-neutral-300">{data.reply_time}</Text>
           </Text>
         </View>
         {data.content_rendered && (
-          <View className="bg-gray-100 mt-1 p-1 rounded">
+          <View className="bg-neutral-100 mt-1 p-1 rounded dark:bg-neutral-800">
             <HtmlRender
               contentWidth={width - 24 - 8 - 8 - 8}
               source={{

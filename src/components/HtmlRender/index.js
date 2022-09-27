@@ -2,10 +2,11 @@ import { memo, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { useNavigation } from '@react-navigation/native'
 import BaseRender, { useInternalRenderer } from 'react-native-render-html'
-import { useTailwind } from 'tailwindcss-react-native'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 import { isAppLink, getScreenInfo } from '@/utils/url'
 
 import ImageElement from './ImageElement'
+import colors from 'tailwindcss/colors'
 
 const ImageRenderer = (props) => {
   const { rendererProps } = useInternalRenderer('img', props)
@@ -19,14 +20,15 @@ const renderers = {
 const defaultTextProps = { selectable: true }
 
 function RenderHtml({ tagsStyles, baseStyle, ...props }) {
-  const tw = useTailwind()
+  const { colorScheme } = useColorScheme()
   const navigation = useNavigation()
 
   const styles = useMemo(() => {
     const baseFontSize = baseStyle?.fontSize || 16
     return {
       body: {
-        ...tw('text-gray-700'),
+        color:
+          colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[700],
         fontSize: baseFontSize,
         lineHeight: baseFontSize * 1.33
       },
@@ -68,11 +70,14 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
         marginVertical: baseFontSize
       },
       pre: {
-        backgroundColor: '#f6f6f6',
+        backgroundColor:
+          colorScheme === 'dark' ? colors.neutral[800] : colors.neutral[100],
         paddingHorizontal: (12 / 16) * baseFontSize,
         lineHeight: 1.25 * baseFontSize
       },
-      code: tw('text-sm'),
+      code: {
+        fontSize: 14
+      },
       ul: {
         paddingLeft: 12,
         marginTop: 0
@@ -85,17 +90,21 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
         lineHeight: 1.25 * baseFontSize,
         marginBottom: baseFontSize
       },
-      a: tw('no-underline'),
+      a: {
+        textDecorationLine: 'none',
+        color: colorScheme === 'dark' ? colors.sky[300] : colors.blue[600]
+      },
       blockquote: {
         marginLeft: 0,
         paddingLeft: baseFontSize * 1.5,
         paddingVertical: baseFontSize * 0.25,
         borderLeftWidth: 2,
-        borderLeftColor: '#111111'
+        borderLeftColor:
+          colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
       },
       ...(tagsStyles || {})
     }
-  }, [tagsStyles, baseStyle])
+  }, [tagsStyles, baseStyle, colorScheme])
   const renderersProps = useMemo(() => {
     return {
       a: {

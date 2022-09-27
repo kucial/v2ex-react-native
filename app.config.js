@@ -8,7 +8,8 @@ export default ({ config }) => {
       authToken: process.env.SENTRY_AUTH_TOKEN
     }
   }
-  config.extra.revisionId = new Date().toISOString()
+
+  config.extra.buildId = process.env.CI_SHORT_COMMIT || new Date().toISOString()
 
   config.hooks.postPublish.push(sentryRelease)
 

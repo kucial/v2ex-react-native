@@ -1,19 +1,19 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { InlineText, BlockText } from './Elements'
+import { InlineText, BlockText, Box } from './Elements'
 
 export default function TopicRowSkeleton() {
   return (
-    <View className="border-b border-gray-200 bg-white flex flex-row items-center">
+    <View className="border-b border-neutral-200 flex flex-row items-center bg-white dark:bg-neutral-900">
       <View className="flex-1 py-2 pl-1">
         <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
-          <View className="w-[24px] h-[24px] rounded bg-gray-100" />
+          <Box className="w-[24px] h-[24px] rounded" />
           <View>
             <View className="py-[2px] rounded w-[50px]">
               <InlineText className="text-xs"></InlineText>
             </View>
           </View>
-          <Text className="text-gray-200">·</Text>
+          <Text className="text-neutral-200">·</Text>
           <View className="relative">
             <InlineText width={[56, 80]} className="text-xs"></InlineText>
           </View>
@@ -29,9 +29,9 @@ export default function TopicRowSkeleton() {
         </View>
       </View>
       <View className="w-[80px] flex flex-row justify-end pr-4">
-        <View className="rounded-full px-2 bg-gray-100">
+        <Box className="rounded-full px-2">
           <InlineText width={8} className="text-xs" />
-        </View>
+        </Box>
       </View>
     </View>
   )

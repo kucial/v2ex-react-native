@@ -5,7 +5,7 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./src/assets/splash.png",
       "resizeMode": "contain",
@@ -17,7 +17,15 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.kucial.v2ex"
+      "bundleIdentifier": "com.kucial.v2ex",
+      "splash": {
+        "image": "./src/assets/splash.png",
+        "backgroundColor": "#ffffff",
+        "dark": {
+          "image": "./src/assets/splash-dark.png",
+          "backgroundColor": "#111111"
+        }
+      }
     },
     "android": {
       "adaptiveIcon": {

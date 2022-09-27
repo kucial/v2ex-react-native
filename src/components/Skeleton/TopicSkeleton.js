@@ -5,7 +5,7 @@ import { BlockText, InlineBox, InlineText } from './Elements'
 
 export default function TopicSkeleton() {
   return (
-    <View className="bg-white py-3 px-4 mb-2 shadow-sm">
+    <View className="bg-white py-3 px-4 mb-2 shadow-sm dark:bg-neutral-900">
       <View className="flex flex-row mb-2">
         <View className="flex flex-row flex-1">
           <InlineBox className="w-[32px] h-[32px] rounded" />
@@ -24,7 +24,7 @@ export default function TopicSkeleton() {
             width={[48, 72]}></InlineBox>
         </View>
       </View>
-      <View className="pb-2 border-b border-b-gray-300 border-solid mb-2">
+      <View className="pb-2 border-b border-b-neutral-300 border-solid mb-2">
         <BlockText className="text-lg font-semibold" lines={[1, 3]} />
       </View>
       <View className="mt-1">

@@ -53,6 +53,9 @@ import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import TopicReplyForm from './TopicReplyForm'
 import ReplyRow from './ReplyRow'
 import Converation from './Conversation'
+import classNames from 'classnames'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
 
 const maxLen = (str = '', limit = 0) => {
   if (limit && str.length > limit) {
@@ -150,6 +153,8 @@ function TopicScreen({ navigation, route }) {
   const {
     params: { brief, id }
   } = route
+  const { colorScheme } = useColorScheme()
+
   const { showActionSheetWithOptions } = useActionSheet()
   const alert = useAlertService()
   const { touchViewed } = useViewedTopics()
@@ -160,6 +165,13 @@ function TopicScreen({ navigation, route }) {
   const { width } = useWindowDimensions()
   const { composeAuthedNavigation } = useAuthService()
   const aIndicator = useActivityIndicator()
+
+  const tw = useTailwind()
+  const { color: iconColor } = tw('color-neutral-800 dark:color-neutral-400')
+  const { color: collectActiveColor } = tw(
+    'color-yellow-400 dark:color-yellow-200'
+  )
+  const { color: likedActiveColor } = tw('color-red-700 dark:color-rose-400')
 
   const topicSwr = useSWR(`/page/t/${id}/topic.json`)
   const listSwr = useSWRInfinite(
@@ -242,7 +254,7 @@ function TopicScreen({ navigation, route }) {
               }
             )
           }}>
-          <EllipsisHorizontalIcon size={24} color="#333" />
+          <EllipsisHorizontalIcon size={24} color={iconColor} />
         </Pressable>
       )
     })
@@ -355,6 +367,7 @@ function TopicScreen({ navigation, route }) {
       renderReply({ item }) {
         return (
           <ReplyRow
+            className="bg-white dark:bg-neutral-900"
             data={item}
             onReply={initReply}
             onThank={handleThankToReply}
@@ -384,7 +397,7 @@ function TopicScreen({ navigation, route }) {
 
   const baseContent = (
     <>
-      <View className="bg-white py-3 px-4 mb-2 shadow-sm">
+      <View className="bg-white py-3 px-4 mb-2 shadow-sm dark:bg-neutral-900">
         <View className="flex flex-row mb-2">
           <View className="flex flex-row flex-1">
             <Pressable
@@ -412,11 +425,13 @@ function TopicScreen({ navigation, route }) {
                       username: member.username
                     })
                   }}>
-                  <Text className="font-medium">{member.username}</Text>
+                  <Text className="font-medium dark:text-neutral-300">
+                    {member.username}
+                  </Text>
                 </Pressable>
               </View>
               <View className="ml-2">
-                <Text className="text-gray-400 text-xs">
+                <Text className="text-neutral-400 text-xs dark:text-neutral-300">
                   {topic.created_time}
                 </Text>
               </View>
@@ -425,7 +440,7 @@ function TopicScreen({ navigation, route }) {
           <View>
             {node && (
               <Pressable
-                className="py-1 px-[6px] rounded bg-gray-100 active:opacity-50"
+                className="py-1 px-[6px] rounded bg-neutral-100 active:opacity-50 dark:bg-neutral-750"
                 hitSlop={6}
                 onPress={() => {
                   navigation.push('node', {
@@ -433,13 +448,17 @@ function TopicScreen({ navigation, route }) {
                     brief: node
                   })
                 }}>
-                <Text className="text-gray-500">{node.title}</Text>
+                <Text className="text-neutral-500 dark:text-neutral-300">
+                  {node.title}
+                </Text>
               </Pressable>
             )}
           </View>
         </View>
-        <View className="pb-2 border-b border-b-gray-300 border-solid mb-2">
-          <Text selectable className="text-lg font-semibold">
+        <View className="pb-2 border-b border-b-neutral-300 border-solid mb-2 dark:border-b-neutral-600">
+          <Text
+            selectable
+            className="text-lg font-semibold dark:text-neutral-300">
             {topic.title}
           </Text>
         </View>
@@ -450,10 +469,12 @@ function TopicScreen({ navigation, route }) {
           <View className="mt-2">
             {topic.subtles.map((subtle, index) => (
               <View
-                className="-mx-2 pl-4 pr-2 py-2 border-t border-gray-300 bg-[#ffff0008]"
+                className="-mx-2 pl-4 pr-2 py-2 border-t border-neutral-300 dark:border-neutral-700 bg-[#ffff0008] dark:bg-[#ffff8808]"
                 key={index}>
                 <View className="mb-1">
-                  <Text className="text-xs text-gray-500">{subtle.meta}</Text>
+                  <Text className="text-xs text-neutral-500">
+                    {subtle.meta}
+                  </Text>
                 </View>
                 <HtmlRender
                   contentWidth={width - 32}
@@ -472,11 +493,14 @@ function TopicScreen({ navigation, route }) {
             extra={
               <View className="mt-2 flex flex-row justify-center">
                 <Pressable
-                  className="px-4 h-[44px] w-[120px] rounded-full bg-gray-900 text-white items-center justify-center active:opacity-60"
+                  className={classNames(
+                    'px-4 h-[44px] w-[120px] rounded-full bg-neutral-900 items-center justify-center active:opacity-60',
+                    'dark:bg-amber-50'
+                  )}
                   onPress={() => {
                     topicSwr.mutate()
                   }}>
-                  <Text className="text-white">重试</Text>
+                  <Text className="text-white dark:text-neutral-800">重试</Text>
                 </Pressable>
               </View>
             }
@@ -489,8 +513,15 @@ function TopicScreen({ navigation, route }) {
         )}
       </View>
       {!!topic.replies && (
-        <View className="bg-white px-3 py-2 border-b border-gray-300">
-          <Text className="text-gray-600">{topic.replies} 条回复</Text>
+        <View
+          className={classNames(
+            'px-3 py-2 border-b',
+            'bg-white border-neutral-300',
+            'dark:bg-neutral-900 dark:border-neutral-600'
+          )}>
+          <Text className="text-neutral-600 dark:text-neutral-300">
+            {topic.replies} 条回复
+          </Text>
         </View>
       )}
 
@@ -520,6 +551,9 @@ function TopicScreen({ navigation, route }) {
         }}
         refreshControl={
           <RefreshControl
+            tintColor={
+              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+            }
             onRefresh={() => {
               if (listSwr.isValidating) {
                 return
@@ -533,21 +567,23 @@ function TopicScreen({ navigation, route }) {
           />
         }
       />
-      <SafeAreaView className="u-absolute bottom-0 left-0 w-full bg-white border-t border-t-gray-200">
+      <SafeAreaView className="u-absolute bottom-0 left-0 w-full bg-white border-t border-t-neutral-200 dark:bg-neutral-800 dark:border-neutral-600">
         <View className="h-[48px] flex flex-row items-center pl-3 pr-1">
           <View className="flex-1 mr-2">
             <Pressable
               hitSlop={5}
-              className="h-[32px] w-full justify-center px-3 bg-gray-100 rounded-full active:opacity-60"
+              className="h-[32px] w-full justify-center px-3 bg-neutral-100 rounded-full active:opacity-60 dark:bg-neutral-900"
               onPress={() => {
                 initReply()
               }}>
-              <Text className="text-gray-800 text-sm">发表评论</Text>
+              <Text className="text-neutral-800 text-sm dark:text-neutral-300">
+                发表评论
+              </Text>
             </Pressable>
           </View>
           <View className="flex flex-row px-1">
             <Pressable
-              className="w-[46px] h-[48px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              className="w-[46px] h-[48px] items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
               onPress={composeAuthedNavigation(() => {
                 if (topic.collected) {
                   topicSwr.mutate(
@@ -597,15 +633,17 @@ function TopicScreen({ navigation, route }) {
               })}>
               <View className="my-1">
                 {topic.collected ? (
-                  <FilledStarIcon size={24} color="#FFC100" />
+                  <FilledStarIcon size={24} color={collectActiveColor} />
                 ) : (
-                  <StarIcon size={24} color="#333" />
+                  <StarIcon size={24} color={iconColor} />
                 )}
               </View>
-              <Text className="text-gray-600 text-[10px]">收藏</Text>
+              <Text className="text-neutral-600 dark:text-neutral-300 text-[10px]">
+                收藏
+              </Text>
             </Pressable>
             <Pressable
-              className="w-[46px] h-[48px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              className="w-[46px] h-[48px] items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
               onPress={composeAuthedNavigation(() => {
                 if (topic.thanked) {
                   // TODO: SHOW MESSAGE
@@ -628,15 +666,17 @@ function TopicScreen({ navigation, route }) {
               })}>
               <View className="my-1">
                 {topic.thanked ? (
-                  <FilledHeartIcon size={24} color="#cc0000" />
+                  <FilledHeartIcon size={24} color={likedActiveColor} />
                 ) : (
-                  <HeartIcon size={24} color="#333" />
+                  <HeartIcon size={24} color={iconColor} />
                 )}
               </View>
-              <Text className="text-gray-600 text-[9px]">感谢</Text>
+              <Text className="text-neutral-600 dark:text-neutral-300 text-[9px]">
+                感谢
+              </Text>
             </Pressable>
             <Pressable
-              className="w-[46px] h-[48px] items-center justify-center active:bg-gray-100 active:opacity-60"
+              className="w-[46px] h-[48px] items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
               disabled={!topicSwr.data}
               onPress={async () => {
                 try {
@@ -658,9 +698,11 @@ function TopicScreen({ navigation, route }) {
                 }
               }}>
               <View className="my-1">
-                <ShareIcon size={24} color="#333" />
+                <ShareIcon size={24} color={iconColor} />
               </View>
-              <Text className="text-gray-600 text-[9px]">分享</Text>
+              <Text className="text-neutral-600 dark:text-neutral-300 text-[9px]">
+                分享
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -696,4 +738,4 @@ function TopicScreen({ navigation, route }) {
   )
 }
 
-export default TopicScreen
+export default memo(TopicScreen)

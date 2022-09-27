@@ -17,7 +17,7 @@ export default function ViewedTopicsScreen({ navigation }) {
         const { node, member, title } = item
         return (
           <FixedPressable
-            className="border-b border-gray-200 bg-white flex flex-row items-center active:opacity-50"
+            className="border-b border-neutral-200 bg-white flex flex-row items-center active:opacity-50 dark:bg-neutral-900 dark:border-neutral-600"
             onPress={() => {
               navigation.push('topic', {
                 id: item.id,
@@ -45,17 +45,19 @@ export default function ViewedTopicsScreen({ navigation }) {
                 <View>
                   <FixedPressable
                     hitSlop={4}
-                    className="py-[2px] px-[6px] rounded bg-gray-100 active:opacity-60"
+                    className="py-[2px] px-[6px] rounded bg-neutral-100 active:opacity-60 dark:bg-neutral-750"
                     onPress={() => {
                       navigation.navigate('node', {
                         name: node.name,
                         brief: node
                       })
                     }}>
-                    <Text className="text-gray-500 text-xs">{node.title}</Text>
+                    <Text className="text-neutral-500 text-xs dark:text-neutral-300">
+                      {node.title}
+                    </Text>
                   </FixedPressable>
                 </View>
-                <Text className="text-gray-400">·</Text>
+                <Text className="text-neutral-400">·</Text>
                 <View className="relative top-[1px]">
                   <FixedPressable
                     className="active:opacity-60"
@@ -66,17 +68,21 @@ export default function ViewedTopicsScreen({ navigation }) {
                         brief: member
                       })
                     }}>
-                    <Text className="font-bold text-xs text-gray-700">
+                    <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-400">
                       {member.username}
                     </Text>
                   </FixedPressable>
                 </View>
               </View>
               <View>
-                <Text className="text-base text-gray-700">{title}</Text>
+                <Text className="text-base text-neutral-700 dark:text-neutral-300">
+                  {title}
+                </Text>
                 <View className="mt-2 flex flex-row items-center">
-                  <Text className="text-xs text-gray-400 mr-2">上次查看</Text>
-                  <Text className="text-xs text-gray-400">
+                  <Text className="text-xs text-neutral-400 mr-2">
+                    上次查看
+                  </Text>
+                  <Text className="text-xs text-neutral-400">
                     <TimeAgo date={item.viewed_at} />
                   </Text>
                 </View>
@@ -110,7 +116,7 @@ export default function ViewedTopicsScreen({ navigation }) {
               }
             )
           }}>
-          <EllipsisHorizontalIcon size={24} color="#333" />
+          <EllipsisHorizontalIcon size={24} color={props.tintColor} />
         </Pressable>
       )
     })
@@ -123,7 +129,7 @@ export default function ViewedTopicsScreen({ navigation }) {
       keyExtractor={keyExtractor}
       ListEmptyComponent={() => (
         <View className="items-center py-9">
-          <Text className="text-neutral-600">
+          <Text className="text-neutral-600 dark:text-neutral-400">
             你还没有查看过任何一个主题哦～
           </Text>
         </View>

@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react-native'
-import { TailwindProvider } from 'tailwindcss-react-native'
+import { TailwindProvider, useTailwind } from 'tailwindcss-react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -18,6 +18,7 @@ import AlertService from './src/containers/AlertService'
 import ImgurService from './src/containers/ImgurService'
 import ActivityIndicator from './src/containers/ActivityIndicator'
 import ViewedTopicsService from './src/containers/ViewedTopicsService'
+import WatchSchemeUpdate from './src/containers/WatchSchemeUpdate'
 
 import HomeScreen from './src/screens/HomeScreen'
 import NodesScreen from './src/screens/NodesScreen'
@@ -50,6 +51,10 @@ import DebugScreen from './src/screens/DebugScreen'
 
 import fetcher, { FetcherWebView } from './src/utils/fetcher'
 import { cacheProvider } from './src/utils/swr'
+import { useColorScheme } from './src/hooks'
+
+import * as themes from './theme'
+import colors from 'tailwindcss/colors'
 
 Sentry.init({
   dsn: SENTRY_DSN,
@@ -62,10 +67,14 @@ const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
 function MainTab() {
+  const tw = useTailwind()
+  const { color: inactiveColor } = tw('text-neutral-500 dark:text-neutral-500')
+
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#111'
+        tabBarInactiveTintColor: inactiveColor,
+        tabBarStyle: tw('dark:bg-neutral-800')
         // headerShown: false,
       }}>
       <Tab.Screen
@@ -100,12 +109,17 @@ function MainTab() {
 }
 
 function AppStack() {
+  const tw = useTailwind()
+  const { color: tintColor } = tw('color-neutral-900 dark:text-neutral-300')
+
   return (
     <Stack.Navigator
       screenOptions={{
-        headerTintColor: '#111',
+        headerStyle: tw('bg-white dark:bg-neutral-900'),
         headerBackTitleVisible: false,
-        headerLeft
+        headerLeft,
+        headerTintColor: tintColor,
+        headerTitleStyle: tw('text-neutral-800 dark:text-neutral-300')
       }}>
       <Stack.Group>
         <Stack.Screen
@@ -320,15 +334,18 @@ const swrConfig = {
 }
 
 function App() {
+  const scheme = useColorScheme()
   return (
-    <TailwindProvider>
+    <TailwindProvider initialColorScheme={scheme}>
+      <WatchSchemeUpdate />
       <ErrorBoundary>
         <FetcherWebView />
+        {/* <StatusBar style="auto" /> */}
         <SWRConfig value={swrConfig}>
           <AlertService>
             <ActionSheetProvider>
               <ActivityIndicator>
-                <NavigationContainer>
+                <NavigationContainer theme={themes[scheme]}>
                   <AuthService>
                     <ViewedTopicsService>
                       <ImgurService>

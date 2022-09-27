@@ -5,7 +5,8 @@
 [data-slate-placeholder='true'] {
   top: 0;
   line-height: 1.3;
-  color: #464646;
+  color: var(--color-placeholder, #464646);
+  opacity: 1 !important;
 }
 [data-slate-node="element"] {
   margin-bottom: 1em;
@@ -14,6 +15,9 @@
 body {
   font-size: 1rem;
   line-height: 1.33;
+  background-color: var(--color-background);
+  caret-color: var(--color-caret);
+  color: var(--color-text);
 }
 h1 {
   font-size: 1.75rem;
@@ -72,7 +76,7 @@ blockquote {
   padding-left: 1.5rem;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
-  border-left: 2px solid #111111;
+  border-left: 2px solid var(--color-blockquote-border, #111111);
 }
 blockquote *:last-child {
   margin-bottom: 0;

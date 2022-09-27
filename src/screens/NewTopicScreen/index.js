@@ -11,6 +11,8 @@ import {
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
+import classNames from 'classnames'
 
 import {
   EditorProvider,
@@ -30,6 +32,7 @@ import NodeSelect from './NodeSelect'
 
 export default function NewTopicScreen(props) {
   const { route, navigation } = props
+  const { colorScheme } = useColorScheme()
   const titleInput = useRef()
   const editorRef = useRef()
 
@@ -54,7 +57,7 @@ export default function NewTopicScreen(props) {
   }, [])
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-white dark:bg-neutral-900">
       <KeyboardAwareView animated>
         <SafeAreaView className="flex-1">
           <EditorProvider ref={editorRef}>
@@ -62,11 +65,23 @@ export default function NewTopicScreen(props) {
               <ScrollView className="flex-1">
                 <View className="px-4 my-3">
                   <View className="mb-1">
-                    <Text className="font-medium px-2">标题</Text>
+                    <Text className="font-medium px-2 dark:text-neutral-300">
+                      标题
+                    </Text>
                   </View>
                   <View>
                     <TextInput
-                      className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md"
+                      className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-800 dark:text-neutral-300"
+                      selectionColor={
+                        colorScheme === 'dark'
+                          ? colors.amber[50]
+                          : colors.neutral[600]
+                      }
+                      placeholderTextColor={
+                        colorScheme === 'dark'
+                          ? colors.neutral[500]
+                          : colors.neutral[400]
+                      }
                       style={{ fontSize: 16 }}
                       placeholder="请输入主题标题"
                       onChangeText={(value) =>
@@ -76,25 +91,29 @@ export default function NewTopicScreen(props) {
                         }))
                       }
                       value={values.title}
-                      selectionColor={colors.gray[600]}
                       ref={titleInput}
                     />
                   </View>
                 </View>
                 <View className="px-4 my-3">
                   <View className="mb-1">
-                    <Text className="font-medium px-2">节点</Text>
+                    <Text className="font-medium px-2 dark:text-neutral-300">
+                      节点
+                    </Text>
                   </View>
                   <View>
                     <NodeSelect
                       options={nodes}
                       value={values.node}
                       renderLabel={(n) => (
-                        <Text>
+                        <Text className="text-neutral-900 dark:text-neutral-400">
                           {n.title} / {n.name}
                         </Text>
                       )}
-                      className="h-[44px] px-2 bg-gray-100 mb-2 rounded-md flex flex-row items-center"
+                      className={classNames(
+                        'h-[44px] px-2 bg-neutral-100 mb-2 rounded-md flex flex-row items-center',
+                        'dark:bg-neutral-800'
+                      )}
                       filterPlaceholder="查询"
                       placeholder="请输入主题节点"
                       onChange={(node) => {
@@ -108,19 +127,44 @@ export default function NewTopicScreen(props) {
                 </View>
                 <View className="px-4 my-3">
                   <View className="mb-1">
-                    <Text className="font-medium px-2">正文</Text>
+                    <Text className="font-medium px-2 dark:text-neutral-300">
+                      正文
+                    </Text>
                   </View>
                   <View>
-                    <View className="px-2 bg-gray-100 mb-2 rounded-md">
+                    <View className="px-2 bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md">
                       <EditorRender
                         placeholder="如果标题能够表达完整内容，则正文可以为空"
+                        selectionColor={
+                          colorScheme === 'dark'
+                            ? colors.amber[50]
+                            : colors.neutral[600]
+                        }
+                        placeholderTextColor={
+                          colorScheme === 'dark'
+                            ? colors.neutral[500]
+                            : colors.neutral[400]
+                        }
+                        backgroundColor={
+                          colorScheme === 'dark'
+                            ? colors.neutral[800]
+                            : colors.neutral[100]
+                        }
+                        textColor={
+                          colorScheme === 'dark'
+                            ? colors.neutral[300]
+                            : colors.neutral[800]
+                        }
+                        blockquoteBorderColor={
+                          colorScheme === 'dark'
+                            ? colors.neutral[300]
+                            : colors.neutral[900]
+                        }
                         containerStyle={{
                           overflow: 'hidden',
                           minHeight: 200,
-                          backgroundColor: colors.gray[100],
                           paddingTop: 10,
-                          paddingBottom: 10,
-                          caretColor: '#111'
+                          paddingBottom: 10
                         }}
                       />
                     </View>
@@ -128,8 +172,12 @@ export default function NewTopicScreen(props) {
                 </View>
                 <View className="px-4 my-3">
                   <Pressable
-                    className="h-[50px] bg-gray-900 rounded-lg items-center justify-center active:opacity-60"
-                    style={!isValid ? { opacity: 0.5 } : null}
+                    className={classNames(
+                      'h-[50px] rounded-lg items-center justify-center active:opacity-60',
+                      isValid
+                        ? 'bg-neutral-900 dark:bg-amber-100'
+                        : 'bg-neutral-900/60 dark:bg-amber-50/80'
+                    )}
                     disabled={!isValid || isSubmitting}
                     onPress={async () => {
                       try {
@@ -156,9 +204,18 @@ export default function NewTopicScreen(props) {
                       }
                     }}>
                     {isSubmitting ? (
-                      <Loader size={20} color="#ffffffbc" />
+                      <Loader
+                        size={20}
+                        color={
+                          colorScheme === 'dark'
+                            ? colors.neutral[900]
+                            : colors.neutral[100]
+                        }
+                      />
                     ) : (
-                      <Text className="text-white">发布</Text>
+                      <Text className="text-base text-white dark:text-neutral-900">
+                        发布
+                      </Text>
                     )}
                   </Pressable>
                 </View>
@@ -169,7 +226,6 @@ export default function NewTopicScreen(props) {
             <View style={{ position: 'absolute', bottom: 0 }}>
               <EditorToolbar
                 showOnFocus
-                className="bg-white"
                 onOpenImageSelect={() => {
                   showImagePicker(true)
                 }}

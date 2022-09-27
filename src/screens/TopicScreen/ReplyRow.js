@@ -18,6 +18,8 @@ import HtmlRender from '@/components/HtmlRender'
 import { InlineText, BlockText, Box } from '@/components/Skeleton/Elements'
 
 import { useAuthService } from '@/containers/AuthService'
+import { useColorScheme } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
 
 function ReplyRow(props) {
   const { width } = useWindowDimensions()
@@ -25,10 +27,17 @@ function ReplyRow(props) {
   const { data, isPivot } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
+  const { colorScheme } = useColorScheme()
+  const iconColor =
+    colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[600]
 
   if (!data) {
     return (
-      <View className="bg-white border-b border-gray-200">
+      <View
+        className={classNames(
+          'border-b bg-white border-neutral-200',
+          'dark:bg-neutral-900 dark:border-neutral-600'
+        )}>
         <View className="flex-1 py-2 pl-1">
           <View className="flex flex-row mb-2">
             <View className="flex flex-row items-center flex-1 pl-1 ">
@@ -52,9 +61,14 @@ function ReplyRow(props) {
   const { member } = data
   return (
     <View
+      style={props.style}
       className={classNames(
-        'border-b border-gray-200 pt-2',
-        isPivot ? 'bg-yellow-50' : 'bg-white'
+        'border-b border-neutral-200 pt-2',
+        isPivot && 'bg-yellow-700/5',
+        // isPivot
+        //   ? 'bg-yellow-50 dark:bg-[#2a2720]'
+        //   : 'bg-white dark:bg-neutral-900',
+        'dark:border-neutral-600'
       )}>
       <View className="flex flex-row pl-2">
         <View className="mr-2">
@@ -84,40 +98,51 @@ function ReplyRow(props) {
                     username: member.username
                   })
                 }}>
-                <Text className="font-bold text-xs text-gray-700">
+                <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-300">
                   {member.username}
                 </Text>
               </Pressable>
               {data.member_is_op && (
-                <View className="ml-2 px-1 rounded border border-blue-600">
-                  <Text className="text-[10px] font-medium leading-[17px] text-blue-600">
+                <View className="ml-2 px-1 rounded border border-blue-600 dark:border-sky-300">
+                  <Text className="text-[10px] font-medium leading-[17px] text-blue-600 dark:text-sky-300">
                     OP
                   </Text>
                 </View>
               )}
               {data.member_is_mod && (
-                <View className="ml-2 px-1 rounded border border-blue-600 bg-blue-600">
-                  <Text className="text-[10px] font-medium leading-[17px] text-white">
+                <View className="ml-2 px-1 rounded border border-blue-600 bg-blue-600 dark:border-sky-300 dark:bg-sky-400/90">
+                  <Text className="text-[10px] font-medium leading-[17px] text-white dark:text-neutral-100">
                     MOD
                   </Text>
                 </View>
               )}
               <View className="ml-2">
-                <Text className="text-xs text-gray-400">{data.reply_time}</Text>
+                <Text className="text-xs text-neutral-400 dark:text-neutral-300">
+                  {data.reply_time}
+                </Text>
               </View>
               {data.reply_device && (
-                <Text className="text-xs text-gray-400 ml-2">
+                <Text className="ml-2 text-xs text-neutral-400 dark:text-neutral-300">
                   {data.reply_device}
                 </Text>
               )}
               {!!data.thanks_count && (
                 <>
                   <View className="relative top-[1px] mx-1">
-                    <Text className="text-gray-400">·</Text>
+                    <Text className="text-neutral-400 dark:text-neutral-300">
+                      ·
+                    </Text>
                   </View>
                   <View className="flex flex-row items-center">
-                    <FilledHeartIcon size={14} color={'#cc0000'} />
-                    <Text className="text-xs text-gray-400 ml-1">
+                    <FilledHeartIcon
+                      size={14}
+                      color={
+                        colorScheme === 'dark'
+                          ? colors.rose[400]
+                          : colors.red[600]
+                      }
+                    />
+                    <Text className="text-xs text-neutral-400 ml-1 dark:text-neutral-300">
                       {data.thanks_count}
                     </Text>
                   </View>
@@ -126,7 +151,9 @@ function ReplyRow(props) {
             </View>
             <View className="pr-1 justify-center">
               <View className="px-[3px] rounded-full">
-                <Text className="text-xs text-gray-400">#{data.num}</Text>
+                <Text className="text-xs text-neutral-400 dark:text-neutral-300">
+                  #{data.num}
+                </Text>
               </View>
             </View>
           </View>
@@ -150,35 +177,35 @@ function ReplyRow(props) {
                 className={classNames(
                   'h-[36px] px-2',
                   '-m-2 flex flex-row items-center justify-center rounded-full',
-                  'active:bg-gray-200 active:opacity-60',
+                  'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                   'relative z-10'
                 )}
                 onPress={composeAuthedNavigation(() => {
                   props.onReply(data)
                 })}>
-                <ReplyIcon size={14} color="#666" />
+                <ReplyIcon size={14} color={iconColor} />
                 <View className="ml-1">
-                  <Text className="text-xs text-gray-500">回复</Text>
+                  <Text className="text-xs text-neutral-500">回复</Text>
                 </View>
               </Pressable>
               <View className="w-4"></View>
               {data.thanked ? (
-                <Text className="text-xs text-gray-500">已感谢</Text>
+                <Text className="text-xs text-neutral-500">已感谢</Text>
               ) : (
                 <Pressable
                   hitSlop={2}
                   className={classNames(
                     'h-[36px] px-2',
                     '-m-2 flex flex-row items-center justify-center rounded-full',
-                    'active:bg-gray-200 active:opacity-60',
+                    'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                     'relative z-10'
                   )}
                   onPress={composeAuthedNavigation(() => {
                     props.onThank(data)
                   })}>
-                  <HeartIcon size={14} color="#666" />
+                  <HeartIcon size={14} color={iconColor} />
                   <View className="ml-1">
-                    <Text className="text-xs text-gray-500">感谢</Text>
+                    <Text className="text-xs text-neutral-500">感谢</Text>
                   </View>
                 </Pressable>
               )}
@@ -189,15 +216,15 @@ function ReplyRow(props) {
                   className={classNames(
                     'h-[36px] px-2',
                     '-m-2 flex flex-row items-center justify-center rounded-full',
-                    'active:bg-gray-200 active:opacity-60',
+                    'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                     'relative z-10'
                   )}
                   onPress={() => {
                     props.onShowConversation(data)
                   }}>
-                  <ChatBubbleLeftRightIcon size={14} color="#666" />
+                  <ChatBubbleLeftRightIcon size={14} color={iconColor} />
                   <View className="ml-1">
-                    <Text className="text-xs text-gray-500">会话</Text>
+                    <Text className="text-xs text-neutral-500">会话</Text>
                   </View>
                 </Pressable>
               )}
@@ -209,16 +236,23 @@ function ReplyRow(props) {
                 className={classNames(
                   'h-[36px] w-[36px]',
                   '-my-2 flex flex-row items-center justify-center rounded-full',
-                  'active:bg-gray-200 active:opacity-60',
+                  'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                   'relative z-10'
                 )}
                 onPress={() => {
                   setMarkdownVisible((prev) => !prev)
                 }}>
                 {showMarkdown ? (
-                  <MarkdownFilledIcon size={20} color="#29ab30" />
+                  <MarkdownFilledIcon
+                    size={20}
+                    color={
+                      colorScheme === 'dark'
+                        ? colors.emerald[200]
+                        : colors.green[700]
+                    }
+                  />
                 ) : (
-                  <MarkdownIcon size={20} color="#666" />
+                  <MarkdownIcon size={20} color={iconColor} />
                 )}
               </Pressable>
             </View>

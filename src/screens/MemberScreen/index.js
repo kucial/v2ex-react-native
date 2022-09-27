@@ -4,7 +4,6 @@ import React, { useEffect, useMemo } from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { useSWR } from '@/utils/swr'
 
-import MemberInfo from './MemberInfo'
 import MemberTopics from './MemberTopics'
 import MemberReplies from './MemberReplies'
 import MemberScreenHeader from './MemberScreenHeader'
@@ -47,7 +46,6 @@ export default function MemberScreen({ route, navigation }) {
       <Tab.Navigator
         screenOptions={{
           tabBarScrollEnabled: false,
-          tabBarIndicatorStyle: { backgroundColor: '#111' },
           lazy: true
         }}>
         {tabs.map((tab) => (

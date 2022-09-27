@@ -16,7 +16,7 @@ export default function NodeTopicRow(props) {
 
   return (
     <Pressable
-      className="flex flex-row items-center border-b border-gray-200 bg-white active:opacity-60 p-2"
+      className="flex flex-row items-center border-b border-neutral-200 bg-white active:opacity-60 p-2 dark:bg-neutral-900 dark:border-neutral-600"
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
@@ -32,25 +32,25 @@ export default function NodeTopicRow(props) {
         />
       </View>
       <View className="flex-1 relative top-[-2px]">
-        <Text className="text-base font-medium text-gray-700 mb-2 leading-none">
+        <Text className="text-base font-medium text-neutral-700 mb-2 leading-none dark:text-neutral-300">
           {data.title}
         </Text>
         <View className="flex flex-row">
-          <Text className="text-xs font-semibold text-gray-400">
+          <Text className="text-xs font-semibold text-neutral-400">
             {member.username}
           </Text>
           {!!data.characters && (
             <>
-              <Text className="text-xs text-gray-400 px-1">·</Text>
-              <Text className="text-xs text-gray-400">
+              <Text className="text-xs text-neutral-400 px-1">·</Text>
+              <Text className="text-xs text-neutral-400">
                 {data.characters} 字符
               </Text>
             </>
           )}
           {!!data.clicks && (
             <>
-              <Text className="text-xs text-gray-400 px-1">·</Text>
-              <Text className="text-xs text-gray-400">
+              <Text className="text-xs text-neutral-400 px-1">·</Text>
+              <Text className="text-xs text-neutral-400">
                 {data.clicks} 次点击
               </Text>
             </>
@@ -60,8 +60,10 @@ export default function NodeTopicRow(props) {
 
       <View className="w-[80px] flex flex-row items-center justify-end pr-2">
         {!!data.replies && (
-          <View className="rounded-full text-xs px-2 bg-gray-400">
-            <Text className="text-white">{data.replies}</Text>
+          <View className="rounded-full text-xs px-2 bg-neutral-400 dark:bg-neutral-750">
+            <Text className="text-white dark:text-neutral-300">
+              {data.replies}
+            </Text>
           </View>
         )}
       </View>

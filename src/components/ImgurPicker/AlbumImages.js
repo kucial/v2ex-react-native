@@ -7,33 +7,51 @@ import {
   Pressable
 } from 'react-native'
 import React, { useCallback } from 'react'
+
 import { useImgurService } from '@/containers/ImgurService'
+import { isRefreshing } from '@/utils/swr'
+
 import ImageCard from './ImageCard'
 import BackButton from '../BackButton'
-import { isRefreshing } from '@/utils/swr'
 import UploadButton from './UploadButton'
+import { useColorScheme } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
 
 export default function AlbumView(props) {
   const { album } = props
+  const { colorScheme } = useColorScheme()
   const imgur = useImgurService()
   const imagesSwr = imgur.useAlbumImages(album.id)
   return (
     <View className="flex flex-1">
       <SafeAreaView>
-        <View className="flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1 border-b border-gray-300">
+        <View className="flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1 border-b border-neutral-300 dark:border-neutral-600">
           <View className="w-[56px]">
-            <BackButton onPress={props.onCancel} />
+            <BackButton
+              tintColor={
+                colorScheme === 'dark'
+                  ? colors.neutral[300]
+                  : colors.neutral[900]
+              }
+              onPress={props.onCancel}
+            />
           </View>
           <View className="flex-1 px-1">
             <Text
-              className="text-center font-medium text-base"
+              className="text-center font-medium text-base dark:text-neutral-300"
               numberOfLines={1}
               ellipsizeMode="tail">
               {album.title}
             </Text>
           </View>
           <View className="w-[56px] items-end">
-            <UploadButton />
+            <UploadButton
+              tintColor={
+                colorScheme === 'dark'
+                  ? colors.neutral[300]
+                  : colors.neutral[900]
+              }
+            />
           </View>
         </View>
       </SafeAreaView>
@@ -41,6 +59,9 @@ export default function AlbumView(props) {
         className="flex-1"
         refreshControl={
           <RefreshControl
+            tintColor={
+              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+            }
             refreshing={isRefreshing(imagesSwr)}
             onRefresh={() => {
               imagesSwr.mutate()

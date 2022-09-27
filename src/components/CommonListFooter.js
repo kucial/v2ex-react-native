@@ -28,7 +28,7 @@ export default function CommonListFooter(props) {
           {listSwr.error.code !== 'member_locked' && (
             <View className="flex flex-row justify-center mb-4">
               <Pressable
-                className="px-4 h-[44px] w-[120px] rounded-full bg-gray-900 text-white items-center justify-center active:opacity-60"
+                className="px-4 h-[44px] w-[120px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60"
                 onPress={() => {
                   listSwr.mutate()
                 }}>
@@ -41,13 +41,13 @@ export default function CommonListFooter(props) {
       {hasReachEnd(listSwr) &&
         (isEmptyList(listSwr) ? (
           <View className="w-full flex flex-row justify-center py-4">
-            <Text className="text-gray-400">
+            <Text className="text-neutral-400">
               {props.emptyMessage || '还没有内容哦'}
             </Text>
           </View>
         ) : (
           <View className="w-full flex flex-row justify-center py-4">
-            <Text className="text-gray-400">到达底部啦</Text>
+            <Text className="text-neutral-400">到达底部啦</Text>
           </View>
         ))}
     </View>

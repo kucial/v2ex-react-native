@@ -9,10 +9,14 @@ import React, {
 import PropTypes from 'prop-types'
 import { XIcon } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
+import { useColorScheme } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
 
 function SearchInput(props, ref) {
   const [text, setText] = useState(props.initialValue || '')
   const searchInput = useRef()
+  const { colorScheme } = useColorScheme()
+
   const service = useMemo(
     () => ({
       focus() {
@@ -40,7 +44,13 @@ function SearchInput(props, ref) {
       style={props.style}>
       <View className="relative flex-1 py-2">
         <TextInput
-          className="bg-gray-100 rounded-lg flex-1 px-2 h-[36px] text-[16px] leading-[20px]"
+          className="bg-neutral-100 dark:bg-neutral-800 rounded-lg flex-1 px-2 h-[36px] text-[16px] leading-[20px]"
+          selectionColor={
+            colorScheme === 'dark' ? colors.amber[50] : colors.neutral[600]
+          }
+          placeholderTextColor={
+            colorScheme === 'dark' ? colors.neutral[500] : colors.neutral[400]
+          }
           ref={searchInput}
           placeholder={props.placeholder}
           returnKeyType="search"
@@ -55,7 +65,7 @@ function SearchInput(props, ref) {
         {!!text && (
           <View className="absolute right-0 top-2 h-full flex flex-row items-center justify-center">
             <Pressable
-              className="rounded-full w-[40px] h-[40px] active:bg-gray-100 active:opacity-60 items-center justify-center"
+              className="rounded-full w-[40px] h-[40px] active:bg-neutral-100 active:opacity-60 items-center justify-center"
               onPress={() => {
                 service.reset()
               }}>
@@ -70,12 +80,12 @@ function SearchInput(props, ref) {
           className={classNames(
             'ml-2',
             'rounded-lg h-[36px] px-3 items-center justify-center',
-            'active:bg-gray-100 active:opacity-60'
+            'active:bg-neutral-100 active:opacity-60'
           )}
           onPress={() => {
             service.submit()
           }}>
-          <Text className="text-gray-900 font-medium tracking-wide text-md">
+          <Text className="text-neutral-900 font-medium tracking-wide text-md">
             搜索
           </Text>
         </Pressable>

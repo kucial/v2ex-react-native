@@ -2,7 +2,7 @@ import {
   Modal,
   StyleSheet,
   Pressable,
-  SafeAreaView,
+  View,
   KeyboardAvoidingView,
   Platform,
   useWindowDimensions
@@ -21,13 +21,14 @@ export default function SlideUp(props) {
       onRequestClose={props.onRequestClose}>
       <AlertService>
         <Pressable
-          className="u-flex-1 justify-end items-center absolute w-full h-full backdrop-opacity-10 bg-gray-900/20"
+          className="u-flex-1 justify-end items-center absolute w-full h-full backdrop-opacity-10 bg-neutral-900/20 dark:bg-neutral-900/80"
           onPress={props.onRequestClose}></Pressable>
 
         <KeyboardAvoidingView
           style={styles.safeArea}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <SafeAreaView
+          <View
+            className="bg-white dark:bg-neutral-800"
             style={[
               styles.modalView,
               {
@@ -41,7 +42,7 @@ export default function SlideUp(props) {
                 props.fullHeight && { height: '100%' }
               ]
             })}
-          </SafeAreaView>
+          </View>
         </KeyboardAvoidingView>
       </AlertService>
     </Modal>
@@ -64,7 +65,6 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: '100%',
-    backgroundColor: 'white',
     borderTopEndRadius: 20,
     borderTopStartRadius: 20,
     alignItems: 'center',
