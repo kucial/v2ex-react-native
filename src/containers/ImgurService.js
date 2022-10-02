@@ -24,10 +24,11 @@ class ImgurClient {
 
     this.fetcher.interceptors.request.use((config) => {
       config.headers = config.headers ? config.headers : {}
+      console.log('IMGUR_REQUEST', config)
       if (this.credentials?.access_token) {
+        console.log('authorization assign')
         config.headers.authorization = `Bearer ${this.credentials.access_token}`
       }
-      console.log('IMGUR_REQUEST', config)
       return config
     })
 
@@ -74,6 +75,9 @@ class ImgurClient {
       url: `/3/upload`,
       method: 'POST',
       data: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
       transformRequest: (data) => {
         return data
       }

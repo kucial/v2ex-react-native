@@ -31,7 +31,7 @@ const renderBackdrop = (props) => {
 
 // NEXT: reply cache.
 export default function TopicReplyForm(props) {
-  const { context } = props
+  const { context, navigation } = props
   const [imagePickerOpened, showImagePicker] = useState(false)
   const { colorScheme } = useColorScheme()
   const tw = useTailwind()
@@ -161,6 +161,11 @@ export default function TopicReplyForm(props) {
           }}>
           {imagePickerOpened && (
             <ImgurPicker
+              onConfigSettings={() => {
+                navigation.push('imgur-settings', {
+                  autoBack: true
+                })
+              }}
               onSubmit={(images) => {
                 const content = getValues('content')
                 setValue(

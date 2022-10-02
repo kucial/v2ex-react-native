@@ -31,7 +31,10 @@ export default function ImageCard(props) {
         className={classNames(
           'absolute right-0 top-0 p-2 items-center justify-center active:opacity-60'
         )}
-        onPress={props.onPress}>
+        onPress={(e) => {
+          e.stopPropagation()
+          props.onToggleSelect()
+        }}>
         <View
           className={classNames(
             'w-[18px] h-[18px] rounded-full items-center justify-center',

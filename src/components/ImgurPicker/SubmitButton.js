@@ -12,7 +12,7 @@ export default function UploadButton(props) {
     <View className="absolute bottom-[56px] right-[24px]">
       <Pressable
         className={classNames(
-          'w-[56px] h-[56px] items-center justify-center rounded-full shadow-sm active:opacity-60',
+          'w-[62px] h-[62px] items-center justify-center rounded-full shadow-sm active:opacity-60',
           'bg-neutral-900',
           'dark:bg-amber-50'
         )}

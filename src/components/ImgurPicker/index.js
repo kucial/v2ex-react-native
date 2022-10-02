@@ -53,22 +53,17 @@ export default function ImgurPicker(props) {
             Imgur 服务还未设置
           </Text>
         </View>
-        <Pressable
-          className={classNames(
-            'h-[44px] w-[200px] rounded-md flex items-center justify-center mt-4',
-            'bg-neutral-900 active:opacity-60',
-            'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
-          )}
-          onPress={() => {
-            if (props.onRequestClose) {
-              props.onRequestClose()
-            }
-            navigation.push('imgur-settings', {
-              autoBack: true
-            })
-          }}>
-          <Text className="text-white dark:text-neutral-900">前往设置</Text>
-        </Pressable>
+        {props.onConfigSettings && (
+          <Pressable
+            className={classNames(
+              'h-[44px] w-[200px] rounded-md flex items-center justify-center mt-4',
+              'bg-neutral-900 active:opacity-60',
+              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
+            )}
+            onPress={props.onConfigSettings}>
+            <Text className="text-white dark:text-neutral-900">前往设置</Text>
+          </Pressable>
+        )}
       </View>
     )
   }
@@ -90,7 +85,7 @@ export default function ImgurPicker(props) {
               }
             ])
           }}
-          onToggleImage={toggleImage}
+          onToggleSelect={toggleImage}
         />
       )
       break
@@ -102,7 +97,7 @@ export default function ImgurPicker(props) {
           onCancel={() => {
             setStack((prev) => prev.slice(0, -1))
           }}
-          onToggleImage={toggleImage}
+          onToggleSelect={toggleImage}
         />
       )
       break

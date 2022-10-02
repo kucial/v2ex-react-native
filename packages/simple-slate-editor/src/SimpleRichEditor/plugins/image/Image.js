@@ -28,7 +28,7 @@ const Image = ({ attributes, children, element }) => {
           className={`block max-w-full h-auto mx-auto ${selected && focused ? 'outline-2 outline outline-neutral-800' : ''}`}
         />
         <button
-          className={`btn w-[44px] h-[44px] absolute top-2 right-2 bg-white rounded-lg ${ selected && focused ? 'flex': '!hidden'}`}
+          className={`btn w-[44px] h-[44px] absolute top-2 right-2 rounded-lg bg-white/50 text-red-600 dark:bg-neutral-800/50 dark:text-rose-400 ${ selected && focused ? 'flex': '!hidden'}`}
           onMouseDown={(e) => {
             e.preventDefault();
           }}

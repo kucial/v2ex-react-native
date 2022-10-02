@@ -1,21 +1,13 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  ScrollView,
-  RefreshControl,
-  Pressable
-} from 'react-native'
-import React, { useCallback } from 'react'
+import { View, Text, SafeAreaView } from 'react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
-import { isRefreshing } from '@/utils/swr'
 
-import ImageCard from './ImageCard'
 import BackButton from '../BackButton'
 import UploadButton from './UploadButton'
 import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
+
+import ImagesGrid from './ImagesGrid'
 
 export default function AlbumView(props) {
   const { album } = props
@@ -55,40 +47,11 @@ export default function AlbumView(props) {
           </View>
         </View>
       </SafeAreaView>
-      <ScrollView
-        className="flex-1"
-        refreshControl={
-          <RefreshControl
-            tintColor={
-              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-            }
-            refreshing={isRefreshing(imagesSwr)}
-            onRefresh={() => {
-              imagesSwr.mutate()
-            }}
-          />
-        }>
-        <View className="px-2 py-2">
-          {imagesSwr.error && (
-            <View>
-              <Text>{imagesSwr.error.message}</Text>
-            </View>
-          )}
-          <View className="flex flex-row flex-wrap">
-            {imagesSwr.data?.map((image) => (
-              <View className="basis-1/2 p-2" key={image.id}>
-                <ImageCard
-                  data={image}
-                  selected={!!props.selected.find((i) => i.id === image.id)}
-                  onPress={() => {
-                    props.onToggleImage(image)
-                  }}
-                />
-              </View>
-            ))}
-          </View>
-        </View>
-      </ScrollView>
+      <ImagesGrid
+        imagesSwr={imagesSwr}
+        selected={props.selected}
+        onToggleSelect={props.onToggleSelect}
+      />
     </View>
   )
 }

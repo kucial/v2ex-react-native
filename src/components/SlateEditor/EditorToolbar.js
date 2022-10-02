@@ -35,7 +35,7 @@ function ToolbarButton({ active, disabled, onPress, Icon, iconProps }) {
         'w-[42px] h-[42px] rounded-md bg-white dark:bg-neutral-750 flex items-center justify-center',
         {
           'bg-neutral-900 text-white dark:bg-neutral-600': active,
-          'active:bg-neutral-100': !active,
+          'active:bg-neutral-100 active:bg-neutral-600': !active,
           'active:opacity-60': !disabled,
           'opacity-50': disabled
         }

@@ -74,7 +74,7 @@ export default function Landing(props) {
       {tabIndex == 0 && (
         <Images
           selected={props.selected}
-          onToggleSelect={props.onToggleImage}
+          onToggleSelect={props.onToggleSelect}
         />
       )}
     </View>

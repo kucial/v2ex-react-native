@@ -5,7 +5,7 @@
 [data-slate-placeholder='true'] {
   top: 0;
   line-height: 1.3;
-  color: var(--color-placeholder, #464646);
+  @apply text-neutral-400 dark:text-neutral-500;
   opacity: 1 !important;
 }
 [data-slate-node="element"] {
@@ -15,9 +15,8 @@
 body {
   font-size: 1rem;
   line-height: 1.33;
-  background-color: var(--color-background);
-  caret-color: var(--color-caret);
-  color: var(--color-text);
+  @apply text-neutral-800 bg-neutral-100 caret-neutral-500;
+  @apply dark:text-neutral-300 dark:bg-neutral-800 dark:caret-amber-50;
 }
 h1 {
   font-size: 1.75rem;
@@ -76,7 +75,7 @@ blockquote {
   padding-left: 1.5rem;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
-  border-left: 2px solid var(--color-blockquote-border, #111111);
+  @apply border-l-2 border-solid border-l-neutral-900 dark:border-l-neutral-300;
 }
 blockquote *:last-child {
   margin-bottom: 0;

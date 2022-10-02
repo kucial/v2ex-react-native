@@ -749,6 +749,7 @@ function TopicScreen({ navigation, route }) {
         handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}>
         {replyContext && (
           <TopicReplyForm
+            navigation={navigation}
             cacheKey={getReplyFormCacheKey(replyContext)}
             context={replyContext}
             onSubmit={handleSubmitReply}

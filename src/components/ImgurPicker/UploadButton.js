@@ -11,18 +11,46 @@ import { useAlertService } from '@/containers/AlertService'
 
 import { useAlbum } from './context'
 import { USER_ROOT_ALBUM } from './constants'
+import { useActivityIndicator } from '@/containers/ActivityIndicator'
+import { useCallback } from 'react'
 
 export default function UploadButton(props) {
   const imgur = useImgurService()
   const album = useAlbum()
   const { mutate } = useSWRConfig()
   const alert = useAlertService()
+  const aIndicator = useActivityIndicator()
+  const uploadImage = useCallback(
+    async (imageInfo) => {
+      if (!imgur) {
+        return
+      }
+      const localUri = imageInfo.uri
+      const filename = localUri.split('/').pop()
+      const match = /\.(\w+)$/.exec(filename)
+      let type = match ? `image/${match[1]}` : `image`
+
+      const imgurRes = await imgur.upload({
+        image: {
+          uri: imageInfo.uri,
+          name: imageInfo.fileName || filename,
+          type
+        },
+        type: 'file',
+        name: imageInfo.fileName,
+        album: album?.deletehash
+      })
+      console.log(imgurRes)
+      return imgurRes.data
+    },
+    [imgur, album]
+  )
   if (!imgur) {
     return null
   }
   return (
     <Pressable
-      className="h-[44px] w-[44px] items-center justify-center rounded-full active:bg-neutral-100"
+      className="h-[44px] w-[44px] items-center justify-center rounded-full active:bg-neutral-100 dark:active:bg-neutral-600"
       onPress={async () => {
         const permissionRes =
           await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -32,30 +60,34 @@ export default function UploadButton(props) {
         }
         const result = await ImagePicker.launchImageLibraryAsync({
           allowsMultipleSelection: true,
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          base64: true
+          mediaTypes: ImagePicker.MediaTypeOptions.Images
+          // allowsEditing: true
+          // base64: true
         })
-        if (result.cancelled) {
+        if (result.cancelled || result.err) {
           return
         }
         try {
-          await Promise.all(
-            result.selected.map(async (item) => {
-              const imgurRes = await imgur.upload({
-                image: item.base64,
-                type: 'base64',
-                name: item.fileName
-                // album: album?.deletehash
+          aIndicator.show()
+          let uploaded
+          if (result.selected) {
+            uploaded = await Promise.all(
+              result.selected.map((item) => {
+                return uploadImage(item, album)
               })
-              console.log(imgurRes)
-            })
-          )
+            )
+          } else {
+            const imageEntity = await uploadImage(result, album)
+            uploaded = [imageEntity]
+          }
           // 刷新缓存
           mutate(`/imgur/album/${album?.id || USER_ROOT_ALBUM}/images`)
           // mutate album cache
         } catch (err) {
           alert.alertWithType('error', '错误', err.message)
           Sentry.captureException(err)
+        } finally {
+          aIndicator.hide()
         }
       }}>
       <ArrowUpTrayIcon size={22} color={props.tintColor} />

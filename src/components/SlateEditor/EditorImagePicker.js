@@ -1,8 +1,7 @@
 import ImgurPicker from '../ImgurPicker'
-import { useEditor } from './context'
 
 export default function EditorImagePicker(props) {
-  const editor = useEditor()
+  const { editor } = props
   return (
     <ImgurPicker
       {...props}

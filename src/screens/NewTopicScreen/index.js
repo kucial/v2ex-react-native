@@ -151,31 +151,6 @@ export default function NewTopicScreen(props) {
                     <View className="px-2 bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md">
                       <EditorRender
                         placeholder="如果标题能够表达完整内容，则正文可以为空"
-                        selectionColor={
-                          colorScheme === 'dark'
-                            ? colors.amber[50]
-                            : colors.neutral[600]
-                        }
-                        placeholderTextColor={
-                          colorScheme === 'dark'
-                            ? colors.neutral[500]
-                            : colors.neutral[400]
-                        }
-                        backgroundColor={
-                          colorScheme === 'dark'
-                            ? colors.neutral[800]
-                            : colors.neutral[100]
-                        }
-                        textColor={
-                          colorScheme === 'dark'
-                            ? colors.neutral[300]
-                            : colors.neutral[800]
-                        }
-                        blockquoteBorderColor={
-                          colorScheme === 'dark'
-                            ? colors.neutral[300]
-                            : colors.neutral[900]
-                        }
                         containerStyle={{
                           overflow: 'hidden',
                           minHeight: 200,
@@ -191,8 +166,8 @@ export default function NewTopicScreen(props) {
                     className={classNames(
                       'h-[50px] rounded-lg items-center justify-center active:opacity-60',
                       isValid
-                        ? 'bg-neutral-900 dark:bg-amber-100'
-                        : 'bg-neutral-900/60 dark:bg-amber-50/80'
+                        ? 'bg-neutral-900 dark:bg-amber-50'
+                        : 'bg-neutral-900/60 dark:bg-amber-50/70'
                     )}
                     disabled={!isValid || isSubmitting}
                     onPress={async () => {
@@ -262,6 +237,13 @@ export default function NewTopicScreen(props) {
               }}>
               {imagePickerOpened && (
                 <EditorImagePicker
+                  editor={editorRef.current}
+                  onConfigSettings={() => {
+                    pickerModalRef.current?.dismiss()
+                    navigation.push('imgur-settings', {
+                      autoBack: true
+                    })
+                  }}
                   onSubmit={() => {
                     pickerModalRef.current?.dismiss()
                   }}

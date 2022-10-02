@@ -55,10 +55,7 @@ export default function HomeScreen() {
     return (
       <View className="flex-1 flex flex-row items-center justify-center bg-white">
         <View className="px-4 flex items-center justify-center">
-          <Text>
-            {tabsSwr.error?.message ||
-              'Elit veniam laboris sunt esse aliqua dolore aliquip laborum proident ea velit nisi consectetur velit. Officia aliquip enim officia nostrud dolor mollit duis culpa. Et aliquip fugiat veniam aliquip excepteur consectetur Lorem labore aliqua qui sint. Elit ea duis adipisicing culpa anim. Lorem Lorem consequat ad occaecat ut minim veniam. Adipisicing culpa duis laboris duis duis laborum.'}
-          </Text>
+          <Text>{tabsSwr.error?.message || '数据加载失败'}</Text>
           <Pressable
             disabled={tabsSwr.isValidating}
             className="mt-4 px-4 h-[44px] w-[200px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60"
