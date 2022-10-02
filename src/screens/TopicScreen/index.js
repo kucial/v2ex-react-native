@@ -57,13 +57,6 @@ import classNames from 'classnames'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
 
-const maxLen = (str = '', limit = 0) => {
-  if (limit && str.length > limit) {
-    return str.slice(0, limit) + ' ...'
-  }
-  return str
-}
-
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id) => `https://v2ex.com/t/${id}`

@@ -67,7 +67,8 @@
     "react-time-ago": "^7.2.1",
     "sentry-expo": "^4.2.0",
     "swr": "^1.3.0",
-    "tailwindcss-react-native": "^1.7.10"
+    "tailwindcss-react-native": "^1.7.10",
+    "expo-web-browser": "~10.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
