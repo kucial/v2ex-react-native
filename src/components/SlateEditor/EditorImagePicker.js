@@ -14,8 +14,8 @@ export default function EditorImagePicker(props) {
           width: image.width,
           height: image.height
         })
-        if (props.onRequestClose) {
-          props.onRequestClose()
+        if (props.onSubmit) {
+          props.onSubmit()
         }
       }}
     />

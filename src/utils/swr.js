@@ -35,7 +35,10 @@ export const useSWR = (...args) => {
   const lastArg = args[args.length - 1]
   let swr
   if (typeof lastArg === 'object') {
-    options = args[1]
+    options = {
+      ...options,
+      ...args[1]
+    }
     swr = useSWRBase(...args)
   } else {
     swr = useSWRBase(...args, options)

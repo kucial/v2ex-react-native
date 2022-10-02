@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 import React, { useRef, useEffect, useState } from 'react'
 import Constants from 'expo-constants'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
+import { useColorScheme } from 'tailwindcss-react-native'
 import WebView from 'react-native-webview'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'

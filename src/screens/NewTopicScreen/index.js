@@ -11,8 +11,9 @@ import {
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 
 import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 import classNames from 'classnames'
+import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 
 import {
   EditorProvider,
@@ -26,15 +27,30 @@ import Loader from '@/components/Loader'
 import fetcher from '@/utils/fetcher'
 
 import nodes from '@/mock/nodes'
-import SlideUp from '@/components/SlideUp'
 
 import NodeSelect from './NodeSelect'
+
+const pickerSnapPoints = ['90%']
+
+const renderBackdrop = (props) => {
+  return (
+    <BottomSheetBackdrop
+      {...props}
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      pressBehavior="close"
+    />
+  )
+}
 
 export default function NewTopicScreen(props) {
   const { route, navigation } = props
   const { colorScheme } = useColorScheme()
   const titleInput = useRef()
   const editorRef = useRef()
+  const pickerModalRef = useRef()
+
+  const tw = useTailwind()
 
   const [imagePickerOpened, showImagePicker] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -228,19 +244,30 @@ export default function NewTopicScreen(props) {
                 showOnFocus
                 onOpenImageSelect={() => {
                   showImagePicker(true)
+                  editorRef.current?.blur()
+                  pickerModalRef.current.present()
                 }}
               />
             </View>
-            {imagePickerOpened && (
-              <SlideUp
-                visible={imagePickerOpened}
-                onRequestClose={() => {
-                  showImagePicker(false)
-                }}
-                fullHeight>
-                <EditorImagePicker />
-              </SlideUp>
-            )}
+            <BottomSheetModal
+              ref={pickerModalRef}
+              index={0}
+              snapPoints={pickerSnapPoints}
+              backdropComponent={renderBackdrop}
+              backgroundStyle={tw('bg-white dark:bg-neutral-800')}
+              handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}
+              onDismiss={() => {
+                showImagePicker(false)
+                editorRef.current?.focus()
+              }}>
+              {imagePickerOpened && (
+                <EditorImagePicker
+                  onSubmit={() => {
+                    pickerModalRef.current?.dismiss()
+                  }}
+                />
+              )}
+            </BottomSheetModal>
           </EditorProvider>
         </SafeAreaView>
       </KeyboardAwareView>

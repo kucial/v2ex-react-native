@@ -8,6 +8,7 @@ import * as WebBrowser from 'expo-web-browser'
 import { isAppLink, getScreenInfo } from '@/utils/url'
 import ImageElement from './ImageElement'
 import colors from 'tailwindcss/colors'
+import { captureException } from '@sentry/react-native'
 
 const ImageRenderer = (props) => {
   const { rendererProps } = useInternalRenderer('img', props)
@@ -119,6 +120,7 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
             }
           }
           WebBrowser.openBrowserAsync(href).catch((err) => {
+            captureException(err)
             console.log(err)
           })
         }

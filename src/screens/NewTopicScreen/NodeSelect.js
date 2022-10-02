@@ -6,20 +6,33 @@ import {
   TextInput,
   FlatList
 } from 'react-native'
-import React from 'react'
-import { useState, useCallback, useMemo } from 'react'
-import { useColorScheme } from 'tailwindcss-react-native'
+import { useState, useCallback, useMemo, useRef } from 'react'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
 import classNames from 'classnames'
+import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 
 import { useSWR } from '@/utils/swr'
-import SlideUp from '@/components/SlideUp'
+
+const pickerSnapPoints = ['50%', '90%']
+const renderBackdrop = (props) => {
+  return (
+    <BottomSheetBackdrop
+      {...props}
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      pressBehavior="close"
+    />
+  )
+}
 
 export default function NodeSelect(props) {
   const nodesSwr = useSWR('/api/nodes/all.json')
   const { colorScheme } = useColorScheme()
+  const tw = useTailwind()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
+  const selectRef = useRef()
 
   const filtered = useMemo(() => {
     if (!nodesSwr.data) {
@@ -35,8 +48,6 @@ export default function NodeSelect(props) {
     )
   }, [nodesSwr.data, filter])
 
-  console.log(filtered)
-
   const renderItem = useCallback(
     ({ item }) => {
       return (
@@ -44,7 +55,7 @@ export default function NodeSelect(props) {
           className="pl-3 active:opacity-50"
           onPress={() => {
             props.onChange(item)
-            setOpen(false)
+            selectRef.current?.close()
           }}>
           <View
             className={classNames(
@@ -67,6 +78,7 @@ export default function NodeSelect(props) {
         style={props.style}
         onPress={() => {
           setOpen(true)
+          selectRef.current?.present()
         }}>
         {props.value ? (
           <Text className="text-[16px]">{props.renderLabel(props.value)}</Text>
@@ -76,17 +88,21 @@ export default function NodeSelect(props) {
           </Text>
         )}
       </Pressable>
-      {open && (
-        <SlideUp
-          visible
-          fullHeight
-          onRequestClose={() => {
-            setOpen(false)
-          }}>
-          <View className="flex-1 w-full bg-white dark:bg-[#333333]">
+      <BottomSheetModal
+        ref={selectRef}
+        index={0}
+        snapPoints={pickerSnapPoints}
+        backdropComponent={renderBackdrop}
+        backgroundStyle={tw('bg-white dark:bg-neutral-800')}
+        handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}
+        onDismiss={() => {
+          setOpen(false)
+        }}>
+        {open && (
+          <View className="flex-1 w-full bg-white dark:bg-neutral-800">
             <View className="p-3">
               <TextInput
-                className="h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-800 dark:text-neutral-300"
+                className="h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300"
                 selectionColor={
                   colorScheme === 'dark'
                     ? colors.amber[50]
@@ -112,8 +128,8 @@ export default function NodeSelect(props) {
               keyExtractor={(n) => n.id}
             />
           </View>
-        </SlideUp>
-      )}
+        )}
+      </BottomSheetModal>
     </>
   )
 }

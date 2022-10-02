@@ -16,8 +16,7 @@ import React, {
   useCallback,
   useState,
   memo,
-  useRef,
-  useEffect
+  useRef
 } from 'react'
 import { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
@@ -31,6 +30,11 @@ import {
   HeartIcon as FilledHeartIcon,
   StarIcon as FilledStarIcon
 } from 'react-native-heroicons/solid'
+import {
+  BottomSheetModal,
+  BottomSheetBackdrop,
+  BottomSheetScrollView
+} from '@gorhom/bottom-sheet'
 
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
@@ -40,7 +44,6 @@ import ErrorNotice from '@/components/ErrorNotice'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import CommonListFooter from '@/components/CommonListFooter'
-import SlideUp from '@/components/SlideUp'
 
 import { hasReachEnd, isLoading, useSWR, isRefreshing } from '@/utils/swr'
 import fetcher from '@/utils/fetcher'
@@ -56,10 +59,28 @@ import Converation from './Conversation'
 import classNames from 'classnames'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
+import { Keyboard } from 'react-native'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id) => `https://v2ex.com/t/${id}`
+
+const replyModalSnapPoints = ['20%']
+const conversationSnapPoints = ['60%', '90%']
+
+const renderBackdrop = (props) => {
+  return (
+    <BottomSheetBackdrop
+      {...props}
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      pressBehavior="close"
+      onPress={() => {
+        Keyboard.dismiss()
+      }}
+    />
+  )
+}
 
 const hasRelatedMessages = (reply, replyList) => {
   if (!reply) {
@@ -155,6 +176,8 @@ function TopicScreen({ navigation, route }) {
   const [conversationContext, setConversationContext] = useState(null)
 
   const listRef = useRef()
+  const replyModalRef = useRef()
+  const conversationModalRef = useRef()
   const { width } = useWindowDimensions()
   const { composeAuthedNavigation } = useAuthService()
   const aIndicator = useActivityIndicator()
@@ -166,7 +189,9 @@ function TopicScreen({ navigation, route }) {
   )
   const { color: likedActiveColor } = tw('color-red-700 dark:color-rose-400')
 
-  const topicSwr = useSWR(`/page/t/${id}/topic.json`)
+  const topicSwr = useSWR(`/page/t/${id}/topic.json`, {
+    onSuccess: touchViewed
+  })
   const listSwr = useSWRInfinite(
     useCallback(
       (index) => {
@@ -261,12 +286,6 @@ function TopicScreen({ navigation, route }) {
     }
   }, [topic?.title])
 
-  useEffect(() => {
-    if (topicSwr.data) {
-      touchViewed(topicSwr.data)
-    }
-  }, [topicSwr.data])
-
   const htmlRenderProps = useMemo(() => {
     if (!topic) {
       return {}
@@ -287,6 +306,7 @@ function TopicScreen({ navigation, route }) {
   const initReply = useCallback(
     (reply) => {
       setReplyContext({ target: reply })
+      replyModalRef.current?.present()
     },
     [id]
   )
@@ -321,6 +341,7 @@ function TopicScreen({ navigation, route }) {
 
   const handleSubmitReply = useCallback(
     (values) => {
+      replyModalRef.current?.dismiss()
       setReplyContext(null)
       aIndicator.show()
       return fetcher(`/page/t/${id}/reply.json`, {
@@ -353,6 +374,7 @@ function TopicScreen({ navigation, route }) {
 
   const showConversation = useCallback((reply) => {
     setConversationContext(reply)
+    conversationModalRef.current?.present()
   }, [])
 
   const { renderReply, keyExtractor } = useMemo(() => {
@@ -700,33 +722,39 @@ function TopicScreen({ navigation, route }) {
           </View>
         </View>
       </SafeAreaView>
-      {replyContext && (
-        <SlideUp
-          visible={!!replyContext}
-          onRequestClose={() => {
-            setReplyContext(null)
-          }}>
+      <BottomSheetModal
+        ref={conversationModalRef}
+        index={0}
+        snapPoints={conversationSnapPoints}
+        backdropComponent={renderBackdrop}
+        backgroundStyle={tw('bg-white dark:bg-neutral-800')}
+        handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}>
+        {conversationContext && (
+          <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
+            <Converation
+              data={conversation}
+              pivot={conversationContext}
+              onReply={initReply}
+              onThank={handleThankToReply}
+            />
+          </BottomSheetScrollView>
+        )}
+      </BottomSheetModal>
+      <BottomSheetModal
+        ref={replyModalRef}
+        index={0}
+        snapPoints={replyModalSnapPoints}
+        backdropComponent={renderBackdrop}
+        backgroundStyle={tw('bg-white dark:bg-neutral-800')}
+        handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}>
+        {replyContext && (
           <TopicReplyForm
             cacheKey={getReplyFormCacheKey(replyContext)}
             context={replyContext}
             onSubmit={handleSubmitReply}
           />
-        </SlideUp>
-      )}
-      {conversationContext && !replyContext && (
-        <SlideUp
-          visible={!!conversationContext}
-          onRequestClose={() => {
-            setConversationContext(null)
-          }}>
-          <Converation
-            data={conversation}
-            pivot={conversationContext}
-            onReply={initReply}
-            onThank={handleThankToReply}
-          />
-        </SlideUp>
-      )}
+        )}
+      </BottomSheetModal>
     </View>
   )
 }

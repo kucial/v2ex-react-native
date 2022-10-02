@@ -1,10 +1,12 @@
 import * as Sentry from '@sentry/react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { TailwindProvider, useTailwind } from 'tailwindcss-react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { SWRConfig } from 'swr'
 import { SENTRY_DSN } from '@env'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
 import { FolderIcon, HomeIcon, UserIcon } from 'react-native-heroicons/outline'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
@@ -338,27 +340,31 @@ function App() {
   return (
     <TailwindProvider initialColorScheme={scheme}>
       <WatchSchemeUpdate />
+      <FetcherWebView />
       <ErrorBoundary>
-        <FetcherWebView />
-        {/* <StatusBar style="auto" /> */}
-        <SWRConfig value={swrConfig}>
-          <AlertService>
-            <ActionSheetProvider>
-              <ActivityIndicator>
-                <NavigationContainer theme={themes[scheme]}>
-                  <AuthService>
-                    <ViewedTopicsService>
-                      <ImgurService>
-                        {/* <DebugScreen /> */}
-                        <AppStack />
-                      </ImgurService>
-                    </ViewedTopicsService>
-                  </AuthService>
-                </NavigationContainer>
-              </ActivityIndicator>
-            </ActionSheetProvider>
-          </AlertService>
-        </SWRConfig>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          {/* <StatusBar style="auto" /> */}
+          <SWRConfig value={swrConfig}>
+            <AlertService>
+              <ActionSheetProvider>
+                <ActivityIndicator>
+                  <NavigationContainer theme={themes[scheme]}>
+                    <ImgurService>
+                      <BottomSheetModalProvider>
+                        <AuthService>
+                          <ViewedTopicsService>
+                            {/* <DebugScreen /> */}
+                            <AppStack />
+                          </ViewedTopicsService>
+                        </AuthService>
+                      </BottomSheetModalProvider>
+                    </ImgurService>
+                  </NavigationContainer>
+                </ActivityIndicator>
+              </ActionSheetProvider>
+            </AlertService>
+          </SWRConfig>
+        </GestureHandlerRootView>
       </ErrorBoundary>
     </TailwindProvider>
   )

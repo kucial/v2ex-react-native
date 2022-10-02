@@ -31,9 +31,9 @@ export default function ActivityIndicatorProvider(props) {
             height: INDICATOR_HEIGHT,
             alignItems: 'center',
             justifyContent: 'center',
-            borderRadius: 12,
-            backgroundColor: 'rgba(244, 244, 240, .8)'
-          }}>
+            borderRadius: 12
+          }}
+          className="bg-neutral-100/80 dark:bg-neutral-900/90">
           <Loader size={30} color="#333" autoPlay />
         </View>
       )}
