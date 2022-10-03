@@ -1,5 +1,6 @@
+import { throttle } from 'lodash';
 import React, { createRef } from 'react'
-import { Editor, Element } from 'slate'
+import { Editor, Element, Range, Node } from 'slate'
 import { ReactEditor } from 'slate-react'
 import SimpleRichEditor from './SimpleRichEditor';
 
@@ -11,6 +12,7 @@ const parseData = (str) => {
     return null;
   }
 }
+
 class App extends React.Component {
 
   constructor(props) {
@@ -39,13 +41,18 @@ class App extends React.Component {
     })
   }
 
-
   componentDidUpdate() {
     if (!this.domRef.current) { return; }
+    this.triggerViewportUpdate()
+    this.triggerSelectionUpdate()
+  }
+
+  triggerViewportUpdate() {
     const {scrollHeight, clientWidth} = this.domRef.current;
     if (scrollHeight === this.viewport.height && clientWidth === this.viewport.width) {
       return;
     }
+
     this.viewport = {
       height: scrollHeight,
       width: clientWidth,
@@ -56,6 +63,50 @@ class App extends React.Component {
       payload: this.viewport,
     })
   }
+
+  triggerSelectionUpdate = throttle(() => {
+    if (
+      this.lastSelection && this.editor.selection &&
+      Range.equals(this.editor.selection, this.lastSelection)) {
+      return;
+    }
+    this.lastSelection = JSON.parse(JSON.stringify(this.editor.selection));
+    let selectionBox;
+    if (this.editor.selection) {
+      // hack selection for new block inserted
+      if (Range.isCollapsed(this.editor.selection)) {
+        const nodeEntry = Editor.above(this.editor, {
+          match: (n) => Editor.isBlock(this.editor, n),
+          at: this.editor.selection
+        });
+        if (nodeEntry && Editor.isEmpty(this.editor, nodeEntry[0])) {
+          const anchorDom = ReactEditor.toDOMNode(this.editor, nodeEntry[0]);
+          // selectionBox = anchorDom.getBoundingClientRect();
+          selectionBox = {
+            top: anchorDom.offsetTop,
+            height: anchorDom.clientHeight,
+            bottom: anchorDom.offsetTop + anchorDom.clientHeight,
+            width: 0,
+          }
+        }
+      }
+
+      if (!selectionBox) {
+        const range = ReactEditor.toDOMRange(this.editor, this.editor.selection);
+        selectionBox = range.getBoundingClientRect();
+      }
+      console.log(selectionBox)
+    }
+
+    this.postMessage({
+      type: 'event',
+      name: 'selection',
+      payload: {
+        selection: this.editor.selection,
+        selectionBox,
+      }
+    })
+  }, 300);
 
   watchWindowBlur = (e) => {
     ReactEditor.blur(this.editor);

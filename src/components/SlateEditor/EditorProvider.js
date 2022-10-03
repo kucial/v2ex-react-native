@@ -9,6 +9,8 @@ const uniqId = () => {
   return `${Date.now()}-${count++}`
 }
 
+const debug = false
+
 const EditorProvider = forwardRef((props, ref) => {
   const webviewRef = useRef()
   const requests = useRef({})
@@ -61,6 +63,7 @@ const EditorProvider = forwardRef((props, ref) => {
   const editor = useMemo(() => {
     return {
       viewport: state.viewport,
+      selectionBox: state.selectionBox,
       isReady() {
         return state.isReady
       },
@@ -91,7 +94,9 @@ const EditorProvider = forwardRef((props, ref) => {
       webview: webviewRef,
       handleMessage: (e) => {
         const data = JSON.parse(e.nativeEvent.data)
-        console.log('editor webview', data)
+        if (debug) {
+          console.log('editor webview', data)
+        }
         if (data.requestId) {
           const { requestId, result } = data
           const { resolve, reject } = requests.current[requestId] || {}
@@ -130,6 +135,13 @@ const EditorProvider = forwardRef((props, ref) => {
               setState((prev) => ({
                 ...prev,
                 viewport: data.payload
+              }))
+              break
+            case 'selection':
+              // TODO: check if is equal
+              setState((prev) => ({
+                ...prev,
+                ...data.payload
               }))
               break
             case 'focus':

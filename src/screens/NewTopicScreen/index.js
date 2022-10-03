@@ -14,6 +14,7 @@ import colors from 'tailwindcss/colors'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 import classNames from 'classnames'
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
+import { debounce } from 'lodash'
 
 import {
   EditorProvider,
@@ -29,6 +30,10 @@ import fetcher from '@/utils/fetcher'
 import nodes from '@/mock/nodes'
 
 import NodeSelect from './NodeSelect'
+import { useCallback } from 'react'
+
+// toolbar + extra...
+const VISIBLE_BOTTOM_OFFSET = 85
 
 const pickerSnapPoints = ['90%']
 
@@ -49,6 +54,13 @@ export default function NewTopicScreen(props) {
   const titleInput = useRef()
   const editorRef = useRef()
   const pickerModalRef = useRef()
+  const scrollViewRef = useRef()
+  const scrollViewInfo = useRef({
+    height: undefined,
+    width: undefined,
+    scrollY: 0
+  })
+  const editorRenderContainer = useRef()
 
   const tw = useTailwind()
 
@@ -72,13 +84,59 @@ export default function NewTopicScreen(props) {
     })
   }, [])
 
+  const editorScrollIntoView = useCallback(
+    debounce(() => {
+      if (editorRef.current?.hasFocus() && editorRef.current.selectionBox) {
+        editorRenderContainer.current.measureLayout(
+          scrollViewRef.current,
+          (left, top, width, height) => {
+            const cursorOffsetTop = top + editorRef.current.selectionBox.top
+
+            const visibleRegion = [
+              scrollViewInfo.current.scrollY,
+              scrollViewInfo.current.scrollY +
+                scrollViewInfo.current.height -
+                VISIBLE_BOTTOM_OFFSET
+            ]
+
+            if (
+              cursorOffsetTop > visibleRegion[0] &&
+              cursorOffsetTop < visibleRegion[1]
+            ) {
+              console.log('selection inside scrollview viewport')
+              return
+            }
+
+            scrollViewRef.current.scrollTo({
+              y:
+                cursorOffsetTop -
+                (scrollViewInfo.current.height - VISIBLE_BOTTOM_OFFSET)
+            })
+          }
+        )
+      }
+    }, 100),
+    []
+  )
+
   return (
     <View className="flex-1 bg-white dark:bg-neutral-900">
       <KeyboardAwareView animated>
         <SafeAreaView className="flex-1">
           <EditorProvider ref={editorRef}>
             <KeyboardDismiss className="flex-1">
-              <ScrollView className="flex-1">
+              <ScrollView
+                className="flex-1"
+                ref={scrollViewRef}
+                onLayout={(e) => {
+                  scrollViewInfo.current.width = e.nativeEvent.layout.width
+                  scrollViewInfo.current.height = e.nativeEvent.layout.height
+                  editorScrollIntoView()
+                }}
+                onScroll={(e) => {
+                  scrollViewInfo.current.scrollY = e.nativeEvent.contentOffset.y
+                }}
+                scrollEventThrottle={16}>
                 <View className="px-4 my-3">
                   <View className="mb-1">
                     <Text className="font-medium px-2 dark:text-neutral-300">
@@ -148,16 +206,16 @@ export default function NewTopicScreen(props) {
                     </Text>
                   </View>
                   <View>
-                    <View className="bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md overflow-hidden">
+                    <View
+                      className="bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md overflow-hidden px-2 py-[10px]"
+                      ref={editorRenderContainer}>
                       <EditorRender
                         placeholder="如果标题能够表达完整内容，则正文可以为空"
+                        onLayout={editorScrollIntoView}
+                        onCursorPositionUpdate={editorScrollIntoView}
                         containerStyle={{
                           overflow: 'hidden',
-                          minHeight: 200,
-                          paddingTop: 10,
-                          paddingBottom: 10,
-                          paddingLeft: 8,
-                          paddingRight: 8
+                          minHeight: 200
                         }}
                       />
                     </View>
