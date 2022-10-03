@@ -148,14 +148,16 @@ export default function NewTopicScreen(props) {
                     </Text>
                   </View>
                   <View>
-                    <View className="px-2 bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md">
+                    <View className="bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md overflow-hidden">
                       <EditorRender
                         placeholder="如果标题能够表达完整内容，则正文可以为空"
                         containerStyle={{
                           overflow: 'hidden',
                           minHeight: 200,
                           paddingTop: 10,
-                          paddingBottom: 10
+                          paddingBottom: 10,
+                          paddingLeft: 8,
+                          paddingRight: 8
                         }}
                       />
                     </View>
