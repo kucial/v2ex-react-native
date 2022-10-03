@@ -1,11 +1,12 @@
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native'
 import { useState, useMemo } from 'react'
 import ImageView from 'react-native-image-viewing'
-import { CheckIcon } from 'react-native-heroicons/solid'
+
 import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
 import classNames from 'classnames'
 
+import CheckIcon from '@/components/CheckIcon'
 import { isRefreshing } from '@/utils/swr'
 
 import ImageCard from './ImageCard'

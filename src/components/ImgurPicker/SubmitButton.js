@@ -1,12 +1,13 @@
 import { View } from 'react-native'
 import React from 'react'
-import { CheckIcon } from 'react-native-heroicons/outline'
 import { Pressable } from 'react-native'
 import classNames from 'classnames'
 import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
 
-export default function UploadButton(props) {
+import CheckIcon from '@/components/CheckIcon'
+
+export default function SubmitButton(props) {
   const { colorScheme } = useColorScheme()
   return (
     <View className="absolute bottom-[56px] right-[24px]">
@@ -21,7 +22,7 @@ export default function UploadButton(props) {
         disabled={props.disabled}>
         <CheckIcon
           color={colorScheme === 'dark' ? colors.neutral[900] : 'white'}
-          size={18}
+          size={22}
         />
       </Pressable>
     </View>

@@ -2,7 +2,7 @@ import { View, Text, ImageBackground, Pressable } from 'react-native'
 import React from 'react'
 import classNames from 'classnames'
 
-import { CheckIcon } from 'react-native-heroicons/solid'
+import CheckIcon from '@/components/CheckIcon'
 import { getImageLink } from '@/containers/ImgurService'
 import imagePlaceholder from './assets/image-placeholder.png'
 
