@@ -615,15 +615,18 @@ const CUSTOM_ENDPOINTS = {
       }())`,
       `(function() {
         try {
-          if (/^\/t\/\d+/.test(window.location.pathname)) {
-            const id = d.querySelector('h1 a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0];
+          const match = /^\\/t\\/\\d+/.match(window.location.pathname)
+          if (match) {
             window.ReactNativeWebView.postMessage(JSON.stringify({
-              id,
+              id: match[1]
             }))
           } else {
             window.ReactNativeWebView.postMessage(JSON.stringify({
               error: true,
-              message: 'redirect location is not expected'
+              message: 'redirect location is not expected',
+              data: {
+                location: window.location.pathname
+              }
             }))
           }
         } catch (err) {
