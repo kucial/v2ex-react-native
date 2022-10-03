@@ -107,6 +107,7 @@ export default function NodeSelect(props) {
           <View className="flex-1 w-full bg-white dark:bg-neutral-800">
             <View className="p-3">
               <BottomSheetTextInput
+                autoFocus={!props.value}
                 style={tw(
                   'h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300'
                 )}
