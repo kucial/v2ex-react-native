@@ -82,6 +82,7 @@ const CUSTOM_ENDPOINTS = {
           });
           window.ReactNativeWebView.postMessage(JSON.stringify({
             data: items,
+            fetchedAt: Date.now()
           }))
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -130,6 +131,7 @@ const CUSTOM_ENDPOINTS = {
 
           window.ReactNativeWebView.postMessage(JSON.stringify({
             data: items,
+            fetchedAt: Date.now(),
             pagination: paginationText ? {
               current:  Number(paginationText.split('/')[0])  || 1,
               total:  Number(paginationText.split('/')[1])  || 1,

@@ -22,7 +22,23 @@ export const hasReachEnd = (listSwr) => {
   return !listSwr.isValidating
 }
 
-export const shouldInit = (swr) => !swr.data && !swr.isValidating
+const CACHE_TTL = 5 // min
+const maybeOutdated = (data) => {
+  // infinite swr
+  let fetchedAt
+  if (Array.isArray(data)) {
+    fetchedAt = data[0]?.fetchedAt
+  } else {
+    fetchedAt = data.fetchedAt
+  }
+  return (
+    fetchedAt &&
+    Date.now() - new Date(fetchedAt).valueOf() > 1000 * 60 * CACHE_TTL
+  )
+}
+
+export const shouldInit = (swr) =>
+  (!swr.data || maybeOutdated(swr.data)) && !swr.isValidating
 
 // 自定义 revalidateOnMount 行为。
 export const useSWR = (...args) => {
