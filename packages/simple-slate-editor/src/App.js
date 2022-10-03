@@ -200,6 +200,13 @@ class App extends React.Component {
           result: true,
         })
         break;
+      case 'base64Encode':
+        this.editor.base64Encode(...data.args)
+        this.postMessage({
+          requestId: data.requestId,
+          result: true,
+        })
+        break;
       default :
         this.postMessage({
           requestId: data.requestId,

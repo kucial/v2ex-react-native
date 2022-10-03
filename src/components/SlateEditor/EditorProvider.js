@@ -56,6 +56,7 @@ const EditorProvider = forwardRef((props, ref) => {
       'listIndent',
       'listOutdent',
       'insertImage',
+      'base64Encode',
       'undo',
       'redo'
     ])

@@ -28,8 +28,8 @@ export default function EditorRender(props) {
       onLayout={props.onLayout}>
       <WebView
         originWhitelist={['*']}
-        // source={{ uri: 'http://192.168.1.102:3000/editor.html' }}
         source={editorHtml}
+        // source={{ uri: 'http://192.168.1.102:3000/editor.html' }}
         ref={editor.webview}
         onMessage={editor.handleMessage}
         style={{

@@ -7,3 +7,4 @@ export * from './list';
 export * from './blockquote';
 export * from './hr';
 export * from './image'
+export * from './base64'

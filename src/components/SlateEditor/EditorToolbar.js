@@ -116,7 +116,7 @@ export default function EditorToolbar(props) {
         <ToolbarButton
           active={false}
           onPress={() => {
-            // TODO...
+            editor.base64Encode()
           }}
           Icon={Base64Icon}
         />

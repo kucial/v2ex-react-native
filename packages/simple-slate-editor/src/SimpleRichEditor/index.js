@@ -12,7 +12,8 @@ import {
   withMarkdownShortcut,
   withBlockquote,
   withList,
-  withImage
+  withImage,
+  withBase64Encode
 } from './plugins';
 
 const myCreateEditor = () => {
@@ -26,6 +27,7 @@ const myCreateEditor = () => {
     withImage,
     withHr,
     withMarkdownShortcut,
+    withBase64Encode,
     withHistory,
   ].reduce((base, plugin) => plugin(base), withReact(createEditor()));
 };
