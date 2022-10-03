@@ -216,7 +216,8 @@ export default function NewTopicScreen(props) {
                 <View className="h-[56px]"></View>
               </ScrollView>
             </KeyboardDismiss>
-            <View style={{ position: 'absolute', bottom: 0 }}>
+            <View
+              style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
               <EditorToolbar
                 showOnFocus
                 onOpenImageSelect={() => {
