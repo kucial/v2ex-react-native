@@ -4,17 +4,22 @@ import {
   Pressable,
   ScrollView,
   TextInput,
-  FlatList
+  FlatList,
+  Keyboard
 } from 'react-native'
 import { useState, useCallback, useMemo, useRef } from 'react'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
 import classNames from 'classnames'
-import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
+import {
+  BottomSheetModal,
+  BottomSheetBackdrop,
+  BottomSheetTextInput
+} from '@gorhom/bottom-sheet'
 
 import { useSWR } from '@/utils/swr'
 
-const pickerSnapPoints = ['50%', '90%']
+const pickerSnapPoints = ['50%']
 const renderBackdrop = (props) => {
   return (
     <BottomSheetBackdrop
@@ -101,8 +106,10 @@ export default function NodeSelect(props) {
         {open && (
           <View className="flex-1 w-full bg-white dark:bg-neutral-800">
             <View className="p-3">
-              <TextInput
-                className="h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300"
+              <BottomSheetTextInput
+                style={tw(
+                  'h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300'
+                )}
                 selectionColor={
                   colorScheme === 'dark'
                     ? colors.amber[50]
