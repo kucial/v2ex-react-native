@@ -12,10 +12,12 @@ import TopicRow from './TopicRow'
 import { useAlertService } from '@/containers/AlertService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { useColorScheme } from 'tailwindcss-react-native'
+import { useRef } from 'react'
 
 export default function TopicList(props) {
   const { colorScheme } = useColorScheme()
   const alert = useAlertService()
+  const listViewRef = useRef()
   const { hasViewed } = useViewedTopics()
   const listSwr = useSWRInfinite(props.getKey, {
     revalidateOnMount: false,
@@ -38,7 +40,16 @@ export default function TopicList(props) {
 
   useEffect(() => {
     if (isFocused && shouldInit(listSwr)) {
-      listSwr.mutate()
+      if (listSwr.data) {
+        console.log('refresh.....')
+        listSwr.setSize(1)
+        listViewRef.current?.scrollToIndex({
+          index: 0,
+          viewPosition: 0
+        })
+      } else {
+        listSwr.mutate()
+      }
     }
   }, [isFocused])
 
@@ -58,6 +69,7 @@ export default function TopicList(props) {
 
   return (
     <FlatList
+      ref={listViewRef}
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
