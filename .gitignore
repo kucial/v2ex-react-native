@@ -78,3 +78,5 @@ credentials.json
 # @end expo-cli
 
 .env
+.env.development
+.env.production

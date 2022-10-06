@@ -19,10 +19,34 @@
 - react-native-image-viewing -- imgur 图片预览
 - react-native-dropdownalert -- 信息提示
 
-## 关于用户身份认证
+## ENV 参数
+
+- 本地开发，依赖 `module:react-native-dotenv` + `.env` 来进行设置。 修改 `.env` 后需要注意清理缓存： `expo start -c --dev-client`
+
+## 关于“当前登录用户”
 
 用户登录状态实际从 webview 中获得。登录用户操作的行为都会通过 `webview.injectJavaScript` 来执行
 
-## 首页数据刷新
+## NEXT
 
-- TTL -- 5min
+- [ ] Typescript
+- [ ] Android 适配、调试
+- [ ] 功能完善
+  - [ ] 主题相关
+    - [ ] 点赞
+    - [ ] 附言
+    - [ ] 举报
+  - [ ] 用户相关
+    - [ ] 屏蔽用户
+    - [ ] 关注用户
+- [ ] 应用设置
+  - [ ] 添加用户设置
+  - [ ] 主页刷新时间设置
+- [ ] 优化
+  - [ ] Imgur 删除图片
+  - [ ] 文本选择 与 base64 decode
+- [ ] expo 构建、更新流程
+- [ ] 测试用例
+  - [ ] Webview fetcher 测试
+
+## 功能列表

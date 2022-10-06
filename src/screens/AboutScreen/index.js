@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import RNRestart from 'react-native-restart'
 import classNames from 'classnames'
+import * as Application from 'expo-application'
 import Constants from 'expo-constants'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'

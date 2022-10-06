@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 0.47.0"
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -11,18 +11,31 @@
         "buildConfiguration": "Debug"
       }
     },
-    "preview": {
+    "staging": {
       "credentialsSource": "local",
+      "distribution": "internal",
       "env": {
-        "SENTRY_DSN": "https://cb3af3c00cb64d519c65468bfd661c7e@o4503925891334144.ingest.sentry.io/4503928221466624",
-        "IMGUR_CLIENT_ID": "eb2dd6d8927e275"
+        "IMGUR_CLIENT_ID": "eb2dd6d8927e275",
+        "SENTRY_URL": "https://sentry.kongkx.com",
+        "SENTRY_ORG": "kucial",
+        "SENTRY_PROJECT": "v2ex-react-native",
+        "SENTRY_DSN": "https://7580d23586fd42838e4c0eb78a17d165@sentry.kongkx.com/6"
       }
     },
     "production": {
-      "extends": "preview"
+      "env": {
+        "IMGUR_CLIENT_ID": "eb2dd6d8927e275",
+        "SENTRY_ORG": "kucial",
+        "SENTRY_PROJECT": "v2ex-react-native",
+        "SENTRY_DSN": "https://cb3af3c00cb64d519c65468bfd661c7e@o4503925891334144.ingest.sentry.io/4503928221466624"
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "language": "zh-Hans"
+      }
+    }
   }
 }

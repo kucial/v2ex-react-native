@@ -2,7 +2,6 @@
   "expo": {
     "name": "\\V2EX/",
     "slug": "v2ex-react-native",
-    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -38,9 +37,17 @@
       "favicon": "./src/assets/favicon.png"
     },
     "hooks": {
-      "postPublish": []
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps"
+        }
+      ]
     },
-    "extra": {},
+    "extra": {
+      "eas": {
+        "projectId": "5c24d369-c0ba-41e3-8679-8b8cee82fc13"
+      }
+    },
     "plugins": [
       "expo-image-picker",
       [
