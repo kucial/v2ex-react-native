@@ -1,1 +1,0 @@
-export const USER_ROOT_ALBUM = 'USER_ROOT_ALBUM'

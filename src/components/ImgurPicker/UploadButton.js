@@ -10,7 +10,6 @@ import { useImgurService } from '@/containers/ImgurService'
 import { useAlertService } from '@/containers/AlertService'
 
 import { useAlbum } from './context'
-import { USER_ROOT_ALBUM } from './constants'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useCallback } from 'react'
 
@@ -40,7 +39,6 @@ export default function UploadButton(props) {
         name: imageInfo.fileName,
         album: album?.deletehash
       })
-      console.log(imgurRes)
       return imgurRes.data
     },
     [imgur, album]
@@ -81,7 +79,11 @@ export default function UploadButton(props) {
             uploaded = [imageEntity]
           }
           // 刷新缓存
-          mutate(`/imgur/album/${album?.id || USER_ROOT_ALBUM}/images`)
+          if (album?.id) {
+            imgur.refreshAlbumImages(album.id)
+          } else {
+            imgur.refreshImages()
+          }
           // mutate album cache
         } catch (err) {
           alert.alertWithType('error', '错误', err.message)

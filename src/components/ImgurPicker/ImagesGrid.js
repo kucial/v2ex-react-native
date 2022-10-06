@@ -18,19 +18,20 @@ export default function ImagesView(props) {
   const [viewIndex, setViewIndex] = useState(-1)
 
   const imageViewingProps = useMemo(() => {
+    const imageItems = imagesSwr.data?.data
     return {
-      images: imagesSwr.data?.map((item) => ({
+      images: imageItems?.map((item) => ({
         uri: item.link
       })),
       FooterComponent: ({ imageIndex }) => {
-        const image = imagesSwr.data[imageIndex]
+        const image = imageItems[imageIndex]
         const selected = !!props.selected.find((i) => i.id === image.id)
         return (
           <View className="flex flex-row w-full px-3 pb-8 items-center justify-between">
             <View className="w-[80px]">
               <View className="px-2">
                 <Text className="text-neutral-300">
-                  {imageIndex + 1} / {imagesSwr.data.length}
+                  {imageIndex + 1} / {imageItems.length}
                 </Text>
               </View>
             </View>
@@ -70,6 +71,8 @@ export default function ImagesView(props) {
     }
   }, [imagesSwr.data, props.selected])
 
+  const imageItems = imagesSwr.data?.data
+
   return (
     <ScrollView
       refreshControl={
@@ -85,7 +88,7 @@ export default function ImagesView(props) {
       }>
       <View className="py-2 px-[1px]">
         <View className="flex flex-row flex-wrap">
-          {imagesSwr.data?.map((image, index) => (
+          {imageItems?.map((image, index) => (
             <View className="basis-1/3 p-[1px]" key={image.id}>
               <ImageCard
                 data={image}

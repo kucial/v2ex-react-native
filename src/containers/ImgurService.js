@@ -120,10 +120,13 @@ export default function ImgurService(props) {
           return res.data
         })
       },
-      useImages(page = 0) {
-        return useSWR(`/imgur/accounts/me/images/${page}`, async () => {
+      useImages() {
+        return useSWR(`/imgur/accounts/me/images`, async () => {
           const res = await client.getImages()
-          return res.data
+          return {
+            data: res.data,
+            fetchedAt: Date.now()
+          }
         })
       },
       useImage(hashid) {
@@ -135,7 +138,10 @@ export default function ImgurService(props) {
       useAlbumImages(album) {
         return useSWR(`/imgur/album/${album}/images`, async () => {
           const res = await client.getAlbumImages(album)
-          return res.data
+          return {
+            data: res.data,
+            fetchedAt: Date.now()
+          }
         })
       },
       getAlbums() {
@@ -148,7 +154,10 @@ export default function ImgurService(props) {
       upload(payload) {
         return client.upload(payload)
       },
-      flushImages(album) {
+      refreshImages() {
+        mutate('/imgur/accounts/me/images')
+      },
+      refreshAlbumImages(album) {
         mutate(`/imgur/album/${album}/images`)
       }
     }

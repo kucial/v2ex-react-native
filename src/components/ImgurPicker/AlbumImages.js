@@ -1,4 +1,5 @@
-import { View, Text, SafeAreaView } from 'react-native'
+import { View, Text, SafeAreaView, InteractionManager } from 'react-native'
+import { useEffect } from 'react'
 
 import { useImgurService } from '@/containers/ImgurService'
 
@@ -14,6 +15,20 @@ export default function AlbumView(props) {
   const { colorScheme } = useColorScheme()
   const imgur = useImgurService()
   const imagesSwr = imgur.useAlbumImages(album.id)
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      if (
+        !imagesSwr.isValidating &&
+        (!imagesSwr.data ||
+          !imagesSwr.data.fetchedAt ||
+          Date.now() - imagesSwr.data.fetchedAt > 1000 * 60 * 5) // 自动刷新
+      ) {
+        imagesSwr.mutate()
+      }
+    })
+  }, [])
+
   return (
     <View className="flex flex-1">
       <SafeAreaView>
@@ -38,6 +53,7 @@ export default function AlbumView(props) {
           </View>
           <View className="w-[56px] items-end">
             <UploadButton
+              onUploaded={imagesSwr.mutate}
               tintColor={
                 colorScheme === 'dark'
                   ? colors.neutral[300]
