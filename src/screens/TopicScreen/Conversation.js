@@ -1,5 +1,6 @@
-import { View } from 'react-native'
 import React from 'react'
+import { View } from 'react-native'
+
 import ReplyRow from './ReplyRow'
 
 export default function Conversation({ data, pivot, onReply, onThank }) {

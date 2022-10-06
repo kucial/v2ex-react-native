@@ -1,4 +1,4 @@
-import { View, Pressable, Text } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import classNames from 'classnames'
 export const LineItemGroup = (props) => {
   return (

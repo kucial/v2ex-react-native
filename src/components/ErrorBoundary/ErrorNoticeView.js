@@ -1,9 +1,9 @@
 import React from 'react'
-import { View, Text, SafeAreaView, Pressable } from 'react-native'
-import classNames from 'classnames'
+import { Pressable, SafeAreaView, Text, View } from 'react-native'
 import { InformationCircleIcon } from 'react-native-heroicons/outline'
-import { useColorScheme } from 'tailwindcss-react-native'
+import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 export default function ErrorNoticeView(props) {
   const { colorScheme } = useColorScheme()

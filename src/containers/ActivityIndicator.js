@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState } from 'react'
-import { View, useWindowDimensions } from 'react-native'
+import { useWindowDimensions, View } from 'react-native'
+
 import Loader from '@/components/Loader'
 
 const ActivityIndicatorContext = createContext({

@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import useSWRBase from 'swr'
+
 import storage from './storage'
 
 export const isRefreshing = (swrState) => {

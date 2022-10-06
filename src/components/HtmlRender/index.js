@@ -1,14 +1,15 @@
 import { memo, useMemo } from 'react'
-import PropTypes from 'prop-types'
-import { useNavigation } from '@react-navigation/native'
 import BaseRender, { useInternalRenderer } from 'react-native-render-html'
-import { useColorScheme } from 'tailwindcss-react-native'
-import * as WebBrowser from 'expo-web-browser'
-
-import { isAppLink, getScreenInfo } from '@/utils/url'
-import ImageElement from './ImageElement'
-import colors from 'tailwindcss/colors'
+import { useNavigation } from '@react-navigation/native'
 import { captureException } from '@sentry/react-native'
+import * as WebBrowser from 'expo-web-browser'
+import PropTypes from 'prop-types'
+import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
+
+import { getScreenInfo, isAppLink } from '@/utils/url'
+
+import ImageElement from './ImageElement'
 
 const ImageRenderer = (props) => {
   const { rendererProps } = useInternalRenderer('img', props)

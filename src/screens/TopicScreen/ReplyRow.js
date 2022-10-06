@@ -1,25 +1,23 @@
-import { View, Text, Image, Pressable, useWindowDimensions } from 'react-native'
 import React, { memo, useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
-import { marked } from 'marked'
+import { Image, Pressable, Text, useWindowDimensions, View } from 'react-native'
 import {
-  HeartIcon,
-  ChatBubbleLeftRightIcon
+  ChatBubbleLeftRightIcon,
+  HeartIcon
 } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
-
+import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
+import { marked } from 'marked'
 import PropTypes from 'prop-types'
-
-import ReplyIcon from '@/components/ReplyIcon'
-import MarkdownIcon from '@/components/MarkdownIcon'
-import MarkdownFilledIcon from '@/components/MarkdownFilledIcon'
-import HtmlRender from '@/components/HtmlRender'
-import { InlineText, BlockText, Box } from '@/components/Skeleton/Elements'
-
-import { useAuthService } from '@/containers/AuthService'
-import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
+
+import HtmlRender from '@/components/HtmlRender'
+import MarkdownFilledIcon from '@/components/MarkdownFilledIcon'
+import MarkdownIcon from '@/components/MarkdownIcon'
+import ReplyIcon from '@/components/ReplyIcon'
+import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
+import { useAuthService } from '@/containers/AuthService'
 
 function ReplyRow(props) {
   const { width } = useWindowDimensions()

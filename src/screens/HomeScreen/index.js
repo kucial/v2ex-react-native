@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react'
-import { ScrollView, RefreshControl, View, Text, Pressable } from 'react-native'
-import useSWR from 'swr'
+import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
+import useSWR from 'swr'
+import colors from 'tailwindcss/colors'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
+
 import Loader from '@/components/Loader'
+import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
 
 import TopicList from './TopicList'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
-import colors from 'tailwindcss/colors'
 
 const Tab = createMaterialTopTabNavigator()
 

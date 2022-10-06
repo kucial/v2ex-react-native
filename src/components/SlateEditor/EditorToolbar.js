@@ -1,26 +1,28 @@
-import { View, ScrollView, Pressable } from 'react-native'
 import React from 'react'
+import { Pressable, ScrollView, View } from 'react-native'
 import classNames from 'classnames'
+import { useTailwind } from 'tailwindcss-react-native'
+
+import { useAlertService } from '@/containers/AlertService'
+
 import { useEditor } from './context'
 import {
-  UndoIcon,
-  RedoIcon,
-  BoldIcon,
-  ItalicIcon,
-  UnderlineIcon,
-  TitleIcon,
-  ImageIcon,
-  UnorderedListIcon,
-  OrderedListIcon,
-  IndentIcon,
-  OutdentIcon,
-  TextQuoteIcon,
-  CodeBlockIcon,
   Base64Icon,
-  KeyboardDismissIcon
+  BoldIcon,
+  CodeBlockIcon,
+  ImageIcon,
+  IndentIcon,
+  ItalicIcon,
+  KeyboardDismissIcon,
+  OrderedListIcon,
+  OutdentIcon,
+  RedoIcon,
+  TextQuoteIcon,
+  TitleIcon,
+  UnderlineIcon,
+  UndoIcon,
+  UnorderedListIcon
 } from './EditorIcons'
-import { useAlertService } from '@/containers/AlertService'
-import { useTailwind } from 'tailwindcss-react-native'
 
 function ToolbarButton({ active, disabled, onPress, Icon, iconProps }) {
   const tw = useTailwind()

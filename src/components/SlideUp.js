@@ -1,13 +1,14 @@
-import {
-  Modal,
-  StyleSheet,
-  Pressable,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  useWindowDimensions
-} from 'react-native'
 import React, { cloneElement } from 'react'
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  useWindowDimensions,
+  View
+} from 'react-native'
+
 import AlertService from '@/containers/AlertService'
 
 export default function SlideUp(props) {

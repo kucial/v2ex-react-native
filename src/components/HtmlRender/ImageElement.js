@@ -1,12 +1,12 @@
+import React, { useCallback } from 'react'
+import { Image } from 'react-native'
+import ImageModal from 'react-native-image-modal'
 import {
-  useIMGElementState,
+  IMGElementContainer,
   IMGElementContentError,
   IMGElementContentLoading,
-  IMGElementContainer
+  useIMGElementState
 } from 'react-native-render-html'
-import { Image } from 'react-native'
-import React, { useCallback } from 'react'
-import ImageModal from 'react-native-image-modal'
 
 const IMGElementContentSuccess = ({
   source,

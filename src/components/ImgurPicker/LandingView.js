@@ -1,12 +1,12 @@
-import { View, Text, SafeAreaView, ScrollView, Pressable } from 'react-native'
 import React, { useState } from 'react'
+import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
-import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
+import BackButton from '../BackButton'
 import Albums from './Albums'
 import Images from './Images'
-import BackButton from '../BackButton'
 import UploadButton from './UploadButton'
 
 export default function Landing(props) {

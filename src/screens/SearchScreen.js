@@ -1,21 +1,21 @@
+import React, { useEffect, useRef, useState } from 'react'
 import {
-  View,
-  Text,
   InteractionManager,
+  Pressable,
+  Text,
   TextInput,
-  Pressable
+  View
 } from 'react-native'
-import React, { useRef, useEffect, useState } from 'react'
-import Constants from 'expo-constants'
-import { useColorScheme } from 'tailwindcss-react-native'
-import WebView from 'react-native-webview'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
+import WebView from 'react-native-webview'
+import Constants from 'expo-constants'
+import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 import BackButton from '@/components/BackButton'
-import { getScreenInfo } from '@/utils/url'
 import { getJSON, setJSON } from '@/utils/storage'
-import colors from 'tailwindcss/colors'
+import { getScreenInfo } from '@/utils/url'
 
 const topicLinkCapture = `(function() {
   try {

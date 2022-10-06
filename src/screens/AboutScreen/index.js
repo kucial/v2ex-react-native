@@ -1,21 +1,19 @@
+import React from 'react'
 import {
-  View,
-  Text,
+  Linking,
+  Platform,
   Pressable,
   SafeAreaView,
-  Platform,
-  Linking
+  Text,
+  View
 } from 'react-native'
-import React from 'react'
-import Constants from 'expo-constants'
-
 import RNRestart from 'react-native-restart'
 import classNames from 'classnames'
+import Constants from 'expo-constants'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
 
 import GithubIcon from '@/components/GithubIcon'
-
 import storage from '@/utils/storage'
 
 export default function AboutScreen() {

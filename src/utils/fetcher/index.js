@@ -1,10 +1,11 @@
-import axios from 'axios'
-import { useRef, useState, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { View } from 'react-native'
 import WebView from 'react-native-webview'
-import { stringify, parse } from 'qs'
-import { parse as pathParse } from 'path-to-regexp'
+import axios from 'axios'
 import pathMatch from 'path-match'
+import { parse as pathParse } from 'path-to-regexp'
+import { parse, stringify } from 'qs'
+
 import { OFFICIAL_ENDPOINTS } from './constants'
 
 const REQUEST_TIMEOUT = 1000 * 10

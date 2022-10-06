@@ -1,5 +1,6 @@
-import { View, Pressable } from 'react-native'
 import React from 'react'
+import { Pressable, View } from 'react-native'
+
 import { useEditor } from './context'
 
 export default function EditorDismiss(props) {

@@ -1,7 +1,7 @@
-import { View, Text, ScrollView } from 'react-native'
 import React, { useMemo } from 'react'
+import { ScrollView, Text, View } from 'react-native'
 
-import { InlineText, InlineBox, valueInRange } from './Elements'
+import { InlineBox, InlineText, valueInRange } from './Elements'
 
 function NodeSection(props) {
   const nodes = useMemo(() => {

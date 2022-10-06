@@ -1,10 +1,12 @@
-import { View, Text, ImageBackground, Pressable } from 'react-native'
 import React from 'react'
+import { ImageBackground, Pressable, Text, View } from 'react-native'
 import { LockClosedIcon } from 'react-native-heroicons/outline'
-import { getImageLink, useImgurService } from '@/containers/ImgurService'
-import albumCover from './assets/album-cover.png'
-import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
+
+import { getImageLink, useImgurService } from '@/containers/ImgurService'
+
+import albumCover from './assets/album-cover.png'
 
 export default function AlbumCard(props) {
   const { data } = props

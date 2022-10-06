@@ -1,12 +1,12 @@
-import { View, Text, Pressable } from 'react-native'
 import React from 'react'
+import { Pressable, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
 import {
   hasReachEnd,
+  isEmptyList,
   isLoadingMore,
-  shouldShowError,
-  isEmptyList
+  shouldShowError
 } from '@/utils/swr'
 
 import Loader from './Loader'

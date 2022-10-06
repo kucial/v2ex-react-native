@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo, useRef } from 'react'
 import DropdownAlert from 'react-native-dropdownalert'
-import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 const AlterService = createContext()
 
 export default function AlertService(props) {

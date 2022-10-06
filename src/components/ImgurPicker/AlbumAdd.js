@@ -1,8 +1,10 @@
-import { View, Text, ImageBackground, Pressable } from 'react-native'
 import React from 'react'
-import albumAdd from './assets/album-add.png'
+import { ImageBackground, Pressable, Text, View } from 'react-native'
 import { Alert } from 'react-native'
+
 import { useImgurService } from '@/containers/ImgurService'
+
+import albumAdd from './assets/album-add.png'
 
 export default function AlbumCard(props) {
   const imgur = useImgurService()

@@ -1,23 +1,22 @@
+import React, { useEffect, useState } from 'react'
 import {
-  View,
-  Text,
   KeyboardAvoidingView,
+  Pressable,
+  Text,
   TextInput,
-  Pressable
+  View
 } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { IMGUR_CLIENT_ID } from '@env'
 import classNames from 'classnames'
 import * as Clipboard from 'expo-clipboard'
 import * as Linking from 'expo-linking'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
 
-import { IMGUR_CLIENT_ID } from '@env'
-import { useAlertService } from '@/containers/AlertService'
 import ImgurLogo from '@/components/ImgurLogo'
-
-import { getJSON } from '@/utils/storage'
+import { useAlertService } from '@/containers/AlertService'
 import { useImgurService } from '@/containers/ImgurService'
+import { getJSON } from '@/utils/storage'
 
 const CACHE_KEY = `$app$/settings/imgur`
 

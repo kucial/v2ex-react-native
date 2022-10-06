@@ -1,29 +1,29 @@
-import {
-  View,
-  Text,
-  Image,
-  FlatList,
-  Pressable,
-  useWindowDimensions,
-  RefreshControl
-} from 'react-native'
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
+import {
+  FlatList,
+  Image,
+  Pressable,
+  RefreshControl,
+  Text,
+  useWindowDimensions,
+  View
+} from 'react-native'
+import classNames from 'classnames'
+import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import { useTailwind, useColorScheme } from 'tailwindcss-react-native'
-import PropTypes from 'prop-types'
-import classNames from 'classnames'
+import colors from 'tailwindcss/colors'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
-import HtmlRender from '@/components/HtmlRender'
 import CommonListFooter from '@/components/CommonListFooter'
+import HtmlRender from '@/components/HtmlRender'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
-import { hasReachEnd, isRefreshing } from '@/utils/swr'
-import fetcher from '@/utils/fetcher'
-
-import NodeTopicRow from './NodeTopicRow'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
-import colors from 'tailwindcss/colors'
+import fetcher from '@/utils/fetcher'
+import { hasReachEnd, isRefreshing } from '@/utils/swr'
+
+import NodeTopicRow from './NodeTopicRow'
 
 export default function NodeScreen({ route, navigation }) {
   const { name, brief } = route.params

@@ -1,13 +1,13 @@
-import { View, Text, ScrollView, RefreshControl } from 'react-native'
 import React from 'react'
-import { useColorScheme } from 'tailwindcss-react-native'
+import { RefreshControl, ScrollView, Text, View } from 'react-native'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
-
-import AlbumCard from './AlbumCard'
-import AlbumAdd from './AlbumAdd'
 import { isRefreshing } from '@/utils/swr'
+
+import AlbumAdd from './AlbumAdd'
+import AlbumCard from './AlbumCard'
 
 export default function Albums(props) {
   const imgur = useImgurService()

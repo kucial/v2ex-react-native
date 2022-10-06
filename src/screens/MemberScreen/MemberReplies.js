@@ -1,23 +1,21 @@
+import React, { useCallback, useMemo } from 'react'
 import {
   FlatList,
-  View,
-  Text,
   Pressable,
   RefreshControl,
-  useWindowDimensions
+  Text,
+  useWindowDimensions,
+  View
 } from 'react-native'
-import React, { useCallback, useMemo } from 'react'
+import { useNavigation } from '@react-navigation/native'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
-import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
-
-import { useNavigation } from '@react-navigation/native'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
-
 import { hasReachEnd } from '@/utils/swr'
 
 const MemberReplyRow = (props) => {

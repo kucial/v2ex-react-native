@@ -1,65 +1,62 @@
-import {
-  Text,
-  View,
-  Image,
-  useWindowDimensions,
-  Pressable,
-  FlatList,
-  SafeAreaView,
-  RefreshControl,
-  Share,
-  Linking
-} from 'react-native'
 import React, {
+  memo,
+  useCallback,
   useLayoutEffect,
   useMemo,
-  useCallback,
-  useState,
-  memo,
-  useRef
+  useRef,
+  useState
 } from 'react'
-import { useSWRConfig } from 'swr'
-import useSWRInfinite from 'swr/infinite'
 import {
+  FlatList,
+  Image,
+  Linking,
+  Pressable,
+  RefreshControl,
+  SafeAreaView,
+  Share,
+  Text,
+  useWindowDimensions,
+  View
+} from 'react-native'
+import { Keyboard } from 'react-native'
+import {
+  EllipsisHorizontalIcon,
   HeartIcon,
   ShareIcon,
-  StarIcon,
-  EllipsisHorizontalIcon
+  StarIcon
 } from 'react-native-heroicons/outline'
 import {
   HeartIcon as FilledHeartIcon,
   StarIcon as FilledStarIcon
 } from 'react-native-heroicons/solid'
-import {
-  BottomSheetModal,
-  BottomSheetBackdrop,
-  BottomSheetScrollView
-} from '@gorhom/bottom-sheet'
-
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView
+} from '@gorhom/bottom-sheet'
+import classNames from 'classnames'
+import { useSWRConfig } from 'swr'
+import useSWRInfinite from 'swr/infinite'
+import colors from 'tailwindcss/colors'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
-import HtmlRender from '@/components/HtmlRender'
+import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
+import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
-import CommonListFooter from '@/components/CommonListFooter'
-
-import { hasReachEnd, isLoading, useSWR, isRefreshing } from '@/utils/swr'
-import fetcher from '@/utils/fetcher'
-
-import { useAlertService } from '@/containers/AlertService'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
+import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import fetcher from '@/utils/fetcher'
+import { hasReachEnd, isLoading, isRefreshing, useSWR } from '@/utils/swr'
 
-import TopicReplyForm from './TopicReplyForm'
-import ReplyRow from './ReplyRow'
 import Converation from './Conversation'
-import classNames from 'classnames'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
-import colors from 'tailwindcss/colors'
-import { Keyboard } from 'react-native'
+import ReplyRow from './ReplyRow'
+import TopicReplyForm from './TopicReplyForm'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num) => Math.ceil(num / REPLY_PAGE_SIZE)

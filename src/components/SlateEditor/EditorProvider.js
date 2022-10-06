@@ -1,8 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
 import { forwardRef } from 'react'
-import { captureMessage } from '@sentry/react-native'
-import { EditorContext } from './context'
 import { useImperativeHandle } from 'react'
+import { captureMessage } from '@sentry/react-native'
+
+import { EditorContext } from './context'
 
 let count = 0
 const uniqId = () => {

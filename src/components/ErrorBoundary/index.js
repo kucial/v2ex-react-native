@@ -1,11 +1,15 @@
-import React from 'react'
-import { View, Text, SafeAreaView, StyleSheet, Pressable } from 'react-native'
-import * as Sentry from '@sentry/react-native'
+import { Component } from 'react'
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import RNRestart from 'react-native-restart'
+import * as Sentry from '@sentry/react-native'
+
 import ErrorNoticeView from './ErrorNoticeView'
-class ErrorBoundary extends React.Component {
-  state = {
-    error: false
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      error: false
+    }
   }
 
   static getDerivedStateFromError(error) {
@@ -16,22 +20,18 @@ class ErrorBoundary extends React.Component {
     Sentry.captureException(error, context)
   }
 
-  handleReset = async () => {
+  handleReset = () => {
     // restart app
     RNRestart.Restart()
   }
 
   render() {
     if (this.state.error) {
-      return (
-        <ErrorNoticeView
-          onReset={this.handleReset}
-        />
-      )
+      return <ErrorNoticeView onReset={this.handleReset} />
     } else {
       return this.props.children
     }
   }
 }
 
-export default ErrorBoundary;
+export default ErrorBoundary

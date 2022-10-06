@@ -1,19 +1,20 @@
-import { Image, Text, View, Pressable, Alert } from 'react-native'
 import React, { useEffect } from 'react'
+import { Alert, Image, Pressable, Text, View } from 'react-native'
 import {
   ClockIcon,
   Cog6ToothIcon,
   DocumentIcon,
+  InformationCircleIcon,
   PencilSquareIcon,
-  PhotoIcon,
-  InformationCircleIcon
+  PhotoIcon
 } from 'react-native-heroicons/outline'
-import { useAuthService } from '@/containers/AuthService'
-import { InlineText, Box } from '@/components/Skeleton/Elements'
-import { LineItem, LineItemGroup } from '@/components/LineItem'
-import { useColorScheme } from 'tailwindcss-react-native'
-import colors from 'tailwindcss/colors'
 import classNames from 'classnames'
+import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
+
+import { LineItem, LineItemGroup } from '@/components/LineItem'
+import { Box, InlineText } from '@/components/Skeleton/Elements'
+import { useAuthService } from '@/containers/AuthService'
 
 export default function MyScreen({ navigation }) {
   const { colorScheme } = useColorScheme()

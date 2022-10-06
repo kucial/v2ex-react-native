@@ -1,16 +1,15 @@
-import { Image, View, Pressable, Text } from 'react-native'
+import { Image, Pressable, Text, View } from 'react-native'
 import {
-  MagnifyingGlassIcon,
+  DocumentPlusIcon,
   EnvelopeIcon,
-  DocumentPlusIcon
+  MagnifyingGlassIcon
 } from 'react-native-heroicons/outline'
-import { useTailwind } from 'tailwindcss-react-native'
 import classNames from 'classnames'
-
 import Constants from 'expo-constants'
+import { useTailwind } from 'tailwindcss-react-native'
 
-import Logo from '@/components/Logo'
 import logoImage from '@/assets/logo.png'
+import Logo from '@/components/Logo'
 import { useAuthService } from '@/containers/AuthService'
 
 export default function MainScreenHeader(props) {

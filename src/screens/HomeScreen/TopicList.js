@@ -1,17 +1,17 @@
+import React, { memo, useEffect, useMemo, useRef } from 'react'
 import { FlatList, RefreshControl, ScrollView } from 'react-native'
-import React, { useEffect, useMemo, useRef, memo } from 'react'
 import { useIsFocused } from '@react-navigation/native'
-import useSWRInfinite from 'swr/infinite'
 import { uniqBy } from 'lodash'
+import useSWRInfinite from 'swr/infinite'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
-import { isRefreshing, shouldInit, hasReachEnd } from '@/utils/swr'
 import CommonListFooter from '@/components/CommonListFooter'
-
-import TopicRow from './TopicRow'
 import { useAlertService } from '@/containers/AlertService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { useColorScheme } from 'tailwindcss-react-native'
+import { hasReachEnd, isRefreshing, shouldInit } from '@/utils/swr'
+
+import TopicRow from './TopicRow'
 
 function TopicList(props) {
   const { colorScheme } = useColorScheme()

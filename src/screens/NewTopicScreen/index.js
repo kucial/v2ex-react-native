@@ -1,36 +1,34 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback } from 'react'
 import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  SafeAreaView,
   InteractionManager,
+  Keyboard,
   Pressable,
-  Keyboard
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  View
 } from 'react-native'
-import React, { useRef, useState, useEffect, useMemo } from 'react'
-
+import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet'
+import classNames from 'classnames'
+import { debounce } from 'lodash'
 import colors from 'tailwindcss/colors'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
-import classNames from 'classnames'
-import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
-import { debounce } from 'lodash'
 
-import {
-  EditorProvider,
-  EditorToolbar,
-  EditorRender,
-  EditorImagePicker
-} from '@/components/SlateEditor'
-import KeyboardDismiss from '@/components/KeyboardDismiss'
 import KeyboardAwareView from '@/components/KeyboardAwareView'
+import KeyboardDismiss from '@/components/KeyboardDismiss'
 import Loader from '@/components/Loader'
+import {
+  EditorImagePicker,
+  EditorProvider,
+  EditorRender,
+  EditorToolbar
+} from '@/components/SlateEditor'
+import nodes from '@/mock/nodes'
 import fetcher from '@/utils/fetcher'
 
-import nodes from '@/mock/nodes'
-
 import NodeSelect from './NodeSelect'
-import { useCallback } from 'react'
 
 // toolbar + extra...
 const VISIBLE_BOTTOM_OFFSET = 85

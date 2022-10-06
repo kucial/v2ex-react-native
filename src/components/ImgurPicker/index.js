@@ -1,14 +1,15 @@
-import { View, Text, Pressable } from 'react-native'
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
-import { useImgurService } from '@/containers/ImgurService'
-
-import Landing from './LandingView'
-import Album from './AlbumImages'
-import SubmitButton from './SubmitButton'
-import { AlbumContext } from './context'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { Pressable, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { getJSON, setJSON } from '@/utils/storage'
 import classNames from 'classnames'
+
+import { useImgurService } from '@/containers/ImgurService'
+import { getJSON, setJSON } from '@/utils/storage'
+
+import Album from './AlbumImages'
+import { AlbumContext } from './context'
+import Landing from './LandingView'
+import SubmitButton from './SubmitButton'
 
 const CACHE_KEY = '$app$/ui/imgur-picker-stack'
 

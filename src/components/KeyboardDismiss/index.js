@@ -1,5 +1,6 @@
-import { View, Pressable, Keyboard } from 'react-native'
 import React from 'react'
+import { Keyboard, Pressable, View } from 'react-native'
+
 import { useEditor } from '../SlateEditor/context'
 
 export default function KeyboardDismiss(props) {

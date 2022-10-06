@@ -1,15 +1,15 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 
-import { useNavigation } from '@react-navigation/native'
+import FixedPressable from '@/components/FixedPressable'
 import {
   BlockText,
+  Box,
   InlineBox,
-  InlineText,
-  Box
+  InlineText
 } from '@/components/Skeleton/Elements'
-import FixedPressable from '@/components/FixedPressable'
 
 export default function TopicRow(props) {
   const { data } = props

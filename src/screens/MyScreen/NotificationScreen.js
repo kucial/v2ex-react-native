@@ -1,21 +1,22 @@
+import React, { useMemo } from 'react'
 import {
   FlatList,
-  RefreshControl,
-  View,
-  Text,
   Image,
+  Pressable,
+  RefreshControl,
+  Text,
   useWindowDimensions,
-  Pressable
+  View
 } from 'react-native'
-import React, { useMemo } from 'react'
-import useSWRInfinite from 'swr/infinite'
 import { useNavigation } from '@react-navigation/native'
-import CommonListFooter from '@/components/CommonListFooter'
-import { hasReachEnd } from '@/utils/swr'
-import HtmlRender from '@/components/HtmlRender'
-import { Box, BlockText } from '@/components/Skeleton/Elements'
-import { useAuthService } from '@/containers/AuthService'
 import classNames from 'classnames'
+import useSWRInfinite from 'swr/infinite'
+
+import CommonListFooter from '@/components/CommonListFooter'
+import HtmlRender from '@/components/HtmlRender'
+import { BlockText, Box } from '@/components/Skeleton/Elements'
+import { useAuthService } from '@/containers/AuthService'
+import { hasReachEnd } from '@/utils/swr'
 
 const htmlBaseStyle = {
   lineHeight: 18

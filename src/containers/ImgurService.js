@@ -1,10 +1,10 @@
 import { useContext, useMemo, useState } from 'react'
 import { createContext } from 'react'
 import axios from 'axios'
+import { useSWRConfig } from 'swr'
 
 import { getJSON, setJSON } from '@/utils/storage'
 import { useSWR } from '@/utils/swr'
-import { useSWRConfig } from 'swr'
 
 export const ImgurServiceContext = createContext()
 

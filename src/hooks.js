@@ -1,9 +1,10 @@
-import { useCallback, useState, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Appearance } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { debounce, throttle } from 'lodash'
-import { getScreenInfo } from './utils/url'
+
 import { getJSON, setJSON } from './utils/storage'
+import { getScreenInfo } from './utils/url'
 
 export const useAppLinkHandler = () => {
   const navigation = useNavigation()

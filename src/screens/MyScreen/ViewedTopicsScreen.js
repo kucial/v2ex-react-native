@@ -1,12 +1,12 @@
-import { View, Text, Image, FlatList, Pressable } from 'react-native'
-import { useMemo, useLayoutEffect } from 'react'
-import classNames from 'classnames'
+import { useLayoutEffect, useMemo } from 'react'
+import { FlatList, Image, Pressable, Text, View } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import classNames from 'classnames'
 
-import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import FixedPressable from '@/components/FixedPressable'
 import TimeAgo from '@/components/TimeAgo'
+import { useViewedTopics } from '@/containers/ViewedTopicsService'
 
 export default function ViewedTopicsScreen({ navigation }) {
   const { items, clear } = useViewedTopics()

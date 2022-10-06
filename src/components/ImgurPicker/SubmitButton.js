@@ -1,9 +1,9 @@
-import { View } from 'react-native'
 import React from 'react'
+import { View } from 'react-native'
 import { Pressable } from 'react-native'
 import classNames from 'classnames'
-import { useColorScheme } from 'tailwindcss-react-native'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 import CheckIcon from '@/components/CheckIcon'
 

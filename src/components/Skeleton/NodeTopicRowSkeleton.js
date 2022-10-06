@@ -1,7 +1,8 @@
-import { View, Text } from 'react-native'
 import React from 'react'
-import { InlineText, BlockText, InlineBox } from './Elements'
+import { Text, View } from 'react-native'
 import classNames from 'classnames'
+
+import { BlockText, InlineBox, InlineText } from './Elements'
 
 export default function NodeTopicRowSkeleton() {
   return (

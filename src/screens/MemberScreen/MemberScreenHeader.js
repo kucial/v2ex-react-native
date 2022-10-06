@@ -1,10 +1,10 @@
-import { View, Text, Image } from 'react-native'
 import React from 'react'
+import { Image, Text, View } from 'react-native'
 import Constants from 'expo-constants'
 import colors from 'tailwindcss/colors'
 
-import { Box } from '@/components/Skeleton/Elements'
 import BackButton from '@/components/BackButton'
+import { Box } from '@/components/Skeleton/Elements'
 import { localTime } from '@/utils/time'
 
 const AVATAR_SIZE = 68

@@ -1,20 +1,20 @@
-import { View, Pressable, Text, Keyboard } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
+import { Keyboard, Pressable, Text, View } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/outline'
-import classNames from 'classnames'
-import useSWR from 'swr'
-import { encode, decode } from 'js-base64'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
-import colors from 'tailwindcss/colors'
 import {
-  BottomSheetModal,
   BottomSheetBackdrop,
+  BottomSheetModal,
   BottomSheetTextInput
 } from '@gorhom/bottom-sheet'
+import classNames from 'classnames'
+import { decode, encode } from 'js-base64'
+import useSWR from 'swr'
+import colors from 'tailwindcss/colors'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
-import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
 import ImgurPicker from '@/components/ImgurPicker'
+import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
 
 const pickerSnapPoints = ['90%']
 

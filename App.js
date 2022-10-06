@@ -1,62 +1,54 @@
-import * as Sentry from '@sentry/react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { TailwindProvider, useTailwind } from 'tailwindcss-react-native'
-import { NavigationContainer } from '@react-navigation/native'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { SWRConfig } from 'swr'
-import { SENTRY_DSN } from '@env'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-
 import { FolderIcon, HomeIcon, UserIcon } from 'react-native-heroicons/outline'
+import { SENTRY_DSN } from '@env'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import * as Sentry from '@sentry/react-native'
+import { SWRConfig } from 'swr'
+import colors from 'tailwindcss/colors'
+import { TailwindProvider, useTailwind } from 'tailwindcss-react-native'
+
 import { headerLeft } from './src/components/BackButton'
-
-import MainScreenHeader from './src/components/MainScreenHeader'
 import ErrorBoundary from './src/components/ErrorBoundary'
-
-import AuthService from './src/containers/AuthService'
-import AlertService from './src/containers/AlertService'
-import ImgurService from './src/containers/ImgurService'
+import MainScreenHeader from './src/components/MainScreenHeader'
 import ActivityIndicator from './src/containers/ActivityIndicator'
+import AlertService from './src/containers/AlertService'
+import AuthService from './src/containers/AuthService'
+import ImgurService from './src/containers/ImgurService'
 import ViewedTopicsService from './src/containers/ViewedTopicsService'
 import WatchSchemeUpdate from './src/containers/WatchSchemeUpdate'
-
-import HomeScreen from './src/screens/HomeScreen'
-import NodesScreen from './src/screens/NodesScreen'
-import SearchScreen from './src/screens/SearchScreen'
-import TopicScreen from './src/screens/TopicScreen'
-import NodeScreen from './src/screens/NodeScreen'
-import BrowserScreen from './src/screens/BrowserScreen'
-import MemberScreen from './src/screens/MemberScreen'
-import SigninScreen from './src/screens/SigninScreen'
+import { useColorScheme } from './src/hooks'
 import AboutScreen from './src/screens/AboutScreen'
-import NewTopicScreen from './src/screens/NewTopicScreen'
-
+import BrowserScreen from './src/screens/BrowserScreen'
+import DebugScreen from './src/screens/DebugScreen'
+import HomeScreen from './src/screens/HomeScreen'
+import MemberScreen from './src/screens/MemberScreen'
 import {
-  SettingsLanding,
-  ImgurSettings,
-  HomeTabsSettings
-} from './src/screens/SettingsScreen'
-
-import {
+  CollectedTopicsScreen,
+  CreatedTopicsScreen,
   MyScreen,
   NotificationScreen,
   ProfileScreen,
-  CreatedTopicsScreen,
-  CollectedTopicsScreen,
   RepliedTopicsScreen,
   ViewedTopicsScreen
 } from './src/screens/MyScreen'
-
-import DebugScreen from './src/screens/DebugScreen'
-
+import NewTopicScreen from './src/screens/NewTopicScreen'
+import NodeScreen from './src/screens/NodeScreen'
+import NodesScreen from './src/screens/NodesScreen'
+import SearchScreen from './src/screens/SearchScreen'
+import {
+  HomeTabsSettings,
+  ImgurSettings,
+  SettingsLanding
+} from './src/screens/SettingsScreen'
+import SigninScreen from './src/screens/SigninScreen'
+import TopicScreen from './src/screens/TopicScreen'
 import fetcher, { FetcherWebView } from './src/utils/fetcher'
 import { cacheProvider } from './src/utils/swr'
-import { useColorScheme } from './src/hooks'
-
 import * as themes from './theme'
-import colors from 'tailwindcss/colors'
 
 Sentry.init({
   dsn: SENTRY_DSN,

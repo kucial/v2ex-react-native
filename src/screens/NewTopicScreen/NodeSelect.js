@@ -1,21 +1,21 @@
+import { useCallback, useMemo, useRef, useState } from 'react'
 import {
-  View,
-  Text,
+  FlatList,
+  Keyboard,
   Pressable,
   ScrollView,
+  Text,
   TextInput,
-  FlatList,
-  Keyboard
+  View
 } from 'react-native'
-import { useState, useCallback, useMemo, useRef } from 'react'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
-import colors from 'tailwindcss/colors'
-import classNames from 'classnames'
 import {
-  BottomSheetModal,
   BottomSheetBackdrop,
+  BottomSheetModal,
   BottomSheetTextInput
 } from '@gorhom/bottom-sheet'
+import classNames from 'classnames'
+import colors from 'tailwindcss/colors'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import { useSWR } from '@/utils/swr'
 

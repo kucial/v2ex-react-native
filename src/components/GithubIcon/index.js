@@ -1,4 +1,4 @@
-import { Svg, Path } from 'react-native-svg'
+import { Path, Svg } from 'react-native-svg'
 export default function GithubIcon({ size = 20, color }) {
   return (
     <Svg

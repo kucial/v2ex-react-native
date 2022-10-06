@@ -1,9 +1,10 @@
-import { Pressable } from 'react-native'
-import PropTypes from 'prop-types'
 import { useEffect } from 'react'
+import { Pressable } from 'react-native'
 import WebView from 'react-native-webview'
-import { useEditor } from './context'
+import PropTypes from 'prop-types'
+
 import editorHtml from './assets/editor.html'
+import { useEditor } from './context'
 
 export default function EditorRender(props) {
   const editor = useEditor()

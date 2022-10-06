@@ -1,12 +1,12 @@
-import { View, Text, Pressable, Image } from 'react-native'
 import React from 'react'
+import { Image, Pressable, Text, View } from 'react-native'
+import { DocumentIcon } from 'react-native-heroicons/outline'
+import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 
-import { isInitLoading, useSWR } from '@/utils/swr'
 import ErrorNotice from '@/components/ErrorNotice'
-import { useNavigation } from '@react-navigation/native'
-import { DocumentIcon } from 'react-native-heroicons/outline'
 import { Box } from '@/components/Skeleton/Elements'
+import { isInitLoading, useSWR } from '@/utils/swr'
 
 const isEmpty = (data) => !data.length
 

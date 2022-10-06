@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
 import useSWR from 'swr'
+
 import { InlineText } from '@/components/Skeleton/Elements'
 import { localTime } from '@/utils/time'
 

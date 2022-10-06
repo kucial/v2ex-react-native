@@ -1,14 +1,14 @@
-import { SafeAreaView, View, ScrollView } from 'react-native'
-import { WebView } from 'react-native-webview'
 import React, { useLayoutEffect, useRef, useState } from 'react'
+import { SafeAreaView, ScrollView, View } from 'react-native'
 import { Pressable } from 'react-native'
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ArrowTopRightOnSquareIcon
-} from 'react-native-heroicons/outline'
 import { Linking } from 'react-native'
+import {
+  ArrowTopRightOnSquareIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
+} from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
+import { WebView } from 'react-native-webview'
 import classNames from 'classnames'
 
 export default function BrowserScreen({ route, navigation }) {

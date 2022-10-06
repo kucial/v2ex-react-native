@@ -1,13 +1,13 @@
-import { FlatList, View, Text, Pressable, RefreshControl } from 'react-native'
 import React, { useCallback, useMemo } from 'react'
+import { FlatList, Pressable, RefreshControl, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
-
 import { hasReachEnd } from '@/utils/swr'
+
 import UserTopicRow from './UserTopicRow'
 
 export default function MemberTopics(props) {

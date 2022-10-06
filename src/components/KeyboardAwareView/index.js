@@ -1,8 +1,7 @@
 'use strict'
 
 import React, { Component } from 'react'
-import { Animated, View, Keyboard, Platform } from 'react-native'
-
+import { Animated, Keyboard, Platform, View } from 'react-native'
 import dismissKeyboard from 'react-native/Libraries/Utilities/dismissKeyboard'
 
 class KeyboardAwareView extends React.Component {

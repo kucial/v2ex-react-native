@@ -1,28 +1,27 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import {
-  View,
-  Text,
   Image,
-  TextInput,
-  Pressable,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
-  ScrollView
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View
 } from 'react-native'
-import React, { useRef, useState, useCallback, useEffect } from 'react'
 import WebView from 'react-native-webview'
-import { useForm, Controller } from 'react-hook-form'
-import colors from 'tailwindcss/colors'
 import classNames from 'classnames'
-
-import { useAuthService } from '@/containers/AuthService'
-import BackButton from '@/components/BackButton'
-import Loader from '@/components/Loader'
+import colors from 'tailwindcss/colors'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import logoImage from '@/assets/logo.png'
-import { useAlertService } from '@/containers/AlertService'
+import BackButton from '@/components/BackButton'
+import Loader from '@/components/Loader'
 import Logo from '@/components/Logo'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
+import { useAlertService } from '@/containers/AlertService'
+import { useAuthService } from '@/containers/AuthService'
 
 const extractImageCaptcha = `
 (function() {

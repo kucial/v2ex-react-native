@@ -1,16 +1,16 @@
-import { View, Text, Pressable, TextInput } from 'react-native'
 import React, {
-  useState,
-  useRef,
-  useMemo,
   forwardRef,
-  useImperativeHandle
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState
 } from 'react'
-import PropTypes from 'prop-types'
+import { Pressable, Text, TextInput, View } from 'react-native'
 import { XIcon } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
-import { useColorScheme } from 'tailwindcss-react-native'
+import PropTypes from 'prop-types'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 function SearchInput(props, ref) {
   const [text, setText] = useState(props.initialValue || '')

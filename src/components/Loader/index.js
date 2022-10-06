@@ -1,9 +1,10 @@
 import { forwardRef, useRef } from 'react'
-import LottieView from 'lottie-react-native'
 import composeRefs from '@seznam/compose-react-refs'
-import loadingAnimation from './loading.json'
-import { useColorScheme } from 'tailwindcss-react-native'
+import LottieView from 'lottie-react-native'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
+
+import loadingAnimation from './loading.json'
 
 const Loader = (
   { style, color, size = 28, speed = 1.8, autoPlay = true, ...props },

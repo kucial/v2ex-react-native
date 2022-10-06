@@ -1,6 +1,8 @@
-import { useImgurService } from '@/containers/ImgurService'
 import { useEffect } from 'react'
 import { InteractionManager } from 'react-native'
+
+import { useImgurService } from '@/containers/ImgurService'
+
 import ImagesGrid from './ImagesGrid'
 
 export default function Images(props) {

@@ -1,23 +1,23 @@
+import React, { useRef, useState } from 'react'
 import {
   Image,
-  Text,
-  View,
-  ScrollView,
   Pressable,
   RefreshControl,
-  TextInput
+  ScrollView,
+  Text,
+  TextInput,
+  View
 } from 'react-native'
-import React, { useRef, useState } from 'react'
 import useSwr from 'swr'
+import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
+import SearchInput from '@/components/SearchInput'
 import { useAuthService } from '@/containers/AuthService'
 import { isRefreshing } from '@/utils/swr'
 
 import CollectedNodes from './CollectedNodes'
 import CommonNodes from './CommonNodes'
-import SearchInput from '@/components/SearchInput'
-import { useColorScheme } from 'tailwindcss-react-native'
-import colors from 'tailwindcss/colors'
 
 export default function NodesScreen({ navigation }) {
   const { status } = useAuthService()

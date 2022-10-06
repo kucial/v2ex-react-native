@@ -1,20 +1,20 @@
-import {
-  Text,
-  View,
-  Pressable,
-  FlatList,
-  RefreshControl,
-  Image
-} from 'react-native'
 import React, { useCallback, useMemo } from 'react'
-import useSWRInfinite from 'swr/infinite'
-
+import {
+  FlatList,
+  Image,
+  Pressable,
+  RefreshControl,
+  Text,
+  View
+} from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { InlineBox, BlockText, Box } from '@/components/Skeleton/Elements'
-import CommonListFooter from '@/components/CommonListFooter'
-import { hasReachEnd } from '@/utils/swr'
-import { useColorScheme } from 'tailwindcss-react-native'
+import useSWRInfinite from 'swr/infinite'
 import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
+
+import CommonListFooter from '@/components/CommonListFooter'
+import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
+import { hasReachEnd } from '@/utils/swr'
 
 const CollectedTopicRow = (props) => {
   const { data } = props

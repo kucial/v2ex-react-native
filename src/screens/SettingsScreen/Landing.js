@@ -1,7 +1,8 @@
-import { View, Text, Pressable } from 'react-native'
 import React from 'react'
-import { LineItem, LineItemGroup } from '@/components/LineItem'
+import { Pressable, Text, View } from 'react-native'
 import { Switch } from 'react-native'
+
+import { LineItem, LineItemGroup } from '@/components/LineItem'
 
 export function SettingsLanding({ navigation }) {
   return (

@@ -1,8 +1,10 @@
-import { createContext, useEffect, useMemo, useContext, useRef } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
 import { AppState } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import useSWR from 'swr'
+
 import fetcher from '@/utils/fetcher'
+
 import { useAlertService } from './AlertService'
 export const AuthServiceContext = createContext({
   user: null,

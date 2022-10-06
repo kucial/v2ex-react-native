@@ -1,14 +1,13 @@
-import { View, Text, SafeAreaView, InteractionManager } from 'react-native'
 import { useEffect } from 'react'
+import { InteractionManager, SafeAreaView, Text, View } from 'react-native'
+import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
 
 import BackButton from '../BackButton'
-import UploadButton from './UploadButton'
-import { useColorScheme } from 'tailwindcss-react-native'
-import colors from 'tailwindcss/colors'
-
 import ImagesGrid from './ImagesGrid'
+import UploadButton from './UploadButton'
 
 export default function AlbumView(props) {
   const { album } = props

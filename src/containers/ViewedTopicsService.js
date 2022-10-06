@@ -1,4 +1,5 @@
-import { createContext, useState, useMemo, useContext } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
+
 import { useCachedState } from '@/hooks'
 
 const CACHE_KEY = '$app$/viewed-topics'

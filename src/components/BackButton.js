@@ -1,7 +1,7 @@
-import { useNavigation } from '@react-navigation/native'
 import { Pressable, View } from 'react-native'
 import { ChevronLeftIcon } from 'react-native-heroicons/outline'
 import { HeaderBackButton } from '@react-navigation/elements'
+import { useNavigation } from '@react-navigation/native'
 
 function BackButton({ tintColor, onPress, style }) {
   return (

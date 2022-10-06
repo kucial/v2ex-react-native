@@ -1,12 +1,12 @@
-import { View, Text, Image, ScrollView } from 'react-native'
 import React, { useEffect, useMemo } from 'react'
-
+import { Image, ScrollView, Text, View } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+
 import { useSWR } from '@/utils/swr'
 
-import MemberTopics from './MemberTopics'
 import MemberReplies from './MemberReplies'
 import MemberScreenHeader from './MemberScreenHeader'
+import MemberTopics from './MemberTopics'
 
 const Tab = createMaterialTopTabNavigator()
 

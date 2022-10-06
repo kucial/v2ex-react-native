@@ -1,17 +1,17 @@
-import { View, Text, Alert } from 'react-native'
 import React from 'react'
+import { useCallback } from 'react'
+import { Alert, Text, View } from 'react-native'
 import { Pressable } from 'react-native'
+import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { useSWRConfig } from 'swr'
-import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 
-import { useImgurService } from '@/containers/ImgurService'
+import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
+import { useImgurService } from '@/containers/ImgurService'
 
 import { useAlbum } from './context'
-import { useActivityIndicator } from '@/containers/ActivityIndicator'
-import { useCallback } from 'react'
 
 export default function UploadButton(props) {
   const imgur = useImgurService()

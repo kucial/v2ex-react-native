@@ -1,6 +1,7 @@
-import { View, Text } from 'react-native'
 import React from 'react'
-import { InlineText, BlockText, Box } from './Elements'
+import { Text, View } from 'react-native'
+
+import { BlockText, Box, InlineText } from './Elements'
 
 export default function TopicRowSkeleton() {
   return (

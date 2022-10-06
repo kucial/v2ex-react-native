@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { createContext } from 'react'
 import { useMemo } from 'react'
+import { Text, View } from 'react-native'
 
 const FooterRegionContext = createContext()
 
