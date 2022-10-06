@@ -1,17 +1,30 @@
-import { View, Text, Pressable, SafeAreaView } from 'react-native'
+import {
+  View,
+  Text,
+  Pressable,
+  SafeAreaView,
+  Platform,
+  Linking
+} from 'react-native'
 import React from 'react'
 import Constants from 'expo-constants'
 
 import RNRestart from 'react-native-restart'
-import storage from '@/utils/storage'
 import classNames from 'classnames'
+import colors from 'tailwindcss/colors'
+import { useColorScheme } from 'tailwindcss-react-native'
+
+import GithubIcon from '@/components/GithubIcon'
+
+import storage from '@/utils/storage'
 
 export default function AboutScreen() {
+  const { colorScheme } = useColorScheme()
   return (
     <SafeAreaView className="flex-1">
-      <View className="flex-1 px-4 py-4 items-center justify-center">
-        <View className="bg-white dark:bg-neutral-900 w-full py-8 rounded-lg">
-          <View className="mb-2">
+      <View className="flex-1 px-4 py-2 items-center justify-center">
+        <View className="bg-white dark:bg-neutral-900 w-full py-3 rounded-lg">
+          <View className="my-2">
             <Text className="text-2xl font-bold text-center dark:text-neutral-200">
               \V2EX/
             </Text>
@@ -21,10 +34,40 @@ export default function AboutScreen() {
               V2EX 第三方客户端
             </Text>
           </View>
-          <View className="mt-1 ">
-            <Text className="text-sm text-neutral-600 dark:text-neutral-400 text-center">
-              版本: {Constants.manifest.extra.buildId}
+          <View>
+            <Text className="text-center dark:text-neutral-200">
+              {Constants.manifest.version}
+              <Text className="ml-2">
+                {Platform.OS === 'ios' && Constants.manifest.ios.buildNumber}
+                {Platform.OS === 'android' &&
+                  Constants.manifest.android.versionCode}
+              </Text>
             </Text>
+          </View>
+
+          {Constants.manifest.extra.buildTime && (
+            <View className="mt-2">
+              <Text className="text-sm text-neutral-600 dark:text-neutral-400 text-center">
+                构建时间: {Constants.manifest.extra.buildTime}
+              </Text>
+            </View>
+          )}
+
+          <View className="flex flex-row items-center justify-center mt-2">
+            <Pressable
+              className="p-2 flex flex-row items-center rounded-lg active:bg-neutral-100 active:opacity-60"
+              onPress={() => {
+                Linking.openURL('https://github.com/kucial/v2ex-react-native')
+              }}>
+              <GithubIcon
+                color={
+                  colorScheme === 'dark'
+                    ? colors.neutral[300]
+                    : colors.neutral[800]
+                }
+              />
+              {/* <Text className="ml-1">issues</Text> */}
+            </Pressable>
           </View>
         </View>
       </View>
