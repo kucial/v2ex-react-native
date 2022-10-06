@@ -1,5 +1,5 @@
 import { FlatList, RefreshControl, ScrollView } from 'react-native'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useRef, memo } from 'react'
 import { useIsFocused } from '@react-navigation/native'
 import useSWRInfinite from 'swr/infinite'
 import { uniqBy } from 'lodash'
@@ -12,9 +12,8 @@ import TopicRow from './TopicRow'
 import { useAlertService } from '@/containers/AlertService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { useColorScheme } from 'tailwindcss-react-native'
-import { useRef } from 'react'
 
-export default function TopicList(props) {
+function TopicList(props) {
   const { colorScheme } = useColorScheme()
   const alert = useAlertService()
   const listViewRef = useRef()
@@ -26,6 +25,8 @@ export default function TopicList(props) {
       alert.alertWithType('error', '错误', err.message || '请求资源失败')
     }
   })
+  const isFocused = useIsFocused()
+
   const { renderItem, keyExtractor } = useMemo(
     () => ({
       renderItem: ({ item }) => (
@@ -35,8 +36,6 @@ export default function TopicList(props) {
     }),
     [hasViewed]
   )
-
-  const isFocused = useIsFocused()
 
   useEffect(() => {
     if (isFocused && shouldInit(listSwr)) {
@@ -98,3 +97,4 @@ export default function TopicList(props) {
     />
   )
 }
+export default memo(TopicList)
