@@ -1047,15 +1047,20 @@ const CUSTOM_ENDPOINTS = {
               id: Number(topicLink.getAttribute('href').replace(new RegExp('.*\/t\/'), '').split('#')[0]),
               title: topicLink.textContent.trim()
             }
-            // topic_id
-            // content_rendered
-            // reply_time
+            const text = d.querySelector('[valign=middle] .fade').textContent;
+            let action = 'reply';
+            if (/收藏了你发布的主题/.test(text)) {
+              action = 'collect'
+            } else if (/感谢了你发布的主题/.test(text)) {
+              action = 'thank'
+            }
             return {
               member,
+              action,
               topic,
               topic_id: topic.id,
               content_rendered: d.querySelector('.payload')?.innerHTML.trim(),
-              reply_time: d.querySelector('.snow')?.innerText,
+              time: d.querySelector('.snow')?.innerText,
             }
           });
           const pageText = document.querySelector('#notifications')?.previousElementSibling?.querySelector('td[align="center"]')?.textContent

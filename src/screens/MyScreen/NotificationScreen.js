@@ -52,6 +52,103 @@ const NotificationRow = (props) => {
     )
   }
 
+  let header
+  switch (data.action) {
+    case 'collect':
+      header = (
+        <View className="flex flex-row">
+          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
+            <Text
+              className="text-neutral-600 font-medium dark:text-neutral-400"
+              onPress={() => {
+                navigation.push('member', {
+                  username: data.member.username,
+                  brief: data.member
+                })
+              }}>
+              {data.member.username}
+            </Text>
+            <Text className="">{' 收藏了你发布的主题 '}</Text>
+            <Text
+              className="text-neutral-600 dark:text-neutral-400"
+              style={{ paddingHorizontal: 8 }}
+              onPress={() => {
+                navigation.push('topic', {
+                  id: data.topic.id
+                })
+              }}>
+              {data.topic.title}
+            </Text>
+            <Text> </Text>
+            <Text className="px-2 text-neutral-300">{data.time}</Text>
+          </Text>
+        </View>
+      )
+      break
+    case 'thank':
+      header = (
+        <View className="flex flex-row">
+          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
+            <Text
+              className="text-neutral-600 font-medium dark:text-neutral-400"
+              onPress={() => {
+                navigation.push('member', {
+                  username: data.member.username,
+                  brief: data.member
+                })
+              }}>
+              {data.member.username}
+            </Text>
+            <Text className="">{' 感谢了你发布的主题 '}</Text>
+            <Text
+              className="text-neutral-600 dark:text-neutral-400"
+              style={{ paddingHorizontal: 8 }}
+              onPress={() => {
+                navigation.push('topic', {
+                  id: data.topic.id
+                })
+              }}>
+              {data.topic.title}
+            </Text>
+            <Text> </Text>
+            <Text className="px-2 text-neutral-300">{data.time}</Text>
+          </Text>
+        </View>
+      )
+      break
+    case 'reply':
+    default:
+      header = (
+        <View className="flex flex-row">
+          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
+            <Text
+              className="text-neutral-600 font-medium dark:text-neutral-400"
+              onPress={() => {
+                navigation.push('member', {
+                  username: data.member.username,
+                  brief: data.member
+                })
+              }}>
+              {data.member.username}
+            </Text>
+            <Text className="">{' 在 '}</Text>
+            <Text
+              className="text-neutral-600 dark:text-neutral-400"
+              style={{ paddingHorizontal: 8 }}
+              onPress={() => {
+                navigation.push('topic', {
+                  id: data.topic.id
+                })
+              }}>
+              {data.topic.title}
+            </Text>
+            <Text>{' 里回复了你 '}</Text>
+            <Text className="text-neutral-300">{data.time}</Text>
+          </Text>
+        </View>
+      )
+  }
+
   return (
     <View
       className={classNames(
@@ -78,33 +175,7 @@ const NotificationRow = (props) => {
         </Pressable>
       </View>
       <View className="flex-1">
-        <View className="flex flex-row">
-          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
-            <Text
-              className="text-neutral-600 font-medium dark:text-neutral-400"
-              onPress={() => {
-                navigation.push('member', {
-                  username: data.member.username,
-                  brief: data.member
-                })
-              }}>
-              {data.member.username}
-            </Text>
-            <Text className="">{' 在 '}</Text>
-            <Text
-              className="text-neutral-600 dark:text-neutral-400"
-              style={{ paddingHorizontal: 8 }}
-              onPress={() => {
-                navigation.push('topic', {
-                  id: data.topic.id
-                })
-              }}>
-              {data.topic.title}
-            </Text>
-            <Text>{' 里回复了你 '}</Text>
-            <Text className="text-neutral-300">{data.reply_time}</Text>
-          </Text>
-        </View>
+        {header}
         {data.content_rendered && (
           <View className="bg-neutral-100 mt-1 p-1 rounded dark:bg-neutral-800">
             <HtmlRender
