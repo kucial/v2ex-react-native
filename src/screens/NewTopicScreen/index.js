@@ -25,6 +25,7 @@ import {
   EditorRender,
   EditorToolbar
 } from '@/components/SlateEditor'
+import { useAlertService } from '@/containers/AlertService'
 import nodes from '@/mock/nodes'
 import fetcher from '@/utils/fetcher'
 
@@ -52,6 +53,7 @@ export default function NewTopicScreen(props) {
   const titleInput = useRef()
   const editorRef = useRef()
   const pickerModalRef = useRef()
+  const alert = useAlertService()
   const scrollViewRef = useRef()
   const scrollViewInfo = useRef({
     height: undefined,
