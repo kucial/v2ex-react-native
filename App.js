@@ -272,11 +272,15 @@ const swrConfig = {
         }
       })
     } else {
-      Sentry.captureMessage('SWR_EROR', {
-        err,
-        key,
-        config
+      Sentry.addBreadcrumb({
+        type: 'info',
+        data: {
+          err,
+          key,
+          config
+        }
       })
+      Sentry.captureMessage('SWR_EROR')
     }
   }
   // isOnline() {
