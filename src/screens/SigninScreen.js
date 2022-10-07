@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
+  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -72,8 +73,27 @@ const extractImageCaptcha = `
 }())
 `
 
+const get2FASubmitCode = (code) => `(function() {
+  try {
+    const input = document.getElementById('otp_code');
+    input.value = ${JSON.stringify(code)}
+    document.querySelector('[type="submit"]').click();
+  } catch (err) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({
+      error: true,
+      message: err.message
+    }))
+  }
+}())`
+
 const checkSubmitStatus = `
 (function() {
+  if (location.pathname === '/2fa') {
+    window.ReactNativeWebView.postMessage(JSON.stringify({
+      type: '2fa',
+    }));
+    return;
+  }
   const username = document.querySelector('#menu-entry img.avatar')?.getAttribute('alt');
   if (username) {
     window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -151,6 +171,16 @@ export default function LoginScreen({ navigation }) {
       switch (data.type) {
         case 'captcha_image':
           setCaptchaImage(data.payload)
+          break
+        case '2fa':
+          Alert.prompt(
+            '你的账号已开启两步验证，请输入验证码',
+            undefined,
+            async (val) => {
+              webviewRef.current.injectJavaScript(get2FASubmitCode(val))
+              scriptsToInject.current.unshift(checkSubmitStatus)
+            }
+          )
           break
         case 'login_success':
           fetchCurrentUser().then(() => {
