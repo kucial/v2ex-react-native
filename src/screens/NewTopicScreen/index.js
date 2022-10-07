@@ -11,6 +11,7 @@ import {
   View
 } from 'react-native'
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet'
+import { addBreadcrumb, captureException } from '@sentry/react-native'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
 import colors from 'tailwindcss/colors'
@@ -252,6 +253,13 @@ export default function NewTopicScreen(props) {
                       } catch (err) {
                         setIsSubmitting(false)
                         alert.alertWithType('error', '错误', err.message)
+                        if (err.data) {
+                          addBreadcrumb({
+                            type: 'info',
+                            data: err.data
+                          })
+                        }
+                        captureException(err)
                       }
                     }}>
                     {isSubmitting ? (
