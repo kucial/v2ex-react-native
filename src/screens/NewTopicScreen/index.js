@@ -238,7 +238,8 @@ export default function NewTopicScreen(props) {
                         const payload = {
                           title: values.title,
                           syntax: 'markdown',
-                          content
+                          content,
+                          node_name: values.node.name
                         }
                         const created = await fetcher(`/page/write.json`, {
                           params: {

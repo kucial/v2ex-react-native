@@ -602,6 +602,10 @@ const CUSTOM_ENDPOINTS = {
           titleTextarea.value = data.title;
           // set content
           editor.setValue(data.content);
+          // set node
+          if (data.node_name) {
+            document.forms[0].elements.node_name.value = data.node_name;
+          }
           // select syntax
           const syntax = document.querySelector('#compose input[name=syntax][value=${
             data.syntax
@@ -618,10 +622,10 @@ const CUSTOM_ENDPOINTS = {
       }())`,
       `(function() {
         try {
-          const match = /^\\/t\\/\\d+/.match(window.location.pathname)
+          const match = /^\\/t\\/(\\d+)/.exec(window.location.pathname)
           if (match) {
             window.ReactNativeWebView.postMessage(JSON.stringify({
-              id: match[1]
+              id: Number(match[1]),
             }))
           } else {
             window.ReactNativeWebView.postMessage(JSON.stringify({
