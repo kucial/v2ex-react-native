@@ -276,8 +276,7 @@ const swrConfig = {
         type: 'info',
         data: {
           err,
-          key,
-          config
+          swr_key: key
         }
       })
       Sentry.captureMessage('SWR_EROR')
