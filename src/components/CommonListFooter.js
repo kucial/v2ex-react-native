@@ -14,7 +14,9 @@ import Loader from './Loader'
 export default function CommonListFooter(props) {
   const { data: listSwr } = props
   return (
-    <View className="min-h-[60px] py-4 flex flex-row items-center justify-center">
+    <View
+      sentry-label="ListFooter"
+      className="min-h-[60px] py-4 flex flex-row items-center justify-center">
       {isLoadingMore(listSwr) && (
         <View className="w-full flex flex-row items-center justify-center">
           <Loader />

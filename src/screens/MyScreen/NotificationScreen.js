@@ -151,6 +151,7 @@ const NotificationRow = (props) => {
 
   return (
     <View
+      sentry-label="NotificationRow"
       className={classNames(
         'border-b flex flex-row items-start active:opacity-60 p-2',
         'border-b-neutral-300 bg-white',

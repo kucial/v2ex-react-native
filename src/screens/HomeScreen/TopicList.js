@@ -40,7 +40,6 @@ function TopicList(props) {
   useEffect(() => {
     if (isFocused && shouldInit(listSwr)) {
       if (listSwr.data) {
-        console.log('refresh.....')
         listSwr.setSize(1)
         listViewRef.current?.scrollToIndex({
           index: 0,

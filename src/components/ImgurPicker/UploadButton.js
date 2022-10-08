@@ -3,8 +3,8 @@ import { useCallback } from 'react'
 import { Alert, Text, View } from 'react-native'
 import { Pressable } from 'react-native'
 import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
-import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'expo-image-picker'
+import * as Sentry from 'sentry-expo'
 import { useSWRConfig } from 'swr'
 
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
@@ -87,7 +87,7 @@ export default function UploadButton(props) {
           // mutate album cache
         } catch (err) {
           alert.alertWithType('error', '错误', err.message)
-          Sentry.captureException(err)
+          Sentry.Native.captureException(err)
         } finally {
           aIndicator.hide()
         }

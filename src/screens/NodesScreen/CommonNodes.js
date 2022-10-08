@@ -34,7 +34,7 @@ export default function Nodes({ navigation, filter }) {
   }
 
   return (
-    <View>
+    <View sentry-label="CommonNodesSection">
       {nodesSwr.data.map((g) => (
         <View
           className="bg-white dark:bg-neutral-900 mx-1 mt-1 mb-4 rounded-sm shadow"

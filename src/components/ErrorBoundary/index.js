@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import RNRestart from 'react-native-restart'
-import * as Sentry from '@sentry/react-native'
+import * as Sentry from 'sentry-expo'
 
 import ErrorNoticeView from './ErrorNoticeView'
 class ErrorBoundary extends Component {
@@ -17,7 +17,7 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, context) {
-    Sentry.captureException(error, context)
+    Sentry.Native.captureException(error, context)
   }
 
   handleReset = () => {

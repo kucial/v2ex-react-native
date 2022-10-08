@@ -59,6 +59,7 @@ export default function TopicRow(props) {
 
   return (
     <FixedPressable
+      sentry-label="TopicRow"
       className={classNames(
         'border-b flex flex-row items-center active:opacity-50',
         'border-neutral-200 bg-white',

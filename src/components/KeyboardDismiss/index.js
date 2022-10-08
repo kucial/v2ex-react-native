@@ -7,6 +7,7 @@ export default function KeyboardDismiss(props) {
   const editor = useEditor()
   return (
     <Pressable
+      sentry-label="KeyboardDismiss"
       style={props.style}
       onPress={() => {
         if (editor && editor.hasFocus()) {

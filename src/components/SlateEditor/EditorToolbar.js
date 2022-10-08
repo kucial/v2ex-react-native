@@ -67,6 +67,7 @@ export default function EditorToolbar(props) {
   }
   return (
     <View
+      sentry-label="EditorToolbar"
       style={[props.style]}
       className="bg-white flex flex-row border-t border-neutral-300 dark:bg-neutral-750 dark:border-neutral-600">
       <ScrollView
