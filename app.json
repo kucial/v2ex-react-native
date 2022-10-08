@@ -49,6 +49,7 @@
       }
     },
     "plugins": [
+      "sentry-expo",
       "expo-image-picker",
       [
         "expo-build-properties",

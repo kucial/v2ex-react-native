@@ -19,6 +19,3 @@ buck-out/
 
 # Bundle artifacts
 *.jsbundle
-
-# Sentry
-sentry.properties

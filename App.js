@@ -6,7 +6,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import * as Sentry from '@sentry/react-native'
+import * as Sentry from 'sentry-expo'
 import { SWRConfig } from 'swr'
 import colors from 'tailwindcss/colors'
 import { TailwindProvider, useTailwind } from 'tailwindcss-react-native'
@@ -265,21 +265,21 @@ const swrConfig = {
   provider: cacheProvider,
   onError(err, key, config) {
     if (err instanceof Error) {
-      Sentry.captureException(err, {
+      Sentry.Native.captureException(err, {
         extra: {
           key,
           config
         }
       })
     } else {
-      Sentry.addBreadcrumb({
+      Sentry.Native.addBreadcrumb({
         type: 'info',
         data: {
           err,
           swr_key: key
         }
       })
-      Sentry.captureMessage('SWR_EROR')
+      Sentry.Native.captureMessage('SWR_EROR')
     }
   }
   // isOnline() {
@@ -365,4 +365,4 @@ function App() {
   )
 }
 
-export default Sentry.wrap(App)
+export default App

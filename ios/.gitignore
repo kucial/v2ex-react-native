@@ -28,6 +28,3 @@ project.xcworkspace
 
 # CocoaPods
 /Pods/
-
-# Sentry
-# sentry.properties
