@@ -737,7 +737,7 @@ const CUSTOM_ENDPOINTS = {
           }
           const headerDom =  d.querySelector('.page-content-header')
           const data = {
-            title: document.title,
+            title: document.querySelector('.node-breadcrumb').lastChild.textContent.trim(),
             name: ${JSON.stringify(params.name)},
             header: d.querySelector('.intro')?.innerHTML,
             topics: Number(d.querySelector('.topic-count strong').textContent) || 0,
