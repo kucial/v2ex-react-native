@@ -1053,8 +1053,11 @@ const CUSTOM_ENDPOINTS = {
               action = 'collect'
             } else if (/感谢了你发布的主题/.test(text)) {
               action = 'thank'
+            } else if (/感谢了你在主题/.test(text)) {
+              action = 'thank_reply'
             }
             return {
+              id: d.id,
               member,
               action,
               topic,

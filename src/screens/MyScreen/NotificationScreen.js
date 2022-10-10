@@ -116,6 +116,37 @@ const NotificationRow = (props) => {
         </View>
       )
       break
+    case 'thank_reply':
+      header = (
+        <View className="flex flex-row">
+          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
+            <Text
+              className="text-neutral-600 font-medium dark:text-neutral-400"
+              onPress={() => {
+                navigation.push('member', {
+                  username: data.member.username,
+                  brief: data.member
+                })
+              }}>
+              {data.member.username}
+            </Text>
+            <Text className="">{' 感谢了你在主题 '}</Text>
+            <Text
+              className="text-neutral-600 dark:text-neutral-400"
+              style={{ paddingHorizontal: 8 }}
+              onPress={() => {
+                navigation.push('topic', {
+                  id: data.topic.id
+                })
+              }}>
+              {data.topic.title}
+            </Text>
+            <Text>{' 的回复 '}</Text>
+            <Text className="text-neutral-300">{data.time}</Text>
+          </Text>
+        </View>
+      )
+      break
     case 'reply':
     default:
       header = (
