@@ -15,17 +15,20 @@ export default function FixedPressable({ onPress, onPressIn, ...props }) {
     onPressIn?.(e)
   }, [])
 
-  const _onPress = useCallback((e) => {
-    const { pageX, pageY } = e.nativeEvent
+  const _onPress = useCallback(
+    (e) => {
+      const { pageX, pageY } = e.nativeEvent
 
-    const absX = Math.abs(_touchActivatePositionRef.current.pageX - pageX)
-    const absY = Math.abs(_touchActivatePositionRef.current.pageY - pageY)
+      const absX = Math.abs(_touchActivatePositionRef.current.pageX - pageX)
+      const absY = Math.abs(_touchActivatePositionRef.current.pageY - pageY)
 
-    const dragged = absX > 2 || absY > 2
-    if (!dragged) {
-      onPress?.(e)
-    }
-  }, [])
+      const dragged = absX > 2 || absY > 2
+      if (!dragged) {
+        onPress?.(e)
+      }
+    },
+    [onPress]
+  )
 
   return (
     <Pressable onPressIn={_onPressIn} onPress={_onPress} {...props}>
