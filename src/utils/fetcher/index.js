@@ -1446,7 +1446,10 @@ export const FetcherWebView = () => {
                   } else {
                     console.log('data success:', !data.error)
                     if (data.error) {
-                      reject(data)
+                      const error = new Error(data.message)
+                      error.code = data.code
+                      error.data = data.data
+                      reject(error)
                     } else {
                       resolve(data)
                     }
