@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image, Text, TouchableOpacity, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 
@@ -79,7 +80,7 @@ export default function TopicRow(props) {
               brief: member
             })
           }}>
-          <Image
+          <FastImage
             source={{
               uri: member.avatar_mini
             }}

@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
   View
 } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
@@ -92,14 +93,16 @@ export default function NodeScreen({ route, navigation }) {
     <View className="mb-3 p-2 bg-white dark:bg-neutral-900">
       <View className="rounded-lg">
         <View className="flex flex-row">
-          <Image
-            style={[
-              tw('w-[60px] h-[60px] mr-3'),
-              !node.avatar_large && tw('bg-neutral-100 dark:bg-neutral-750')
-            ]}
-            source={{
-              uri: node.avatar_large
-            }}></Image>
+          {node.avatar_large ? (
+            <FastImage
+              className="w-[60px] h-[60px] mr-3"
+              source={{
+                uri: node.avatar_large
+              }}></FastImage>
+          ) : (
+            <View className="w-[60px] h-[60px] mr-3 bg-neutral-100 dark:bg-neutral-750"></View>
+          )}
+
           <View className="flex-1">
             <View className="flex flex-row justify-between items-center mb-[6px]">
               <View>

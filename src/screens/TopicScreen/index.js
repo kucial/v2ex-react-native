@@ -19,6 +19,7 @@ import {
   View
 } from 'react-native'
 import { Keyboard } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import {
   EllipsisHorizontalIcon,
   HeartIcon,
@@ -420,7 +421,7 @@ function TopicScreen({ navigation, route }) {
                 })
               }}>
               {member.avatar_large ? (
-                <Image
+                <FastImage
                   source={{ uri: member.avatar_large }}
                   className="w-[32px] h-[32px] rounded"
                 />

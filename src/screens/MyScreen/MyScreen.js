@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { Alert, Image, Pressable, Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import {
   ClockIcon,
   Cog6ToothIcon,
@@ -46,7 +47,7 @@ export default function MyScreen({ navigation }) {
           onPress={() => {
             navigation.push('profile')
           }}>
-          <Image
+          <FastImage
             source={{ uri: currentUser.avatar_normal }}
             className="w-[40px] h-[40px] bg-neutral-100 mr-3"
           />
@@ -84,7 +85,7 @@ export default function MyScreen({ navigation }) {
     default:
       header = (
         <View className="flex flex-row py-3 px-4 bg-white dark:bg-neutral-900">
-          <Image className="w-[40px] h-[40px] bg-neutral-100 mr-3" />
+          <FastImage className="w-[40px] h-[40px] bg-neutral-100 mr-3" />
           <View className="flex-1">
             <InlineText
               className="text-base font-semibold mb-1"

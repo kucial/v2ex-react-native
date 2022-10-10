@@ -1,5 +1,6 @@
 import React from 'react'
-import { ImageBackground, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 
 import CheckIcon from '@/components/CheckIcon'
@@ -12,8 +13,8 @@ export default function ImageCard(props) {
   return (
     <Pressable className="active:opacity-50 relative" onPress={props.onPress}>
       <View className="w-full pt-[100%] overflow-hidden">
-        <View className="absolute inset-0 w-full bg-neutral-100">
-          <ImageBackground
+        <View className="absolute inset-0 w-full bg-neutral-100 dark:bg-netural-600">
+          <FastImage
             source={
               data?.link
                 ? {
@@ -25,7 +26,8 @@ export default function ImageCard(props) {
             style={{
               justifyContent: 'center',
               flex: 1
-            }}></ImageBackground>
+            }}
+          />
         </View>
       </View>
       <Pressable

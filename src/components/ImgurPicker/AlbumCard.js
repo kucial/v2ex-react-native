@@ -1,5 +1,6 @@
 import React from 'react'
-import { ImageBackground, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { LockClosedIcon } from 'react-native-heroicons/outline'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
@@ -17,7 +18,7 @@ export default function AlbumCard(props) {
     <Pressable className="active:opacity-50" onPress={props.onPress}>
       <View className="w-full pt-[100%] rounded-lg overflow-hidden">
         <View className="absolute inset-0 w-full dark:bg-neutral-600">
-          <ImageBackground
+          <FastImage
             source={
               coverSwr.data
                 ? {
@@ -29,7 +30,7 @@ export default function AlbumCard(props) {
             style={{
               justifyContent: 'center',
               flex: 1
-            }}></ImageBackground>
+            }}></FastImage>
         </View>
       </View>
       <Text

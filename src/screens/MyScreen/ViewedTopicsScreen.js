@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo } from 'react'
 import { FlatList, Image, Pressable, Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import classNames from 'classnames'
@@ -32,7 +33,7 @@ export default function ViewedTopicsScreen({ navigation }) {
                     brief: member
                   })
                 }}>
-                <Image
+                <FastImage
                   source={{
                     uri: member.avatar_large
                   }}

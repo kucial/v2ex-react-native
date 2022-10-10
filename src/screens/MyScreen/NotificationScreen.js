@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
   View
 } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 import useSWRInfinite from 'swr/infinite'
@@ -198,7 +199,7 @@ const NotificationRow = (props) => {
               brief: data.member
             })
           }}>
-          <Image
+          <FastImage
             source={{
               uri: data.member.avatar_normal
             }}

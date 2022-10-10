@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { Image } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import ImageModal from 'react-native-image-modal'
 import {
   IMGElementContainer,
@@ -21,7 +21,7 @@ const IMGElementContentSuccess = ({
 
   return (
     <>
-      <Image
+      <FastImage
         source={source}
         onError={onImageError}
         style={[dimensions, imageStyle, { display: 'none' }]}

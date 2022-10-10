@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image, Pressable, Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { DocumentIcon } from 'react-native-heroicons/outline'
 import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
@@ -60,9 +61,9 @@ export default function CollectedNodes() {
                         name: node.name
                       })
                     }}>
-                    <Image
+                    <FastImage
                       className="w-[44px] h-[44px]"
-                      source={{ uri: node.avatar_large }}></Image>
+                      source={{ uri: node.avatar_large }}></FastImage>
                     <View className="ml-3 pt-1">
                       <Text className="text-neutral-900 dark:text-neutral-300">
                         {node.title}

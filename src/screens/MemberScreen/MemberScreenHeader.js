@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image, Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import Constants from 'expo-constants'
 import colors from 'tailwindcss/colors'
 
@@ -35,7 +36,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           style={{
             height: Constants.statusBarHeight + HEADER_CANVAS_HEIGHT
           }}>
-          <Image
+          <FastImage
             style={{ width: '100%', height: '100%', position: 'absolute' }}
             source={{ uri: data.avatar_large }}
             resizeMode="cover"
@@ -55,7 +56,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
             bottom: -AVATAR_SIZE / 2
           }}>
           {data.avatar_large ? (
-            <Image
+            <FastImage
               className="w-full h-full rounded-full bg-white border-white dark:border-neutral-900"
               style={{
                 width: AVATAR_SIZE,

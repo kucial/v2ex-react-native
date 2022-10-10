@@ -1,6 +1,7 @@
 import React from 'react'
-import { ImageBackground, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { Alert } from 'react-native'
+import FastImage from 'react-native-fast-image'
 
 import { useImgurService } from '@/containers/ImgurService'
 
@@ -24,13 +25,13 @@ export default function AlbumCard(props) {
       }}>
       <View className="w-full pt-[100%] rounded-lg overflow-hidden ">
         <View className="absolute inset-0 w-full dark:bg-neutral-500">
-          <ImageBackground
+          <FastImage
             source={albumAdd}
             resizeMode="cover"
             style={{
               justifyContent: 'center',
               flex: 1
-            }}></ImageBackground>
+            }}></FastImage>
         </View>
       </View>
       <Text

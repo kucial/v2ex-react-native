@@ -1,5 +1,6 @@
 import React from 'react'
 import { Image, Pressable, Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 
 import NodeTopicRowSkeleton from '@/components/Skeleton/NodeTopicRowSkeleton'
@@ -24,10 +25,11 @@ export default function NodeTopicRow(props) {
         })
       }}>
       <View className="mr-2 self-start">
-        <Image
+        <FastImage
           className="w-[24px] h-[24px] rounded"
           source={{
-            uri: member.avatar_normal
+            uri: member.avatar_normal,
+            priority: FastImage.priority.low
           }}
         />
       </View>

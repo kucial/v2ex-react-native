@@ -1,5 +1,6 @@
 import React, { memo, useState } from 'react'
 import { Image, Pressable, Text, useWindowDimensions, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import {
   ChatBubbleLeftRightIcon,
   HeartIcon
@@ -77,9 +78,10 @@ function ReplyRow(props) {
                 username: member.username
               })
             }}>
-            <Image
+            <FastImage
               source={{
-                uri: member.avatar_normal
+                uri: member.avatar_normal,
+                priority: FastImage.priority.low
               }}
               className="w-[24px] h-[24px] rounded"
             />

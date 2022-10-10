@@ -12,6 +12,7 @@ import {
   TextInput,
   View
 } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import WebView from 'react-native-webview'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
@@ -327,7 +328,7 @@ export default function LoginScreen({ navigation }) {
                 <Pressable
                   onPress={refreshCaptcha}
                   className="active:opacity-60">
-                  <Image
+                  <FastImage
                     source={{ uri: captchaImage.uri }}
                     className="rounded-md mb-2 mt-1"
                     style={{

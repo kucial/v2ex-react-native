@@ -7,6 +7,7 @@ import {
   Text,
   View
 } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import useSWRInfinite from 'swr/infinite'
 import colors from 'tailwindcss/colors'
@@ -61,7 +62,7 @@ const CollectedTopicRow = (props) => {
                 brief: data.member
               })
             }}>
-            <Image
+            <FastImage
               className="w-[36px] h-[36px] rounded"
               source={{ uri: data.member.avatar_normal }}
             />
