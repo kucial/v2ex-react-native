@@ -25,16 +25,18 @@ export default function CommonListFooter(props) {
       {shouldShowError(listSwr) && (
         <View className="w-full px-4 items-center">
           <View className="my-4">
-            <Text>{listSwr.error.message}</Text>
+            <Text className="text-neutral-800 dark:text-neutral-300">
+              {listSwr.error.message}
+            </Text>
           </View>
           {listSwr.error.code !== 'member_locked' && (
             <View className="flex flex-row justify-center mb-4">
               <Pressable
-                className="px-4 h-[44px] w-[120px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60"
+                className="px-4 h-[44px] w-[120px] rounded-full bg-neutral-900 dark:bg-amber-50 text-white items-center justify-center active:opacity-60"
                 onPress={() => {
                   listSwr.mutate()
                 }}>
-                <Text className="text-white">重试</Text>
+                <Text className="text-white dark:text-neutral-800">重试</Text>
               </Pressable>
             </View>
           )}
