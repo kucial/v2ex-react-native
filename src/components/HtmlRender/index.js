@@ -1,5 +1,7 @@
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useRef } from 'react'
 import BaseRender, { useInternalRenderer } from 'react-native-render-html'
+import WebView from 'react-native-webview'
+import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
 import { useNavigation } from '@react-navigation/native'
 import { captureException } from '@sentry/react-native'
 import * as WebBrowser from 'expo-web-browser'
@@ -10,6 +12,7 @@ import { useColorScheme } from 'tailwindcss-react-native'
 import { getScreenInfo, isAppLink } from '@/utils/url'
 
 import ImageElement from './ImageElement'
+import ImageViewingService from './ImageViewingService'
 
 const ImageRenderer = (props) => {
   const { rendererProps } = useInternalRenderer('img', props)
@@ -17,7 +20,12 @@ const ImageRenderer = (props) => {
 }
 
 const renderers = {
-  img: ImageRenderer
+  img: ImageRenderer,
+  iframe: IframeRenderer
+}
+
+const customHTMLElementModels = {
+  iframe: iframeModel
 }
 
 const defaultTextProps = { selectable: true }
@@ -25,6 +33,7 @@ const defaultTextProps = { selectable: true }
 function RenderHtml({ tagsStyles, baseStyle, ...props }) {
   const { colorScheme } = useColorScheme()
   const navigation = useNavigation()
+  const viewingServiceRef = useRef()
 
   const styles = useMemo(() => {
     const baseFontSize = baseStyle?.fontSize || 16
@@ -125,18 +134,25 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
             console.log(err)
           })
         }
+      },
+      iframe: {
+        scalesPageToFit: true
       }
     }
   }, [])
 
   return (
-    <BaseRender
-      tagsStyles={styles}
-      renderers={renderers}
-      renderersProps={renderersProps}
-      defaultTextProps={defaultTextProps}
-      {...props}
-    />
+    <ImageViewingService>
+      <BaseRender
+        WebView={WebView}
+        tagsStyles={styles}
+        renderers={renderers}
+        renderersProps={renderersProps}
+        defaultTextProps={defaultTextProps}
+        customHTMLElementModels={customHTMLElementModels}
+        {...props}
+      />
+    </ImageViewingService>
   )
 }
 
@@ -151,4 +167,4 @@ RenderHtml.defaultProps = {
   }
 }
 
-export default memo(RenderHtml)
+export default memo(RenderHtml, (a, b) => a.source.html === b.source.html)

@@ -12,7 +12,7 @@
   - cacheProvider -- MMKV storage
 - react-native-render-html -- 内容渲染
 - marked -- markdown 预览
-- react-native-image-modal -- 图片预览
+- ~~react-native-image-modal -- 图片预览~~
 - react-hook-form -- 表单
 - slatejs + webview -- 富文本编辑
 - @gorhom/bottom-sheet -- 底部弹出层

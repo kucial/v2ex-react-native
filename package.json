@@ -2,10 +2,10 @@
   "name": "v2ex-react-native",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start --dev-client",
+    "start": "expo start --dev-client -c",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "build:ios": "NODE_ENV=production eas build --platform ios --local --profile staging",
+    "build:ios": "eas build --platform ios --local --profile staging",
     "submit:ios": "eas submit --platform ios",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -14,6 +14,7 @@
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.13.0",
     "@gorhom/bottom-sheet": "^4.4.5",
+    "@native-html/iframe-plugin": "^2.6.1",
     "@react-native-community/netinfo": "9.3.0",
     "@react-native-cookies/cookies": "^6.2.1",
     "@react-native-segmented-control/segmented-control": "2.4.0",
@@ -56,7 +57,6 @@
     "react-native-fast-image": "^8.5.11",
     "react-native-gesture-handler": "~2.5.0",
     "react-native-heroicons": "^3.2.0",
-    "react-native-image-modal": "^2.0.4",
     "react-native-image-viewing": "^0.2.2",
     "react-native-mmkv": "^2.4.3",
     "react-native-nprogress": "^1.1.0",

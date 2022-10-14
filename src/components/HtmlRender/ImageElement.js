@@ -1,12 +1,18 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import FastImage from 'react-native-fast-image'
-import ImageModal from 'react-native-image-modal'
 import {
   IMGElementContainer,
   IMGElementContentError,
   IMGElementContentLoading,
-  useIMGElementState
+  useIMGElementState,
+  useIMGElementStateWithCache
 } from 'react-native-render-html'
+
+import {
+  useCachedImageDimensions,
+  useImageDimensionCache
+} from './ImageDimensionCache'
+import { useImageViewing } from './ImageViewingService'
 
 const IMGElementContentSuccess = ({
   source,
@@ -14,38 +20,33 @@ const IMGElementContentSuccess = ({
   dimensions,
   onError
 }) => {
+  const cache = useImageDimensionCache()
   const onImageError = useCallback(
     ({ nativeEvent: { error } }) => onError(error),
     [onError]
   )
+  const onLoad = useCallback((e) => {
+    cache.update(source.uri, {
+      width: e.nativeEvent.width,
+      height: e.nativeEvent.height
+    })
+  }, [])
 
   return (
-    <>
-      <FastImage
-        source={source}
-        onError={onImageError}
-        style={[dimensions, imageStyle, { display: 'none' }]}
-        testID="image-success"
-      />
-      <ImageModal
-        resizeMode="contain"
-        style={[dimensions, imageStyle]}
-        source={source}
-      />
-    </>
+    <FastImage
+      source={source}
+      style={[dimensions, imageStyle]}
+      testID="image-success"
+      onError={onImageError}
+      onLoad={onLoad}
+    />
   )
 }
 
-export default function ImageElement(props) {
+const DefaultImage = (props) => {
   const state = useIMGElementState(props)
-  let content
-  if (state.type === 'success') {
-    content = React.createElement(IMGElementContentSuccess, state)
-  } else if (state.type === 'loading') {
-    content = React.createElement(IMGElementContentLoading, state)
-  } else {
-    content = React.createElement(IMGElementContentError, state)
-  }
+  let content = React.createElement(IMGElementContentSuccess, state)
+
   return (
     <IMGElementContainer
       testID={props.testID}
@@ -54,5 +55,51 @@ export default function ImageElement(props) {
       style={state.containerStyle}>
       {content}
     </IMGElementContainer>
+  )
+}
+
+const CachedImage = (props) => {
+  const state = useIMGElementStateWithCache(props)
+  let content = React.createElement(IMGElementContentSuccess, state)
+
+  return (
+    <IMGElementContainer
+      testID={props.testID}
+      {...props.containerProps}
+      onPress={props.onPress}
+      style={state.containerStyle}>
+      {content}
+    </IMGElementContainer>
+  )
+}
+
+export default function ImageElement(props) {
+  const cachedDimensions = useCachedImageDimensions(props.source.uri)
+  const service = useImageViewing()
+  useEffect(() => {
+    const imageUri = props.source.uri
+    service.add(imageUri)
+    return () => {
+      service.remove(imageUri)
+    }
+  }, [props.source.uri])
+  if (cachedDimensions) {
+    return (
+      <CachedImage
+        cachedNaturalDimensions={cachedDimensions}
+        {...props}
+        onPress={() => {
+          service.open(props.source.uri)
+        }}
+      />
+    )
+  }
+  return (
+    <DefaultImage
+      {...props}
+      onPress={() => {
+        service.open(props.source.uri)
+      }}
+    />
   )
 }
