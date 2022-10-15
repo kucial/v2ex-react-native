@@ -193,7 +193,13 @@ function TopicScreen({ navigation, route }) {
       onSuccess: (data) => {
         const topic = data[data.length - 1]?.meta?.topic
         if (topic) {
-          topicSwr.mutate((prev) => deepmerge(prev, topic), false)
+          topicSwr.mutate(
+            (prev) =>
+              deepmerge(prev, topic, {
+                arrayMerge: (a, b) => b
+              }),
+            false
+          )
           touchViewed(topic)
         }
       }
