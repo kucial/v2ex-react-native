@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react'
 import {
-  FlatList,
-  Image,
   Pressable,
   RefreshControl,
   Text,
@@ -10,6 +8,7 @@ import {
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
+import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import useSWRInfinite from 'swr/infinite'
 
@@ -17,7 +16,7 @@ import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
-import { hasReachEnd } from '@/utils/swr'
+import { hasReachEnd, isRefreshing } from '@/utils/swr'
 
 const htmlBaseStyle = {
   lineHeight: 18
@@ -264,28 +263,25 @@ export default function NotificationScreen() {
   }, [])
 
   return (
-    <FlatList
+    <FlashList
       className="flex-1"
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
+      estimatedItemSize={80}
       onEndReached={() => {
         if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}
-      refreshControl={
-        <RefreshControl
-          onRefresh={() => {
-            if (listSwr.isValidating) {
-              return
-            }
-            listSwr.mutate()
-          }}
-          refreshing={listSwr.data && listSwr.isValidating}
-        />
-      }
+      onRefresh={() => {
+        if (listSwr.isValidating) {
+          return
+        }
+        listSwr.mutate()
+      }}
+      refreshing={isRefreshing(listSwr)}
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}

@@ -1,14 +1,7 @@
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import {
-  FlatList,
-  Image,
-  Pressable,
-  RefreshControl,
-  Text,
-  useWindowDimensions,
-  View
-} from 'react-native'
+import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
+import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
@@ -178,35 +171,27 @@ export default function NodeScreen({ route, navigation }) {
   )
 
   return (
-    <View className="flex-1">
-      <FlatList
-        className="flex-1"
-        data={feedItems}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        onEndReachedThreshold={0.4}
-        onEndReached={() => {
-          if (!feedSwr.isValidating && !hasReachEnd(feedSwr)) {
-            feedSwr.setSize(feedSwr.size + 1)
-          }
-        }}
-        refreshControl={
-          <RefreshControl
-            tintColor={
-              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-            }
-            onRefresh={() => {
-              feedSwr.mutate()
-            }}
-            refreshing={isRefreshing(feedSwr)}
-          />
+    <FlashList
+      className="flex-1"
+      data={feedItems}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      onEndReachedThreshold={0.4}
+      estimatedItemSize={80}
+      onEndReached={() => {
+        if (!feedSwr.isValidating && !hasReachEnd(feedSwr)) {
+          feedSwr.setSize(feedSwr.size + 1)
         }
-        ListHeaderComponent={header}
-        ListFooterComponent={() => {
-          return <CommonListFooter data={feedSwr} />
-        }}
-      />
-    </View>
+      }}
+      onRefresh={() => {
+        feedSwr.mutate()
+      }}
+      refreshing={isRefreshing(feedSwr)}
+      ListHeaderComponent={header}
+      ListFooterComponent={() => {
+        return <CommonListFooter data={feedSwr} />
+      }}
+    />
   )
 }
 

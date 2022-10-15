@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Image, Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 
 import NodeTopicRowSkeleton from '@/components/Skeleton/NodeTopicRowSkeleton'
 
-export default function NodeTopicRow(props) {
+function NodeTopicRow(props) {
   const navigation = useNavigation()
   const { data } = props
 
@@ -72,3 +72,4 @@ export default function NodeTopicRow(props) {
     </Pressable>
   )
 }
+export default memo(NodeTopicRow)

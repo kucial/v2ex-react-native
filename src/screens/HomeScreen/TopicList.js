@@ -1,10 +1,8 @@
 import React, { memo, useEffect, useMemo, useRef } from 'react'
-import { FlatList, RefreshControl, ScrollView } from 'react-native'
 import { useIsFocused } from '@react-navigation/native'
+import { FlashList } from '@shopify/flash-list'
 import { uniqBy } from 'lodash'
 import useSWRInfinite from 'swr/infinite'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { useAlertService } from '@/containers/AlertService'
@@ -14,7 +12,6 @@ import { hasReachEnd, isRefreshing, shouldInit } from '@/utils/swr'
 import TopicRow from './TopicRow'
 
 function TopicList(props) {
-  const { colorScheme } = useColorScheme()
   const alert = useAlertService()
   const listViewRef = useRef()
   const { hasViewed } = useViewedTopics()
@@ -66,30 +63,24 @@ function TopicList(props) {
   }, [listSwr])
 
   return (
-    <FlatList
+    <FlashList
       ref={listViewRef}
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
+      estimatedItemSize={133}
       onEndReachedThreshold={0.4}
       onEndReached={() => {
         if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
           listSwr.setSize((size) => size + 1)
         }
       }}
-      refreshControl={
-        <RefreshControl
-          tintColor={
-            colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-          }
-          refreshing={isRefreshing(listSwr)}
-          onRefresh={() => {
-            if (!listSwr.isValidating) {
-              listSwr.setSize(1)
-            }
-          }}
-        />
-      }
+      refreshing={isRefreshing(listSwr) || false}
+      onRefresh={() => {
+        if (!listSwr.isValidating) {
+          listSwr.setSize(1)
+        }
+      }}
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}

@@ -1,12 +1,13 @@
 import React, { useCallback, useMemo } from 'react'
-import { FlatList, Pressable, RefreshControl, Text, View } from 'react-native'
+import { Pressable, RefreshControl, Text, View } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
-import { hasReachEnd } from '@/utils/swr'
+import { hasReachEnd, isRefreshing } from '@/utils/swr'
 
 import UserTopicRow from './UserTopicRow'
 
@@ -49,31 +50,25 @@ export default function MemberTopics(props) {
   }, [])
 
   return (
-    <FlatList
+    <FlashList
       className="flex-1"
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
+      estimatedItemSize={110}
       onEndReached={() => {
         if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}
-      refreshControl={
-        <RefreshControl
-          tintColor={
-            colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-          }
-          onRefresh={() => {
-            if (listSwr.isValidating) {
-              return
-            }
-            listSwr.mutate()
-          }}
-          refreshing={listSwr.data && listSwr.isValidating}
-        />
-      }
+      onRefresh={() => {
+        if (listSwr.isValidating) {
+          return
+        }
+        listSwr.mutate()
+      }}
+      refreshing={isRefreshing(listSwr)}
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}

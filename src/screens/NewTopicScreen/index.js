@@ -11,7 +11,11 @@ import {
   View
 } from 'react-native'
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet'
-import { addBreadcrumb, captureException } from '@sentry/react-native'
+import {
+  addBreadcrumb,
+  captureException,
+  captureMessage
+} from '@sentry/react-native'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
 import colors from 'tailwindcss/colors'
@@ -260,7 +264,11 @@ export default function NewTopicScreen(props) {
                             data: err.data
                           })
                         }
-                        captureException(err)
+                        if (err instanceof Error) {
+                          captureException(err)
+                        } else {
+                          captureMessage('CRAETE_TOPIC_ERROR')
+                        }
                       }
                     }}>
                     {isSubmitting ? (

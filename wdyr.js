@@ -6,4 +6,5 @@ if (NODE_ENV === 'development') {
   whyDidYouRender(React, {
     trackAllPureComponents: false
   })
+  console.log('whyDidYouRender loaded')
 }

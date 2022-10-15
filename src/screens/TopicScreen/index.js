@@ -15,7 +15,6 @@ import {
   SafeAreaView,
   Share,
   Text,
-  useWindowDimensions,
   View
 } from 'react-native'
 import { Keyboard } from 'react-native'
@@ -37,6 +36,7 @@ import {
   BottomSheetModal,
   BottomSheetScrollView
 } from '@gorhom/bottom-sheet'
+import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
@@ -45,7 +45,6 @@ import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
-import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
@@ -57,6 +56,7 @@ import { hasReachEnd, isLoading, isRefreshing, useSWR } from '@/utils/swr'
 
 import Converation from './Conversation'
 import ReplyRow from './ReplyRow'
+import TopicInfo from './TopicInfo'
 import TopicReplyForm from './TopicReplyForm'
 
 const REPLY_PAGE_SIZE = 100
@@ -176,7 +176,6 @@ function TopicScreen({ navigation, route }) {
   const listRef = useRef()
   const replyModalRef = useRef()
   const conversationModalRef = useRef()
-  const { width } = useWindowDimensions()
   const { composeAuthedNavigation } = useAuthService()
   const aIndicator = useActivityIndicator()
 
@@ -284,21 +283,6 @@ function TopicScreen({ navigation, route }) {
     }
   }, [topic?.title])
 
-  const htmlRenderProps = useMemo(() => {
-    if (!topic) {
-      return {}
-    }
-    return {
-      baseStyle: {
-        fontSize: 16
-      },
-      source: {
-        html: topic.content_rendered,
-        baseUrl: 'https://v2ex.com'
-      }
-    }
-  }, [topic?.content_rendered])
-
   const { cache } = useSWRConfig()
   const [replyContext, setReplyContext] = useState(null)
   const initReply = useCallback(
@@ -395,6 +379,12 @@ function TopicScreen({ navigation, route }) {
     }
   }, [id, replyItems])
 
+  const handleReachEnd = useCallback(() => {
+    if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+      listSwr.setSize(listSwr.size + 1)
+    }
+  }, [listSwr, topicSwr])
+
   const conversation = useMemo(() => {
     if (!conversationContext) {
       return null
@@ -411,95 +401,7 @@ function TopicScreen({ navigation, route }) {
   const baseContent = (
     <>
       <View className="bg-white py-3 px-4 mb-2 shadow-sm dark:bg-neutral-900">
-        <View className="flex flex-row mb-2">
-          <View className="flex flex-row flex-1">
-            <Pressable
-              hitSlop={4}
-              onPress={() => {
-                navigation.push('member', {
-                  username: member.username
-                })
-              }}>
-              {member.avatar_large ? (
-                <FastImage
-                  source={{ uri: member.avatar_large }}
-                  className="w-[32px] h-[32px] rounded"
-                />
-              ) : (
-                <Box className="w-[32px] h-[32px] rounded" />
-              )}
-            </Pressable>
-            <View className="pl-2 flex flex-row items-center">
-              <View className="py-[2px]">
-                <Pressable
-                  hitSlop={4}
-                  onPress={() => {
-                    navigation.push('member', {
-                      username: member.username
-                    })
-                  }}>
-                  <Text className="font-medium dark:text-neutral-300">
-                    {member.username}
-                  </Text>
-                </Pressable>
-              </View>
-              <View className="ml-2">
-                <Text className="text-neutral-400 text-xs dark:text-neutral-300">
-                  {topic.created_time}
-                </Text>
-              </View>
-            </View>
-          </View>
-          <View>
-            {node && (
-              <Pressable
-                className="py-1 px-[6px] rounded bg-neutral-100 active:opacity-50 dark:bg-neutral-750"
-                hitSlop={6}
-                onPress={() => {
-                  navigation.push('node', {
-                    name: node.name,
-                    brief: node
-                  })
-                }}>
-                <Text className="text-neutral-500 dark:text-neutral-300">
-                  {node.title}
-                </Text>
-              </Pressable>
-            )}
-          </View>
-        </View>
-        <View className="pb-2 border-b border-b-neutral-300 border-solid mb-2 dark:border-b-neutral-600">
-          <Text
-            selectable
-            className="text-lg font-semibold dark:text-neutral-300">
-            {topic.title}
-          </Text>
-        </View>
-        {!!topic.content_rendered && (
-          <HtmlRender contentWidth={width - 32} {...htmlRenderProps} />
-        )}
-        {!!topic.subtles?.length && (
-          <View className="mt-2">
-            {topic.subtles.map((subtle, index) => (
-              <View
-                className="-mx-2 pl-4 pr-2 py-2 border-t border-neutral-300 dark:border-neutral-700 bg-[#ffff0008] dark:bg-[#ffff8808]"
-                key={index}>
-                <View className="mb-1">
-                  <Text className="text-xs text-neutral-500">
-                    {subtle.meta}
-                  </Text>
-                </View>
-                <HtmlRender
-                  contentWidth={width - 32}
-                  {...htmlRenderProps}
-                  source={{
-                    html: subtle.content_rendered
-                  }}
-                />
-              </View>
-            ))}
-          </View>
-        )}
+        <TopicInfo data={topic} navigation={navigation} />
         {topicSwr.error && !isLoading(topicSwr) && (
           <ErrorNotice
             error={topicSwr.error}
@@ -546,7 +448,7 @@ function TopicScreen({ navigation, route }) {
 
   return (
     <View className="flex-1">
-      <FlatList
+      <FlashList
         ref={listRef}
         className="flex-1"
         data={replyItems}
@@ -556,29 +458,19 @@ function TopicScreen({ navigation, route }) {
         ListFooterComponent={
           <CommonListFooter data={listSwr} emptyMessage="目前尚无回复" />
         }
+        estimatedItemSize={117}
         onEndReachedThreshold={0.4}
-        onEndReached={() => {
-          if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
-            listSwr.setSize(listSwr.size + 1)
+        onEndReached={handleReachEnd}
+        onRefresh={() => {
+          if (listSwr.isValidating) {
+            return
+          }
+          listSwr.mutate()
+          if (!topicSwr.data && topicSwr.error) {
+            topicSwr.mutate()
           }
         }}
-        refreshControl={
-          <RefreshControl
-            tintColor={
-              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-            }
-            onRefresh={() => {
-              if (listSwr.isValidating) {
-                return
-              }
-              listSwr.mutate()
-              if (!topicSwr.data && topicSwr.error) {
-                topicSwr.mutate()
-              }
-            }}
-            refreshing={isRefreshing(listSwr)}
-          />
-        }
+        refreshing={isRefreshing(listSwr)}
       />
       <SafeAreaView className="u-absolute bottom-0 left-0 w-full bg-white border-t border-t-neutral-200 dark:bg-neutral-800 dark:border-neutral-600">
         <View className="h-[48px] flex flex-row items-center pl-3 pr-1">
@@ -659,21 +551,28 @@ function TopicScreen({ navigation, route }) {
               className="w-[46px] h-[48px] items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
               onPress={composeAuthedNavigation(() => {
                 if (topic.thanked) {
-                  // TODO: SHOW MESSAGE
+                  alert.alertWithType('info', '', '已感谢过主题')
                   return
                 }
+                topicSwr.mutate(
+                  (prev) => ({
+                    ...prev,
+                    thanked: true
+                  }),
+                  false
+                )
                 fetcher(`/page/t/${id}/thank.json`)
-                  .then((res) => {
-                    console.log(res)
+                  .then(() => {
+                    alert.alertWithType('success', '操作成功', '已感谢主题')
+                  })
+                  .catch((err) => {
                     topicSwr.mutate(
                       (prev) => ({
                         ...prev,
-                        thanked: true
+                        thanked: false
                       }),
                       false
                     )
-                  })
-                  .catch((err) => {
                     alert.alertWithType('error', '错误', err.message)
                   })
               })}>

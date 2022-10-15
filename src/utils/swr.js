@@ -6,9 +6,10 @@ import storage from './storage'
 export const isRefreshing = (swrState) => {
   // once fetched  && isValidating
   return (
-    (swrState.data || swrState.error) &&
-    swrState.isValidating &&
-    (!swrState.size || swrState.size === 1)
+    ((swrState.data || swrState.error) &&
+      swrState.isValidating &&
+      (!swrState.size || swrState.size === 1)) ||
+    false
   )
 }
 

@@ -33,7 +33,6 @@ const defaultTextProps = { selectable: true }
 function RenderHtml({ tagsStyles, baseStyle, ...props }) {
   const { colorScheme } = useColorScheme()
   const navigation = useNavigation()
-  const viewingServiceRef = useRef()
 
   const styles = useMemo(() => {
     const baseFontSize = baseStyle?.fontSize || 16

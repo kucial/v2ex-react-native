@@ -1,18 +1,11 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import {
-  FlatList,
-  Keyboard,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View
-} from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetTextInput
 } from '@gorhom/bottom-sheet'
+import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
@@ -129,9 +122,10 @@ export default function NodeSelect(props) {
                 }}
               />
             </View>
-            <FlatList
+            <FlashList
               className="w-full"
               data={filtered}
+              estimatedItemSize={50}
               renderItem={renderItem}
               keyExtractor={(n) => n.id}
             />

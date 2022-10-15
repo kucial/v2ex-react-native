@@ -1,8 +1,9 @@
 import { useLayoutEffect, useMemo } from 'react'
-import { FlatList, Image, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 
 import FixedPressable from '@/components/FixedPressable'
@@ -124,15 +125,25 @@ export default function ViewedTopicsScreen({ navigation }) {
   }, [])
 
   return (
-    <FlatList
+    <FlashList
       data={items}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
+      estimatedItemSize={110}
       ListEmptyComponent={() => (
         <View className="items-center py-9">
           <Text className="text-neutral-600 dark:text-neutral-400">
             你还没有查看过任何一个主题哦～
           </Text>
+        </View>
+      )}
+      ListFooterComponent={() => (
+        <View
+          sentry-label="ListFooter"
+          className="min-h-[60px] py-4 flex flex-row items-center justify-center">
+          <View className="w-full flex flex-row justify-center py-4">
+            <Text className="text-neutral-400">到达底部啦</Text>
+          </View>
         </View>
       )}
     />

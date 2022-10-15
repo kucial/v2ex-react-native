@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react'
-import { Image, Pressable, Text, useWindowDimensions, View } from 'react-native'
+import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import {
   ChatBubbleLeftRightIcon,
@@ -268,6 +268,7 @@ ReplyRow.propTypes = {
   onThank: PropTypes.func,
   onReply: PropTypes.func,
   hasConversation: PropTypes.bool,
+  isPivot: PropTypes.bool,
   onShowConversation: PropTypes.func
 }
 
