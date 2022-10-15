@@ -7,18 +7,14 @@ import React, {
   useState
 } from 'react'
 import {
-  FlatList,
-  Image,
   Linking,
   Pressable,
-  RefreshControl,
   SafeAreaView,
   Share,
   Text,
   View
 } from 'react-native'
 import { Keyboard } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import {
   EllipsisHorizontalIcon,
   HeartIcon,
@@ -38,10 +34,10 @@ import {
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
+import deepmerge from 'deepmerge'
 import { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import colors from 'tailwindcss/colors'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
+import { useTailwind } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
@@ -165,7 +161,6 @@ function TopicScreen({ navigation, route }) {
   const {
     params: { brief, id }
   } = route
-  const { colorScheme } = useColorScheme()
 
   const { showActionSheetWithOptions } = useActionSheet()
   const alert = useAlertService()
@@ -186,16 +181,23 @@ function TopicScreen({ navigation, route }) {
   )
   const { color: likedActiveColor } = tw('color-red-700 dark:color-rose-400')
 
-  const topicSwr = useSWR(`/page/t/${id}/topic.json`, {
-    onSuccess: touchViewed
-  })
+  const topicSwr = useSWR(`/api/topics/show.json?id=${id}`)
   const listSwr = useSWRInfinite(
     useCallback(
       (index) => {
         return `/page/t/${id}/replies.json?p=${index + 1}`
       },
       [id]
-    )
+    ),
+    {
+      onSuccess: (data) => {
+        const topic = data[data.length - 1]?.meta?.topic
+        if (topic) {
+          topicSwr.mutate((prev) => deepmerge(prev, topic), false)
+          touchViewed(topic)
+        }
+      }
+    }
   )
 
   const replyItems = useMemo(() => {
@@ -395,8 +397,6 @@ function TopicScreen({ navigation, route }) {
   if (!topic) {
     return <TopicSkeleton />
   }
-  const { member, node } = topic
-  // return null
 
   const baseContent = (
     <>
@@ -466,9 +466,6 @@ function TopicScreen({ navigation, route }) {
             return
           }
           listSwr.mutate()
-          if (!topicSwr.data && topicSwr.error) {
-            topicSwr.mutate()
-          }
         }}
         refreshing={isRefreshing(listSwr)}
       />

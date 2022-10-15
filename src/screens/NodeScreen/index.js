@@ -3,10 +3,10 @@ import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
+import deepmerge from 'deepmerge'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import colors from 'tailwindcss/colors'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
@@ -31,7 +31,7 @@ export default function NodeScreen({ route, navigation }) {
   const alert = useAlertService()
   const { composeAuthedNavigation } = useAuthService()
 
-  const nodeSwr = useSWR(`/page/go/${name}/node.json`, {
+  const nodeSwr = useSWR(`/api/nodes/show.json?name=${name}`, {
     shouldRetryOnError: false
   })
   const getKey = useCallback(
@@ -41,7 +41,14 @@ export default function NodeScreen({ route, navigation }) {
     [name]
   )
 
-  const feedSwr = useSWRInfinite(getKey)
+  const feedSwr = useSWRInfinite(getKey, {
+    onSuccess: (data) => {
+      const node = data[data.length - 1]?.meta?.node
+      if (node) {
+        nodeSwr.mutate((prev) => deepmerge(prev, node), false)
+      }
+    }
+  })
 
   const node = nodeSwr.data || brief || {}
   useLayoutEffect(() => {
@@ -125,7 +132,7 @@ export default function NodeScreen({ route, navigation }) {
                     'opacity-60': collecting
                   }
                 )}
-                disabled={collecting}
+                disabled={collecting || node.collected === undefined}
                 onPress={composeAuthedNavigation(() => {
                   const endpoint = node.collected
                     ? `/page/go/${name}/uncollect.json`

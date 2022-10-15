@@ -6,8 +6,6 @@ import pathMatch from 'path-match'
 import { parse as pathParse } from 'path-to-regexp'
 import { parse, stringify } from 'qs'
 
-import { OFFICIAL_ENDPOINTS } from './constants'
-
 const REQUEST_TIMEOUT = 1000 * 10
 const instance = axios.create({
   baseURL: 'https://www.v2ex.com',
@@ -22,6 +20,20 @@ instance.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+const OFFICIAL_ENDPOINTS = {
+  '/api/site/stats.json': {},
+  '/api/site/info.json': {},
+  '/api/nodes/all.json': {},
+  '/api/nodes/show.json': {},
+  '/api/topics/hot.json': {},
+  '/api/topics/latest.json': {},
+  '/api/topics/show.json': {
+    mapData: (data) => data[0]
+  },
+  '/api/replies/show.json': {},
+  '/api/members/show.json': {}
+}
 
 const CUSTOM_ENDPOINTS = {
   '/page/index/tabs.json': {
@@ -186,7 +198,7 @@ const CUSTOM_ENDPOINTS = {
             })
           })
 
-          const data = {
+          const topic = {
             id: Number(window.location.pathname.replace('/t/', '')),
             title: document.querySelector('#Wrapper .header h1').textContent.trim(),
             content_rendered: document.querySelector('#Wrapper .cell .topic_content')?.innerHTML.trim(),
@@ -202,7 +214,7 @@ const CUSTOM_ENDPOINTS = {
             blocked: !![...document.querySelectorAll('a.tb')].find((a) => a.innerText === '取消忽略')
           };
 
-          window.ReactNativeWebView.postMessage(JSON.stringify(data))
+          window.ReactNativeWebView.postMessage(JSON.stringify(topic))
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             error: true,
@@ -269,9 +281,64 @@ const CUSTOM_ENDPOINTS = {
             pagination.total = Number(total)
           }
 
+
+          function getTopicInfo() {
+            const member = {}
+            const memberImg = document.querySelector('#Wrapper .header a[href^="/member"] img')
+            member.username = memberImg.alt;
+            member.avatar_large = memberImg.src;
+            const node = {};
+            const nodeAnchor = document.querySelector('#Wrapper .header a[href^="/go"]');
+            node.name = nodeAnchor.href.replace(new RegExp('.*\/go\/'), '');
+            node.title = nodeAnchor.textContent.trim();
+
+            const rDom = document.querySelector('.cell[id^=r_]');
+            let replies = 0;
+            let last_reply_time;
+            if (rDom) {
+              const infoDom = rDom.parentElement.children[0]
+              const compos = infoDom.textContent.trim().split('•');
+              replies = Number(compos[0].replace('条回复', ''))
+              last_reply_time = compos[1]?.trim();
+            }
+            const metaDom = document.querySelector('#Wrapper .header > small.gray');
+            const metaMatch = /at(.*)/.exec(metaDom.textContent.trim())
+            const created_time = metaMatch ? metaMatch[1].split('·')[0].trim() : '';
+            const clicks = metaMatch ? Number(/\\d+/.exec(metaMatch[1].split('·')[1])[0]) : 0;
+
+            const subtles = [];
+            [...document.querySelectorAll('#Wrapper .content .subtle')].forEach((d, index) => {
+              subtles.push({
+                meta: d.querySelector('.fade').textContent.trim(),
+                content_rendered: d.querySelector('.topic_content').innerHTML.trim()
+              })
+            })
+
+            const topic = {
+              id: Number(window.location.pathname.replace('/t/', '')),
+              title: document.querySelector('#Wrapper .header h1').textContent.trim(),
+              content_rendered: document.querySelector('#Wrapper .cell .topic_content')?.innerHTML.trim(),
+              replies,
+              last_reply_time,
+              created_time,
+              clicks,
+              node,
+              member,
+              subtles,
+              collected: !!document.querySelector('a.op[href^="/unfavorite"]'),
+              thanked: !!document.querySelector('#topic_thank .topic_thanked'),
+              blocked: !![...document.querySelectorAll('a.tb')].find((a) => a.innerText === '取消忽略')
+            };
+            return topic
+          }
+          try {
+            topic = getTopicInfo();
+          } catch (err) { console.log(err); }
+
           window.ReactNativeWebView.postMessage(JSON.stringify({
             data,
-            pagination
+            pagination,
+            meta: { topic }
           }))
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -762,7 +829,7 @@ const CUSTOM_ENDPOINTS = {
   '/page/go/:name/feed.json': {
     host: 'https://www.v2ex.com',
     pathname: '/go/:name',
-    scripts: [
+    getScripts: ({ params }) => [
       `
       (function() {
         try {
@@ -799,9 +866,36 @@ const CUSTOM_ENDPOINTS = {
               total: Number(pageText.split('/')[1])
             }
           }
+
+          function getNode() {
+            const d = document.querySelector('.node-header');
+            if (!d) {
+              throw new Error('资源解析遇到问题了')
+            }
+            const headerDom =  d.querySelector('.page-content-header')
+            const data = {
+              title: document.querySelector('.node-breadcrumb').lastChild.textContent.trim(),
+              name: ${JSON.stringify(params.name)},
+              header: d.querySelector('.intro')?.innerHTML,
+              topics: Number(d.querySelector('.topic-count strong').textContent) || 0,
+              avatar_large: d.querySelector('.page-content-header img')?.src,
+              collected: !!d.querySelector('a[href^="/unfavorite/node"]'),
+              theme: {
+                backgroundColor: window.getComputedStyle(headerDom)['background-color'],
+                textColor: window.getComputedStyle(headerDom)['color'],
+              }
+            }
+            return data;
+          }
+          let node;
+          try {
+            node = getNode();
+          } catch (err) {}
+
           window.ReactNativeWebView.postMessage(JSON.stringify({
             data,
             pagination,
+            meta: { node }
           }))
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -1284,15 +1378,30 @@ const CUSTOM_ENDPOINTS = {
     ]
   }
 }
+
+const getMatchedOfficialConfig = (url) => {
+  const entry = Object.entries(OFFICIAL_ENDPOINTS).find(
+    ([endpoint]) => url.indexOf(endpoint) > -1
+  )
+  return entry?.[1]
+}
+
 const request = async (url, config = {}) => {
   console.log('api request', url)
-  if (OFFICIAL_ENDPOINTS.some((endpoint) => url.indexOf(endpoint) > -1)) {
+  const officalRequestConfig = getMatchedOfficialConfig(url)
+  if (officalRequestConfig) {
     return instance({
       method: 'GET',
-      url: url,
+      url,
       ...config
-    })
+    }).then(
+      officalRequestConfig.mapData ||
+        function (data) {
+          return data
+        }
+    )
   }
+
   let urlParams = {}
   const requestEntry = Object.entries(CUSTOM_ENDPOINTS).find(([path]) => {
     if (path === url) {
