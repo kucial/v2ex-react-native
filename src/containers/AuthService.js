@@ -114,8 +114,8 @@ export default function AuthService(props) {
         fetcher('/custom/auth/current-user.json').then((res) => {
           userSwr.mutate(res, false)
         })
-        appState = nextAppState
       }
+      appState = nextAppState
     })
 
     return () => {
