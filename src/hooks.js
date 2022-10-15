@@ -77,10 +77,10 @@ export const useColorScheme = (delay = 250) => {
     []
   )
   useEffect(() => {
-    Appearance.addChangeListener(onColorSchemeChange)
+    const subscription = Appearance.addChangeListener(onColorSchemeChange)
     return () => {
       onColorSchemeChange.cancel()
-      Appearance.removeChangeListener(onColorSchemeChange)
+      subscription.remove()
     }
   }, [])
   return colorScheme

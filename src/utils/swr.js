@@ -39,8 +39,17 @@ const maybeOutdated = (data) => {
   )
 }
 
-export const shouldInit = (swr) =>
-  (!swr.data || maybeOutdated(swr.data)) && !swr.isValidating
+export const shouldFetch = (swr) => {
+  if (swr.data && maybeOutdated(swr.data)) {
+    console.log('fetch as data maybe outdated')
+    return true
+  }
+  if (!swr.data && !swr.isValidating) {
+    console.log('init fetch')
+    return true
+  }
+  return false
+}
 
 // 自定义 revalidateOnMount 行为。
 export const useSWR = (...args) => {
@@ -57,7 +66,7 @@ export const useSWR = (...args) => {
       ...options,
       ...args[1]
     }
-    swr = useSWRBase(...args)
+    swr = useSWRBase(...args.slice(0, -1), options)
   } else {
     swr = useSWRBase(...args, options)
   }
@@ -67,7 +76,7 @@ export const useSWR = (...args) => {
       key &&
       options.revalidateOnMount === false &&
       options.initOnMount &&
-      shouldInit(swr)
+      shouldFetch(swr)
     ) {
       swr.mutate()
     }

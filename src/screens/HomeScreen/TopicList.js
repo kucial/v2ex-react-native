@@ -7,7 +7,7 @@ import useSWRInfinite from 'swr/infinite'
 import CommonListFooter from '@/components/CommonListFooter'
 import { useAlertService } from '@/containers/AlertService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { hasReachEnd, isRefreshing, shouldInit } from '@/utils/swr'
+import { hasReachEnd, isRefreshing, shouldFetch } from '@/utils/swr'
 
 import TopicRow from './TopicRow'
 
@@ -35,7 +35,7 @@ function TopicList(props) {
   )
 
   useEffect(() => {
-    if (isFocused && shouldInit(listSwr)) {
+    if (isFocused && shouldFetch(listSwr)) {
       if (listSwr.data) {
         listSwr.setSize(1)
         listViewRef.current?.scrollToIndex({
