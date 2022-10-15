@@ -3,7 +3,6 @@ import FastImage from 'react-native-fast-image'
 import {
   IMGElementContainer,
   IMGElementContentError,
-  IMGElementContentLoading,
   useIMGElementState,
   useIMGElementStateWithCache
 } from 'react-native-render-html'
@@ -22,7 +21,7 @@ const IMGElementContentSuccess = ({
 }) => {
   const cache = useImageDimensionCache()
   const onImageError = useCallback(
-    ({ nativeEvent: { error } }) => onError(error),
+    ({ nativeEvent: { error } }) => onError?.(error),
     [onError]
   )
   const onLoad = useCallback((e) => {
@@ -43,9 +42,14 @@ const IMGElementContentSuccess = ({
   )
 }
 
-const DefaultImage = (props) => {
-  const state = useIMGElementState(props)
-  let content = React.createElement(IMGElementContentSuccess, state)
+function ImageRender(props) {
+  const { state } = props
+  let content
+  if (state.type === 'error') {
+    content = React.createElement(IMGElementContentError, state)
+  } else {
+    content = React.createElement(IMGElementContentSuccess, state)
+  }
 
   return (
     <IMGElementContainer
@@ -60,17 +64,12 @@ const DefaultImage = (props) => {
 
 const CachedImage = (props) => {
   const state = useIMGElementStateWithCache(props)
-  let content = React.createElement(IMGElementContentSuccess, state)
+  return <ImageRender {...props} state={state} />
+}
 
-  return (
-    <IMGElementContainer
-      testID={props.testID}
-      {...props.containerProps}
-      onPress={props.onPress}
-      style={state.containerStyle}>
-      {content}
-    </IMGElementContainer>
-  )
+const DefaultImage = (props) => {
+  const state = useIMGElementState(props)
+  return <ImageRender {...props} state={state} />
 }
 
 export default function ImageElement(props) {

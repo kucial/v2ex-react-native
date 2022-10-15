@@ -143,11 +143,6 @@ export default function MemberReplies(props) {
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}
-      ListEmptyComponent={() => (
-        <View>
-          <Text>EMPTY</Text>
-        </View>
-      )}
     />
   )
 }
