@@ -10,6 +10,7 @@ import {
   TextInput,
   View
 } from 'react-native'
+import WebView from 'react-native-webview'
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet'
 import {
   addBreadcrumb,
@@ -32,7 +33,6 @@ import {
 } from '@/components/SlateEditor'
 import { useAlertService } from '@/containers/AlertService'
 import nodes from '@/mock/nodes'
-import fetcher from '@/utils/fetcher'
 
 import NodeSelect from './NodeSelect'
 
@@ -66,6 +66,8 @@ export default function NewTopicScreen(props) {
     scrollY: 0
   })
   const editorRenderContainer = useRef()
+  const webviewRef = useRef()
+  const webviewScripts = useRef([])
 
   const tw = useTailwind()
 
@@ -123,6 +125,25 @@ export default function NewTopicScreen(props) {
     }, 100),
     []
   )
+
+  const handleSubmit = useCallback(async () => {
+    try {
+      setIsSubmitting(true)
+      const content = await editorRef.current.getMarkdown()
+      const payload = {
+        title: values.title,
+        syntax: 'markdown',
+        content,
+        node_name: values.node.name
+      }
+
+      webviewScripts.current.push(getResultScript())
+      webviewRef.current?.injectJavaScript(getSubmitScript(payload))
+    } catch (err) {
+      setIsSubmitting(false)
+      alert.alertWithType('error', '错误', err.message)
+    }
+  }, [values])
 
   return (
     <View className="flex-1 bg-white dark:bg-neutral-900">
@@ -235,42 +256,7 @@ export default function NewTopicScreen(props) {
                         : 'bg-neutral-900/60 dark:bg-amber-50/70'
                     )}
                     disabled={!isValid || isSubmitting}
-                    onPress={async () => {
-                      try {
-                        setIsSubmitting(true)
-                        const content = await editorRef.current.getMarkdown()
-                        const payload = {
-                          title: values.title,
-                          syntax: 'markdown',
-                          content,
-                          node_name: values.node.name
-                        }
-                        const created = await fetcher(`/page/write.json`, {
-                          params: {
-                            node: values.node.name
-                          },
-                          data: payload
-                        })
-                        setIsSubmitting(false)
-                        navigation.replace('topic', {
-                          id: created.id
-                        })
-                      } catch (err) {
-                        setIsSubmitting(false)
-                        alert.alertWithType('error', '错误', err.message)
-                        if (err.data) {
-                          addBreadcrumb({
-                            type: 'info',
-                            data: err.data
-                          })
-                        }
-                        if (err instanceof Error) {
-                          captureException(err)
-                        } else {
-                          captureMessage('CRAETE_TOPIC_ERROR')
-                        }
-                      }
-                    }}>
+                    onPress={handleSubmit}>
                     {isSubmitting ? (
                       <Loader
                         size={20}
@@ -331,6 +317,146 @@ export default function NewTopicScreen(props) {
           </EditorProvider>
         </SafeAreaView>
       </KeyboardAwareView>
+      {values.node && (
+        <View>
+          <WebView
+            originWhitelist={['*']}
+            injectedJavaScript={domReadyMessage}
+            source={{
+              uri: `https://www.v2ex.com/write?node=${values.node.name}`
+            }}
+            ref={webviewRef}
+            onMessage={(event) => {
+              if (event.nativeEvent.data) {
+                const data = JSON.parse(event.nativeEvent.data)
+                console.log(data)
+                if (data.event === 'DocumentReady') {
+                  const script = webviewScripts.current.shift()
+                  if (script) {
+                    webviewRef.current.injectJavaScript(script)
+                  }
+                } else if (data.error) {
+                  if (data.code === 'PROBLEMS') {
+                    alert.alertWithType(
+                      'error',
+                      data.message,
+                      data.data.join('\n')
+                    )
+                  } else {
+                    if (data.data) {
+                      addBreadcrumb({
+                        type: 'info',
+                        data: data.data,
+                        message: data.message
+                      })
+                    }
+                    captureMessage('CREATE_ERROR')
+                    alert.alertWithType('error', '错误', data.message)
+                  }
+                  setIsSubmitting(false)
+                } else {
+                  alert.alertWithType('success', '成功', '主题发布成功')
+                  navigation.replace('topic', {
+                    id: data.id
+                  })
+                }
+              } else {
+                console.log('onMessage', event)
+              }
+            }}
+          />
+        </View>
+      )}
     </View>
   )
+}
+
+const domReadyMessage = `(function() {
+  try {
+    window.ReactNativeWebView.postMessage(JSON.stringify({
+      event: 'DocumentReady'
+    }))
+  } catch (err) {
+    // do nothing
+  }
+}())`
+
+const getSubmitScript = (data) => {
+  return `(function() {
+    try {
+      const data = ${JSON.stringify(data)};
+      // set title
+      const titleTextarea = document.getElementById('topic_title')
+      titleTextarea.value = data.title;
+      // set content
+      editor.setValue(data.content);
+      // set node
+      // if (data.node_name) {
+      //   document.forms[0].elements.node_name.value = data.node_name;
+      // }
+      // select syntax
+      const syntax = document.querySelector('#compose input[name=syntax][value=${
+        data.syntax
+      }]')
+      syntax?.click();
+      // publishTopic
+      publishTopic();
+    } catch (err) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        error: true,
+        message: err.message
+      }))
+    }
+  }())`
+}
+
+const getResultScript = () => {
+  return `(function() {
+      try {
+        const match = /^\\/t\\/(\\d+)/.exec(window.location.pathname)
+        console.log('callback script injected')
+        if (match) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            id: Number(match[1]),
+          }))
+          return;
+        }
+        if (window.location.pathname === '/write') {
+          console.log('timeout setup');
+          const pDom = document.querySelector('.problem');
+          if (pDom) {
+            const message = pDom.firstChild.textContent;
+            const data = [...pDom.querySelectorAll('ul li')].map((li) => li.textContent.trim())
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              code: 'PROBLEMS',
+              message,
+              data,
+            }))
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: 'Unknown Error',
+              data: {
+                location: window.location.pathname,
+              }
+            }))
+          }
+          return;
+        }
+
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          error: true,
+          message: 'redirect location is not expected',
+          data: {
+            location: window.location.pathname
+          }
+        }))
+      } catch (err) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          error: true,
+          message: err.message
+        }))
+      }
+    }())`
 }

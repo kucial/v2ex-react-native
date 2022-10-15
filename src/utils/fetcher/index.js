@@ -5,6 +5,7 @@ import axios from 'axios'
 import pathMatch from 'path-match'
 import { parse as pathParse } from 'path-to-regexp'
 import { parse, stringify } from 'qs'
+import * as Sentry from 'sentry-expo'
 
 const REQUEST_TIMEOUT = 1000 * 10
 const instance = axios.create({
@@ -347,6 +348,7 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       }());
+      true;
       `
     ]
   },
@@ -654,62 +656,6 @@ const CUSTOM_ENDPOINTS = {
             }))
           }
         }())`
-    ]
-  },
-
-  '/page/write.json': {
-    host: 'https://www.v2ex.com',
-    pathname: '/write',
-    getScripts: ({ data }) => [
-      `(function() {
-        try {
-          const data = ${JSON.stringify(data)};
-          // set title
-          const titleTextarea = document.getElementById('topic_title')
-          titleTextarea.value = data.title;
-          // set content
-          editor.setValue(data.content);
-          // set node
-          if (data.node_name) {
-            document.forms[0].elements.node_name.value = data.node_name;
-          }
-          // select syntax
-          const syntax = document.querySelector('#compose input[name=syntax][value=${
-            data.syntax
-          }]')
-          syntax?.click();
-          // publishTopic
-          publishTopic();
-        } catch (err) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            error: true,
-            message: err.message
-          }))
-        }
-      }())`,
-      `(function() {
-        try {
-          const match = /^\\/t\\/(\\d+)/.exec(window.location.pathname)
-          if (match) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              id: Number(match[1]),
-            }))
-          } else {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              error: true,
-              message: 'redirect location is not expected',
-              data: {
-                location: window.location.pathname
-              }
-            }))
-          }
-        } catch (err) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            error: true,
-            message: err.message
-          }))
-        }
-      }())`
     ]
   },
 
@@ -1336,6 +1282,7 @@ const CUSTOM_ENDPOINTS = {
         }))
       }
     }());
+    true;
     `
     ]
   },
@@ -1506,7 +1453,6 @@ export const FetcherWebView = () => {
           }, [url])
           return (
             <WebView
-              // style={{ flex: 1 }}
               ref={ref}
               source={{ uri: url }}
               injectedJavaScript={domReadyMessage}
@@ -1518,6 +1464,7 @@ export const FetcherWebView = () => {
                   try {
                     const script = scriptsToInject.current.shift()
                     if (script) {
+                      console.log('inject script')
                       ref.current.injectJavaScript(script)
                     }
                   } catch (err) {
@@ -1538,6 +1485,7 @@ export const FetcherWebView = () => {
                 console.log(`load: ${url}`)
                 const script = scriptsToInject.current.shift()
                 if (script) {
+                  console.log('inject script')
                   ref.current.injectJavaScript(script)
                 }
               }}
@@ -1548,6 +1496,7 @@ export const FetcherWebView = () => {
                     console.log(`event message: ${url}`)
                     if (data.event === 'DocumentReady') {
                       const script = scriptsToInject.current.shift()
+                      console.log('inject script')
                       if (script) {
                         ref.current.injectJavaScript(script)
                       }
