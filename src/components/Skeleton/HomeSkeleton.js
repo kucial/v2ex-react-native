@@ -7,7 +7,7 @@ import TopicRowSkeleton from './TopicRowSkeleton'
 export default function HomeSkeleton() {
   return (
     <View>
-      <View className="h-[46px] flex flex-row bg-white overflow-hidden dark:bg-neutral-800">
+      <View className="h-[46px] flex flex-row bg-white overflow-hidden dark:bg-neutral-900">
         <View className="px-[12px] flex flex-row items-center justify-center">
           <InlineText className="text-base" width={[48, 64]} />
         </View>

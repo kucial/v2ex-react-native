@@ -45,6 +45,7 @@ import NodeScreen from './src/screens/NodeScreen'
 import NodesScreen from './src/screens/NodesScreen'
 import SearchScreen from './src/screens/SearchScreen'
 import {
+  DisplaySettings,
   HomeTabs,
   ImgurSettings,
   SettingsLanding
@@ -241,6 +242,13 @@ function AppStack() {
           component={HomeTabs}
           options={{
             title: '首页标签设置'
+          }}
+        />
+        <Stack.Screen
+          name="display-settings"
+          component={DisplaySettings}
+          options={{
+            title: '显示设置'
           }}
         />
       </Stack.Group>

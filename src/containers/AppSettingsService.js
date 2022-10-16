@@ -8,7 +8,7 @@ const CACHE_KEY = '$app$/settings'
 const DEFAULT_SETTINGS = {
   homeTabs: undefined, // Array<TabDesc>
   showHasViewed: true,
-  topicRowStyle: 'normal', // normal | tide
+  layoutStyle: 'normal', // normal | tide
   theme: 'auto', // 'light' | 'dark' | 'auto'
   themeColor: '' // 主题强调色
 }

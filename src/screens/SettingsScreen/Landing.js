@@ -18,6 +18,12 @@ export function SettingsLanding({ navigation }) {
         />
         <LineItem
           title="显示已读"
+          onPress={() => {
+            update((prev) => ({
+              ...prev,
+              showHasViewed: !prev.showHasViewed
+            }))
+          }}
           extra={
             <Switch
               value={data.showHasViewed}
@@ -36,7 +42,7 @@ export function SettingsLanding({ navigation }) {
         <LineItem
           title="显示设置"
           onPress={() => {
-            // TODO... UPDATE SETTINGS
+            navigation.push('display-settings')
           }}
           isLast
         />

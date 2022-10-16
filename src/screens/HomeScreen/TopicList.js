@@ -6,14 +6,19 @@ import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { useAlertService } from '@/containers/AlertService'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { hasReachEnd, isRefreshing, shouldFetch } from '@/utils/swr'
 
+import TideTopicRow from './TideTopicRow'
 import TopicRow from './TopicRow'
 
 function TopicList(props) {
   const alert = useAlertService()
   const listViewRef = useRef()
+  const {
+    data: { layoutStyle }
+  } = useAppSettings()
   const { hasViewed } = useViewedTopics()
   const listSwr = useSWRInfinite(props.getKey, {
     revalidateOnMount: false,
@@ -26,12 +31,15 @@ function TopicList(props) {
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item }) => (
-        <TopicRow data={item} viewed={hasViewed(item?.id)} />
-      ),
+      renderItem: ({ item }) =>
+        layoutStyle === 'tide' ? (
+          <TideTopicRow data={item} viewed={hasViewed(item?.id)} />
+        ) : (
+          <TopicRow data={item} viewed={hasViewed(item?.id)} />
+        ),
       keyExtractor: (item, index) => item?.id || `index-${index}`
     }),
-    [hasViewed]
+    [hasViewed, layoutStyle]
   )
 
   useEffect(() => {

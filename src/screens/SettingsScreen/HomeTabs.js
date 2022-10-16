@@ -36,7 +36,7 @@ const UnderlayLeft = (props) => {
   const { close } = useSwipeableItemParams()
   const { colorScheme } = useColorScheme()
   return (
-    <View className="h-full flex-row flex-row justify-end bg-red-600 dark:bg-rose-400">
+    <View className="h-full flex-row flex-row justify-end bg-red-600 dark:bg-rose-500">
       <Pressable
         className={classNames(
           'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',
@@ -48,7 +48,7 @@ const UnderlayLeft = (props) => {
           })
         }}>
         <TrashIcon
-          color={colorScheme === 'dark' ? colors.neutral[300] : colors.white}
+          color={colorScheme === 'dark' ? colors.neutral[100] : colors.white}
         />
       </Pressable>
     </View>
@@ -63,7 +63,7 @@ const LineItem = (props) => {
         'min-h-[50px] flex flex-row items-center pl-4',
         'bg-white dark:bg-neutral-900',
         openDirection !== 'none' &&
-          'active:bg-neutral-100 dark:active-bg-neutral-800'
+          'active:bg-neutral-100 dark:active:bg-neutral-800'
       )}
       onPress={() => {
         if (openDirection !== 'none') {
@@ -144,7 +144,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
           )}>
           <RectangleStackIcon size={18} color={tintColor} />
           <View className="ml-3">
-            <Text>{item.title}</Text>
+            <Text className="dark:text-neutral-300">{item.title}</Text>
           </View>
         </View>
       </Pressable>
@@ -179,7 +179,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
               )}>
               <HomeModernIcon size={18} color={tintColor} />
               <View className="ml-3">
-                <Text>{item.label}</Text>
+                <Text className="dark:text-neutral-300">{item.label}</Text>
               </View>
             </View>
           </Pressable>
@@ -279,52 +279,55 @@ export function HomeTabs(props) {
     return [a, b]
   }, [tabs])
 
-  const renderItem = useCallback(({ item, drag, isActive, index }) => {
-    let icon
-    const tintColor =
-      colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-    if (item.type === 'node') {
-      icon = <RectangleStackIcon size={18} color={tintColor} />
-    } else {
-      icon = <HomeModernIcon size={18} color={tintColor} />
-    }
-    return (
-      <ScaleDecorator>
-        <SwipeableItem
-          key={item.value}
-          item={`${item.type}-${item.value}`}
-          swipeEnabled={!isActive}
-          snapPointsLeft={[60]}
-          renderUnderlayLeft={() => (
-            <UnderlayLeft
-              onDelete={() => {
-                setTabs((prev) => {
-                  const tabIndex = prev.findIndex(
-                    (t) => t.type === item.type && t.value === item.value
-                  )
-                  return [
-                    ...prev.slice(0, tabIndex),
-                    { ...item, disabled: true },
-                    ...prev.slice(tabIndex + 1)
-                  ]
-                })
+  const renderItem = useCallback(
+    ({ item, drag, isActive, index }) => {
+      let icon
+      const tintColor =
+        colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+      if (item.type === 'node') {
+        icon = <RectangleStackIcon size={18} color={tintColor} />
+      } else {
+        icon = <HomeModernIcon size={18} color={tintColor} />
+      }
+      return (
+        <ScaleDecorator>
+          <SwipeableItem
+            key={item.value}
+            item={`${item.type}-${item.value}`}
+            swipeEnabled={!isActive}
+            snapPointsLeft={[60]}
+            renderUnderlayLeft={() => (
+              <UnderlayLeft
+                onDelete={() => {
+                  setTabs((prev) => {
+                    const tabIndex = prev.findIndex(
+                      (t) => t.type === item.type && t.value === item.value
+                    )
+                    return [
+                      ...prev.slice(0, tabIndex),
+                      { ...item, disabled: true },
+                      ...prev.slice(tabIndex + 1)
+                    ]
+                  })
+                }}
+              />
+            )}>
+            <LineItem
+              onLongPress={drag}
+              disabled={isActive}
+              title={item.label}
+              icon={icon}
+              isLast={index === enabledTabs.length - 1}
+              style={{
+                opacity: isActive ? 0.8 : 1
               }}
             />
-          )}>
-          <LineItem
-            onLongPress={drag}
-            disabled={isActive}
-            title={item.label}
-            icon={icon}
-            isLast={index === enabledTabs.length - 1}
-            style={{
-              opacity: isActive ? 0.8 : 1
-            }}
-          />
-        </SwipeableItem>
-      </ScaleDecorator>
-    )
-  }, [])
+          </SwipeableItem>
+        </ScaleDecorator>
+      )
+    },
+    [enabledTabs]
+  )
 
   return (
     <>
