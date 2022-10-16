@@ -5,12 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 
 import FixedPressable from '@/components/FixedPressable'
-import {
-  BlockText,
-  Box,
-  InlineBox,
-  InlineText
-} from '@/components/Skeleton/Elements'
+import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
 export default function TopicRow(props) {
   const { data } = props

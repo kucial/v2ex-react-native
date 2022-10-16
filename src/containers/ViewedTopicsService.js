@@ -2,6 +2,8 @@ import { createContext, useContext, useMemo, useState } from 'react'
 
 import { useCachedState } from '@/hooks'
 
+import { useAppSettings } from './AppSettingsService'
+
 const CACHE_KEY = '$app$/viewed-topics'
 
 export const ViewedTopicsContext = createContext({
@@ -11,11 +13,15 @@ export const ViewedTopicsContext = createContext({
 
 export default function ViewedTopicsService(props) {
   const [state, setState] = useCachedState(CACHE_KEY, [])
+  const {
+    data: { showHasViewed }
+  } = useAppSettings()
 
   const service = useMemo(() => {
     return {
       items: state,
-      hasViewed: (id) => state.some((t) => String(t.id) === String(id)),
+      hasViewed: (id) =>
+        showHasViewed && state.some((t) => String(t.id) === String(id)),
       clear: () => setState([]),
       touchViewed: (topic) => {
         setState((prev) => {

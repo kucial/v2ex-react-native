@@ -3,6 +3,8 @@ import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import RNRestart from 'react-native-restart'
 import * as Sentry from 'sentry-expo'
 
+import storage from '@/utils/storage'
+
 import ErrorNoticeView from './ErrorNoticeView'
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -22,6 +24,7 @@ class ErrorBoundary extends Component {
 
   handleReset = () => {
     // restart app
+    storage.clearAll()
     RNRestart.Restart()
   }
 

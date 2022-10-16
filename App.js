@@ -1,5 +1,9 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { FolderIcon, HomeIcon, UserIcon } from 'react-native-heroicons/outline'
+import {
+  HomeIcon,
+  RectangleStackIcon,
+  UserIcon
+} from 'react-native-heroicons/outline'
 import { SENTRY_DSN } from '@env'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
@@ -16,6 +20,7 @@ import ErrorBoundary from './src/components/ErrorBoundary'
 import MainScreenHeader from './src/components/MainScreenHeader'
 import ActivityIndicator from './src/containers/ActivityIndicator'
 import AlertService from './src/containers/AlertService'
+import AppSettingsService from './src/containers/AppSettingsService'
 import AuthService from './src/containers/AuthService'
 import ImgurService from './src/containers/ImgurService'
 import ViewedTopicsService from './src/containers/ViewedTopicsService'
@@ -40,7 +45,7 @@ import NodeScreen from './src/screens/NodeScreen'
 import NodesScreen from './src/screens/NodesScreen'
 import SearchScreen from './src/screens/SearchScreen'
 import {
-  HomeTabsSettings,
+  HomeTabs,
   ImgurSettings,
   SettingsLanding
 } from './src/screens/SettingsScreen'
@@ -84,7 +89,7 @@ function MainTab() {
         name="nodes"
         component={NodesScreen}
         options={{
-          tabBarIcon: FolderIcon,
+          tabBarIcon: RectangleStackIcon,
           tabBarLabel: '节点',
           header: (props) => <MainScreenHeader {...props} />
         }}
@@ -232,10 +237,10 @@ function AppStack() {
           }}
         />
         <Stack.Screen
-          name="home-tabs"
-          component={HomeTabsSettings}
+          name="home-tab-settings"
+          component={HomeTabs}
           options={{
-            title: '首页标签排序'
+            title: '首页标签设置'
           }}
         />
       </Stack.Group>
@@ -325,35 +330,37 @@ const swrConfig = {
 function App() {
   const scheme = useColorScheme()
   return (
-    <TailwindProvider initialColorScheme={scheme}>
-      <WatchSchemeUpdate />
-      <FetcherWebView />
-      <ErrorBoundary>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          {/* <StatusBar style="auto" /> */}
-          <SWRConfig value={swrConfig}>
-            <AlertService>
-              <ActionSheetProvider>
-                <ActivityIndicator>
-                  <NavigationContainer theme={themes[scheme]}>
-                    <ImgurService>
-                      <BottomSheetModalProvider>
-                        <AuthService>
-                          <ViewedTopicsService>
-                            {/* <DebugScreen /> */}
-                            <AppStack />
-                          </ViewedTopicsService>
-                        </AuthService>
-                      </BottomSheetModalProvider>
-                    </ImgurService>
-                  </NavigationContainer>
-                </ActivityIndicator>
-              </ActionSheetProvider>
-            </AlertService>
-          </SWRConfig>
-        </GestureHandlerRootView>
-      </ErrorBoundary>
-    </TailwindProvider>
+    <AppSettingsService>
+      <TailwindProvider initialColorScheme={scheme}>
+        <WatchSchemeUpdate />
+        <FetcherWebView />
+        <ErrorBoundary>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            {/* <StatusBar style="auto" /> */}
+            <SWRConfig value={swrConfig}>
+              <AlertService>
+                <ActionSheetProvider>
+                  <ActivityIndicator>
+                    <NavigationContainer theme={themes[scheme]}>
+                      <ImgurService>
+                        <BottomSheetModalProvider>
+                          <AuthService>
+                            <ViewedTopicsService>
+                              {/* <DebugScreen /> */}
+                              <AppStack />
+                            </ViewedTopicsService>
+                          </AuthService>
+                        </BottomSheetModalProvider>
+                      </ImgurService>
+                    </NavigationContainer>
+                  </ActivityIndicator>
+                </ActionSheetProvider>
+              </AlertService>
+            </SWRConfig>
+          </GestureHandlerRootView>
+        </ErrorBoundary>
+      </TailwindProvider>
+    </AppSettingsService>
   )
 }
 

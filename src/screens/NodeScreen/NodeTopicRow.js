@@ -2,7 +2,9 @@ import React, { memo } from 'react'
 import { Image, Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
+import classNames from 'classnames'
 
+import FixedPressable from '@/components/FixedPressable'
 import NodeTopicRowSkeleton from '@/components/Skeleton/NodeTopicRowSkeleton'
 
 function NodeTopicRow(props) {
@@ -16,7 +18,7 @@ function NodeTopicRow(props) {
   const { member } = data
 
   return (
-    <Pressable
+    <FixedPressable
       className="flex flex-row items-center border-b border-neutral-200 bg-white active:opacity-60 p-2 dark:bg-neutral-900 dark:border-neutral-600"
       onPress={() => {
         navigation.push('topic', {
@@ -25,15 +27,27 @@ function NodeTopicRow(props) {
         })
       }}>
       <View className="mr-2 self-start">
-        <FastImage
-          className="w-[24px] h-[24px] rounded"
-          source={{
-            uri: member.avatar_normal,
-            priority: FastImage.priority.low
-          }}
-        />
+        <FixedPressable
+          onPress={() => {
+            navigation.navigate('member', {
+              username: member.username,
+              brief: member
+            })
+          }}>
+          <FastImage
+            className="w-[24px] h-[24px] rounded"
+            source={{
+              uri: member.avatar_normal,
+              priority: FastImage.priority.low
+            }}
+          />
+        </FixedPressable>
       </View>
-      <View className="flex-1 relative top-[-2px]">
+      <View
+        className={classNames(
+          'flex-1 relative top-[-2px]',
+          props.viewed && 'opacity-80'
+        )}>
         <Text className="text-base font-medium text-neutral-700 mb-2 leading-none dark:text-neutral-300">
           {data.title}
         </Text>
@@ -69,7 +83,7 @@ function NodeTopicRow(props) {
           </View>
         )}
       </View>
-    </Pressable>
+    </FixedPressable>
   )
 }
 export default memo(NodeTopicRow)

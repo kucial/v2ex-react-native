@@ -1,25 +1,34 @@
 import React from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { View } from 'react-native'
 import { Switch } from 'react-native'
 
 import { LineItem, LineItemGroup } from '@/components/LineItem'
+import { useAppSettings } from '@/containers/AppSettingsService'
 
 export function SettingsLanding({ navigation }) {
+  const { data, update } = useAppSettings()
   return (
     <View className="py-2">
-      {/* <LineItemGroup>
+      <LineItemGroup>
         <LineItem
-          title="首页标签排序"
+          title="首页标签设置"
           onPress={() => {
-            navigation.push('home-tabs')
+            navigation.push('home-tab-settings')
           }}
         />
         <LineItem
           title="显示已读"
-          onPress={() => {
-            // TODO... UPDATE SETTINGS
-          }}
-          extra={<Switch />}
+          extra={
+            <Switch
+              value={data.showHasViewed}
+              onValueChange={(val) =>
+                update((prev) => ({
+                  ...prev,
+                  showHasViewed: val
+                }))
+              }
+            />
+          }
           isLast
         />
       </LineItemGroup>
@@ -31,7 +40,7 @@ export function SettingsLanding({ navigation }) {
           }}
           isLast
         />
-      </LineItemGroup> */}
+      </LineItemGroup>
       <LineItemGroup>
         <LineItem
           title="Imgur 图床设置"

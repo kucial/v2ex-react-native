@@ -1,29 +1,23 @@
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
-import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
-import deepmerge from 'deepmerge'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
-import useSWRInfinite from 'swr/infinite'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
-import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 import fetcher from '@/utils/fetcher'
-import { hasReachEnd, isRefreshing } from '@/utils/swr'
 
-import NodeTopicRow from './NodeTopicRow'
+import NodeTopicList from './NodeTopicList'
 
 export default function NodeScreen({ route, navigation }) {
   const { name, brief } = route.params
   const [collecting, setCollecting] = useState(false)
   const { mutate } = useSWRConfig()
-  const { colorScheme } = useColorScheme()
 
   const { width } = useWindowDimensions()
   const tw = useTailwind()
@@ -41,15 +35,6 @@ export default function NodeScreen({ route, navigation }) {
     [name]
   )
 
-  const feedSwr = useSWRInfinite(getKey, {
-    onSuccess: (data) => {
-      const node = data[data.length - 1]?.meta?.node
-      if (node) {
-        nodeSwr.mutate((prev) => deepmerge(prev, node), false)
-      }
-    }
-  })
-
   const node = nodeSwr.data || brief || {}
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -63,31 +48,6 @@ export default function NodeScreen({ route, navigation }) {
       baseStyle: tw('text-sm')
     }
   }, [node])
-
-  const { renderItem, keyExtractor } = useMemo(() => {
-    return {
-      renderItem({ item, index }) {
-        return <NodeTopicRow data={item} num={index + 1} />
-      },
-      keyExtractor(item, index) {
-        return item?.id || index
-      }
-    }
-  }, [])
-
-  const feedItems = useMemo(() => {
-    if (!feedSwr.data && !feedSwr.error) {
-      // initial loading
-      return new Array(10)
-    }
-    const items = feedSwr.data?.reduce((combined, page) => {
-      if (page.data) {
-        return [...combined, ...page.data]
-      }
-      return combined
-    }, [])
-    return items || []
-  }, [feedSwr])
 
   const header = (
     <View className="mb-3 p-2 bg-white dark:bg-neutral-900">
@@ -177,29 +137,7 @@ export default function NodeScreen({ route, navigation }) {
     </View>
   )
 
-  return (
-    <FlashList
-      className="flex-1"
-      data={feedItems}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      onEndReachedThreshold={0.4}
-      estimatedItemSize={80}
-      onEndReached={() => {
-        if (!feedSwr.isValidating && !hasReachEnd(feedSwr)) {
-          feedSwr.setSize(feedSwr.size + 1)
-        }
-      }}
-      onRefresh={() => {
-        feedSwr.mutate()
-      }}
-      refreshing={isRefreshing(feedSwr)}
-      ListHeaderComponent={header}
-      ListFooterComponent={() => {
-        return <CommonListFooter data={feedSwr} />
-      }}
-    />
-  )
+  return <NodeTopicList header={header} nodeSwr={nodeSwr} getKey={getKey} />
 }
 
 NodeScreen.propTypes = {

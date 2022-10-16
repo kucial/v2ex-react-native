@@ -863,6 +863,7 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       }());
+      true;
     `
     ]
   },
@@ -1446,7 +1447,9 @@ const domReadyMessage = `(function() {
   } catch (err) {
     // do nothing
   }
-}())`
+}())
+  true;
+`
 export const FetcherWebView = () => {
   const [stack, setStack] = useState({})
   const fetcher = useCallback(
