@@ -8,7 +8,7 @@ import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
 export default function TopicRow(props) {
-  const { data } = props
+  const { data, showAvatar, showLastReplyMember } = props
   const navigation = useNavigation()
 
   if (!data) {
@@ -21,7 +21,7 @@ export default function TopicRow(props) {
         )}>
         <View className="flex-1 py-2 pl-1">
           <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
-            <Box className="w-[24px] h-[24px] rounded" />
+            {showAvatar && <Box className="w-[24px] h-[24px] rounded" />}
             <View>
               <View className="py-[2px] rounded w-[50px]">
                 <InlineText className="text-xs"></InlineText>
@@ -67,22 +67,27 @@ export default function TopicRow(props) {
           brief: props.data
         })
       }}>
-      <View className="px-2 py-2 self-start">
-        <FixedPressable
-          onPress={() => {
-            navigation.navigate('member', {
-              username: member.username,
-              brief: member
-            })
-          }}>
-          <FastImage
-            source={{
-              uri: member.avatar_mini
-            }}
-            className="w-[24px] h-[24px] rounded"
-          />
-        </FixedPressable>
-      </View>
+      {showAvatar ? (
+        <View className="px-2 py-2 self-start">
+          <FixedPressable
+            onPress={() => {
+              navigation.navigate('member', {
+                username: member.username,
+                brief: member
+              })
+            }}>
+            <FastImage
+              source={{
+                uri: member.avatar_mini
+              }}
+              className="w-[24px] h-[24px] rounded"
+            />
+          </FixedPressable>
+        </View>
+      ) : (
+        <View className="pl-3"></View>
+      )}
+
       <View className={classNames('flex-1 py-2', props.viewed && 'opacity-80')}>
         <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
           <View>
@@ -125,7 +130,7 @@ export default function TopicRow(props) {
             <Text className="text-xs text-neutral-400">
               {data?.last_reply_time}
             </Text>
-            {data?.last_reply_by && (
+            {showLastReplyMember && data?.last_reply_by && (
               <>
                 <Text className="text-neutral-400 text-xs px-2">•</Text>
                 <View className="flex flex-row items-center">

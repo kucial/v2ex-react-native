@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
+import { Switch } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 
 import { useAppSettings } from '@/containers/AppSettingsService'
 
 const styleLabels = {
-  normal: '正常',
+  normal: '默认',
   tide: '紧凑'
 }
 
@@ -30,6 +31,7 @@ const topic = {
 const NormalTopicRowDemo = (props) => {
   const { node, member, title, replies, last_reply_time, last_reply_by } =
     props.data
+  const { showAvatar, showLastReplyMember } = props
   return (
     <View
       className={classNames(
@@ -37,14 +39,18 @@ const NormalTopicRowDemo = (props) => {
         'border-neutral-200 bg-white',
         'dark:border-neutral-700 dark:bg-neutral-900'
       )}>
-      <View className="px-2 py-2 self-start">
-        <FastImage
-          source={{
-            uri: member.avatar_mini
-          }}
-          className="w-[24px] h-[24px] rounded"
-        />
-      </View>
+      {showAvatar ? (
+        <View className="px-2 py-2 self-start">
+          <FastImage
+            source={{
+              uri: member.avatar_mini
+            }}
+            className="w-[24px] h-[24px] rounded"
+          />
+        </View>
+      ) : (
+        <View className="pl-3"></View>
+      )}
       <View className={classNames('flex-1 py-2')}>
         <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
           <View>
@@ -67,7 +73,7 @@ const NormalTopicRowDemo = (props) => {
           </Text>
           <View className="mt-2 flex flex-row items-center">
             <Text className="text-xs text-neutral-400">{last_reply_time}</Text>
-            {last_reply_by && (
+            {showLastReplyMember && (
               <>
                 <Text className="text-neutral-400 text-xs px-2">•</Text>
                 <View className="flex flex-row items-center">
@@ -98,6 +104,7 @@ const NormalTopicRowDemo = (props) => {
 const TideTopicRowDemo = (props) => {
   const { node, member, title, replies, last_reply_time, last_reply_by } =
     props.data
+  const { showAvatar, showLastReplyMember } = props
   return (
     <View
       className={classNames(
@@ -105,14 +112,19 @@ const TideTopicRowDemo = (props) => {
         'border-neutral-200 bg-white',
         'dark:border-neutral-700 dark:bg-neutral-900'
       )}>
-      <View className="px-2 py-2 self-start">
-        <FastImage
-          source={{
-            uri: member.avatar_mini
-          }}
-          className="w-[24px] h-[24px] rounded"
-        />
-      </View>
+      {showAvatar ? (
+        <View className="px-2 py-2 self-start">
+          <FastImage
+            source={{
+              uri: member.avatar_mini
+            }}
+            className="w-[24px] h-[24px] rounded"
+          />
+        </View>
+      ) : (
+        <View className="pl-3"></View>
+      )}
+
       <View className={classNames('flex-1 pt-1 pb-2')}>
         <View>
           <Text className="text-[16px] leading-[22px] text-neutral-700 dark:text-neutral-300">
@@ -125,9 +137,9 @@ const TideTopicRowDemo = (props) => {
               </Text>
             </View>
             <Text className="text-xs text-neutral-400">{last_reply_time}</Text>
-            {last_reply_by && (
+            {showLastReplyMember && (
               <>
-                <Text className="text-neutral-400 text-xs px-2">•</Text>
+                <Text className="text-neutral-400 text-xs px-1">•</Text>
                 <View className="flex flex-row items-center">
                   <Text className="text-xs text-neutral-400 dark:text-neutral-300">
                     最后回复来自
@@ -154,8 +166,19 @@ const TideTopicRowDemo = (props) => {
   )
 }
 
-export function DisplaySettings() {
+export function DisplaySettings({ navigation }) {
   const { data, update } = useAppSettings()
+  const [state, setState] = useState(data)
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (state !== data) {
+        update(state)
+      }
+    })
+    return unsubscribe
+  }, [navigation, data, state])
+
   return (
     <View className="flex-1 bg-white dark:bg-neutral-900">
       <View className="px-4 my-2">
@@ -163,21 +186,33 @@ export function DisplaySettings() {
       </View>
 
       <View className="mb-2">
-        {data.layoutStyle === 'normal' && <NormalTopicRowDemo data={topic} />}
-        {data.layoutStyle === 'tide' && <TideTopicRowDemo data={topic} />}
+        {state.feedLayout === 'normal' && (
+          <NormalTopicRowDemo
+            data={topic}
+            showAvatar={state.feedShowAvatar}
+            showLastReplyMember={state.feedShowLastReplyMember}
+          />
+        )}
+        {state.feedLayout === 'tide' && (
+          <TideTopicRowDemo
+            data={topic}
+            showAvatar={state.feedShowAvatar}
+            showLastReplyMember={state.feedShowLastReplyMember}
+          />
+        )}
       </View>
 
       <Pressable
         className={classNames(
-          'min-h-[50px]  flex flex-row items-center pl-4',
+          'min-h-[50px] flex flex-row items-center pl-4',
           'bg-white dark:bg-neutral-900',
           'active:opacity-50'
         )}
         onPress={() => {
-          const next = data.layoutStyle === 'normal' ? 'tide' : 'normal'
-          update((prev) => ({
+          const next = state.feedLayout === 'normal' ? 'tide' : 'normal'
+          setState((prev) => ({
             ...prev,
-            layoutStyle: next
+            feedLayout: next
           }))
         }}>
         <View className="flex-1">
@@ -185,10 +220,75 @@ export function DisplaySettings() {
         </View>
         <View className="mr-4 px-2">
           <Text className="text-neutral-700 dark:text-neutral-400">
-            {styleLabels[data.layoutStyle]}
+            {styleLabels[state.feedLayout]}
           </Text>
         </View>
       </Pressable>
+      <View
+        className={classNames(
+          'min-h-[50px]  flex flex-row items-center pl-4',
+          'bg-white dark:bg-neutral-900',
+          'active:opacity-50'
+        )}>
+        <View className="flex-1">
+          <Text className="text-base dark:text-neutral-300">显示头像</Text>
+        </View>
+        <View className="mr-4 px-2">
+          <Switch
+            value={state.feedShowAvatar}
+            onValueChange={(val) =>
+              setState((prev) => ({
+                ...prev,
+                feedShowAvatar: val
+              }))
+            }
+          />
+        </View>
+      </View>
+      <View
+        className={classNames(
+          'min-h-[50px]  flex flex-row items-center pl-4',
+          'bg-white dark:bg-neutral-900',
+          'active:opacity-50'
+        )}>
+        <View className="flex-1">
+          <Text className="text-base dark:text-neutral-300">
+            显示最后回复用户
+          </Text>
+        </View>
+        <View className="mr-4 px-2">
+          <Switch
+            value={state.feedShowLastReplyMember}
+            onValueChange={(val) =>
+              setState((prev) => ({
+                ...prev,
+                feedShowLastReplyMember: val
+              }))
+            }
+          />
+        </View>
+      </View>
+      <View
+        className={classNames(
+          'min-h-[50px]  flex flex-row items-center pl-4',
+          'bg-white dark:bg-neutral-900',
+          'active:opacity-50'
+        )}>
+        <View className="flex-1">
+          <Text className="text-base dark:text-neutral-300">已读提示</Text>
+        </View>
+        <View className="mr-4 px-2">
+          <Switch
+            value={state.showHasViewed}
+            onValueChange={(val) =>
+              setState((prev) => ({
+                ...prev,
+                showHasViewed: val
+              }))
+            }
+          />
+        </View>
+      </View>
     </View>
   )
 }

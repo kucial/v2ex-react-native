@@ -5,7 +5,6 @@ import axios from 'axios'
 import pathMatch from 'path-match'
 import { parse as pathParse } from 'path-to-regexp'
 import { parse, stringify } from 'qs'
-import * as Sentry from 'sentry-expo'
 
 const REQUEST_TIMEOUT = 1000 * 10
 const instance = axios.create({

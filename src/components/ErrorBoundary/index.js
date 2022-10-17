@@ -24,7 +24,7 @@ class ErrorBoundary extends Component {
 
   handleReset = () => {
     // restart app
-    storage.clearAll()
+    // storage.clearAll()
     RNRestart.Restart()
   }
 

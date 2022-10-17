@@ -26,7 +26,10 @@ export default function NodeScreen({ route, navigation }) {
   const { composeAuthedNavigation } = useAuthService()
 
   const nodeSwr = useSWR(`/api/nodes/show.json?name=${name}`, {
-    shouldRetryOnError: false
+    shouldRetryOnError: false,
+    onError(err) {
+      alert.alertWithType('error', '错误', err.message || '请求资源失败')
+    }
   })
   const getKey = useCallback(
     (index) => {
@@ -137,7 +140,14 @@ export default function NodeScreen({ route, navigation }) {
     </View>
   )
 
-  return <NodeTopicList header={header} nodeSwr={nodeSwr} getKey={getKey} />
+  return (
+    <NodeTopicList
+      header={header}
+      nodeSwr={nodeSwr}
+      getKey={getKey}
+      isFocused
+    />
+  )
 }
 
 NodeScreen.propTypes = {

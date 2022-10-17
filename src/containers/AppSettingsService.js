@@ -8,9 +8,14 @@ const CACHE_KEY = '$app$/settings'
 const DEFAULT_SETTINGS = {
   homeTabs: undefined, // Array<TabDesc>
   showHasViewed: true,
-  layoutStyle: 'normal', // normal | tide
+
   theme: 'auto', // 'light' | 'dark' | 'auto'
-  themeColor: '' // 主题强调色
+  themeColor: '', // 主题强调色
+
+  feedLayout: 'normal', // normal | tide
+  feedShowAvatar: true,
+  feedShowLastReplyMember: true,
+  feedShowViewedHint: true
 }
 
 const AppSettingsContext = createContext({})

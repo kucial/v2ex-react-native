@@ -1,19 +1,25 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
+import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import deepmerge from 'deepmerge'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { hasReachEnd, isRefreshing } from '@/utils/swr'
+import { hasReachEnd, isRefreshing, shouldFetch } from '@/utils/swr'
 
 import NodeTopicRow from './NodeTopicRow'
 
 export default function NodeTopicList(props) {
-  const { header, nodeSwr, getKey } = props
+  const { header, nodeSwr, getKey, isFocused } = props
   const { hasViewed } = useViewedTopics()
 
-  const feedSwr = useSWRInfinite(getKey, {
+  const listSwr = useSWRInfinite(getKey, {
+    revalidateOnMount: false,
+    shouldRetryOnError: false,
+    onError(err) {
+      alert.alertWithType('error', '错误', err.message || '请求资源失败')
+    },
     onSuccess: (data) => {
       const node = data[data.length - 1]?.meta?.node
       if (node && nodeSwr) {
@@ -33,40 +39,85 @@ export default function NodeTopicList(props) {
     }
   }, [hasViewed])
 
-  const feedItems = useMemo(() => {
-    if (!feedSwr.data && !feedSwr.error) {
+  useEffect(() => {
+    if (isFocused && shouldFetch(listSwr)) {
+      if (listSwr.data) {
+        listSwr.setSize(1)
+        listViewRef.current?.scrollToIndex({
+          index: 0,
+          viewPosition: 0
+        })
+      } else {
+        listSwr.mutate().catch((err) => {
+          console.log(err)
+        })
+      }
+    }
+    if (isFocused) {
+      let appState = AppState.currentState
+      let toBackDate
+      const subscription = AppState.addEventListener(
+        'change',
+        (nextAppState) => {
+          if (
+            appState === 'background' &&
+            nextAppState === 'active' &&
+            Date.now() - toBackDate > 60 * 1000 &&
+            shouldFetch(listSwr)
+          ) {
+            listSwr.setSize(1)
+            listViewRef.current?.scrollToIndex({
+              index: 0,
+              viewPosition: 0
+            })
+          } else if (nextAppState === 'background') {
+            toBackDate = Date.now()
+          }
+          appState = nextAppState
+        }
+      )
+      return () => {
+        subscription.remove()
+      }
+    }
+  }, [isFocused])
+
+  const listItems = useMemo(() => {
+    if (!listSwr.data && !listSwr.error) {
       // initial loading
       return new Array(10)
     }
-    const items = feedSwr.data?.reduce((combined, page) => {
+    const items = listSwr.data?.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
     }, [])
     return items || []
-  }, [feedSwr])
+  }, [listSwr])
 
   return (
     <FlashList
       className="flex-1"
-      data={feedItems}
+      data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
       estimatedItemSize={80}
       onEndReached={() => {
-        if (!feedSwr.isValidating && !hasReachEnd(feedSwr)) {
-          feedSwr.setSize(feedSwr.size + 1)
+        if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+          listSwr.setSize(listSwr.size + 1)
         }
       }}
+      refreshing={isRefreshing(listSwr)}
       onRefresh={() => {
-        feedSwr.mutate()
+        if (!listSwr.isValidating) {
+          listSwr.setSize(1)
+        }
       }}
-      refreshing={isRefreshing(feedSwr)}
       ListHeaderComponent={header}
       ListFooterComponent={() => {
-        return <CommonListFooter data={feedSwr} />
+        return <CommonListFooter data={listSwr} />
       }}
     />
   )

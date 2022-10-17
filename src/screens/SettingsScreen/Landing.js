@@ -17,29 +17,6 @@ export function SettingsLanding({ navigation }) {
           }}
         />
         <LineItem
-          title="显示已读"
-          onPress={() => {
-            update((prev) => ({
-              ...prev,
-              showHasViewed: !prev.showHasViewed
-            }))
-          }}
-          extra={
-            <Switch
-              value={data.showHasViewed}
-              onValueChange={(val) =>
-                update((prev) => ({
-                  ...prev,
-                  showHasViewed: val
-                }))
-              }
-            />
-          }
-          isLast
-        />
-      </LineItemGroup>
-      <LineItemGroup>
-        <LineItem
           title="显示设置"
           onPress={() => {
             navigation.push('display-settings')
@@ -47,6 +24,7 @@ export function SettingsLanding({ navigation }) {
           isLast
         />
       </LineItemGroup>
+
       <LineItemGroup>
         <LineItem
           title="Imgur 图床设置"
