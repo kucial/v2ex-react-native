@@ -46,7 +46,6 @@ export const setJSON = (key, value) => {
     storage.delete(key)
   } else {
     const str = JSON.stringify(value)
-    // console.log(str)
     storage.set(key, str)
   }
 }

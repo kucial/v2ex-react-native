@@ -126,7 +126,6 @@ export default function HomeScreen() {
   return (
     <TabView
       key={routes.map((r) => r.key).join(',')}
-      lazy
       navigationState={{ index, routes }}
       renderScene={renderScene}
       renderTabBar={renderTabBar}

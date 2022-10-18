@@ -7,6 +7,7 @@ import {
   Text,
   View
 } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import RNRestart from 'react-native-restart'
 import classNames from 'classnames'
 import * as Application from 'expo-application'
@@ -21,7 +22,7 @@ export default function AboutScreen() {
   const { colorScheme } = useColorScheme()
   return (
     <SafeAreaView className="flex-1">
-      <View className="flex-1 px-4 py-2 items-center justify-center">
+      <View className="flex-1 px-4 pb-8 items-center justify-center">
         <View className="bg-white dark:bg-neutral-900 w-full py-3 rounded-lg">
           <View className="my-2">
             <Text className="text-2xl font-bold text-center dark:text-neutral-200">
@@ -69,21 +70,41 @@ export default function AboutScreen() {
             </Pressable>
           </View>
         </View>
-      </View>
-
-      <View className="px-4 py-4">
-        <Pressable
-          className={classNames(
-            'h-[50px] rounded-md flex items-center justify-center mt-4',
-            'bg-neutral-900 active:opacity-60',
-            'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
-          )}
-          onPress={() => {
-            storage.clearAll()
-            RNRestart.Restart()
-          }}>
-          <Text className="text-white dark:text-neutral-900">清除缓存</Text>
-        </Pressable>
+        <View className="py-2 w-full">
+          <Pressable
+            className={classNames(
+              'h-[50px] rounded-md flex items-center justify-center mt-4',
+              'bg-neutral-900 active:opacity-60',
+              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
+            )}
+            onPress={() => {
+              // clear swr cache
+              const keys = storage.getAllKeys()
+              keys.forEach((key) => {
+                if (/\$app\$/.test(key)) {
+                  return
+                }
+                storage.delete(key)
+              })
+              FastImage.clearDiskCache()
+              RNRestart.Restart()
+            }}>
+            <Text className="text-white dark:text-neutral-900">清除缓存</Text>
+          </Pressable>
+          <Pressable
+            className={classNames(
+              'h-[50px] rounded-md flex items-center justify-center mt-4',
+              'bg-neutral-900 active:opacity-60',
+              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
+            )}
+            onPress={() => {
+              storage.clearAll()
+              FastImage.clearDiskCache()
+              RNRestart.Restart()
+            }}>
+            <Text className="text-white dark:text-rose-500">重置</Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   )

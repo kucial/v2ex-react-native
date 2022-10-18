@@ -119,9 +119,10 @@ export const cacheProvider = (cache) => {
     set: (key, value) => {
       cache.set(key, value)
       // skip swr state info cache
-      if (typeof key === 'string' && !/^\$swr\$/.test(key)) {
+      if (typeof key === 'string' && !/^\$swr\$/.test(key) && value) {
         Sentry.Native.addBreadcrumb({
           type: 'info',
+          key,
           data: value
         })
         storage.set(key, JSON.stringify(value))
