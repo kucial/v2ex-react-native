@@ -42,7 +42,7 @@ export default function CollectedNodes() {
       {!!nodesSwr.data?.data &&
         (isEmpty(nodesSwr.data.data) ? (
           <View className="py-8">
-            <Text className="text-center">EMPTY</Text>
+            <Text className="text-center dark:text-neutral-400">EMPTY</Text>
           </View>
         ) : (
           <View className="px-1">

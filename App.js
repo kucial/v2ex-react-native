@@ -278,12 +278,17 @@ const swrConfig = {
   provider: cacheProvider,
   onError(err, key, config) {
     // err with custom code consider handled
-    if (!err.code) {
+    if (err instanceof Error && !err.code) {
       Sentry.Native.captureException(err, {
         extra: {
           key,
           config
         }
+      })
+    } else {
+      Sentry.Native.captureMessage('SWR_ERROR_@', {
+        key,
+        err
       })
     }
   }

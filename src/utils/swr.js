@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import * as Sentry from 'sentry-expo'
 import useSWRBase from 'swr'
 
 import storage from './storage'
@@ -119,6 +120,10 @@ export const cacheProvider = (cache) => {
       cache.set(key, value)
       // skip swr state info cache
       if (typeof key === 'string' && !/^\$swr\$/.test(key)) {
+        Sentry.Native.addBreadcrumb({
+          type: 'info',
+          data: value
+        })
         storage.set(key, JSON.stringify(value))
       }
     },

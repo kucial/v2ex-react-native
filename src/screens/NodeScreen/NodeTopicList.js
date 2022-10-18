@@ -5,6 +5,7 @@ import deepmerge from 'deepmerge'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import { useAlertService } from '@/containers/AlertService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { hasReachEnd, isRefreshing, shouldFetch } from '@/utils/swr'
 
@@ -13,6 +14,7 @@ import NodeTopicRow from './NodeTopicRow'
 export default function NodeTopicList(props) {
   const { header, nodeSwr, getKey, isFocused } = props
   const { hasViewed } = useViewedTopics()
+  const alert = useAlertService()
 
   const listSwr = useSWRInfinite(getKey, {
     revalidateOnMount: false,

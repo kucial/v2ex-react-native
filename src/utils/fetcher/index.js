@@ -169,6 +169,13 @@ const CUSTOM_ENDPOINTS = {
         try {
           const member = {}
           const memberImg = document.querySelector('#Wrapper .header a[href^="/member"] img')
+          if (!memberImg) {
+            const error = new Error('Requeset error')
+            error.data = {
+              body: document.body.innerHTML
+            }
+            throw error;
+          }
           member.username = memberImg.alt;
           member.avatar_large = memberImg.src;
           const node = {};
@@ -218,7 +225,8 @@ const CUSTOM_ENDPOINTS = {
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             error: true,
-            message: err.message
+            message: err.message,
+            data: err.data,
           }))
         }
       }())
