@@ -19,7 +19,7 @@ const CollectedTopicRow = (props) => {
     return (
       <View className="border-b border-neutral-200 bg-white flex flex-row items-center p-2 active:opacity-60 dark:bg-neutral-900 dark:border-neutral-700">
         <View className="self-start">
-          <Box className="w-[36px] h-[36px] rounded" />
+          <Box className="w-[24px] h-[24px] rounded" />
         </View>
         <View className="flex-1 pl-2">
           <View className="">
@@ -57,12 +57,12 @@ const CollectedTopicRow = (props) => {
               })
             }}>
             <FastImage
-              className="w-[36px] h-[36px] rounded"
+              className="w-[24px] h-[24px] rounded"
               source={{ uri: data.member.avatar_normal }}
             />
           </Pressable>
         ) : (
-          <Box className="w-[36px] h-[36px] rounded" />
+          <Box className="w-[24px] h-[24px] rounded" />
         )}
       </View>
       <View className="flex-1 pl-2">
