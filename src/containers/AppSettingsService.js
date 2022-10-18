@@ -54,6 +54,7 @@ export default function AppSettings(props) {
           ...prev,
           homeTabs: mapped
         }))
+        return mapped
       }
     }
   }, [settings])

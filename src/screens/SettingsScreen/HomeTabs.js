@@ -2,6 +2,7 @@ import React, {
   forwardRef,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState
@@ -11,6 +12,7 @@ import DraggableFlatList, {
   ScaleDecorator
 } from 'react-native-draggable-flatlist'
 import {
+  EllipsisHorizontalIcon,
   HomeModernIcon,
   PlusIcon,
   RectangleStackIcon,
@@ -19,6 +21,7 @@ import {
 import SwipeableItem, {
   useSwipeableItemParams
 } from 'react-native-swipeable-item'
+import { useActionSheet } from '@expo/react-native-action-sheet'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -29,6 +32,7 @@ import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
+import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useSWR } from '@/utils/swr'
 
@@ -248,11 +252,55 @@ export function HomeTabs(props) {
   const { navigation } = props
   const {
     data: { homeTabs },
-    update
+    update,
+    initHomeTabs
   } = useAppSettings()
   const [tabs, setTabs] = useState(homeTabs)
   const { colorScheme } = useColorScheme()
   const sheetRef = useRef()
+  const { showActionSheetWithOptions } = useActionSheet()
+  const aIndicator = useActivityIndicator()
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable
+          className="h-[44px] w-[44px] items-center justify-center -mr-4 active:opacity-60"
+          onPress={() => {
+            // actionsheet
+            showActionSheetWithOptions(
+              {
+                options: ['取消', '重置'],
+                cancelButtonIndex: 0,
+                destructiveButtonIndex: 1
+              },
+              (buttonIndex) => {
+                if (buttonIndex === 1) {
+                  aIndicator.show()
+                  initHomeTabs()
+                    .then((newTabs) => {
+                      setTabs(newTabs)
+                    })
+                    .catch((err) => {
+                      alert.alertWithType('error', '错误', err.message)
+                    })
+                    .finally(() => {
+                      aIndicator.hide()
+                    })
+                }
+              }
+            )
+          }}>
+          <EllipsisHorizontalIcon
+            size={24}
+            color={
+              colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[800]
+            }
+          />
+        </Pressable>
+      )
+    })
+  }, [])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
