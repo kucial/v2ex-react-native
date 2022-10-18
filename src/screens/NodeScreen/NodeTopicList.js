@@ -6,15 +6,18 @@ import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { useAlertService } from '@/containers/AlertService'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { hasReachEnd, isRefreshing, shouldFetch } from '@/utils/swr'
 
 import NodeTopicRow from './NodeTopicRow'
+import TideNodeTopicRow from './TideNodeTopicRow'
 
 export default function NodeTopicList(props) {
   const { header, nodeSwr, getKey, isFocused } = props
   const { hasViewed } = useViewedTopics()
   const alert = useAlertService()
+  const { data: settings } = useAppSettings()
 
   const listSwr = useSWRInfinite(getKey, {
     revalidateOnMount: false,
@@ -33,13 +36,25 @@ export default function NodeTopicList(props) {
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
       renderItem({ item }) {
-        return <NodeTopicRow data={item} viewed={hasViewed(item?.id)} />
+        return settings.feedLayout === 'tide' ? (
+          <TideNodeTopicRow
+            data={item}
+            viewed={hasViewed(item?.id)}
+            showAvatar={settings.feedShowAvatar}
+          />
+        ) : (
+          <NodeTopicRow
+            data={item}
+            viewed={hasViewed(item?.id)}
+            showAvatar={settings.feedShowAvatar}
+          />
+        )
       },
       keyExtractor(item, index) {
         return item?.id || `index-${index}`
       }
     }
-  }, [hasViewed])
+  }, [hasViewed, settings])
 
   useEffect(() => {
     if (isFocused && shouldFetch(listSwr)) {
