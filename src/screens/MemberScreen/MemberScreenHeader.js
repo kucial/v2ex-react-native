@@ -45,7 +45,18 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
             style={{
               marginLeft: AVATAR_SIZE + 16 + 12
             }}>
-            <Text className="text-lg font-medium">{data.username || ''}</Text>
+            <Text
+              className="text-lg font-medium"
+              style={{
+                textShadowColor: '#ffffffbb',
+                textShadowOffset: { width: 0, height: 0 },
+                textShadowRadius: 16,
+                paddingLeft: 20,
+                paddingRight: 30,
+                marginLeft: -20
+              }}>
+              {data.username || ''}
+            </Text>
           </View>
         </View>
         <View
@@ -82,13 +93,17 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           paddingVertical: 4
         }}>
         <Text className="text-neutral-500 text-sm">
-          {data.created && (
-            <Text className="mb-1">{localTime(data.created * 1000)} 加入</Text>
-          )}
-          <Text className="mb-1">{data.tagline}</Text>
-          <Text className="mb-1">{data.location}</Text>
-          <Text className="mb-1">{data.bio}</Text>
-          <Text className="mb-1">{data.website}</Text>
+          <Text className="pl-2 mb-1">
+            {[
+              data.created ? `${localTime(data.created * 1000)} 加入` : '',
+              data.tagline,
+              data.location,
+              data.bio,
+              data.website
+            ]
+              .filter(Boolean)
+              .join('; ')}
+          </Text>
         </Text>
       </View>
     </View>
