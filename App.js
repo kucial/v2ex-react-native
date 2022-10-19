@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import {
   HomeIcon,
@@ -8,7 +9,10 @@ import { SENTRY_DSN } from '@env'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { NavigationContainer } from '@react-navigation/native'
+import {
+  NavigationContainer,
+  useNavigationContainerRef
+} from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import * as Sentry from 'sentry-expo'
 import { SWRConfig } from 'swr'
@@ -286,10 +290,11 @@ const swrConfig = {
         }
       })
     } else {
-      Sentry.Native.captureMessage('SWR_ERROR_@', {
-        key,
-        err
+      Sentry.Native.addBreadcrumb({
+        type: 'info',
+        data: { key, err }
       })
+      Sentry.Native.captureMessage('SWR_ERROR_@')
     }
   }
   // isOnline() {
@@ -342,6 +347,9 @@ const swrConfig = {
 
 function App() {
   const scheme = useColorScheme()
+  const navigationRef = useNavigationContainerRef()
+  const routeNameRef = useRef()
+
   return (
     <AppSettingsService>
       <TailwindProvider initialColorScheme={scheme}>
@@ -354,7 +362,39 @@ function App() {
               <AlertService>
                 <ActionSheetProvider>
                   <ActivityIndicator>
-                    <NavigationContainer theme={themes[scheme]}>
+                    <NavigationContainer
+                      theme={themes[scheme]}
+                      ref={navigationRef}
+                      onReady={() => {
+                        routeNameRef.current =
+                          navigationRef.getCurrentRoute().name
+                      }}
+                      onStateChange={() => {
+                        const previousRouteName = routeNameRef.current
+                        const currentRouteName =
+                          navigationRef.getCurrentRoute().name
+
+                        if (previousRouteName !== currentRouteName) {
+                          // The line below uses the expo-firebase-analytics tracker
+                          // https://docs.expo.io/versions/latest/sdk/firebase-analytics/
+                          // Change this line to use another Mobile analytics SDK
+                          Sentry.Native.addBreadcrumb({
+                            level: 'info',
+                            category: 'navigation',
+                            data: {
+                              prev: previousRouteName,
+                              current: currentRouteName
+                            }
+                          })
+                          console.log({
+                            prev: previousRouteName,
+                            current: currentRouteName
+                          })
+                        }
+
+                        // Save the current route name for later comparison
+                        routeNameRef.current = currentRouteName
+                      }}>
                       <ImgurService>
                         <BottomSheetModalProvider>
                           <AuthService>

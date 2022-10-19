@@ -88,7 +88,7 @@ export default function TopicRow(props) {
         <View className="pl-3"></View>
       )}
 
-      <View className={classNames('flex-1 py-2', props.viewed && 'opacity-80')}>
+      <View className={classNames('flex-1 py-2', props.viewed && 'opacity-70')}>
         <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
           <View>
             <FixedPressable

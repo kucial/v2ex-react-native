@@ -104,7 +104,6 @@ export default function HomeScreen() {
         <View className="px-4 flex items-center justify-center">
           <Text>{error?.message || '数据加载失败'}</Text>
           <Pressable
-            disabled={tabsSwr.isValidating}
             className="mt-4 px-4 h-[44px] w-[200px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60"
             onPress={() => {
               setError(null)

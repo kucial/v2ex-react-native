@@ -84,7 +84,7 @@ function NodeTopicRow(props) {
         <View className="pl-3"></View>
       )}
 
-      <View className={classNames('flex-1 py-2', props.viewed && 'opacity-80')}>
+      <View className={classNames('flex-1 py-2', props.viewed && 'opacity-70')}>
         <Text className="text-base text-neutral-700 dark:text-neutral-300">
           {data.title}
         </Text>

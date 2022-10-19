@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import deepmerge from 'deepmerge'
@@ -18,6 +18,7 @@ export default function NodeTopicList(props) {
   const { hasViewed } = useViewedTopics()
   const alert = useAlertService()
   const { data: settings } = useAppSettings()
+  const listViewRef = useRef()
 
   const listSwr = useSWRInfinite(getKey, {
     revalidateOnMount: false,
@@ -115,6 +116,7 @@ export default function NodeTopicList(props) {
 
   return (
     <FlashList
+      ref={listViewRef}
       className="flex-1"
       data={listItems}
       renderItem={renderItem}

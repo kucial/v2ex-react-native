@@ -861,6 +861,7 @@ const CUSTOM_ENDPOINTS = {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             data,
             pagination,
+            fetchedAt: Date.now(),
             meta: { node }
           }))
         } catch (err) {

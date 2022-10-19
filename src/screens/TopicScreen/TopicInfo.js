@@ -2,9 +2,8 @@ import React, { memo, useMemo } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 
-import ErrorNotice from '@/components/ErrorNotice'
 import HtmlRender from '@/components/HtmlRender'
-import { BlockText, Box } from '@/components/Skeleton/Elements'
+import { Box } from '@/components/Skeleton/Elements'
 
 function TopicInfo(props) {
   const { data: topic, navigation } = props
@@ -24,7 +23,7 @@ function TopicInfo(props) {
         baseUrl: 'https://v2ex.com'
       }
     }
-  }, [topic?.content_rendered])
+  }, [topic.content_rendered])
 
   return (
     <>
