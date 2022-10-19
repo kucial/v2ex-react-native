@@ -5,12 +5,13 @@ import useSWRInfinite from 'swr/infinite'
 import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import { useAlertService } from '@/containers/AlertService'
 import { hasReachEnd, isRefreshing } from '@/utils/swr'
 
 import UserTopicRow from './UserTopicRow'
 
 export default function MemberTopics(props) {
-  const { colorScheme } = useColorScheme()
+  const alert = useAlertService()
   const getKey = useCallback(
     (index) => {
       return `/page/member/${props.username}/topics.json?p=${index + 1}`
@@ -18,8 +19,13 @@ export default function MemberTopics(props) {
     [props.username]
   )
 
-  const listSwr = useSWRInfinite(getKey, undefined, {
-    shouldRetryOnError: false
+  const listSwr = useSWRInfinite(getKey, {
+    shouldRetryOnError: false,
+    onError(err) {
+      if (!err.code) {
+        alert.alertWithType('error', '错误', err.message || '请求资源失败')
+      }
+    }
   })
 
   const listItems = useMemo(() => {
@@ -56,6 +62,9 @@ export default function MemberTopics(props) {
       onEndReachedThreshold={0.4}
       estimatedItemSize={110}
       onEndReached={() => {
+        if (listSwr.error?.code === 'member_locked') {
+          return
+        }
         if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
         }
