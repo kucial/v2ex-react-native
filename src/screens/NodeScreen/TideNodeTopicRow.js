@@ -1,16 +1,11 @@
-import React, { memo } from 'react'
-import { Image, Pressable, Text, View } from 'react-native'
+import { memo } from 'react'
+import { Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 
 import FixedPressable from '@/components/FixedPressable'
-import {
-  BlockText,
-  Box,
-  InlineBox,
-  InlineText
-} from '@/components/Skeleton/Elements'
+import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
 function NodeTopicRow(props) {
   const navigation = useNavigation()

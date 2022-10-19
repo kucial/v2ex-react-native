@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import {
   Alert,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -16,9 +15,8 @@ import FastImage from 'react-native-fast-image'
 import WebView from 'react-native-webview'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
+import { useColorScheme } from 'tailwindcss-react-native'
 
-import logoImage from '@/assets/logo.png'
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
 import Logo from '@/components/Logo'

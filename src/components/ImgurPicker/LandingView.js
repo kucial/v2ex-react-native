@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native'
+import { useState } from 'react'
+import { SafeAreaView, Text, View } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'

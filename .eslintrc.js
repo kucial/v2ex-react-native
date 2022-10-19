@@ -1,7 +1,14 @@
 module.exports = {
   root: true,
   extends: ['plugin:react/recommended', 'plugin:react/jsx-runtime'],
-  plugins: ['react', 'react-native', 'prettier', 'simple-import-sort'],
+  plugins: [
+    'react',
+    'react-native',
+    'jest',
+    'prettier',
+    'simple-import-sort',
+    'unused-imports'
+  ],
   settings: { react: { version: 'detect' } },
   parser: '@babel/eslint-parser',
   parserOptions: {
@@ -13,7 +20,8 @@ module.exports = {
   },
   env: {
     'react-native/react-native': true,
-    browser: true
+    browser: true,
+    'jest/globals': true
   },
   rules: {
     'prettier/prettier': 'error',
@@ -31,6 +39,7 @@ module.exports = {
           ['^\\.']
         ]
       }
-    ]
+    ],
+    'no-undef': 'error'
   }
 }

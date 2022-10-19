@@ -1,4 +1,4 @@
-import { Image, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import {
   DocumentPlusIcon,
   EnvelopeIcon,
@@ -8,7 +8,6 @@ import classNames from 'classnames'
 import Constants from 'expo-constants'
 import { useTailwind } from 'tailwindcss-react-native'
 
-import logoImage from '@/assets/logo.png'
 import Logo from '@/components/Logo'
 import { useAuthService } from '@/containers/AuthService'
 

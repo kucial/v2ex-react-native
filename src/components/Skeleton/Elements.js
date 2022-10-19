@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { useMemo } from 'react'
+import { Text, View } from 'react-native'
 import { useTailwind } from 'tailwindcss-react-native'
 
 const randomPercentage = () => {

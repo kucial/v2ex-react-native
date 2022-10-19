@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useCallback } from 'react'
 import {
   InteractionManager,
-  Keyboard,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -12,11 +11,7 @@ import {
 } from 'react-native'
 import WebView from 'react-native-webview'
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet'
-import {
-  addBreadcrumb,
-  captureException,
-  captureMessage
-} from '@sentry/react-native'
+import { addBreadcrumb, captureMessage } from '@sentry/react-native'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
 import colors from 'tailwindcss/colors'

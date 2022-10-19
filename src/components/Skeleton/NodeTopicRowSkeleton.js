@@ -1,5 +1,4 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
 import classNames from 'classnames'
 
 import { BlockText, InlineBox, InlineText } from './Elements'
@@ -11,13 +10,7 @@ export default function NodeTopicRowSkeleton() {
         'flex flex-row items-center border-b  active:opacity-60 p-2',
         'border-neutral-200 bg-white',
         'dark:border-neutral-600 dark:bg-neutral-900'
-      )}
-      onPress={() => {
-        navigation.push('topic', {
-          id: props.data.id,
-          brief: props.data
-        })
-      }}>
+      )}>
       <View className="mr-2 self-start">
         <InlineBox className="w-[24px] h-[24px] rounded" />
       </View>

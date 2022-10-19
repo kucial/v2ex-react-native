@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useRef, useState } from 'react'
-import { SafeAreaView, ScrollView, View } from 'react-native'
+import { useLayoutEffect, useRef, useState } from 'react'
+import { SafeAreaView, View } from 'react-native'
 import { Pressable } from 'react-native'
 import { Linking } from 'react-native'
 import {

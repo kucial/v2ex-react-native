@@ -1,13 +1,5 @@
-import React, { useRef, useState } from 'react'
-import {
-  Image,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TextInput,
-  View
-} from 'react-native'
+import { useRef } from 'react'
+import { RefreshControl, ScrollView, View } from 'react-native'
 import useSwr from 'swr'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'

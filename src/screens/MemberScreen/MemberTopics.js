@@ -1,9 +1,7 @@
-import React, { useCallback, useMemo } from 'react'
-import { Pressable, RefreshControl, Text, View } from 'react-native'
+import { useCallback, useMemo } from 'react'
 import { FlashList } from '@shopify/flash-list'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
-import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'

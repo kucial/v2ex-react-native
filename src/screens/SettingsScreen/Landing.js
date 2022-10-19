@@ -1,6 +1,4 @@
-import React from 'react'
 import { View } from 'react-native'
-import { Switch } from 'react-native'
 
 import { LineItem, LineItemGroup } from '@/components/LineItem'
 import { useAppSettings } from '@/containers/AppSettingsService'

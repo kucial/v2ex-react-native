@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useMemo, useRef } from 'react'
+/*global Proxy */
+import { createContext, useContext, useMemo, useRef } from 'react'
 import DropdownAlert from 'react-native-dropdownalert'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'

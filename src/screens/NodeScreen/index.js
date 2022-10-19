@@ -1,10 +1,10 @@
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
+import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
+import { useTailwind } from 'tailwindcss-react-native'
 
 import HtmlRender from '@/components/HtmlRender'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'

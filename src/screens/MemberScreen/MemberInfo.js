@@ -1,4 +1,3 @@
-import React from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import useSWR from 'swr'
 

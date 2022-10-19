@@ -1,6 +1,5 @@
-import React from 'react'
 import { useCallback } from 'react'
-import { Alert, Text, View } from 'react-native'
+import { Alert } from 'react-native'
 import { Pressable } from 'react-native'
 import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 import * as ImagePicker from 'expo-image-picker'

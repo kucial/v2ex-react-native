@@ -1,11 +1,5 @@
-import React, { useMemo } from 'react'
-import {
-  Pressable,
-  RefreshControl,
-  Text,
-  useWindowDimensions,
-  View
-} from 'react-native'
+import { useMemo } from 'react'
+import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import { FlashList } from '@shopify/flash-list'

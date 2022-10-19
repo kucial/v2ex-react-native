@@ -1,5 +1,4 @@
-import React from 'react'
-import { Keyboard, Pressable, View } from 'react-native'
+import { Keyboard, Pressable } from 'react-native'
 
 import { useEditor } from '../SlateEditor/context'
 

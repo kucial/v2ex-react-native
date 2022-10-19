@@ -1,5 +1,4 @@
-import React from 'react'
-import { Image, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Constants from 'expo-constants'
 import colors from 'tailwindcss/colors'

@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { Component } from 'react'
+import React from 'react'
 import { Animated, Keyboard, Platform, View } from 'react-native'
 import dismissKeyboard from 'react-native/Libraries/Utilities/dismissKeyboard'
 

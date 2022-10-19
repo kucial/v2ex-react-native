@@ -1,16 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
-import {
-  Button,
-  Keyboard,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native'
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider
-} from '@gorhom/bottom-sheet'
+import { useCallback, useMemo, useRef } from 'react'
+import { Button, StyleSheet, Text, View } from 'react-native'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
 export default function DebugScreen() {
   // ref

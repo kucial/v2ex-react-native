@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 
 import { InlineBox, InlineText, valueInRange } from './Elements'

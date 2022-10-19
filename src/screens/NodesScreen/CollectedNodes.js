@@ -1,5 +1,4 @@
-import React from 'react'
-import { Image, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { DocumentIcon } from 'react-native-heroicons/outline'
 import { useNavigation } from '@react-navigation/native'

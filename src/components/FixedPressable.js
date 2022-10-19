@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { Pressable } from 'react-native'
 
 export default function FixedPressable({ onPress, onPressIn, ...props }) {

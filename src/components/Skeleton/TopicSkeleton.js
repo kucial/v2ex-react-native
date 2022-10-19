@@ -1,5 +1,4 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import { View } from 'react-native'
 
 import { BlockText, InlineBox, InlineText } from './Elements'
 

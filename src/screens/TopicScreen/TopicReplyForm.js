@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Keyboard, Pressable, Text, View } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/outline'
@@ -8,7 +8,7 @@ import {
   BottomSheetTextInput
 } from '@gorhom/bottom-sheet'
 import classNames from 'classnames'
-import { decode, encode } from 'js-base64'
+import { encode } from 'js-base64'
 import useSWR from 'swr'
 import colors from 'tailwindcss/colors'
 import { useColorScheme, useTailwind } from 'tailwindcss-react-native'

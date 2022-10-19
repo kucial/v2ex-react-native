@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react'
-import { Alert, Image, Pressable, Text, View } from 'react-native'
+import { useEffect } from 'react'
+import { Alert, Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import {
-  ClockIcon,
   Cog6ToothIcon,
   DocumentIcon,
-  InformationCircleIcon,
-  PencilSquareIcon,
-  PhotoIcon
+  InformationCircleIcon
 } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'

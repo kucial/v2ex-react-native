@@ -1,4 +1,3 @@
-import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Alert } from 'react-native'
 import FastImage from 'react-native-fast-image'

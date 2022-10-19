@@ -1,5 +1,5 @@
-import React, { memo } from 'react'
-import { Image, Pressable, Text, View } from 'react-native'
+import { memo } from 'react'
+import { Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'

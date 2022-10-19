@@ -1,5 +1,4 @@
-import React from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 

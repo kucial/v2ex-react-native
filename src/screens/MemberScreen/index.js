@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo } from 'react'
-import { Image, ScrollView, Text, View } from 'react-native'
+import { useMemo } from 'react'
+import { View } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
 import { useSWR } from '@/utils/swr'

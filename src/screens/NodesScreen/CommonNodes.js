@@ -1,4 +1,3 @@
-import React from 'react'
 import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'

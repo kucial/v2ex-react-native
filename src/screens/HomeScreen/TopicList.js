@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useRef } from 'react'
+import { memo, useEffect, useMemo, useRef } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { uniqBy } from 'lodash'

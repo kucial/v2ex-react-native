@@ -1,4 +1,3 @@
-import React from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import classNames from 'classnames'
 import { useTailwind } from 'tailwindcss-react-native'
@@ -9,7 +8,6 @@ import { useEditor } from './context'
 import {
   Base64Icon,
   BoldIcon,
-  CodeBlockIcon,
   ImageIcon,
   IndentIcon,
   ItalicIcon,

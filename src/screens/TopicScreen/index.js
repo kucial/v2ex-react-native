@@ -1,4 +1,4 @@
-import React, {
+import {
   memo,
   useCallback,
   useLayoutEffect,
@@ -41,7 +41,7 @@ import { useTailwind } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
-import { BlockText, Box } from '@/components/Skeleton/Elements'
+import { BlockText } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'

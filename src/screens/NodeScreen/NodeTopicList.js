@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import deepmerge from 'deepmerge'

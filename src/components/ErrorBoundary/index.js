@@ -1,9 +1,6 @@
 import { Component } from 'react'
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import RNRestart from 'react-native-restart'
 import * as Sentry from 'sentry-expo'
-
-import storage from '@/utils/storage'
 
 import ErrorNoticeView from './ErrorNoticeView'
 class ErrorBoundary extends Component {

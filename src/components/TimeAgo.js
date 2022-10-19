@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Text } from 'react-native'
 import TimeAgo from 'javascript-time-ago'
 import zh from 'javascript-time-ago/locale/zh.json'
 

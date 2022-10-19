@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import * as Sentry from 'sentry-expo'
 import useSWRBase from 'swr'
 
 import storage from './storage'
