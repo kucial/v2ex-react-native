@@ -15,7 +15,10 @@ const DEFAULT_SETTINGS = {
   feedLayout: 'normal', // normal | tide
   feedShowAvatar: true,
   feedShowLastReplyMember: true,
-  feedShowViewedHint: true
+  feedShowViewedHint: true,
+
+  autoRefresh: true,
+  autoRefreshDuration: 10
 }
 
 const AppSettingsContext = createContext({})

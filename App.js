@@ -49,9 +49,9 @@ import NodeScreen from './src/screens/NodeScreen'
 import NodesScreen from './src/screens/NodesScreen'
 import SearchScreen from './src/screens/SearchScreen'
 import {
-  DisplaySettings,
   HomeTabs,
   ImgurSettings,
+  PreferenceSettings,
   SettingsLanding
 } from './src/screens/SettingsScreen'
 import SigninScreen from './src/screens/SigninScreen'
@@ -249,10 +249,10 @@ function AppStack() {
           }}
         />
         <Stack.Screen
-          name="display-settings"
-          component={DisplaySettings}
+          name="preference-settings"
+          component={PreferenceSettings}
           options={{
-            title: '显示设置'
+            title: '偏好设置'
           }}
         />
       </Stack.Group>

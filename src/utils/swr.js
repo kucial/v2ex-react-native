@@ -24,8 +24,7 @@ export const hasReachEnd = (listSwr) => {
   return !listSwr.isValidating
 }
 
-const CACHE_TTL = 5 // min
-const maybeOutdated = (data) => {
+const maybeOutdated = (data, ttl) => {
   // infinite swr
   let fetchedAt
   if (Array.isArray(data)) {
@@ -34,13 +33,12 @@ const maybeOutdated = (data) => {
     fetchedAt = data.fetchedAt
   }
   return (
-    fetchedAt &&
-    Date.now() - new Date(fetchedAt).valueOf() > 1000 * 60 * CACHE_TTL
+    fetchedAt && Date.now() - new Date(fetchedAt).valueOf() > 1000 * 60 * ttl
   )
 }
 
-export const shouldFetch = (swr) => {
-  if (swr.data && maybeOutdated(swr.data)) {
+export const shouldFetch = (swr, ttl) => {
+  if (swr.data && ttl && maybeOutdated(swr.data, ttl)) {
     console.log('fetch as data maybe outdated')
     return true
   }

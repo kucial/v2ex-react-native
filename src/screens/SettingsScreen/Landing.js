@@ -1,10 +1,8 @@
 import { View } from 'react-native'
 
 import { LineItem, LineItemGroup } from '@/components/LineItem'
-import { useAppSettings } from '@/containers/AppSettingsService'
 
 export function SettingsLanding({ navigation }) {
-  const { data, update } = useAppSettings()
   return (
     <View className="py-2">
       <LineItemGroup>
@@ -15,9 +13,9 @@ export function SettingsLanding({ navigation }) {
           }}
         />
         <LineItem
-          title="显示设置"
+          title="偏好设置"
           onPress={() => {
-            navigation.push('display-settings')
+            navigation.push('preference-settings')
           }}
           isLast
         />

@@ -58,7 +58,10 @@ export default function NodeTopicList(props) {
   }, [hasViewed, settings])
 
   useEffect(() => {
-    if (isFocused && shouldFetch(listSwr)) {
+    if (
+      isFocused &&
+      shouldFetch(listSwr, settings.autoRefresh && settings.autoRefreshDuration)
+    ) {
       if (listSwr.data) {
         listSwr.setSize(1)
         listViewRef.current?.scrollToIndex({
@@ -81,7 +84,10 @@ export default function NodeTopicList(props) {
             appState === 'background' &&
             nextAppState === 'active' &&
             Date.now() - toBackDate > 60 * 1000 &&
-            shouldFetch(listSwr)
+            shouldFetch(
+              listSwr,
+              settings.autoRefresh && settings.autoRefreshDuration
+            )
           ) {
             listSwr.setSize(1)
             listViewRef.current?.scrollToIndex({
@@ -98,7 +104,7 @@ export default function NodeTopicList(props) {
         subscription.remove()
       }
     }
-  }, [isFocused])
+  }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration])
 
   const listItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
