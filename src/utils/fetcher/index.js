@@ -619,7 +619,7 @@ const CUSTOM_ENDPOINTS = {
         try {
           const thankScript = document.querySelector('#topic_thank a')?.getAttribute('onclick');
           const scriptMatch = /thankTopic\\((\\d+),'(.*)'\\)/.exec(thankScript)
-          if (onceMatch) {
+          if (scriptMatch) {
             thankTopic(scriptMatch[0], scriptMatch[1])
           }
           setTimeout(() => {
