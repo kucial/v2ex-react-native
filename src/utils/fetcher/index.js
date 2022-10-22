@@ -100,7 +100,7 @@ const CUSTOM_ENDPOINTS = {
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             error: true,
-            message: err.message
+            message: err.message,
           }))
         }
       }());
@@ -342,7 +342,6 @@ const CUSTOM_ENDPOINTS = {
           try {
             topic = getTopicInfo();
           } catch (err) { console.log(err); }
-
           window.ReactNativeWebView.postMessage(JSON.stringify({
             data,
             pagination,
@@ -351,7 +350,10 @@ const CUSTOM_ENDPOINTS = {
         } catch (err) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             error: true,
-            message: err.message
+            message: err.message,
+            data: {
+              content: document.body?.innerHTML
+            }
           }))
         }
       }());

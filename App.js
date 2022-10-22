@@ -286,7 +286,8 @@ const swrConfig = {
       Sentry.Native.captureException(err, {
         extra: {
           key,
-          config
+          config,
+          info: err.data
         }
       })
     } else {
@@ -348,7 +349,7 @@ const swrConfig = {
 function App() {
   const scheme = useColorScheme()
   const navigationRef = useNavigationContainerRef()
-  const routeNameRef = useRef()
+  const routeRef = useRef()
 
   return (
     <AppSettingsService>
@@ -366,34 +367,25 @@ function App() {
                       theme={themes[scheme]}
                       ref={navigationRef}
                       onReady={() => {
-                        routeNameRef.current =
-                          navigationRef.getCurrentRoute().name
+                        routeRef.current = navigationRef.getCurrentRoute()
                       }}
                       onStateChange={() => {
-                        const previousRouteName = routeNameRef.current
-                        const currentRouteName =
-                          navigationRef.getCurrentRoute().name
+                        const previousRoute = routeRef.current
+                        const currentRoute = navigationRef.getCurrentRoute()
 
-                        if (previousRouteName !== currentRouteName) {
-                          // The line below uses the expo-firebase-analytics tracker
-                          // https://docs.expo.io/versions/latest/sdk/firebase-analytics/
-                          // Change this line to use another Mobile analytics SDK
+                        if (previousRoute.key !== currentRoute.key) {
+                          const info = {
+                            prev: previousRoute,
+                            current: currentRoute
+                          }
                           Sentry.Native.addBreadcrumb({
                             level: 'info',
                             category: 'navigation',
-                            data: {
-                              prev: previousRouteName,
-                              current: currentRouteName
-                            }
+                            data: info
                           })
-                          console.log({
-                            prev: previousRouteName,
-                            current: currentRouteName
-                          })
+                          console.log(info)
                         }
-
-                        // Save the current route name for later comparison
-                        routeNameRef.current = currentRouteName
+                        routeRef.current = currentRoute
                       }}>
                       <ImgurService>
                         <BottomSheetModalProvider>

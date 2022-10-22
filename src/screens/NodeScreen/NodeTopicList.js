@@ -128,7 +128,7 @@ export default function NodeTopicList(props) {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      estimatedItemSize={80}
+      estimatedItemSize={settings.feedLayout === 'tide' ? 65 : 80}
       onEndReached={() => {
         if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
