@@ -339,6 +339,7 @@ const CUSTOM_ENDPOINTS = {
             };
             return topic
           }
+          let topic
           try {
             topic = getTopicInfo();
           } catch (err) { console.log(err); }
