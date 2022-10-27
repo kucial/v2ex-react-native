@@ -281,15 +281,17 @@ const swrConfig = {
   fetcher: fetcher,
   provider: cacheProvider,
   onError(err, key, config) {
-    // err with custom code consider handled
-    if (err instanceof Error && !err.code) {
-      Sentry.Native.captureException(err, {
-        extra: {
-          key,
-          config,
-          info: err.data
-        }
-      })
+    if (err instanceof Error) {
+      // err with custom code consider handled
+      if (!err.code) {
+        Sentry.Native.captureException(err, {
+          extra: {
+            key,
+            config,
+            info: err.data
+          }
+        })
+      }
     } else {
       Sentry.Native.addBreadcrumb({
         type: 'info',
