@@ -43,7 +43,7 @@ const CUSTOM_ENDPOINTS = {
       `
       (function() {
         try {
-          const tabAnchors = document.querySelectorAll('#Wrapper .content a.tab');
+          const tabAnchors = document.querySelectorAll('#Wrapper .content a[class^=tab]');
           const tabs = [...tabAnchors].map((a) => {
             const value = new URL(a.href).searchParams.get('tab')
             const label = a.textContent.trim();
