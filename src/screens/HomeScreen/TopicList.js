@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { uniqBy } from 'lodash'
@@ -14,9 +14,10 @@ import TideTopicRow from './TideTopicRow'
 import TopicRow from './TopicRow'
 
 function TopicList(props) {
-  const { getKey, isFocused } = props
+  const { getKey, isFocused, currentListRef } = props
   const alert = useAlertService()
   const listViewRef = useRef()
+  const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const { hasViewed } = useViewedTopics()
   const listSwr = useSWRInfinite(getKey, {
@@ -26,6 +27,21 @@ function TopicList(props) {
       alert.alertWithType('error', '错误', err.message || '请求资源失败')
     }
   })
+
+  const scrollToRefresh = useCallback(() => {
+    if (listSwr.isValidating) {
+      return
+    }
+    if (listSwr.data) {
+      listSwr.setSize(1)
+      listViewRef.current.scrollToOffset({
+        offset: scrollY.current > 0 ? 0 : -60,
+        animated: true
+      })
+    } else {
+      listSwr.mutate().catch(() => {})
+    }
+  }, [listSwr])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
@@ -55,15 +71,7 @@ function TopicList(props) {
       isFocused &&
       shouldFetch(listSwr, settings.autoRefresh && settings.autoRefreshDuration)
     ) {
-      if (listSwr.data) {
-        listSwr.setSize(1)
-        listViewRef.current?.scrollToIndex({
-          index: 0,
-          viewPosition: 0
-        })
-      } else {
-        listSwr.mutate().catch(() => {})
-      }
+      scrollToRefresh()
     }
     if (isFocused) {
       let appState = AppState.currentState
@@ -80,11 +88,7 @@ function TopicList(props) {
               settings.autoRefresh && settings.autoRefreshDuration
             )
           ) {
-            listSwr.setSize(1)
-            listViewRef.current?.scrollToIndex({
-              index: 0,
-              viewPosition: 0
-            })
+            scrollToRefresh()
           } else if (nextAppState === 'background') {
             toBackDate = Date.now()
           }
@@ -96,6 +100,12 @@ function TopicList(props) {
       }
     }
   }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration])
+
+  useEffect(() => {
+    currentListRef.current = {
+      scrollToRefresh
+    }
+  }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
@@ -113,6 +123,7 @@ function TopicList(props) {
 
   return (
     <FlashList
+      scrollToOverflowEnabled
       ref={listViewRef}
       data={listItems}
       renderItem={renderItem}
@@ -132,6 +143,9 @@ function TopicList(props) {
       }}
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
+      }}
+      onScroll={(e) => {
+        scrollY.current = e.nativeEvent.contentOffset.y
       }}
     />
   )

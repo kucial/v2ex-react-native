@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import deepmerge from 'deepmerge'
@@ -14,11 +14,12 @@ import NodeTopicRow from './NodeTopicRow'
 import TideNodeTopicRow from './TideNodeTopicRow'
 
 export default function NodeTopicList(props) {
-  const { header, nodeSwr, getKey, isFocused } = props
+  const { header, nodeSwr, getKey, isFocused, currentListRef } = props
   const { hasViewed } = useViewedTopics()
   const alert = useAlertService()
   const { data: settings } = useAppSettings()
   const listViewRef = useRef()
+  const scrollY = useRef(0)
 
   const listSwr = useSWRInfinite(getKey, {
     revalidateOnMount: false,
@@ -33,6 +34,22 @@ export default function NodeTopicList(props) {
       }
     }
   })
+
+  const scrollToRefresh = useCallback(() => {
+    if (listSwr.isValidating) {
+      return
+    }
+    if (listSwr.data) {
+      listSwr.setSize(1)
+      const params = {
+        offset: scrollY.current > 0 ? 0 : -60,
+        animated: true
+      }
+      listViewRef.current.scrollToOffset(params)
+    } else {
+      listSwr.mutate().catch(() => {})
+    }
+  }, [listSwr])
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
@@ -62,17 +79,7 @@ export default function NodeTopicList(props) {
       isFocused &&
       shouldFetch(listSwr, settings.autoRefresh && settings.autoRefreshDuration)
     ) {
-      if (listSwr.data) {
-        listSwr.setSize(1)
-        listViewRef.current?.scrollToIndex({
-          index: 0,
-          viewPosition: 0
-        })
-      } else {
-        listSwr.mutate().catch((err) => {
-          console.log(err)
-        })
-      }
+      scrollToRefresh()
     }
     if (isFocused) {
       let appState = AppState.currentState
@@ -89,11 +96,7 @@ export default function NodeTopicList(props) {
               settings.autoRefresh && settings.autoRefreshDuration
             )
           ) {
-            listSwr.setSize(1)
-            listViewRef.current?.scrollToIndex({
-              index: 0,
-              viewPosition: 0
-            })
+            scrollToRefresh()
           } else if (nextAppState === 'background') {
             toBackDate = Date.now()
           }
@@ -105,6 +108,14 @@ export default function NodeTopicList(props) {
       }
     }
   }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration])
+
+  useEffect(() => {
+    if (currentListRef) {
+      currentListRef.current = {
+        scrollToRefresh
+      }
+    }
+  }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
@@ -122,6 +133,7 @@ export default function NodeTopicList(props) {
 
   return (
     <FlashList
+      scrollToOverflowEnabled
       ref={listViewRef}
       className="flex-1"
       data={listItems}
@@ -143,6 +155,9 @@ export default function NodeTopicList(props) {
       ListHeaderComponent={header}
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
+      }}
+      onScroll={(e) => {
+        scrollY.current = e.nativeEvent.contentOffset.y
       }}
     />
   )

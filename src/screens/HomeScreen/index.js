@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useWindowDimensions } from 'react-native'
 import { TabBar, TabView } from 'react-native-tab-view'
+import { useIsFocused } from '@react-navigation/native'
 import { useTailwind } from 'tailwindcss-react-native'
 
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
@@ -34,14 +35,18 @@ const renderTabBar = (props) => {
   )
 }
 
-export default function HomeScreen() {
+export default function HomeScreen(props) {
   const {
     data: { homeTabs },
     initHomeTabs
   } = useAppSettings()
+  const { navigation } = props
   const { width } = useWindowDimensions()
   const [error, setError] = useState()
   const [index, setIndex] = useState(0)
+
+  const currentListRef = useRef()
+  const isFocused = useIsFocused()
 
   const { renderScene, routes } = useMemo(() => {
     if (!homeTabs) {
@@ -64,11 +69,13 @@ export default function HomeScreen() {
       routes,
       renderScene: ({ route }) => {
         const { tab } = route
+        const isActive = isFocused && route.key === routes[index].key
         if (tab.type === 'node') {
           return (
             <NodeTopicList
               key={`${tab.type}-${tab.value}`}
-              isFocused={route.key === routes[index].key}
+              isFocused={isActive}
+              currentListRef={isActive && currentListRef}
               getKey={(index) =>
                 `/page/go/${tab.value}/feed.json?p=${index + 1}`
               }
@@ -78,7 +85,8 @@ export default function HomeScreen() {
         return (
           <TopicList
             key={`${tab.type}-${tab.value}`}
-            isFocused={route.key === routes[index].key}
+            isFocused={isActive}
+            currentListRef={isActive && currentListRef}
             getKey={
               tab.value === 'recent'
                 ? (index) => `/page/recent/topics.json?p=${index + 1}`
@@ -88,7 +96,7 @@ export default function HomeScreen() {
         )
       }
     }
-  }, [homeTabs, index])
+  }, [homeTabs, index, isFocused])
 
   useEffect(() => {
     if (!homeTabs) {
@@ -97,6 +105,18 @@ export default function HomeScreen() {
       })
     }
   }, [homeTabs])
+
+  useEffect(() => {
+    if (isFocused) {
+      const unsubscribe = navigation.addListener('tabPress', (e) => {
+        if (currentListRef.current) {
+          e.preventDefault()
+          currentListRef.current.scrollToRefresh()
+        }
+      })
+      return unsubscribe
+    }
+  }, [navigation, isFocused])
 
   if (error) {
     return (
