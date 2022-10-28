@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useWindowDimensions } from 'react-native'
 import { TabBar, TabView } from 'react-native-tab-view'
@@ -11,29 +11,7 @@ import { useAppSettings } from '@/containers/AppSettingsService'
 import NodeTopicList from '../NodeScreen/NodeTopicList'
 import TopicList from './TopicList'
 
-const renderTabBar = (props) => {
-  const tw = useTailwind()
-  return (
-    <TabBar
-      {...props}
-      scrollEnabled
-      indicatorStyle={tw('bg-neutral-800  dark:bg-neutral-300')}
-      style={tw('bg-white dark:bg-neutral-900')}
-      labelStyle={tw('text-neutral-900 dark:text-neutral-200 text-[13px]')}
-      tabStyle={{
-        flexShrink: 0,
-        width: 'auto',
-        height: 42,
-        paddingTop: 4
-      }}
-      contentContainerStyle={{
-        display: 'flex',
-        flexDirection: 'row',
-        overflow: 'scroll'
-      }}
-    />
-  )
-}
+const IDLE_RESET = 1000
 
 export default function HomeScreen(props) {
   const {
@@ -44,11 +22,14 @@ export default function HomeScreen(props) {
   const { width } = useWindowDimensions()
   const [error, setError] = useState()
   const [index, setIndex] = useState(0)
+  const tw = useTailwind()
 
   const currentListRef = useRef()
+  const tabIdleForRefresh = useRef()
+  const tabIdleResetTimer = useRef()
   const isFocused = useIsFocused()
 
-  const { renderScene, routes } = useMemo(() => {
+  const { renderScene, routes, renderTabBar } = useMemo(() => {
     if (!homeTabs) {
       return {}
     }
@@ -94,6 +75,47 @@ export default function HomeScreen(props) {
             }
           />
         )
+      },
+      renderTabBar: (props) => {
+        return (
+          <TabBar
+            {...props}
+            scrollEnabled
+            indicatorStyle={tw('bg-neutral-800  dark:bg-neutral-300')}
+            style={tw('bg-white dark:bg-neutral-900')}
+            labelStyle={tw(
+              'text-neutral-900 dark:text-neutral-200 text-[13px]'
+            )}
+            tabStyle={{
+              flexShrink: 0,
+              width: 'auto',
+              height: 42,
+              paddingTop: 4
+            }}
+            contentContainerStyle={{
+              display: 'flex',
+              flexDirection: 'row',
+              overflow: 'scroll'
+            }}
+            onTabPress={({ route }) => {
+              const currentRoute = routes[index]
+              if (currentRoute.key === route.key) {
+                if (tabIdleForRefresh.current === route.key) {
+                  clearTimeout(tabIdleResetTimer.current)
+                  if (currentListRef.current) {
+                    currentListRef.current.scrollToRefresh()
+                  }
+                  tabIdleForRefresh.current = undefined
+                } else {
+                  tabIdleForRefresh.current = route.key
+                  tabIdleResetTimer.current = setTimeout(() => {
+                    tabIdleForRefresh.current = undefined
+                  }, IDLE_RESET)
+                }
+              }
+            }}
+          />
+        )
       }
     }
   }, [homeTabs, index, isFocused])
@@ -109,14 +131,23 @@ export default function HomeScreen(props) {
   useEffect(() => {
     if (isFocused) {
       const unsubscribe = navigation.addListener('tabPress', (e) => {
-        if (currentListRef.current) {
-          e.preventDefault()
-          currentListRef.current.scrollToRefresh()
+        if (tabIdleForRefresh.current) {
+          clearTimeout(tabIdleResetTimer.current)
+          if (currentListRef.current) {
+            e.preventDefault()
+            currentListRef.current.scrollToRefresh()
+          }
+          tabIdleForRefresh.current = undefined
+        } else {
+          tabIdleForRefresh.current = routes[index].key
+          tabIdleResetTimer.current = setTimeout(() => {
+            tabIdleForRefresh.current = undefined
+          }, IDLE_RESET)
         }
       })
       return unsubscribe
     }
-  }, [navigation, isFocused])
+  }, [navigation, routes, index, isFocused])
 
   if (error) {
     return (
