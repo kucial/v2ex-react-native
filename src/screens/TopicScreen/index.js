@@ -408,7 +408,7 @@ function TopicScreen({ navigation, route }) {
     <>
       <View className="bg-white py-3 px-4 mb-2 shadow-sm dark:bg-neutral-900">
         <TopicInfo data={topic} navigation={navigation} />
-        {topicSwr.error && !isLoading(topicSwr) && (
+        {!topicSwr.data && topicSwr.error && !isLoading(topicSwr) && (
           <ErrorNotice
             error={topicSwr.error}
             extra={
