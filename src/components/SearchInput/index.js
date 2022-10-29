@@ -6,7 +6,7 @@ import {
   useState
 } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
-import { XIcon } from 'react-native-heroicons/outline'
+import { XMarkIcon } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import colors from 'tailwindcss/colors'
@@ -69,7 +69,7 @@ function SearchInput(props, ref) {
               onPress={() => {
                 service.reset()
               }}>
-              <XIcon size={18} color="#333" />
+              <XMarkIcon size={18} color="#333" />
             </Pressable>
           </View>
         )}
