@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { Platform, StatusBar } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import {
   HomeIcon,
@@ -258,22 +259,14 @@ function AppStack() {
         />
       </Stack.Group>
 
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen
-          name="signin"
-          component={SigninScreen}
-          options={{
-            headerShown: false
-          }}
-        />
-        {/* <Stack.Screen
-          name="signup"
-          component={SignupScreen}
-          options={{
-            headerShown: false
-          }}
-        /> */}
-      </Stack.Group>
+      <Stack.Screen
+        name="signin"
+        component={SigninScreen}
+        options={{
+          headerShown: false,
+          presentation: Platform.OS === 'ios' ? 'modal' : undefined
+        }}
+      />
     </Stack.Navigator>
   )
 }
@@ -359,6 +352,9 @@ function App() {
       <TailwindProvider initialColorScheme={scheme}>
         <WatchSchemeUpdate />
         <FetcherWebView />
+        <StatusBar
+          barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'}
+        />
         <ErrorBoundary>
           <GestureHandlerRootView style={{ flex: 1 }}>
             {/* <StatusBar style="auto" /> */}

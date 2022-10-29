@@ -1,9 +1,10 @@
-import { Text, View } from 'react-native'
+import { ImageBackground, Platform, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Constants from 'expo-constants'
 import colors from 'tailwindcss/colors'
 
 import BackButton from '@/components/BackButton'
+import OutlinedText from '@/components/OutlinedText'
 import { Box } from '@/components/Skeleton/Elements'
 import { localTime } from '@/utils/time'
 
@@ -13,6 +14,7 @@ const HEADER_CANVAS_HEIGHT = 80
 export default function MemberScreenHeader({ route, navigation, swr }) {
   const { brief, username } = route.params
   const data = swr.data || brief || { username }
+
   return (
     <View className="bg-white w-full dark:bg-neutral-900">
       <View
@@ -31,11 +33,11 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
       </View>
       <View className="relative">
         <View
-          className="bg-neutral-100 flex flex-row items-end dark:bg-neutral-900"
+          className="bg-neutral-100 dark:bg-neutral-900 flex flex-row items-end"
           style={{
             height: Constants.statusBarHeight + HEADER_CANVAS_HEIGHT
           }}>
-          <FastImage
+          <ImageBackground
             style={{ width: '100%', height: '100%', position: 'absolute' }}
             source={{ uri: data.avatar_large }}
             resizeMode="cover"
@@ -45,18 +47,14 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
             style={{
               marginLeft: AVATAR_SIZE + 16 + 12
             }}>
-            <Text
-              className="text-lg font-medium"
-              style={{
-                textShadowColor: '#ffffffbb',
-                textShadowOffset: { width: 0, height: 0 },
-                textShadowRadius: 16,
-                paddingLeft: 20,
-                paddingRight: 30,
-                marginLeft: -20
-              }}>
-              {data.username || ''}
-            </Text>
+            <OutlinedText
+              text={data.username}
+              width={200}
+              height={40}
+              fontSize={18}
+              color="#111111"
+              outlineColor="#ffffff50"
+            />
           </View>
         </View>
         <View

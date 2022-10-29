@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native'
+import { Platform, Pressable, Text, View } from 'react-native'
 import {
   ClockIcon,
   DocumentPlusIcon,
@@ -25,8 +25,8 @@ export default function MainScreenHeader(props) {
         'dark:bg-neutral-900'
       )}
       style={{
-        height: 48 + Constants.statusBarHeight,
-        paddingTop: Constants.statusBarHeight
+        height: Platform.OS === 'android' ? 48 : 48 + Constants.statusBarHeight,
+        paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight
       }}>
       <View className="flex-1">
         <View className="">

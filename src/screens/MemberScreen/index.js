@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { View } from 'react-native'
+import { StatusBar, View } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
 import { useSWR } from '@/utils/swr'
@@ -38,6 +38,7 @@ export default function MemberScreen({ route, navigation }) {
 
   return (
     <View className="flex-1">
+      <StatusBar translucent backgroundColor="transparent" />
       <MemberScreenHeader
         route={route}
         swr={memberSwr}

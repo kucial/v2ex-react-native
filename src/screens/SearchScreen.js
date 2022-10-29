@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   InteractionManager,
+  Platform,
   Pressable,
   Text,
   TextInput,
@@ -65,8 +66,9 @@ export default function SearchScreen({ navigation }) {
       <View
         className="bg-white w-full flex-row items-center pl-1 dark:bg-neutral-900"
         style={{
-          height: 48 + Constants.statusBarHeight,
-          paddingTop: Constants.statusBarHeight
+          height:
+            Platform.OS === 'android' ? 58 : 48 + Constants.statusBarHeight,
+          paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight
         }}>
         <View className="mr-1">
           <BackButton

@@ -10,7 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}' --rule 'unused-imports/no-unused-imports: error'",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "eas-build-pre-install": "node --version && npm config set legacy-peer-deps true"
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^3.13.0",
@@ -74,6 +75,7 @@
     "react-native-screens": "~3.15.0",
     "react-native-svg": "^13.3.0",
     "react-native-swipeable-item": "^2.0.9",
+    "react-native-tab-view": "^3.3.0",
     "react-native-web": "~0.18.7",
     "react-native-webview": "11.23.0",
     "react-time-ago": "^7.2.1",
