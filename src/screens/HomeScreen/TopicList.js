@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
+import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
 import useSWRInfinite from 'swr/infinite'
 
@@ -32,6 +33,7 @@ function TopicList(props) {
     if (listSwr.isValidating) {
       return
     }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     if (listSwr.data) {
       listSwr.setSize(1)
       listViewRef.current.scrollToOffset({

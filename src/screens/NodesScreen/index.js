@@ -1,5 +1,6 @@
-import { useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { RefreshControl, SectionList, Text, View } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
 
@@ -13,7 +14,7 @@ import CommonNodes from './CommonNodes'
 
 const CACHE_KEY = '$app$/nodes-filter'
 
-export default function NodesScreen() {
+export default function NodesScreen({ navigation }) {
   const { status } = useAuthService()
   const { colorScheme } = useColorScheme()
 
@@ -28,6 +29,23 @@ export default function NodesScreen() {
   })
 
   const filterInput = useRef()
+  const listRef = useRef()
+
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = navigation.addListener('tabPress', (e) => {
+        console.log('...call....')
+        listRef.current?.scrollToLocation({
+          viewOffset: 0,
+          animated: true,
+          itemIndex: 0,
+          sectionIndex: 0
+        })
+      })
+
+      return unsubscribe
+    }, [])
+  )
 
   const { sections, renderItem } = useMemo(() => {
     return {
@@ -104,6 +122,7 @@ export default function NodesScreen() {
         />
       </View>
       <SectionList
+        ref={listRef}
         sections={sections}
         keyExtractor={(item) => {
           return item.name
