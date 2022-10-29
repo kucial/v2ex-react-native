@@ -76,26 +76,27 @@ function MainTab() {
 
   return (
     <Tab.Navigator
+      initialRouteName="feed"
       screenOptions={{
         tabBarInactiveTintColor: inactiveColor,
         tabBarStyle: tw('dark:bg-neutral-800')
         // headerShown: false,
       }}>
       <Tab.Screen
-        name="feed"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: HomeIcon,
-          tabBarLabel: '主题',
-          header: (props) => <MainScreenHeader {...props} />
-        }}
-      />
-      <Tab.Screen
         name="nodes"
         component={NodesScreen}
         options={{
           tabBarIcon: RectangleStackIcon,
           tabBarLabel: '节点',
+          header: (props) => <MainScreenHeader {...props} />
+        }}
+      />
+      <Tab.Screen
+        name="feed"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: HomeIcon,
+          tabBarLabel: '主题',
           header: (props) => <MainScreenHeader {...props} />
         }}
       />
