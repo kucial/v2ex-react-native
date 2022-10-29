@@ -36,7 +36,7 @@ export default storage
 export const getJSON = (key, fallback) => {
   const str = storage.getString(key)
   if (typeof str !== 'string') {
-    return fallback || undefined
+    return fallback ?? undefined
   }
   return JSON.parse(str)
 }

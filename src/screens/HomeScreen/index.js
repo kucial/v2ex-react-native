@@ -7,11 +7,13 @@ import { useTailwind } from 'tailwindcss-react-native'
 
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { useCachedState } from '@/hooks'
 
 import NodeTopicList from '../NodeScreen/NodeTopicList'
 import TopicList from './TopicList'
 
-const IDLE_RESET = 1000
+const REFRESH_IDLE_RESET_TIMEOUT = 1000
+const CACHE_KEY = '$app$/home-screen-index'
 
 export default function HomeScreen(props) {
   const {
@@ -21,7 +23,7 @@ export default function HomeScreen(props) {
   const { navigation } = props
   const { width } = useWindowDimensions()
   const [error, setError] = useState()
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useCachedState(CACHE_KEY, 0)
   const tw = useTailwind()
 
   const currentListRef = useRef()
@@ -110,7 +112,7 @@ export default function HomeScreen(props) {
                   tabIdleForRefresh.current = route.key
                   tabIdleResetTimer.current = setTimeout(() => {
                     tabIdleForRefresh.current = undefined
-                  }, IDLE_RESET)
+                  }, REFRESH_IDLE_RESET_TIMEOUT)
                 }
               }
             }}
@@ -142,7 +144,7 @@ export default function HomeScreen(props) {
           tabIdleForRefresh.current = routes[index].key
           tabIdleResetTimer.current = setTimeout(() => {
             tabIdleForRefresh.current = undefined
-          }, IDLE_RESET)
+          }, REFRESH_IDLE_RESET_TIMEOUT)
         }
       })
       return unsubscribe
