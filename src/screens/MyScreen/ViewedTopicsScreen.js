@@ -12,7 +12,7 @@ import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 
 const TopicRow = (props) => {
-  const { navigation, data } = props
+  const { navigation, data, showAvatar } = props
   const { node, member, title } = data
   return (
     <FixedPressable
@@ -23,22 +23,27 @@ const TopicRow = (props) => {
           brief: data
         })
       }}>
-      <View className="px-2 py-2 self-start">
-        <FixedPressable
-          onPress={() => {
-            navigation.navigate('member', {
-              username: member.username,
-              brief: member
-            })
-          }}>
-          <FastImage
-            source={{
-              uri: member.avatar_large
-            }}
-            className="w-[24px] h-[24px] rounded"
-          />
-        </FixedPressable>
-      </View>
+      {showAvatar ? (
+        <View className="px-2 py-2 self-start">
+          <FixedPressable
+            onPress={() => {
+              navigation.navigate('member', {
+                username: member.username,
+                brief: member
+              })
+            }}>
+            <FastImage
+              source={{
+                uri: member.avatar_large
+              }}
+              className="w-[24px] h-[24px] rounded"
+            />
+          </FixedPressable>
+        </View>
+      ) : (
+        <View className="pl-3"></View>
+      )}
+
       <View className={classNames('flex-1 py-2')}>
         <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
           <View>
@@ -159,28 +164,29 @@ const TideTopicRow = (props) => {
 }
 
 export default function ViewedTopicsScreen({ navigation }) {
-  const { items, clear } = useViewedTopics()
+  const { getItems, clear } = useViewedTopics()
   const { showActionSheetWithOptions } = useActionSheet()
   const { data: settings } = useAppSettings()
-  const { renderItem, keyExtractor } = useMemo(
+  const { renderItem, keyExtractor, data } = useMemo(
     () => ({
+      data: getItems(),
       renderItem: ({ item }) =>
         settings.feedLayout === 'tide' ? (
           <TideTopicRow
             data={item}
             navigation={navigation}
-            showAvatar={settings.showAvatar}
+            showAvatar={settings.feedShowAvatar}
           />
         ) : (
           <TopicRow
             data={item}
             navigation={navigation}
-            showAvatar={settings.showAvatar}
+            showAvatar={settings.feedShowAvatar}
           />
         ),
       keyExtractor: (item) => item.id
     }),
-    [settings.feedLayout, settings.showAvatar, navigation]
+    [settings.feedLayout, settings.showAvatar, navigation, getItems]
   )
 
   useLayoutEffect(() => {
@@ -211,7 +217,7 @@ export default function ViewedTopicsScreen({ navigation }) {
 
   return (
     <FlashList
-      data={items}
+      data={data}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       estimatedItemSize={110}
