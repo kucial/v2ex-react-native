@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native'
 import {
+  ClockIcon,
   DocumentPlusIcon,
   EnvelopeIcon,
   MagnifyingGlassIcon
@@ -53,14 +54,14 @@ export default function MainScreenHeader(props) {
 
       <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">
         <Pressable
-          className="w-[44px] h-[44px] flex items-center justify-center  rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
           onPress={composeAuthedNavigation(() => {
             navigation.push('new-topic')
           })}>
           <DocumentPlusIcon size={24} color={color} />
         </Pressable>
         <Pressable
-          className="w-[44px] h-[44px] flex items-center justify-center  rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
           onPress={composeAuthedNavigation(() => {
             navigation.push('notification')
           })}>
@@ -77,11 +78,19 @@ export default function MainScreenHeader(props) {
         </Pressable>
 
         <Pressable
-          className="w-[44px] h-[44px] flex items-center justify-center  rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
           onPress={() => {
             navigation.push('search')
           }}>
           <MagnifyingGlassIcon size={24} color={color} />
+        </Pressable>
+
+        <Pressable
+          className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          onPress={() => {
+            navigation.push('viewed-topics')
+          }}>
+          <ClockIcon size={24} color={color} />
         </Pressable>
       </View>
     </View>
