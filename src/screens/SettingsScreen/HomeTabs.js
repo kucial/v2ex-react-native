@@ -7,7 +7,7 @@ import {
   useRef,
   useState
 } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, Text, View } from 'react-native'
 import DraggableFlatList, {
   ScaleDecorator
 } from 'react-native-draggable-flatlist'
@@ -302,18 +302,6 @@ export function HomeTabs(props) {
     })
   }, [])
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      if (homeTabs !== tabs) {
-        update((prev) => ({
-          ...prev,
-          homeTabs: tabs
-        }))
-      }
-    })
-    return unsubscribe
-  }, [navigation, tabs, homeTabs])
-
   const [enabledTabs, disabledTabs] = useMemo(() => {
     const a = []
     const b = []
@@ -376,6 +364,23 @@ export function HomeTabs(props) {
     },
     [enabledTabs]
   )
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (enabledTabs.length === 0) {
+        e.preventDefault()
+        Alert.alert('你需要至少设置一个首页标签页')
+        return
+      }
+      if (homeTabs !== tabs) {
+        update((prev) => ({
+          ...prev,
+          homeTabs: tabs
+        }))
+      }
+    })
+    return unsubscribe
+  }, [navigation, tabs, homeTabs, enabledTabs])
 
   return (
     <>

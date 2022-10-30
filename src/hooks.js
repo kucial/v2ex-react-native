@@ -38,7 +38,7 @@ function useStateCallback(initialState) {
   return [state, setStateCallback]
 }
 
-export const useCachedState = (cacheKey, initialState = null) => {
+export const useCachedState = (cacheKey, initialState = null, revalidate) => {
   const cacheInit = useRef(null)
   const updateCache = useCallback(
     debounce((value) => {
@@ -48,7 +48,10 @@ export const useCachedState = (cacheKey, initialState = null) => {
     [cacheKey]
   )
   const [state, setState] = useState(() => {
-    const cache = getJSON(cacheKey, initialState)
+    let cache = getJSON(cacheKey, initialState)
+    if (revalidate) {
+      cache = revalidate(cache)
+    }
     cacheInit.current = cache
     return cache
   })

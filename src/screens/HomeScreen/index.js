@@ -23,7 +23,31 @@ export default function HomeScreen(props) {
   const { navigation } = props
   const { width } = useWindowDimensions()
   const [error, setError] = useState()
-  const [index, setIndex] = useCachedState(CACHE_KEY, 0)
+  const routes = useMemo(() => {
+    if (!homeTabs) {
+      return null
+    }
+    return homeTabs
+      .map((tab) => {
+        if (tab.disabled) {
+          return
+        }
+        const key = `home-${tab.type}-${tab.value}`
+        return {
+          key,
+          title: tab.label,
+          tab: tab
+        }
+      })
+      .filter(Boolean)
+  }, [homeTabs])
+
+  const [index, setIndex] = useCachedState(CACHE_KEY, 0, (val) => {
+    if (!routes) {
+      return val
+    }
+    return val >= routes.length ? 0 : val
+  })
   const tw = useTailwind()
 
   const currentListRef = useRef()
@@ -31,25 +55,12 @@ export default function HomeScreen(props) {
   const tabIdleResetTimer = useRef()
   const isFocused = useIsFocused()
 
-  const { renderScene, routes, renderTabBar } = useMemo(() => {
+  const { renderScene, renderTabBar } = useMemo(() => {
     if (!homeTabs) {
       return {}
     }
-    const routes = []
-    homeTabs.forEach((tab) => {
-      if (tab.disabled) {
-        return
-      }
-      const key = `home-${tab.type}-${tab.value}`
-      routes.push({
-        key,
-        title: tab.label,
-        tab: tab
-      })
-    })
 
     return {
-      routes,
       renderScene: ({ route }) => {
         const { tab } = route
         const isActive = isFocused && route.key === routes[index].key
@@ -120,7 +131,7 @@ export default function HomeScreen(props) {
         )
       }
     }
-  }, [homeTabs, index, isFocused])
+  }, [routes, index, isFocused])
 
   useEffect(() => {
     if (!homeTabs) {
