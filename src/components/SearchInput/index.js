@@ -44,7 +44,7 @@ function SearchInput(props, ref) {
       style={props.style}>
       <View className="relative flex-1 py-2">
         <TextInput
-          className="bg-neutral-100 dark:bg-neutral-800 rounded-lg flex-1 px-2 h-[36px] text-[16px] leading-[20px]"
+          className="bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 rounded-lg flex-1 px-2 h-[36px] text-[16px] leading-[20px]"
           selectionColor={
             colorScheme === 'dark' ? colors.amber[50] : colors.neutral[600]
           }
@@ -69,7 +69,14 @@ function SearchInput(props, ref) {
               onPress={() => {
                 service.reset()
               }}>
-              <XMarkIcon size={18} color="#333" />
+              <XMarkIcon
+                size={18}
+                color={
+                  colorScheme === 'dark'
+                    ? colors.amber[50]
+                    : colors.neutral[600]
+                }
+              />
             </Pressable>
           </View>
         )}

@@ -233,12 +233,13 @@ export default function LoginScreen({ navigation }) {
       </View>
       <ScrollView className="flex-1 w-full ">
         <View className="flex flex-row justify-center mt-1">
-          <Logo
+          <View style={{ width: 94, height: 30 }}></View>
+          {/* <Logo
             style={{ width: 94, height: 30 }}
             color={
               colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[800]
             }
-          />
+          /> */}
         </View>
         <Pressable
           className="w-full"

@@ -9,14 +9,14 @@ import classNames from 'classnames'
 import Constants from 'expo-constants'
 import { useTailwind } from 'tailwindcss-react-native'
 
-import Logo from '@/components/Logo'
 import { useAuthService } from '@/containers/AuthService'
 
 export default function MainScreenHeader(props) {
-  const { navigation } = props
+  const { navigation, options } = props
   const { composeAuthedNavigation, meta } = useAuthService()
   const tw = useTailwind()
   const { color } = tw('color-neutral-800 dark:color-neutral-200')
+  const title = options.tabBarLabel
   return (
     <View
       className={classNames(
@@ -29,27 +29,15 @@ export default function MainScreenHeader(props) {
         paddingTop: Constants.statusBarHeight
       }}>
       <View className="flex-1">
-        {props.title ? (
-          <View className="pl-1">
-            <Text
-              className="font-bold text-[17px]"
-              style={{
-                color
-              }}>
-              {props.title}
-            </Text>
-          </View>
-        ) : (
-          <Logo
-            color={color}
+        <View className="">
+          <Text
+            className="font-bold text-[19px]"
             style={{
-              width: 47,
-              height: 15
-            }}
-          />
-        )}
-
-        {/* <Text className="text-lg font-bold">V2EX</Text> */}
+              color
+            }}>
+            {title}
+          </Text>
+        </View>
       </View>
 
       <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">

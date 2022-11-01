@@ -120,7 +120,7 @@ export default function NodeTopicList(props) {
   const listItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
       // initial loading
-      return new Array(10)
+      return new Array(20)
     }
     const items = listSwr.data?.reduce((combined, page) => {
       if (page.data) {

@@ -24,7 +24,7 @@ export default function AboutScreen() {
         <View className="bg-white dark:bg-neutral-900 w-full py-3 rounded-lg">
           <View className="my-2">
             <Text className="text-2xl font-bold text-center dark:text-neutral-200">
-              \V2EX/
+              R2V
             </Text>
           </View>
           <View className="my-2">

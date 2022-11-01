@@ -19,7 +19,8 @@
         "SENTRY_URL": "https://sentry.kongkx.com",
         "SENTRY_ORG": "kucial",
         "SENTRY_PROJECT": "v2ex-react-native",
-        "SENTRY_DSN": "https://7580d23586fd42838e4c0eb78a17d165@sentry.kongkx.com/6"
+        "SENTRY_DSN": "https://7580d23586fd42838e4c0eb78a17d165@sentry.kongkx.com/6",
+        "SENTRY_AUTH_TOKEN": "7aed5a54e9124562b6e7188a9a50b89651e55b3524fa4b5d8477840b3985c764"
       }
     },
     "production": {
@@ -27,7 +28,8 @@
         "IMGUR_CLIENT_ID": "eb2dd6d8927e275",
         "SENTRY_ORG": "kucial",
         "SENTRY_PROJECT": "v2ex-react-native",
-        "SENTRY_DSN": "https://cb3af3c00cb64d519c65468bfd661c7e@o4503925891334144.ingest.sentry.io/4503928221466624"
+        "SENTRY_DSN": "https://cb3af3c00cb64d519c65468bfd661c7e@o4503925891334144.ingest.sentry.io/4503928221466624",
+        "SENTRY_AUTH_TOKEN": "512a1cc82b7d41e0ae6ef32f263c3abbdb6d3809355f4b55ab716b750112163f"
       }
     }
   },
