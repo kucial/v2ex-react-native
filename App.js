@@ -16,7 +16,6 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import * as Sentry from 'sentry-expo'
 import { SWRConfig } from 'swr'
-import colors from 'tailwindcss/colors'
 import { TailwindProvider, useTailwind } from 'tailwindcss-react-native'
 
 import { headerLeft } from './src/components/BackButton'
@@ -77,6 +76,7 @@ function MainTab() {
   return (
     <Tab.Navigator
       initialRouteName="feed"
+      backBehavior="initialRoute"
       screenOptions={{
         tabBarInactiveTintColor: inactiveColor,
         tabBarStyle: tw('dark:bg-neutral-800')
@@ -296,7 +296,7 @@ const swrConfig = {
     } else {
       Sentry.Native.addBreadcrumb({
         type: 'info',
-        data: { key, err }
+        data: { swrKey: key, err, message: err?.message }
       })
       Sentry.Native.captureMessage('SWR_ERROR_@')
     }
@@ -375,7 +375,6 @@ function App() {
                       onStateChange={() => {
                         const previousRoute = routeRef.current
                         const currentRoute = navigationRef.getCurrentRoute()
-
                         if (previousRoute.key !== currentRoute.key) {
                           const info = {
                             prev: previousRoute,
@@ -386,7 +385,6 @@ function App() {
                             category: 'navigation',
                             data: info
                           })
-                          console.log(info)
                         }
                         routeRef.current = currentRoute
                       }}>
