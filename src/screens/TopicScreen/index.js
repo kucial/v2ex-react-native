@@ -1,6 +1,7 @@
 import {
   memo,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -367,12 +368,20 @@ function TopicScreen({ navigation, route }) {
     conversationModalRef.current?.present()
   }, [])
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('blur', () => {
+      conversationModalRef.current?.dismiss()
+    })
+    return unsubscribe
+  }, [navigation])
+
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
       renderReply({ item }) {
         return (
           <ReplyRow
             className="bg-white dark:bg-neutral-900"
+            navigation={navigation}
             data={item}
             onReply={initReply}
             onThank={handleThankToReply}
@@ -632,6 +641,7 @@ function TopicScreen({ navigation, route }) {
         {conversationContext && (
           <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
             <Converation
+              navigation={navigation}
               data={conversation}
               pivot={conversationContext}
               onReply={initReply}

@@ -2,7 +2,13 @@ import { View } from 'react-native'
 
 import ReplyRow from './ReplyRow'
 
-export default function Conversation({ data, pivot, onReply, onThank }) {
+export default function Conversation({
+  data,
+  pivot,
+  onReply,
+  onThank,
+  navigation
+}) {
   return (
     <View>
       {data.map((reply) => (
@@ -11,7 +17,8 @@ export default function Conversation({ data, pivot, onReply, onThank }) {
           isPivot={reply.id === pivot.id}
           data={reply}
           onReply={onReply}
-          onThank={onThank}></ReplyRow>
+          onThank={onThank}
+          navigation={navigation}></ReplyRow>
       ))}
     </View>
   )

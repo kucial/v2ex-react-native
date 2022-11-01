@@ -6,7 +6,6 @@ import {
   HeartIcon
 } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
-import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 import { marked } from 'marked'
 import PropTypes from 'prop-types'
@@ -22,7 +21,7 @@ import { useAuthService } from '@/containers/AuthService'
 
 function ReplyRow(props) {
   const { width } = useWindowDimensions()
-  const navigation = useNavigation()
+  const { navigation } = props
   const { data, isPivot } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
