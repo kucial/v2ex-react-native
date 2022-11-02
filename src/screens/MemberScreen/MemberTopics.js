@@ -2,11 +2,10 @@ import { useCallback, useMemo } from 'react'
 import { FlashList } from '@shopify/flash-list'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { useAlertService } from '@/containers/AlertService'
-import { hasReachEnd, isRefreshing } from '@/utils/swr'
+import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 
 import UserTopicRow from './UserTopicRow'
 
@@ -65,7 +64,7 @@ export default function MemberTopics(props) {
         if (listSwr.error?.code === 'member_locked') {
           return
         }
-        if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+        if (shouldLoadMore(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}

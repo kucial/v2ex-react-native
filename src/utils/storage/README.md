@@ -16,6 +16,7 @@
 
 -- SWR 库 --
 
-`$swr$` -- SWR 状态数据缓存
-`/api/endpoint/string` - SWR 请求数据缓存
-`$inf$/api/endpoint/string` -- SWRInfinite 请求数据缓存
+- `$swr$` -- SWR 状态数据缓存 `{ isValidating: false }`
+- `/api/endpoint/string` - SWR 请求数据缓存
+- `$inf$/api/endpoint/string` -- SWRInfinite 请求数据缓存
+- `$len$/api/endpoint/string` -- SWRInfinite size 数据

@@ -1,4 +1,4 @@
-import { ImageBackground, Platform, Text, View } from 'react-native'
+import { ImageBackground, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Constants from 'expo-constants'
 import colors from 'tailwindcss/colors'

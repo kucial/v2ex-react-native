@@ -10,7 +10,7 @@ import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
-import { hasReachEnd, isRefreshing } from '@/utils/swr'
+import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 
 const htmlBaseStyle = {
   lineHeight: 18
@@ -265,7 +265,7 @@ export default function NotificationScreen() {
       onEndReachedThreshold={0.4}
       estimatedItemSize={80}
       onEndReached={() => {
-        if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+        if (shouldLoadMore(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}

@@ -8,7 +8,7 @@ import CommonListFooter from '@/components/CommonListFooter'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { hasReachEnd, isRefreshing, shouldFetch } from '@/utils/swr'
+import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/swr'
 
 import NodeTopicRow from './NodeTopicRow'
 import TideNodeTopicRow from './TideNodeTopicRow'
@@ -142,7 +142,7 @@ export default function NodeTopicList(props) {
       onEndReachedThreshold={0.4}
       estimatedItemSize={settings.feedLayout === 'tide' ? 65 : 80}
       onEndReached={() => {
-        if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+        if (shouldLoadMore(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}

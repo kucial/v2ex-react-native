@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useWindowDimensions } from 'react-native'
 import { TabBar, TabView } from 'react-native-tab-view'

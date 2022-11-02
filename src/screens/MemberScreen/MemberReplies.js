@@ -9,7 +9,7 @@ import { useColorScheme } from 'tailwindcss-react-native'
 import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
-import { hasReachEnd, isRefreshing } from '@/utils/swr'
+import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 
 const MemberReplyRow = (props) => {
   const { width } = useWindowDimensions()
@@ -121,7 +121,7 @@ export default function MemberReplies(props) {
       onEndReachedThreshold={0.4}
       estimatedItemSize={124}
       onEndReached={() => {
-        if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+        if (shouldLoadMore(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}

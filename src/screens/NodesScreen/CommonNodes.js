@@ -1,5 +1,4 @@
-import { useMemo } from 'react'
-import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 

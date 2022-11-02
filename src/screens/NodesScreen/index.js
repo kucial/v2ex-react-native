@@ -34,7 +34,6 @@ export default function NodesScreen({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       const unsubscribe = navigation.addListener('tabPress', (e) => {
-        console.log('...call....')
         listRef.current?.scrollToLocation({
           viewOffset: 0,
           animated: true,

@@ -8,7 +8,7 @@ import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
-import { hasReachEnd, isRefreshing } from '@/utils/swr'
+import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 
 const CollectedTopicRow = (props) => {
   const { data } = props
@@ -179,7 +179,7 @@ export default function CollectedTopicsScreen() {
       onEndReachedThreshold={0.4}
       estimatedItemSize={110}
       onEndReached={() => {
-        if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+        if (shouldLoadMore(listSwr)) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}

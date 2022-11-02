@@ -19,7 +19,6 @@ import { useColorScheme } from 'tailwindcss-react-native'
 
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
-import Logo from '@/components/Logo'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 

@@ -21,7 +21,7 @@ export const hasReachEnd = (listSwr) => {
   if (pagination.total > listSwr.size) {
     return false
   }
-  return !listSwr.isValidating
+  return true
 }
 
 const maybeOutdated = (data, ttl) => {
@@ -47,6 +47,10 @@ export const shouldFetch = (swr, ttl) => {
     return true
   }
   return false
+}
+
+export const shouldLoadMore = (listSwr) => {
+  return !listSwr.isValidating && !listSwr.error && !hasReachEnd(listSwr)
 }
 
 // 自定义 revalidateOnMount 行为。
@@ -115,13 +119,14 @@ export const cacheProvider = (cache) => {
     },
     set: (key, value) => {
       cache.set(key, value)
-      // skip swr state info cache
+      // 不缓存状态数据（强行退出时状态为 isValidating=true，无法重新刷新）
       if (
         typeof key === 'string' &&
-        !/^\$(len|ctx|inf|swr)\$/.test(key) &&
-        value
+        (key.startsWith('$swr$') || key.startsWith('$ctx$'))
       ) {
-        console.log('cache ....')
+        return
+      }
+      if (typeof key === 'string' && value) {
         storage.set(key, JSON.stringify(value))
       }
     },

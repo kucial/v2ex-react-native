@@ -1548,11 +1548,31 @@ export const FetcherWebView = () => {
                   console.log('event', event)
                 }
               }}
-              onError={(err) => {
+              onError={(e) => {
+                const err = new Error(e.nativeEvent.description)
+                err.code = e.nativeEvent.code
                 // hack for JSON.stringify
                 err.toJSON = function () {
                   return {
-                    message: this.message
+                    message: this.message,
+                    code: this.code
+                  }
+                }
+                reject(err)
+                setStack((prev) => {
+                  const newStack = { ...prev }
+                  delete newStack[key]
+                  return newStack
+                })
+              }}
+              onHttpError={(e) => {
+                const err = new Error(e.nativeEvent.description)
+                err.code = e.nativeEvent.statusCode
+                // hack for JSON.stringify
+                err.toJSON = function () {
+                  return {
+                    message: this.message,
+                    code: this.code
                   }
                 }
                 reject(err)
