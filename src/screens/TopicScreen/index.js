@@ -49,7 +49,7 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import fetcher from '@/utils/fetcher'
-import { hasReachEnd, isLoading, isRefreshing, useSWR } from '@/utils/swr'
+import { isLoading, isRefreshing, shouldLoadMore, useSWR } from '@/utils/swr'
 
 import Converation from './Conversation'
 import ReplyRow from './ReplyRow'
@@ -331,14 +331,15 @@ function TopicScreen({ navigation, route }) {
   )
 
   const handleSubmitReply = useCallback(
-    (values) => {
+    async (values) => {
       replyModalRef.current?.dismiss()
       setReplyContext(null)
       aIndicator.show()
-      return fetcher(`/page/t/${id}/reply.json`, {
-        data: values
-      })
-        .then(({ data: reply }) => {
+      try {
+        try {
+          const { data: reply } = await fetcher(`/page/t/${id}/reply.json`, {
+            data: values
+          })
           const p = getPageNum(reply.num)
           listSwr.mutate((currentData) => {
             const pageData = currentData[p - 1]
@@ -352,13 +353,12 @@ function TopicScreen({ navigation, route }) {
           const cacheKey = getReplyFormCacheKey(replyContext)
           cache.delete(cacheKey)
           alert.alertWithType('success', '', '回复成功')
-        })
-        .catch((err) => {
+        } catch (err) {
           alert.alertWithType('error', '', err.message)
-        })
-        .finally(() => {
-          aIndicator.hide()
-        })
+        }
+      } finally {
+        aIndicator.hide()
+      }
     },
     [id, replyContext]
   )
@@ -397,7 +397,7 @@ function TopicScreen({ navigation, route }) {
   }, [id, replyItems])
 
   const handleReachEnd = useCallback(() => {
-    if (!listSwr.isValidating && !hasReachEnd(listSwr)) {
+    if (shouldLoadMore(listSwr)) {
       listSwr.setSize(listSwr.size + 1)
     }
   }, [listSwr, topicSwr])
