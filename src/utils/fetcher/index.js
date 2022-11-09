@@ -5,6 +5,7 @@ import axios from 'axios'
 import pathMatch from 'path-match'
 import { parse as pathParse } from 'path-to-regexp'
 import { parse, stringify } from 'qs'
+import * as Sentry from 'sentry-expo'
 
 const REQUEST_TIMEOUT = 1000 * 10
 const instance = axios.create({
@@ -1474,6 +1475,11 @@ export const FetcherWebView = () => {
           const url = getUrl(config)
           useEffect(() => {
             console.log('mount', url)
+            Sentry.Native.addBreadcrumb({
+              level: 'info',
+              category: 'fetch',
+              message: url
+            })
             return () => {
               console.log('unmount', url)
             }
@@ -1491,7 +1497,11 @@ export const FetcherWebView = () => {
                   try {
                     const script = scriptsToInject.current.shift()
                     if (script) {
-                      console.log('inject script')
+                      Sentry.Native.addBreadcrumb({
+                        level: 'debug',
+                        category: 'fetcher',
+                        message: 'inject script from `timeout`'
+                      })
                       ref.current.injectJavaScript(script)
                     }
                   } catch (err) {
@@ -1512,7 +1522,11 @@ export const FetcherWebView = () => {
                 console.log(`load: ${url}`)
                 const script = scriptsToInject.current.shift()
                 if (script) {
-                  console.log('inject script')
+                  Sentry.Native.addBreadcrumb({
+                    level: 'debug',
+                    category: 'fetcher',
+                    message: 'inject script from onLoad'
+                  })
                   ref.current.injectJavaScript(script)
                 }
               }}
@@ -1523,8 +1537,12 @@ export const FetcherWebView = () => {
                     console.log(`event message: ${url}`)
                     if (data.event === 'DocumentReady') {
                       const script = scriptsToInject.current.shift()
-                      console.log('inject script')
                       if (script) {
+                        Sentry.Native.addBreadcrumb({
+                          level: 'debug',
+                          category: 'fetcher',
+                          message: 'inject script from `DocumentReady` event'
+                        })
                         ref.current.injectJavaScript(script)
                       }
                     }

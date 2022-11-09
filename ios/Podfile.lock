@@ -371,8 +371,6 @@ PODS:
     - glog
   - react-native-cookies (6.2.1):
     - React-Core
-  - react-native-flipper (0.173.0):
-    - React-Core
   - react-native-mmkv (2.4.3):
     - MMKV (>= 1.2.13)
     - React-Core
@@ -392,6 +390,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.0):
     - React-Core
+  - react-native-selectable-text (1.5.9):
+    - React
   - react-native-webview (11.23.0):
     - React-Core
   - React-perflogger (0.69.6)
@@ -587,7 +587,6 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - "react-native-cookies (from `../node_modules/@react-native-cookies/cookies`)"
-  - react-native-flipper (from `../node_modules/react-native-flipper`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -595,6 +594,7 @@ DEPENDENCIES:
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../node_modules/@react-native-segmented-control/segmented-control`)"
+  - "react-native-selectable-text (from `../node_modules/@alentoma/react-native-selectable-text`)"
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -734,8 +734,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-cookies:
     :path: "../node_modules/@react-native-cookies/cookies"
-  react-native-flipper:
-    :path: "../node_modules/react-native-flipper"
   react-native-mmkv:
     :path: "../node_modules/react-native-mmkv"
   react-native-netinfo:
@@ -750,6 +748,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../node_modules/@react-native-segmented-control/segmented-control"
+  react-native-selectable-text:
+    :path: "../node_modules/@alentoma/react-native-selectable-text"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -857,7 +857,6 @@ SPEC CHECKSUMS:
   React-jsinspector: eaacb698c5af7a99131bc1933806372c20222dfd
   React-logger: ebb4d31bbbe4f1a8a1a9b658d7429210b8f68160
   react-native-cookies: f54fcded06bb0cda05c11d86788020b43528a26c
-  react-native-flipper: 64998cd1c415826bf49ef391e5bc0adcb7dcb77a
   react-native-mmkv: 1265a348a4711097ba29c8bcefd5971f48220f2b
   react-native-netinfo: 129bd99f607a2dc5bb096168f3e5c150fd1f1c95
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
@@ -865,6 +864,7 @@ SPEC CHECKSUMS:
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
+  react-native-selectable-text: 4210466b48818e1c6ea7aa87c536e4aa7fac5afe
   react-native-webview: e771bc375f789ebfa02a26939a57dbc6fa897336
   React-perflogger: 1fb1ad5333b43a5137afd7608695f7a42c5efd27
   React-RCTActionSheet: a435bd67689433575a1e5d7614b021d2c17f0726

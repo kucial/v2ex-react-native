@@ -5,7 +5,7 @@ import {
   useLayoutEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react'
 import {
   Linking,
@@ -13,25 +13,25 @@ import {
   SafeAreaView,
   Share,
   Text,
-  View
+  View,
 } from 'react-native'
 import { Keyboard } from 'react-native'
 import {
   EllipsisHorizontalIcon,
   HeartIcon,
   ShareIcon,
-  StarIcon
+  StarIcon,
 } from 'react-native-heroicons/outline'
 import {
   HeartIcon as FilledHeartIcon,
-  StarIcon as FilledStarIcon
+  StarIcon as FilledStarIcon,
 } from 'react-native-heroicons/solid'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
-  BottomSheetScrollView
+  BottomSheetScrollView,
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
@@ -99,7 +99,7 @@ const getRelatedReplies = (pivot, replyList) => {
     pivot.num,
     replyList.length,
     beforePivotReplies.length,
-    afterPivotReplies.length
+    afterPivotReplies.length,
   )
 
   /**
@@ -122,7 +122,7 @@ const getRelatedReplies = (pivot, replyList) => {
       beforeMetionInWay.delete(r.member.username)
       if (r.members_mentioned.length) {
         r.members_mentioned.forEach((username) =>
-          beforeMetionInWay.add(username)
+          beforeMetionInWay.add(username),
         )
       } else {
         rootReplyUsers.add(r.member.username)
@@ -160,7 +160,7 @@ const getRelatedReplies = (pivot, replyList) => {
 
 function TopicScreen({ navigation, route }) {
   const {
-    params: { brief, id }
+    params: { brief, id },
   } = route
 
   const { showActionSheetWithOptions } = useActionSheet()
@@ -178,7 +178,7 @@ function TopicScreen({ navigation, route }) {
   const tw = useTailwind()
   const { color: iconColor } = tw('color-neutral-800 dark:color-neutral-400')
   const { color: collectActiveColor } = tw(
-    'color-yellow-400 dark:color-yellow-200'
+    'color-yellow-400 dark:color-yellow-200',
   )
   const { color: likedActiveColor } = tw('color-red-700 dark:color-rose-400')
 
@@ -188,7 +188,7 @@ function TopicScreen({ navigation, route }) {
       (index) => {
         return `/page/t/${id}/replies.json?p=${index + 1}`
       },
-      [id]
+      [id],
     ),
     {
       onSuccess: (data) => {
@@ -197,14 +197,14 @@ function TopicScreen({ navigation, route }) {
           topicSwr.mutate(
             (prev) =>
               deepmerge(prev, topic, {
-                arrayMerge: (a, b) => b
+                arrayMerge: (a, b) => b,
               }),
-            false
+            false,
           )
           touchViewed(topic)
         }
-      }
-    }
+      },
+    },
   )
 
   const replyItems = useMemo(() => {
@@ -238,15 +238,15 @@ function TopicScreen({ navigation, route }) {
                   '取消',
                   '在内部 WebView 打开',
                   '在外部浏览器中打开',
-                  topic?.blocked ? '取消忽略主题' : '忽略主题'
+                  topic?.blocked ? '取消忽略主题' : '忽略主题',
                 ],
                 cancelButtonIndex: 0,
-                destructiveButtonIndex: 3
+                destructiveButtonIndex: 3,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
                   navigation.push('browser', {
-                    url: getTopicLink(id)
+                    url: getTopicLink(id),
                   })
                 } else if (buttonIndex === 2) {
                   Linking.openURL(getTopicLink(id))
@@ -260,12 +260,12 @@ function TopicScreen({ navigation, route }) {
                       topicSwr.data &&
                         topicSwr.mutate((prev) => ({
                           ...prev,
-                          ...result
+                          ...result,
                         }))
                       alert.alertWithType(
                         'success',
                         '操作成功',
-                        result.blocked ? '已忽略主题' : '已撤销主题忽略'
+                        result.blocked ? '已忽略主题' : '已撤销主题忽略',
                       )
                     })
                     .catch((err) => {
@@ -275,19 +275,19 @@ function TopicScreen({ navigation, route }) {
                       aIndicator.hide()
                     })
                 }
-              }
+              },
             )
           }}>
           <EllipsisHorizontalIcon size={24} color={iconColor} />
         </Pressable>
-      )
+      ),
     })
   }, [id, topic?.blocked])
 
   useLayoutEffect(() => {
     if (topic?.title) {
       navigation.setOptions({
-        title: topic.title
+        title: topic.title,
       })
     }
   }, [topic?.title])
@@ -299,7 +299,7 @@ function TopicScreen({ navigation, route }) {
       setReplyContext({ target: reply })
       replyModalRef.current?.present()
     },
-    [id]
+    [id],
   )
   const getReplyFormCacheKey = useCallback(() => {
     return `topic-reply:${id}/${replyContext.target?.id || 'root'}`
@@ -311,13 +311,13 @@ function TopicScreen({ navigation, route }) {
 
       fetcher(`/page/t/${id}/thank-reply.json?p=${p}`, {
         data: {
-          replyId: reply.id
-        }
+          replyId: reply.id,
+        },
       })
         .then(({ data }) => {
           listSwr.mutate((currentData) => {
             const targetIndex = currentData[p - 1].data.findIndex(
-              (item) => item.id === reply.id
+              (item) => item.id === reply.id,
             )
             currentData[p - 1].data[targetIndex] = data
             return currentData
@@ -327,7 +327,7 @@ function TopicScreen({ navigation, route }) {
           alert.alertWithType?.('error', '错误', err.message)
         })
     },
-    [id]
+    [id],
   )
 
   const handleSubmitReply = useCallback(
@@ -338,7 +338,7 @@ function TopicScreen({ navigation, route }) {
       try {
         try {
           const { data: reply } = await fetcher(`/page/t/${id}/reply.json`, {
-            data: values
+            data: values,
           })
           const p = getPageNum(reply.num)
           listSwr.mutate((currentData) => {
@@ -360,7 +360,7 @@ function TopicScreen({ navigation, route }) {
         aIndicator.hide()
       }
     },
-    [id, replyContext]
+    [id, replyContext],
   )
 
   const showConversation = useCallback((reply) => {
@@ -392,7 +392,7 @@ function TopicScreen({ navigation, route }) {
       },
       keyExtractor(item, index) {
         return item?.id || `index-${index}`
-      }
+      },
     }
   }, [id, replyItems])
 
@@ -425,7 +425,7 @@ function TopicScreen({ navigation, route }) {
                 <Pressable
                   className={classNames(
                     'px-4 h-[44px] w-[120px] rounded-full bg-neutral-900 items-center justify-center active:opacity-60',
-                    'dark:bg-amber-50'
+                    'dark:bg-amber-50',
                   )}
                   onPress={() => {
                     topicSwr.mutate()
@@ -447,7 +447,7 @@ function TopicScreen({ navigation, route }) {
           className={classNames(
             'px-3 py-2 border-b',
             'bg-white border-neutral-300',
-            'dark:bg-neutral-900 dark:border-neutral-600'
+            'dark:bg-neutral-900 dark:border-neutral-600',
           )}>
           <Text className="text-neutral-600 dark:text-neutral-300">
             {topic.replies} 条回复
@@ -462,7 +462,8 @@ function TopicScreen({ navigation, route }) {
   )
 
   return (
-    <View className="flex-1">
+    <>
+      {/* {baseContent} */}
       <FlashList
         ref={listRef}
         className="flex-1"
@@ -506,9 +507,9 @@ function TopicScreen({ navigation, route }) {
                   topicSwr.mutate(
                     (prev) => ({
                       ...prev,
-                      collected: false
+                      collected: false,
                     }),
-                    false
+                    false,
                   )
                   fetcher(`/page/t/${id}/uncollect.json`)
                     .then(() => {
@@ -518,9 +519,9 @@ function TopicScreen({ navigation, route }) {
                       topicSwr.mutate(
                         (prev) => ({
                           ...prev,
-                          collected: true
+                          collected: true,
                         }),
-                        false
+                        false,
                       )
                       alert.alertWithType('error', '错误', err.message)
                     })
@@ -528,9 +529,9 @@ function TopicScreen({ navigation, route }) {
                   topicSwr.mutate(
                     (prev) => ({
                       ...prev,
-                      collected: true
+                      collected: true,
                     }),
-                    false
+                    false,
                   )
                   fetcher(`/page/t/${id}/collect.json`)
                     .then(() => {
@@ -540,9 +541,9 @@ function TopicScreen({ navigation, route }) {
                       topicSwr.mutate(
                         (prev) => ({
                           ...prev,
-                          collected: false
+                          collected: false,
                         }),
-                        false
+                        false,
                       )
                       alert.alertWithType('error', '错误', err.message)
                     })
@@ -569,9 +570,9 @@ function TopicScreen({ navigation, route }) {
                 topicSwr.mutate(
                   (prev) => ({
                     ...prev,
-                    thanked: true
+                    thanked: true,
                   }),
-                  false
+                  false,
                 )
                 fetcher(`/page/t/${id}/thank.json`)
                   .then(() => {
@@ -581,9 +582,9 @@ function TopicScreen({ navigation, route }) {
                     topicSwr.mutate(
                       (prev) => ({
                         ...prev,
-                        thanked: false
+                        thanked: false,
                       }),
-                      false
+                      false,
                     )
                     alert.alertWithType('error', '错误', err.message)
                   })
@@ -606,7 +607,7 @@ function TopicScreen({ navigation, route }) {
                 try {
                   const result = await Share.share({
                     message: topic.title,
-                    url: `https://v2ex.com/t/${topic.id}`
+                    url: `https://v2ex.com/t/${topic.id}`,
                   })
                   if (result.action === Share.sharedAction) {
                     if (result.activityType) {
@@ -666,7 +667,7 @@ function TopicScreen({ navigation, route }) {
           />
         )}
       </BottomSheetModal>
-    </View>
+    </>
   )
 }
 

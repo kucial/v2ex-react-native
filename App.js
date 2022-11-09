@@ -1,10 +1,10 @@
 import { useRef } from 'react'
-import { Platform, StatusBar } from 'react-native'
+import { Platform, StatusBar, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import {
   HomeIcon,
   RectangleStackIcon,
-  UserIcon
+  UserIcon,
 } from 'react-native-heroicons/outline'
 import { SENTRY_DSN } from '@env'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
@@ -12,7 +12,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import {
   NavigationContainer,
-  useNavigationContainerRef
+  useNavigationContainerRef,
 } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import * as Sentry from 'sentry-expo'
@@ -42,7 +42,7 @@ import {
   NotificationScreen,
   ProfileScreen,
   RepliedTopicsScreen,
-  ViewedTopicsScreen
+  ViewedTopicsScreen,
 } from './src/screens/MyScreen'
 import NewTopicScreen from './src/screens/NewTopicScreen'
 import NodeScreen from './src/screens/NodeScreen'
@@ -52,7 +52,7 @@ import {
   HomeTabs,
   ImgurSettings,
   PreferenceSettings,
-  SettingsLanding
+  SettingsLanding,
 } from './src/screens/SettingsScreen'
 import SigninScreen from './src/screens/SigninScreen'
 import TopicScreen from './src/screens/TopicScreen'
@@ -64,7 +64,7 @@ Sentry.init({
   dsn: SENTRY_DSN,
   enableInExpoDevelopment: false,
   debug: false,
-  tracesSampleRate: 1.0
+  tracesSampleRate: 1.0,
 })
 
 const Stack = createNativeStackNavigator()
@@ -80,7 +80,7 @@ function MainTab() {
       backBehavior="initialRoute"
       screenOptions={{
         tabBarInactiveTintColor: inactiveColor,
-        tabBarStyle: tw('dark:bg-neutral-800')
+        tabBarStyle: tw('dark:bg-neutral-800'),
         // headerShown: false,
       }}>
       <Tab.Screen
@@ -89,7 +89,7 @@ function MainTab() {
         options={{
           tabBarIcon: RectangleStackIcon,
           tabBarLabel: '节点',
-          header: (props) => <MainScreenHeader {...props} />
+          header: (props) => <MainScreenHeader {...props} />,
         }}
       />
       <Tab.Screen
@@ -98,7 +98,7 @@ function MainTab() {
         options={{
           tabBarIcon: HomeIcon,
           tabBarLabel: '主题',
-          header: (props) => <MainScreenHeader {...props} />
+          header: (props) => <MainScreenHeader {...props} />,
         }}
       />
       <Tab.Screen
@@ -107,7 +107,7 @@ function MainTab() {
         options={{
           tabBarIcon: UserIcon,
           tabBarLabel: '我的',
-          header: (props) => <MainScreenHeader {...props} title={'我的'} />
+          header: (props) => <MainScreenHeader {...props} title={'我的'} />,
         }}
       />
     </Tab.Navigator>
@@ -125,7 +125,7 @@ function AppStack() {
         headerBackTitleVisible: false,
         headerLeft,
         headerTintColor: tintColor,
-        headerTitleStyle: tw('text-neutral-800 dark:text-neutral-300')
+        headerTitleStyle: tw('text-neutral-800 dark:text-neutral-300'),
       }}>
       <Stack.Group>
         <Stack.Screen
@@ -142,28 +142,28 @@ function AppStack() {
           name="topic"
           component={TopicScreen}
           options={{
-            title: '话题'
+            title: '话题',
           }}
         />
         <Stack.Screen
           name="node"
           component={NodeScreen}
           options={{
-            title: '节点'
+            title: '节点',
           }}
         />
         <Stack.Screen
           name="browser"
           component={BrowserScreen}
           options={{
-            title: '内嵌网页'
+            title: '内嵌网页',
           }}
         />
         <Stack.Screen
           name="member"
           component={MemberScreen}
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
 
@@ -171,7 +171,7 @@ function AppStack() {
           name="about"
           component={AboutScreen}
           options={{
-            title: '关于'
+            title: '关于',
           }}
         />
         <Stack.Screen
@@ -179,7 +179,7 @@ function AppStack() {
           component={NewTopicScreen}
           options={{
             title: '新主题',
-            animation: 'slide_from_bottom'
+            animation: 'slide_from_bottom',
           }}
         />
       </Stack.Group>
@@ -188,42 +188,42 @@ function AppStack() {
           name="notification"
           component={NotificationScreen}
           options={{
-            title: '消息'
+            title: '消息',
           }}
         />
         <Stack.Screen
           name="profile"
           component={ProfileScreen}
           options={{
-            title: '用户档案'
+            title: '用户档案',
           }}
         />
         <Stack.Screen
           name="created-topics"
           component={CreatedTopicsScreen}
           options={{
-            title: '创建的主题'
+            title: '创建的主题',
           }}
         />
         <Stack.Screen
           name="collected-topics"
           component={CollectedTopicsScreen}
           options={{
-            title: '收藏的主题'
+            title: '收藏的主题',
           }}
         />
         <Stack.Screen
           name="replied-topics"
           component={RepliedTopicsScreen}
           options={{
-            title: '回复的主题'
+            title: '回复的主题',
           }}
         />
         <Stack.Screen
           name="viewed-topics"
           component={ViewedTopicsScreen}
           options={{
-            title: '浏览的主题'
+            title: '浏览的主题',
           }}
         />
       </Stack.Group>
@@ -233,28 +233,28 @@ function AppStack() {
           name="settings"
           component={SettingsLanding}
           options={{
-            title: '设置'
+            title: '设置',
           }}
         />
         <Stack.Screen
           name="imgur-settings"
           component={ImgurSettings}
           options={{
-            title: 'Imgur 设置'
+            title: 'Imgur 设置',
           }}
         />
         <Stack.Screen
           name="home-tab-settings"
           component={HomeTabs}
           options={{
-            title: '首页标签设置'
+            title: '首页标签设置',
           }}
         />
         <Stack.Screen
           name="preference-settings"
           component={PreferenceSettings}
           options={{
-            title: '偏好设置'
+            title: '偏好设置',
           }}
         />
       </Stack.Group>
@@ -264,7 +264,7 @@ function AppStack() {
         component={SigninScreen}
         options={{
           headerShown: false,
-          presentation: Platform.OS === 'ios' ? 'modal' : undefined
+          presentation: Platform.OS === 'ios' ? 'modal' : undefined,
         }}
       />
     </Stack.Navigator>
@@ -282,18 +282,18 @@ const swrConfig = {
           extra: {
             key,
             config,
-            info: err.data
-          }
+            info: err.data,
+          },
         })
       }
     } else {
       Sentry.Native.addBreadcrumb({
         type: 'info',
-        data: { swrKey: key, err, message: err?.message }
+        data: { swrKey: key, err, message: err?.message },
       })
       Sentry.Native.captureMessage('SWR_ERROR_@')
     }
-  }
+  },
   // isOnline() {
   //   return true
   // },
@@ -374,12 +374,12 @@ function App() {
                         if (previousRoute.key !== currentRoute.key) {
                           const info = {
                             prev: previousRoute,
-                            current: currentRoute
+                            current: currentRoute,
                           }
                           Sentry.Native.addBreadcrumb({
                             level: 'info',
                             category: 'navigation',
-                            data: info
+                            data: info,
                           })
                         }
                         routeRef.current = currentRoute

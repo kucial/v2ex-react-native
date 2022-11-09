@@ -1,5 +1,5 @@
 import { MMKV } from 'react-native-mmkv'
-import { initializeMMKVFlipper } from 'react-native-mmkv-flipper-plugin'
+// import { initializeMMKVFlipper } from 'react-native-mmkv-flipper-plugin'
 
 const isDebuggingRemotelyActive = () => typeof importScripts === 'function'
 
@@ -30,9 +30,9 @@ if (isDebuggingRemotelyActive()) {
 } else {
   console.log('MMKV storage')
   storage = new MMKV()
-  if (__DEV__) {
-    initializeMMKVFlipper({ default: storage })
-  }
+  // if (__DEV__) {
+  //   initializeMMKVFlipper({ default: storage })
+  // }
 }
 
 export default storage

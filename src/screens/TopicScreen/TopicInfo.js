@@ -16,12 +16,12 @@ function TopicInfo(props) {
     }
     return {
       baseStyle: {
-        fontSize: 16
+        fontSize: 16,
       },
       source: {
         html: topic.content_rendered,
-        baseUrl: 'https://v2ex.com'
-      }
+        baseUrl: 'https://v2ex.com',
+      },
     }
   }, [topic.content_rendered])
 
@@ -33,13 +33,14 @@ function TopicInfo(props) {
             hitSlop={4}
             onPress={() => {
               navigation.push('member', {
-                username: member.username
+                username: member.username,
               })
             }}>
             {member.avatar_large ? (
               <FastImage
                 source={{ uri: member.avatar_large }}
                 className="w-[32px] h-[32px] rounded"
+                priority="low"
               />
             ) : (
               <Box className="w-[32px] h-[32px] rounded" />
@@ -51,7 +52,7 @@ function TopicInfo(props) {
                 hitSlop={4}
                 onPress={() => {
                   navigation.push('member', {
-                    username: member.username
+                    username: member.username,
                   })
                 }}>
                 <Text className="font-medium dark:text-neutral-300">
@@ -74,7 +75,7 @@ function TopicInfo(props) {
               onPress={() => {
                 navigation.push('node', {
                   name: node.name,
-                  brief: node
+                  brief: node,
                 })
               }}>
               <Text className="text-neutral-500 dark:text-neutral-300">
@@ -107,7 +108,7 @@ function TopicInfo(props) {
                 contentWidth={width - 32}
                 {...htmlRenderProps}
                 source={{
-                  html: subtle.content_rendered
+                  html: subtle.content_rendered,
                 }}
               />
             </View>
