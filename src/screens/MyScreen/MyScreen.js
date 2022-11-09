@@ -4,7 +4,7 @@ import FastImage from 'react-native-fast-image'
 import {
   Cog6ToothIcon,
   DocumentIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
 } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
@@ -18,7 +18,7 @@ export default function MyScreen({ navigation }) {
   const { colorScheme } = useColorScheme()
   useEffect(() => {
     navigation.setOptions({
-      title: '我的'
+      title: '我的',
     })
   }, [])
   const {
@@ -26,7 +26,7 @@ export default function MyScreen({ navigation }) {
     status: authStatus,
     logout,
     composeAuthedNavigation,
-    goToSigninSreen
+    goToSigninSreen,
   } = useAuthService()
 
   useEffect(() => {
@@ -192,18 +192,18 @@ export default function MyScreen({ navigation }) {
           <Pressable
             className={classNames(
               'flex flex-row items-center justify-center h-[44px] rounded-md bg-neutral-50 active:opacity-60 active:bg-red-100',
-              'dark:bg-rose-800/5'
+              'dark:bg-rose-800/5',
             )}
             onPress={() => {
               Alert.alert('确认要退出登录吗?', '', [
                 {
                   text: '确认',
-                  onPress: () => logout()
+                  onPress: () => logout(),
                 },
                 {
                   text: '取消',
-                  style: 'cancel'
-                }
+                  style: 'cancel',
+                },
               ])
             }}>
             <Text className="text-red-700 dark:text-rose-300">退出登录</Text>

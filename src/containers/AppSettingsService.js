@@ -18,7 +18,7 @@ const DEFAULT_SETTINGS = {
   feedShowViewedHint: true,
 
   autoRefresh: true,
-  autoRefreshDuration: 10
+  autoRefreshDuration: 10,
 }
 
 const AppSettingsContext = createContext({})
@@ -30,7 +30,7 @@ export default function AppSettings(props) {
     const data = getJSON(CACHE_KEY)
     return {
       ...DEFAULT_SETTINGS,
-      ...(data || {})
+      ...(data || {}),
     }
   })
 
@@ -47,18 +47,18 @@ export default function AppSettings(props) {
         const mapped = [
           {
             value: 'recent',
-            label: '最近'
+            label: '最近',
           },
-          ...data
+          ...data,
         ]
           .filter((item) => item.value !== 'nodes')
           .map((item) => ({ ...item, type: 'home' }))
         setSettings((prev) => ({
           ...prev,
-          homeTabs: mapped
+          homeTabs: mapped,
         }))
         return mapped
-      }
+      },
     }
   }, [settings])
 

@@ -15,13 +15,14 @@ export const LineItem = (props) => {
     <Pressable
       className={classNames(
         'min-h-[50px] bg-white active:opacity-50 flex flex-row items-center pl-4',
-        'dark:bg-neutral-900'
+        'dark:bg-neutral-900',
       )}
       onPress={props.onPress}
       disabled={props.disabled}>
       <View
         className={classNames('h-full flex-1 flex flex-row', {
-          'border-b border-b-neutral-300 dark:border-neutral-600': !props.isLast
+          'border-b border-b-neutral-300 dark:border-neutral-600':
+            !props.isLast,
         })}>
         <View className="flex-1 flex flex-row items-center">
           {props.icon && <View className="mr-3">{props.icon}</View>}

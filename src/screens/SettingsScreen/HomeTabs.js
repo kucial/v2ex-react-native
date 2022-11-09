@@ -5,27 +5,27 @@ import {
   useLayoutEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react'
 import { Alert, Pressable, Text, View } from 'react-native'
 import DraggableFlatList, {
-  ScaleDecorator
+  ScaleDecorator,
 } from 'react-native-draggable-flatlist'
 import {
   EllipsisHorizontalIcon,
   HomeModernIcon,
   PlusIcon,
   RectangleStackIcon,
-  TrashIcon
+  TrashIcon,
 } from 'react-native-heroicons/outline'
 import SwipeableItem, {
-  useSwipeableItemParams
+  useSwipeableItemParams,
 } from 'react-native-swipeable-item'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
-  BottomSheetTextInput
+  BottomSheetTextInput,
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
@@ -44,7 +44,7 @@ const UnderlayLeft = (props) => {
       <Pressable
         className={classNames(
           'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',
-          'active:opacity-70'
+          'active:opacity-70',
         )}
         onPress={() => {
           close().then(() => {
@@ -67,7 +67,7 @@ const LineItem = (props) => {
         'min-h-[50px] flex flex-row items-center pl-4',
         'bg-white dark:bg-neutral-900',
         openDirection !== 'none' &&
-          'active:bg-neutral-100 dark:active:bg-neutral-800'
+          'active:bg-neutral-100 dark:active:bg-neutral-800',
       )}
       onPress={() => {
         if (openDirection !== 'none') {
@@ -79,7 +79,8 @@ const LineItem = (props) => {
       style={props.style}>
       <View
         className={classNames('h-full flex-1 flex flex-row', {
-          'border-b border-b-neutral-300 dark:border-neutral-600': !props.isLast
+          'border-b border-b-neutral-300 dark:border-neutral-600':
+            !props.isLast,
         })}>
         <View className="flex-1 flex flex-row items-center">
           {props.icon && <View className="mr-3">{props.icon}</View>}
@@ -123,8 +124,8 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
     }
     return nodesSwr.data.filter((n) =>
       ['name', 'title', 'title_alternative'].some(
-        (key) => n[key].indexOf(filter) > -1
-      )
+        (key) => n[key].indexOf(filter) > -1,
+      ),
     )
   }, [nodesSwr.data, filter])
 
@@ -136,7 +137,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
           props.onSelect({
             type: 'node',
             value: item.name,
-            label: item.title
+            label: item.title,
           })
         }}>
         <View
@@ -144,7 +145,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
             'h-[50px] flex flex-row items-center border-b pr-3',
             'border-neutral-300',
             'dark:border-neutral-600',
-            index === 0 && 'border-t'
+            index === 0 && 'border-t',
           )}>
           <RectangleStackIcon size={18} color={tintColor} />
           <View className="ml-3">
@@ -171,7 +172,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
               props.onSelect({
                 type: item.type,
                 value: item.value,
-                label: item.label
+                label: item.label,
               })
             }}>
             <View
@@ -179,7 +180,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
                 'h-[50px] flex flex-row items-center border-b pr-3',
                 'border-neutral-300',
                 'dark:border-neutral-600',
-                index === 0 && 'border-t'
+                index === 0 && 'border-t',
               )}>
               <HomeModernIcon size={18} color={tintColor} />
               <View className="ml-3">
@@ -217,7 +218,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
               setIndex(0)
             }}
             style={tw(
-              'h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300'
+              'h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300',
             )}
             selectionColor={
               colorScheme === 'dark' ? colors.amber[50] : colors.neutral[600]
@@ -253,7 +254,7 @@ export function HomeTabs(props) {
   const {
     data: { homeTabs },
     update,
-    initHomeTabs
+    initHomeTabs,
   } = useAppSettings()
   const [tabs, setTabs] = useState(homeTabs)
   const { colorScheme } = useColorScheme()
@@ -272,7 +273,7 @@ export function HomeTabs(props) {
               {
                 options: ['取消', '重置'],
                 cancelButtonIndex: 0,
-                destructiveButtonIndex: 1
+                destructiveButtonIndex: 1,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
@@ -288,7 +289,7 @@ export function HomeTabs(props) {
                       aIndicator.hide()
                     })
                 }
-              }
+              },
             )
           }}>
           <EllipsisHorizontalIcon
@@ -298,7 +299,7 @@ export function HomeTabs(props) {
             }
           />
         </Pressable>
-      )
+      ),
     })
   }, [])
 
@@ -337,12 +338,12 @@ export function HomeTabs(props) {
                 onDelete={() => {
                   setTabs((prev) => {
                     const tabIndex = prev.findIndex(
-                      (t) => t.type === item.type && t.value === item.value
+                      (t) => t.type === item.type && t.value === item.value,
                     )
                     return [
                       ...prev.slice(0, tabIndex),
                       { ...item, disabled: true },
-                      ...prev.slice(tabIndex + 1)
+                      ...prev.slice(tabIndex + 1),
                     ]
                   })
                 }}
@@ -355,14 +356,14 @@ export function HomeTabs(props) {
               icon={icon}
               isLast={index === enabledTabs.length - 1}
               style={{
-                opacity: isActive ? 0.8 : 1
+                opacity: isActive ? 0.8 : 1,
               }}
             />
           </SwipeableItem>
         </ScaleDecorator>
       )
     },
-    [enabledTabs]
+    [enabledTabs],
   )
 
   useEffect(() => {
@@ -375,7 +376,7 @@ export function HomeTabs(props) {
       if (homeTabs !== tabs) {
         update((prev) => ({
           ...prev,
-          homeTabs: tabs
+          homeTabs: tabs,
         }))
       }
     })
@@ -397,7 +398,7 @@ export function HomeTabs(props) {
           className={classNames(
             'w-[62px] h-[62px] items-center justify-center rounded-full shadow-sm active:opacity-60',
             'bg-neutral-900',
-            'dark:bg-amber-50'
+            'dark:bg-amber-50',
           )}
           onPress={() => {
             sheetRef.current?.present()
@@ -414,13 +415,13 @@ export function HomeTabs(props) {
         onSelect={(item) => {
           setTabs((prev) => {
             const relatedItemIndex = prev.findIndex(
-              (t) => t.type === item.type && t.value === item.value
+              (t) => t.type === item.type && t.value === item.value,
             )
             if (relatedItemIndex > -1) {
               return [
                 item,
                 ...prev.slice(0, relatedItemIndex),
-                ...prev.slice(relatedItemIndex + 1)
+                ...prev.slice(relatedItemIndex + 1),
               ]
             }
             return [item, ...prev]

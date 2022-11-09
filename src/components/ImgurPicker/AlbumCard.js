@@ -21,14 +21,14 @@ export default function AlbumCard(props) {
             source={
               coverSwr.data
                 ? {
-                    uri: getImageLink(coverSwr.data, 's')
+                    uri: getImageLink(coverSwr.data, 's'),
                   }
                 : albumCover
             }
             resizeMode="cover"
             style={{
               justifyContent: 'center',
-              flex: 1
+              flex: 1,
             }}></FastImage>
         </View>
       </View>

@@ -7,7 +7,7 @@ import {
   ScrollView,
   Text,
   TextInput,
-  View
+  View,
 } from 'react-native'
 import WebView from 'react-native-webview'
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet'
@@ -24,7 +24,7 @@ import {
   EditorImagePicker,
   EditorProvider,
   EditorRender,
-  EditorToolbar
+  EditorToolbar,
 } from '@/components/SlateEditor'
 import { useAlertService } from '@/containers/AlertService'
 import nodes from '@/mock/nodes'
@@ -58,7 +58,7 @@ export default function NewTopicScreen(props) {
   const scrollViewInfo = useRef({
     height: undefined,
     width: undefined,
-    scrollY: 0
+    scrollY: 0,
   })
   const editorRenderContainer = useRef()
   const webviewRef = useRef()
@@ -71,7 +71,7 @@ export default function NewTopicScreen(props) {
   const [values, setValues] = useState({
     title: '',
     node: route.params?.node,
-    content: ''
+    content: '',
   })
 
   const isValid = useMemo(() => {
@@ -98,7 +98,7 @@ export default function NewTopicScreen(props) {
               scrollViewInfo.current.scrollY,
               scrollViewInfo.current.scrollY +
                 scrollViewInfo.current.height -
-                VISIBLE_BOTTOM_OFFSET
+                VISIBLE_BOTTOM_OFFSET,
             ]
 
             if (
@@ -112,13 +112,13 @@ export default function NewTopicScreen(props) {
             scrollViewRef.current.scrollTo({
               y:
                 cursorOffsetTop -
-                (scrollViewInfo.current.height - VISIBLE_BOTTOM_OFFSET)
+                (scrollViewInfo.current.height - VISIBLE_BOTTOM_OFFSET),
             })
-          }
+          },
         )
       }
     }, 100),
-    []
+    [],
   )
 
   const handleSubmit = useCallback(async () => {
@@ -129,7 +129,7 @@ export default function NewTopicScreen(props) {
         title: values.title,
         syntax: 'markdown',
         content,
-        node_name: values.node.name
+        node_name: values.node.name,
       }
 
       webviewScripts.current.push(getResultScript())
@@ -182,7 +182,7 @@ export default function NewTopicScreen(props) {
                       onChangeText={(value) =>
                         setValues((prev) => ({
                           ...prev,
-                          title: value
+                          title: value,
                         }))
                       }
                       value={values.title}
@@ -207,14 +207,14 @@ export default function NewTopicScreen(props) {
                       )}
                       className={classNames(
                         'h-[44px] px-2 bg-neutral-100 mb-2 rounded-md flex flex-row items-center',
-                        'dark:bg-neutral-800'
+                        'dark:bg-neutral-800',
                       )}
                       filterPlaceholder="查询"
                       placeholder="请输入主题节点"
                       onChange={(node) => {
                         setValues((prev) => ({
                           ...prev,
-                          node
+                          node,
                         }))
                       }}
                     />
@@ -236,7 +236,7 @@ export default function NewTopicScreen(props) {
                         onCursorPositionUpdate={editorScrollIntoView}
                         containerStyle={{
                           overflow: 'hidden',
-                          minHeight: 200
+                          minHeight: 200,
                         }}
                       />
                     </View>
@@ -248,7 +248,7 @@ export default function NewTopicScreen(props) {
                       'h-[50px] rounded-lg items-center justify-center active:opacity-60',
                       isValid
                         ? 'bg-neutral-900 dark:bg-amber-50'
-                        : 'bg-neutral-900/60 dark:bg-amber-50/70'
+                        : 'bg-neutral-900/60 dark:bg-amber-50/70',
                     )}
                     disabled={!isValid || isSubmitting}
                     onPress={handleSubmit}>
@@ -300,7 +300,7 @@ export default function NewTopicScreen(props) {
                   onConfigSettings={() => {
                     pickerModalRef.current?.dismiss()
                     navigation.push('imgur-settings', {
-                      autoBack: true
+                      autoBack: true,
                     })
                   }}
                   onSubmit={() => {
@@ -318,7 +318,7 @@ export default function NewTopicScreen(props) {
             originWhitelist={['*']}
             injectedJavaScript={domReadyMessage}
             source={{
-              uri: `https://www.v2ex.com/write?node=${values.node.name}`
+              uri: `https://www.v2ex.com/write?node=${values.node.name}`,
             }}
             ref={webviewRef}
             onMessage={(event) => {
@@ -335,14 +335,14 @@ export default function NewTopicScreen(props) {
                     alert.alertWithType(
                       'error',
                       data.message,
-                      data.data.join('\n')
+                      data.data.join('\n'),
                     )
                   } else {
                     if (data.data) {
                       addBreadcrumb({
                         type: 'info',
                         data: data.data,
-                        message: data.message
+                        message: data.message,
                       })
                     }
                     captureMessage('CREATE_ERROR')
@@ -352,7 +352,7 @@ export default function NewTopicScreen(props) {
                 } else {
                   alert.alertWithType('success', '成功', '主题发布成功')
                   navigation.replace('topic', {
-                    id: data.id
+                    id: data.id,
                   })
                 }
               } else {

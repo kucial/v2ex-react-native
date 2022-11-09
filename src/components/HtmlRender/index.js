@@ -1,5 +1,4 @@
-import { memo, useMemo } from 'react'
-import { Alert } from 'react-native'
+import { useMemo } from 'react'
 import BaseRender, { useInternalRenderer } from 'react-native-render-html'
 import WebView from 'react-native-webview'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'

@@ -15,7 +15,7 @@ export default function MemberTopics(props) {
     (index) => {
       return `/page/member/${props.username}/topics.json?p=${index + 1}`
     },
-    [props.username]
+    [props.username],
   )
 
   const listSwr = useSWRInfinite(getKey, {
@@ -24,7 +24,7 @@ export default function MemberTopics(props) {
       if (!err.code) {
         alert.alertWithType('error', '错误', err.message || '请求资源失败')
       }
-    }
+    },
   })
 
   const listItems = useMemo(() => {
@@ -48,7 +48,7 @@ export default function MemberTopics(props) {
       },
       keyExtractor(item, index) {
         return item?.id || index
-      }
+      },
     }
   }, [])
 
@@ -82,5 +82,5 @@ export default function MemberTopics(props) {
   )
 }
 MemberTopics.propTypes = {
-  username: PropTypes.string
+  username: PropTypes.string,
 }

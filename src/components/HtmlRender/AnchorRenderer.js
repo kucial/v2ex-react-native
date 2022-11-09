@@ -1,7 +1,7 @@
 import { Text } from 'react-native'
 import {
   getNativePropsForTNode,
-  useNormalizedUrl
+  useNormalizedUrl,
 } from 'react-native-render-html'
 import { useAElementProps } from 'react-native-render-html/src/renderers/ARenderer'
 

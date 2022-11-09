@@ -41,7 +41,7 @@ export default function ImgurPicker(props) {
         return next
       })
     },
-    [props.maxCount]
+    [props.maxCount],
   )
 
   if (!imgur.credentials) {
@@ -59,7 +59,7 @@ export default function ImgurPicker(props) {
             className={classNames(
               'h-[44px] w-[200px] rounded-md flex items-center justify-center mt-4',
               'bg-neutral-900 active:opacity-60',
-              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
+              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
             )}
             onPress={props.onConfigSettings}>
             <Text className="text-white dark:text-neutral-900">前往设置</Text>
@@ -81,9 +81,9 @@ export default function ImgurPicker(props) {
               {
                 name: 'album',
                 params: {
-                  album
-                }
-              }
+                  album,
+                },
+              },
             ])
           }}
           onToggleSelect={toggleImage}

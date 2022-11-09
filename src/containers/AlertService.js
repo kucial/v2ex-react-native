@@ -20,8 +20,8 @@ export default function AlertService(props) {
             console.warn('alert service instance not ref...')
           }
           return null
-        }
-      }
+        },
+      },
     )
   }, [])
   return (
@@ -32,12 +32,12 @@ export default function AlertService(props) {
         renderImage={() => null}
         closeInterval={3000}
         defaultContainer={{
-          paddingHorizontal: 6
+          paddingHorizontal: 6,
         }}
         defaultTextContainer={{
           paddingTop: 6,
           paddingHorizontal: 6,
-          paddingBottom: 8
+          paddingBottom: 8,
         }}
         titleStyle={{
           fontSize: 16,
@@ -45,7 +45,7 @@ export default function AlertService(props) {
           fontWeight: 'bold',
           color: 'white',
           backgroundColor: 'transparent',
-          marginBottom: 2
+          marginBottom: 2,
         }}
         successColor={colorScheme === 'dark' ? colors.emerald[400] : undefined}
         errorColor={colorScheme === 'dark' ? colors.rose[600] : undefined}

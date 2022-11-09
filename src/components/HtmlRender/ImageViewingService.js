@@ -23,7 +23,7 @@ export default function ImageViewingService(props) {
       open: (url) => {
         const index = imagesRef.current.findIndex((n) => n.url === url)
         setViewIndex(index)
-      }
+      },
     }
   }, [])
 

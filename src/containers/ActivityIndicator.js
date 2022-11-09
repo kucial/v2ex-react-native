@@ -5,7 +5,7 @@ import Loader from '@/components/Loader'
 
 const ActivityIndicatorContext = createContext({
   show: () => {},
-  hide: () => {}
+  hide: () => {},
 })
 
 const INDICATOR_WIDTH = 64
@@ -16,7 +16,7 @@ export default function ActivityIndicatorProvider(props) {
 
   const service = useMemo(() => ({
     show: () => setVisible(true),
-    hide: () => setVisible(false)
+    hide: () => setVisible(false),
   }))
 
   return (
@@ -32,7 +32,7 @@ export default function ActivityIndicatorProvider(props) {
             height: INDICATOR_HEIGHT,
             alignItems: 'center',
             justifyContent: 'center',
-            borderRadius: 12
+            borderRadius: 12,
           }}
           className="bg-neutral-100/80 dark:bg-neutral-900/90">
           <Loader size={30} color="#333" autoPlay />

@@ -8,31 +8,31 @@ import { useAppSettings } from '@/containers/AppSettingsService'
 
 const styleLabels = {
   normal: '默认',
-  tide: '紧凑'
+  tide: '紧凑',
 }
 
 const topic = {
   member: {
     avatar_mini:
       'https://cdn.v2ex.com/avatar/c4ca/4238/1_xlarge.png?m=1657258945',
-    username: 'livid'
+    username: 'livid',
   },
   node: {
     name: 'v2ex',
-    title: 'V2EX'
+    title: 'V2EX',
   },
   last_reply_by: 'kongkx',
   last_reply_time: '2小时18分钟前',
   title:
     '如果你在 V2EX 设置的个人网站地址那里填的是一个 ENS，现在会显示 ENS 的图标',
-  replies: 200
+  replies: 200,
 }
 
 const refreshDurationOptions = [
   { value: 5, label: '5 分钟' },
   { value: 10, label: '10 分钟' },
   { value: 15, label: '15 分钟' },
-  { value: 30, label: '30 分钟' }
+  { value: 30, label: '30 分钟' },
 ]
 
 const NormalTopicRowDemo = (props) => {
@@ -44,13 +44,13 @@ const NormalTopicRowDemo = (props) => {
       className={classNames(
         'border-b flex flex-row items-center active:opacity-50',
         'border-neutral-300 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900'
+        'dark:border-neutral-700 dark:bg-neutral-900',
       )}>
       {showAvatar ? (
         <View className="px-2 py-2 self-start">
           <FastImage
             source={{
-              uri: member.avatar_mini
+              uri: member.avatar_mini,
             }}
             className="w-[24px] h-[24px] rounded"
           />
@@ -117,13 +117,13 @@ const TideTopicRowDemo = (props) => {
       className={classNames(
         'border-b flex flex-row items-center active:opacity-50',
         'border-neutral-300 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900'
+        'dark:border-neutral-700 dark:bg-neutral-900',
       )}>
       {showAvatar ? (
         <View className="px-2 py-2 self-start">
           <FastImage
             source={{
-              uri: member.avatar_mini
+              uri: member.avatar_mini,
             }}
             className="w-[24px] h-[24px] rounded"
           />
@@ -216,19 +216,19 @@ export function PreferenceSettings({ navigation }) {
           className={classNames(
             'pl-4',
             'bg-white dark:bg-neutral-900',
-            'active:opacity-50'
+            'active:opacity-50',
           )}
           onPress={() => {
             const next = state.feedLayout === 'normal' ? 'tide' : 'normal'
             setState((prev) => ({
               ...prev,
-              feedLayout: next
+              feedLayout: next,
             }))
           }}>
           <View
             className={classNames(
               'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700'
+              'border-b border-neutral-300 dark:border-neutral-700',
             )}>
             <View className="flex-1">
               <Text className="text-base dark:text-neutral-300">列表布局</Text>
@@ -244,7 +244,7 @@ export function PreferenceSettings({ navigation }) {
           <View
             className={classNames(
               'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700'
+              'border-b border-neutral-300 dark:border-neutral-700',
             )}>
             <View className="flex-1">
               <Text className="text-base dark:text-neutral-300">显示头像</Text>
@@ -255,7 +255,7 @@ export function PreferenceSettings({ navigation }) {
                 onValueChange={(val) =>
                   setState((prev) => ({
                     ...prev,
-                    feedShowAvatar: val
+                    feedShowAvatar: val,
                   }))
                 }
               />
@@ -266,7 +266,7 @@ export function PreferenceSettings({ navigation }) {
           <View
             className={classNames(
               'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700'
+              'border-b border-neutral-300 dark:border-neutral-700',
             )}>
             <View className="flex-1">
               <Text className="text-base dark:text-neutral-300">
@@ -279,7 +279,7 @@ export function PreferenceSettings({ navigation }) {
                 onValueChange={(val) =>
                   setState((prev) => ({
                     ...prev,
-                    feedShowLastReplyMember: val
+                    feedShowLastReplyMember: val,
                   }))
                 }
               />
@@ -290,7 +290,7 @@ export function PreferenceSettings({ navigation }) {
           <View
             className={classNames(
               'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700'
+              'border-b border-neutral-300 dark:border-neutral-700',
             )}>
             <View className="flex-1">
               <Text className="text-base dark:text-neutral-300">已读提示</Text>
@@ -301,7 +301,7 @@ export function PreferenceSettings({ navigation }) {
                 onValueChange={(val) =>
                   setState((prev) => ({
                     ...prev,
-                    showHasViewed: val
+                    showHasViewed: val,
                   }))
                 }
               />
@@ -322,7 +322,7 @@ export function PreferenceSettings({ navigation }) {
           <View
             className={classNames(
               'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700'
+              'border-b border-neutral-300 dark:border-neutral-700',
             )}>
             <View className="flex-1">
               <Text className="text-base dark:text-neutral-300">自动刷新</Text>
@@ -333,7 +333,7 @@ export function PreferenceSettings({ navigation }) {
                 onValueChange={(val) =>
                   setState((prev) => ({
                     ...prev,
-                    autoRefresh: val
+                    autoRefresh: val,
                   }))
                 }
               />
@@ -345,24 +345,24 @@ export function PreferenceSettings({ navigation }) {
           className={classNames(
             'pl-4',
             'bg-white dark:bg-neutral-900',
-            'active:opacity-50'
+            'active:opacity-50',
           )}
           onPress={() => {
             const index = refreshDurationOptions.findIndex(
-              (o) => o.value === state.autoRefreshDuration
+              (o) => o.value === state.autoRefreshDuration,
             )
             const nextIndex = (index + 1) % refreshDurationOptions.length
             const next = refreshDurationOptions[nextIndex]
 
             setState((prev) => ({
               ...prev,
-              autoRefreshDuration: next.value
+              autoRefreshDuration: next.value,
             }))
           }}>
           <View
             className={classNames(
               'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700'
+              'border-b border-neutral-300 dark:border-neutral-700',
             )}>
             <View className="flex-1">
               <Text className="text-base dark:text-neutral-300">刷新间隔</Text>

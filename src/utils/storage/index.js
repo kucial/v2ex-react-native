@@ -25,7 +25,7 @@ if (isDebuggingRemotelyActive()) {
     },
     getAllKeys() {
       return Object.keys(data)
-    }
+    },
   }
 } else {
   console.log('MMKV storage')

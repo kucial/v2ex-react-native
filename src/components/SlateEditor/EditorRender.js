@@ -12,7 +12,7 @@ export default function EditorRender(props) {
     editor.setInitialConfig({
       placeholder: props.placeholder,
       html: props.html,
-      containerStyle: props.containerStyle
+      containerStyle: props.containerStyle,
     })
   }, [])
 
@@ -36,7 +36,7 @@ export default function EditorRender(props) {
         style={{
           opacity: editor.isReady() ? 1 : 0,
           backgroundColor: props.containerStyle?.backgroundColor,
-          minHeight: props.containerStyle?.minHeight
+          minHeight: props.containerStyle?.minHeight,
         }}
         scrollEnabled={false}
       />
@@ -45,5 +45,5 @@ export default function EditorRender(props) {
 }
 
 EditorRender.propTypes = {
-  minHeight: PropTypes.number
+  minHeight: PropTypes.number,
 }

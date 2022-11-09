@@ -5,7 +5,7 @@ import {
   hasReachEnd,
   isEmptyList,
   isLoadingMore,
-  shouldShowError
+  shouldShowError,
 } from '@/utils/swr'
 
 import Loader from './Loader'
@@ -59,5 +59,5 @@ export default function CommonListFooter(props) {
 
 CommonListFooter.propTypes = {
   data: PropTypes.object,
-  emptyMessage: PropTypes.string
+  emptyMessage: PropTypes.string,
 }

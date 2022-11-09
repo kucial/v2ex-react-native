@@ -18,7 +18,7 @@ class ImgurClient {
   constructor(credentials = {}) {
     this.fetcher = axios.create({
       baseURL: IMGUR_API_PREFIX,
-      responseType: 'json'
+      responseType: 'json',
     })
     this.credentials = credentials
 
@@ -45,22 +45,22 @@ class ImgurClient {
           console.log(err.response.data)
         }
         return Promise.reject(err)
-      }
+      },
     )
   }
   getAlbums(username = 'me', page) {
     return this.fetcher({
-      url: `/3/account/${username}/albums/${page || ''}`
+      url: `/3/account/${username}/albums/${page || ''}`,
     })
   }
   getImages(username = 'me', page = 0) {
     return this.fetcher({
-      url: `/3/account/${username}/images/${page}`
+      url: `/3/account/${username}/images/${page}`,
     })
   }
   getImage(hashid) {
     return this.fetcher({
-      url: `/3/image/${hashid}`
+      url: `/3/image/${hashid}`,
     })
   }
   async upload(payload) {
@@ -76,23 +76,23 @@ class ImgurClient {
       method: 'POST',
       data: formData,
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data',
       },
       transformRequest: (data) => {
         return data
-      }
+      },
     })
   }
   getAlbumImages(album) {
     return this.fetcher({
-      url: `/3/album/${album}/images`
+      url: `/3/album/${album}/images`,
     })
   }
   createAlbumn(data) {
     return this.fetcher({
       url: '`/3/album',
       method: 'POST',
-      data
+      data,
     })
   }
   setCredentials(credentials) {
@@ -125,7 +125,7 @@ export default function ImgurService(props) {
           const res = await client.getImages()
           return {
             data: res.data,
-            fetchedAt: Date.now()
+            fetchedAt: Date.now(),
           }
         })
       },
@@ -140,7 +140,7 @@ export default function ImgurService(props) {
           const res = await client.getAlbumImages(album)
           return {
             data: res.data,
-            fetchedAt: Date.now()
+            fetchedAt: Date.now(),
           }
         })
       },
@@ -159,7 +159,7 @@ export default function ImgurService(props) {
       },
       refreshAlbumImages(album) {
         mutate(`/imgur/album/${album}/images`)
-      }
+      },
     }
   }, [credentials])
   return (

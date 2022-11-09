@@ -13,7 +13,7 @@ import { useAuthService } from '@/containers/AuthService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 
 const htmlBaseStyle = {
-  lineHeight: 18
+  lineHeight: 18,
 }
 
 const NotificationRow = (props) => {
@@ -26,7 +26,7 @@ const NotificationRow = (props) => {
         className={classNames(
           'border-b flex flex-row items-start active:opacity-60 p-2',
           'border-b-neutral-300 bg-white',
-          'dark:bg-neutral-900 dark:border-neutral-600'
+          'dark:bg-neutral-900 dark:border-neutral-600',
         )}>
         <View className="mr-2">
           <Box className="w-[24px] h-[24px] rounded" />
@@ -57,7 +57,7 @@ const NotificationRow = (props) => {
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
-                  brief: data.member
+                  brief: data.member,
                 })
               }}>
               {data.member.username}
@@ -68,7 +68,7 @@ const NotificationRow = (props) => {
               style={{ paddingHorizontal: 8 }}
               onPress={() => {
                 navigation.push('topic', {
-                  id: data.topic.id
+                  id: data.topic.id,
                 })
               }}>
               {data.topic.title}
@@ -88,7 +88,7 @@ const NotificationRow = (props) => {
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
-                  brief: data.member
+                  brief: data.member,
                 })
               }}>
               {data.member.username}
@@ -99,7 +99,7 @@ const NotificationRow = (props) => {
               style={{ paddingHorizontal: 8 }}
               onPress={() => {
                 navigation.push('topic', {
-                  id: data.topic.id
+                  id: data.topic.id,
                 })
               }}>
               {data.topic.title}
@@ -119,7 +119,7 @@ const NotificationRow = (props) => {
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
-                  brief: data.member
+                  brief: data.member,
                 })
               }}>
               {data.member.username}
@@ -130,7 +130,7 @@ const NotificationRow = (props) => {
               style={{ paddingHorizontal: 8 }}
               onPress={() => {
                 navigation.push('topic', {
-                  id: data.topic.id
+                  id: data.topic.id,
                 })
               }}>
               {data.topic.title}
@@ -151,7 +151,7 @@ const NotificationRow = (props) => {
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
-                  brief: data.member
+                  brief: data.member,
                 })
               }}>
               {data.member.username}
@@ -162,7 +162,7 @@ const NotificationRow = (props) => {
               style={{ paddingHorizontal: 8 }}
               onPress={() => {
                 navigation.push('topic', {
-                  id: data.topic.id
+                  id: data.topic.id,
                 })
               }}>
               {data.topic.title}
@@ -180,7 +180,7 @@ const NotificationRow = (props) => {
       className={classNames(
         'border-b flex flex-row items-start active:opacity-60 p-2',
         'border-b-neutral-300 bg-white',
-        'dark:bg-neutral-900 dark:border-neutral-600'
+        'dark:bg-neutral-900 dark:border-neutral-600',
       )}>
       <View className="mr-2">
         <Pressable
@@ -189,12 +189,12 @@ const NotificationRow = (props) => {
           onPress={() => {
             navigation.push('member', {
               username: data.member.username,
-              brief: data.member
+              brief: data.member,
             })
           }}>
           <FastImage
             source={{
-              uri: data.member.avatar_normal
+              uri: data.member.avatar_normal,
             }}
             className="w-[24px] h-[24px] rounded"
           />
@@ -208,7 +208,7 @@ const NotificationRow = (props) => {
               contentWidth={width - 24 - 8 - 8 - 8}
               source={{
                 html: data.content_rendered,
-                baseUrl: 'https://v2ex.com'
+                baseUrl: 'https://v2ex.com',
               }}
               baseStyle={htmlBaseStyle}
             />
@@ -226,10 +226,10 @@ export default function NotificationScreen() {
     {
       onSuccess: () => {
         updateMeta({
-          unread_count: 0
+          unread_count: 0,
         })
-      }
-    }
+      },
+    },
   )
   const listItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
@@ -252,7 +252,7 @@ export default function NotificationScreen() {
       },
       keyExtractor(item, index) {
         return item?.id || index
-      }
+      },
     }
   }, [])
 

@@ -42,7 +42,7 @@ const CollectedTopicRow = (props) => {
         if (data) {
           navigation.push('topic', {
             id: props.data.id,
-            brief: props.data
+            brief: props.data,
           })
         }
       }}>
@@ -52,7 +52,7 @@ const CollectedTopicRow = (props) => {
             onPress={() => {
               navigation.push('member', {
                 username: data.member.username,
-                brief: data.member
+                brief: data.member,
               })
             }}>
             <FastImage
@@ -76,7 +76,7 @@ const CollectedTopicRow = (props) => {
               onPress={() => {
                 navigation.push('node', {
                   name: data.node.name,
-                  brief: data.node
+                  brief: data.node,
                 })
               }}>
               <Text className="text-neutral-500 text-xs dark:text-neutral-300">
@@ -89,7 +89,7 @@ const CollectedTopicRow = (props) => {
               hitSlop={4}
               onPress={() => {
                 navigation.push('member', {
-                  username: data.member.username
+                  username: data.member.username,
                 })
               }}>
               <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-400">
@@ -111,7 +111,7 @@ const CollectedTopicRow = (props) => {
                     hitSlop={4}
                     onPress={() => {
                       navigation.push('member', {
-                        username: data.last_reply_by
+                        username: data.last_reply_by,
                       })
                     }}>
                     <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-400">
@@ -166,7 +166,7 @@ export default function CollectedTopicsScreen() {
       },
       keyExtractor(item, index) {
         return item?.id || index
-      }
+      },
     }
   }, [])
 

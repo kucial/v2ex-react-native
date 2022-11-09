@@ -13,7 +13,7 @@ export default function UserTopicRow(props) {
         if (data) {
           navigation.push('topic', {
             id: props.data.id,
-            brief: props.data
+            brief: props.data,
           })
         }
       }}>
@@ -27,7 +27,7 @@ export default function UserTopicRow(props) {
                 onPress={() => {
                   navigation.push('node', {
                     name: data.node.name,
-                    brief: data.node
+                    brief: data.node,
                   })
                 }}>
                 <Text className="text-neutral-500 text-xs dark:text-neutral-300">
@@ -64,7 +64,7 @@ export default function UserTopicRow(props) {
                     hitSlop={4}
                     onPress={() => {
                       navigation.push('member', {
-                        username: data.last_reply_by
+                        username: data.last_reply_by,
                       })
                     }}>
                     <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-300">

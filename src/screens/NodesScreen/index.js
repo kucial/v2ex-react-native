@@ -22,10 +22,10 @@ export default function NodesScreen({ navigation }) {
 
   const hasAuthed = status === 'authed'
   const collectedNodesSwr = useSWR(hasAuthed ? '/page/my/nodes.json' : null, {
-    revalidateOnMount: false
+    revalidateOnMount: false,
   })
   const commonNodesSwr = useSWR('/page/planes/node-groups.json', {
-    revalidateOnMount: false
+    revalidateOnMount: false,
   })
 
   const filterInput = useRef()
@@ -38,12 +38,12 @@ export default function NodesScreen({ navigation }) {
           viewOffset: 0,
           animated: true,
           itemIndex: 0,
-          sectionIndex: 0
+          sectionIndex: 0,
         })
       })
 
       return unsubscribe
-    }, [])
+    }, []),
   )
 
   const { sections, renderItem } = useMemo(() => {
@@ -56,9 +56,9 @@ export default function NodesScreen({ navigation }) {
                 {
                   type: 'self',
                   name: 'collected',
-                  nodes: collectedNodesSwr.data.data
-                }
-              ]
+                  nodes: collectedNodesSwr.data.data,
+                },
+              ],
             }
           : null,
         commonNodesSwr.data?.map((group) => ({
@@ -71,12 +71,12 @@ export default function NodesScreen({ navigation }) {
                 ? group.nodes.filter(
                     (node) =>
                       node.name.match(new RegExp(filter, 'i')) ||
-                      node.title.match(new RegExp(filter, 'i'))
+                      node.title.match(new RegExp(filter, 'i')),
                   )
-                : group.nodes
-            }
-          ]
-        }))
+                : group.nodes,
+            },
+          ],
+        })),
       ]
         .flat()
         .filter((section) => !!section && !!section.data[0].nodes.length),
@@ -101,7 +101,7 @@ export default function NodesScreen({ navigation }) {
               </View>
             )
         }
-      }
+      },
     }
   }, [commonNodesSwr.data, collectedNodesSwr.data, filter])
 

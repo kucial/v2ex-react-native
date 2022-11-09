@@ -5,7 +5,7 @@ import {
   Pressable,
   Text,
   TextInput,
-  View
+  View,
 } from 'react-native'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
@@ -68,7 +68,7 @@ export default function SearchScreen({ navigation }) {
         style={{
           height:
             Platform.OS === 'android' ? 58 : 48 + Constants.statusBarHeight,
-          paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight
+          paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
         }}>
         <View className="mr-1">
           <BackButton
@@ -138,8 +138,8 @@ export default function SearchScreen({ navigation }) {
             injectedJavaScript={topicLinkCapture}
             source={{
               uri: `https://google.com/search?q=${encodeURIComponent(
-                'site:v2ex.com/t ' + keyword
-              )}`
+                'site:v2ex.com/t ' + keyword,
+              )}`,
             }}
             onLoadStart={() => setLoading(true)}
             onLoadEnd={() => setLoading(false)}

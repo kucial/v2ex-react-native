@@ -17,11 +17,11 @@ export default function CollectedNodes(props) {
               'py-2 px-2 bg-white border border-neutral-400 rounded-lg',
               'dark:bg-neutral-800 dark:border-neutral-700',
               'flex flex-row items-center',
-              'active:opacity-60'
+              'active:opacity-60',
             )}
             onPress={() => {
               navigation.navigate('node', {
-                name: node.name
+                name: node.name,
               })
             }}>
             <FastImage

@@ -18,7 +18,7 @@ export default function AlbumCard(props) {
             return
           }
           await imgur.createAlbum({
-            title: trimed
+            title: trimed,
           })
         })
       }}>
@@ -29,7 +29,7 @@ export default function AlbumCard(props) {
             resizeMode="cover"
             style={{
               justifyContent: 'center',
-              flex: 1
+              flex: 1,
             }}></FastImage>
         </View>
       </View>

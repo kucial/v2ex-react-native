@@ -3,7 +3,7 @@ import {
   useImperativeHandle,
   useMemo,
   useRef,
-  useState
+  useState,
 } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { XMarkIcon } from 'react-native-heroicons/outline'
@@ -31,9 +31,9 @@ function SearchInput(props, ref) {
       },
       submit() {
         props.onSubmit?.(text)
-      }
+      },
     }),
-    [text]
+    [text],
   )
 
   useImperativeHandle(ref, () => service, [service])
@@ -87,7 +87,7 @@ function SearchInput(props, ref) {
           className={classNames(
             'ml-2',
             'rounded-lg h-[36px] px-3 items-center justify-center',
-            'active:bg-neutral-100 active:opacity-60'
+            'active:bg-neutral-100 active:opacity-60',
           )}
           onPress={() => {
             service.submit()
@@ -109,7 +109,7 @@ FSearchInput.propTypes = {
   showSearchBtn: PropTypes.bool,
   onSubmit: PropTypes.func,
   onReset: PropTypes.func,
-  style: PropTypes.object
+  style: PropTypes.object,
 }
 
 export default FSearchInput

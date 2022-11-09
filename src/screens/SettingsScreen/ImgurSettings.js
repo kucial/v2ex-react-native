@@ -5,7 +5,7 @@ import {
   Pressable,
   Text,
   TextInput,
-  View
+  View,
 } from 'react-native'
 import { IMGUR_CLIENT_ID } from '@env'
 import classNames from 'classnames'
@@ -28,8 +28,8 @@ export function ImgurSettings(props) {
   const imgurService = useImgurService()
   const [clientInfo, setClientInfo] = useState(
     getJSON(CACHE_KEY, {
-      clientId: IMGUR_CLIENT_ID
-    })
+      clientId: IMGUR_CLIENT_ID,
+    }),
   )
   const REDIRECT_URI = Linking.createURL('imgur-oauth')
   useEffect(() => {
@@ -40,7 +40,7 @@ export function ImgurSettings(props) {
         if (queryParams) {
           imgurService.updateCredentials({
             client_id: clientInfo.clientId,
-            ...queryParams
+            ...queryParams,
           })
           alert.alertWithType('success', '成功', 'Imgur 授权成功')
           if (route.params?.autoBack) {
@@ -71,7 +71,7 @@ export function ImgurSettings(props) {
             <View>
               <Text
                 className={classNames(
-                  'text-sm pl-2 pb-[2px] dark:text-neutral-300'
+                  'text-sm pl-2 pb-[2px] dark:text-neutral-300',
                 )}>
                 Client ID
               </Text>
@@ -84,7 +84,7 @@ export function ImgurSettings(props) {
             <View>
               <Text
                 className={classNames(
-                  'text-sm pl-2 pb-[2px] dark:text-neutral-300'
+                  'text-sm pl-2 pb-[2px] dark:text-neutral-300',
                 )}>
                 Account Username
               </Text>
@@ -97,7 +97,7 @@ export function ImgurSettings(props) {
             <View>
               <Text
                 className={classNames(
-                  'text-sm pl-2 pb-[2px] dark:text-neutral-300'
+                  'text-sm pl-2 pb-[2px] dark:text-neutral-300',
                 )}>
                 Access Token
               </Text>
@@ -112,7 +112,7 @@ export function ImgurSettings(props) {
               className={classNames(
                 'h-[44px] rounded-md flex items-center justify-center active:opacity-60 mt-4 mb-4',
                 'bg-neutral-900',
-                'dark:bg-amber-50'
+                'dark:bg-amber-50',
               )}
               onPress={() => {
                 imgurService.updateCredentials()
@@ -150,8 +150,8 @@ export function ImgurSettings(props) {
                 className={classNames(
                   'text-sm pl-2 pb-[2px] dark:text-neutral-300',
                   {
-                    'opacity-0': !clientInfo.clientId
-                  }
+                    'opacity-0': !clientInfo.clientId,
+                  },
                 )}>
                 clientId
               </Text>
@@ -171,7 +171,7 @@ export function ImgurSettings(props) {
                 onChangeText={(value) =>
                   setClientInfo((prev) => ({
                     ...prev,
-                    clientId: value
+                    clientId: value,
                   }))
                 }
                 value={clientInfo.clientId}
@@ -184,14 +184,14 @@ export function ImgurSettings(props) {
               className={classNames(
                 'h-[44px] rounded-md flex items-center justify-center active:opacity-60 mt-4 mb-4',
                 'bg-neutral-900',
-                'dark:bg-amber-50'
+                'dark:bg-amber-50',
               )}
               onPress={() => {
                 if (!clientInfo.clientId) {
                   return
                 }
                 Linking.openURL(
-                  `https://api.imgur.com/oauth2/authorize?client_id=${clientInfo.clientId}&response_type=token`
+                  `https://api.imgur.com/oauth2/authorize?client_id=${clientInfo.clientId}&response_type=token`,
                 )
               }}>
               <Text className="text-white text-sm dark:text-neutral-900">

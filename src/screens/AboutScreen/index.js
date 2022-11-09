@@ -4,7 +4,7 @@ import {
   Pressable,
   SafeAreaView,
   Text,
-  View
+  View,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import RNRestart from 'react-native-restart'
@@ -73,7 +73,7 @@ export default function AboutScreen() {
             className={classNames(
               'h-[50px] rounded-md flex items-center justify-center mt-4',
               'bg-neutral-900 active:opacity-60',
-              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
+              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
             )}
             onPress={() => {
               // clear swr cache
@@ -93,7 +93,7 @@ export default function AboutScreen() {
             className={classNames(
               'h-[50px] rounded-md flex items-center justify-center mt-4',
               'bg-neutral-900 active:opacity-60',
-              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
+              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
             )}
             onPress={() => {
               storage.clearAll()

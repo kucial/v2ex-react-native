@@ -22,7 +22,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           position: 'absolute',
           left: 6,
           top: Constants.statusBarHeight,
-          zIndex: 10
+          zIndex: 10,
         }}>
         <BackButton
           tintColor={colors.neutral[900]}
@@ -35,7 +35,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
         <View
           className="bg-neutral-100 dark:bg-neutral-900 flex flex-row items-end"
           style={{
-            height: Constants.statusBarHeight + HEADER_CANVAS_HEIGHT
+            height: Constants.statusBarHeight + HEADER_CANVAS_HEIGHT,
           }}>
           <ImageBackground
             style={{ width: '100%', height: '100%', position: 'absolute' }}
@@ -45,7 +45,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           />
           <View
             style={{
-              marginLeft: AVATAR_SIZE + 16 + 12
+              marginLeft: AVATAR_SIZE + 16 + 12,
             }}>
             <OutlinedText
               text={data.username}
@@ -61,7 +61,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           className="absolute"
           style={{
             left: 16,
-            bottom: -AVATAR_SIZE / 2
+            bottom: -AVATAR_SIZE / 2,
           }}>
           {data.avatar_large ? (
             <FastImage
@@ -69,7 +69,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
               style={{
                 width: AVATAR_SIZE,
                 height: AVATAR_SIZE,
-                borderWidth: 3
+                borderWidth: 3,
               }}
               source={{ uri: data.avatar_large }}
             />
@@ -78,7 +78,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
               className="rounded-full bg-white"
               style={{
                 width: AVATAR_SIZE,
-                height: AVATAR_SIZE
+                height: AVATAR_SIZE,
               }}
             />
           )}
@@ -88,7 +88,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
         style={{
           marginLeft: AVATAR_SIZE + 16 + 12,
           minHeight: AVATAR_SIZE / 2,
-          paddingVertical: 4
+          paddingVertical: 4,
         }}>
         <Text className="text-neutral-500 text-sm">
           <Text className="pl-2 mb-1">
@@ -97,7 +97,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
               data.tagline,
               data.location,
               data.bio,
-              data.website
+              data.website,
             ]
               .filter(Boolean)
               .join('; ')}

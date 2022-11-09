@@ -22,7 +22,7 @@ export const album = {
   privacy: 'hidden',
   section: null,
   title: 'My dank meme album',
-  views: 0
+  views: 0,
 }
 
 export const albumImages = [
@@ -54,7 +54,7 @@ export const albumImages = [
     type: 'image/jpeg',
     views: 0,
     vote: null,
-    width: 4288
+    width: 4288,
   },
   {
     account_id: 164913081,
@@ -84,7 +84,7 @@ export const albumImages = [
     type: 'image/jpeg',
     views: 39,
     vote: null,
-    width: 1795
+    width: 1795,
   },
   {
     account_id: 164913081,
@@ -114,7 +114,7 @@ export const albumImages = [
     type: 'image/png',
     views: 176,
     vote: null,
-    width: 3440
+    width: 3440,
   },
   {
     account_id: 164913081,
@@ -144,6 +144,6 @@ export const albumImages = [
     type: 'image/png',
     views: 3,
     vote: null,
-    width: 974
-  }
+    width: 974,
+  },
 ]

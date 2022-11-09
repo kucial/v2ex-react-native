@@ -16,7 +16,7 @@ export default function TideTopicRow(props) {
         className={classNames(
           'border-b flex flex-row items-center',
           'border-neutral-200 bg-white',
-          'dark:border-neutral-700 dark:bg-neutral-900'
+          'dark:border-neutral-700 dark:bg-neutral-900',
         )}>
         {showAvatar ? (
           <View className="px-2 py-2 self-start">
@@ -51,12 +51,12 @@ export default function TideTopicRow(props) {
       className={classNames(
         'border-b flex flex-row items-center active:opacity-50',
         'border-neutral-200 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900'
+        'dark:border-neutral-700 dark:bg-neutral-900',
       )}
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
-          brief: props.data
+          brief: props.data,
         })
       }}>
       {showAvatar ? (
@@ -65,12 +65,12 @@ export default function TideTopicRow(props) {
             onPress={() => {
               navigation.navigate('member', {
                 username: member.username,
-                brief: member
+                brief: member,
               })
             }}>
             <FastImage
               source={{
-                uri: member.avatar_mini
+                uri: member.avatar_mini,
               }}
               className="w-[24px] h-[24px] rounded"
             />
@@ -82,7 +82,7 @@ export default function TideTopicRow(props) {
       <View
         className={classNames(
           'flex-1 pt-1 pb-2',
-          props.viewed && 'opacity-70'
+          props.viewed && 'opacity-70',
         )}>
         <Text className="text-[16px] leading-[22px] text-neutral-700 dark:text-neutral-300">
           {title}
@@ -94,7 +94,7 @@ export default function TideTopicRow(props) {
             onPress={() => {
               navigation.navigate('node', {
                 name: node.name,
-                brief: node
+                brief: node,
               })
             }}>
             <Text className="text-xs text-neutral-500 dark:text-neutral-300">
@@ -123,7 +123,7 @@ export default function TideTopicRow(props) {
                   hitSlop={4}
                   onPress={() => {
                     navigation.push('member', {
-                      username: data.last_reply_by
+                      username: data.last_reply_by,
                     })
                   }}>
                   <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-300">

@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
-  BottomSheetTextInput
+  BottomSheetTextInput,
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
@@ -41,8 +41,8 @@ export default function NodeSelect(props) {
     }
     return nodesSwr.data.filter((n) =>
       ['name', 'title', 'title_alternative'].some(
-        (key) => n[key].indexOf(filter) > -1
-      )
+        (key) => n[key].indexOf(filter) > -1,
+      ),
     )
   }, [nodesSwr.data, filter])
 
@@ -59,14 +59,14 @@ export default function NodeSelect(props) {
             className={classNames(
               'h-[50px] flex flex-row items-center border-b pr-3',
               'border-neutral-300',
-              'dark:border-neutral-600'
+              'dark:border-neutral-600',
             )}>
             {props.renderLabel(item)}
           </View>
         </Pressable>
       )
     },
-    [props.renderLabel]
+    [props.renderLabel],
   )
 
   return (
@@ -102,7 +102,7 @@ export default function NodeSelect(props) {
               <BottomSheetTextInput
                 autoFocus={!props.value}
                 style={tw(
-                  'h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300'
+                  'h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300',
                 )}
                 selectionColor={
                   colorScheme === 'dark'

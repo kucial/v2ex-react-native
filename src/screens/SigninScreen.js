@@ -9,7 +9,7 @@ import {
   ScrollView,
   Text,
   TextInput,
-  View
+  View,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import WebView from 'react-native-webview'
@@ -139,7 +139,7 @@ export default function LoginScreen({ navigation }) {
   const {
     fetchCurrentUser,
     user: currentUser,
-    getNextAction
+    getNextAction,
   } = useAuthService()
   const [error, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -159,8 +159,8 @@ export default function LoginScreen({ navigation }) {
     defaultValues: {
       username: '',
       password: '',
-      captcha: ''
-    }
+      captcha: '',
+    },
   })
 
   const handleWebviewMessage = useCallback((event) => {
@@ -177,7 +177,7 @@ export default function LoginScreen({ navigation }) {
             async (val) => {
               webviewRef.current.injectJavaScript(get2FASubmitCode(val))
               scriptsToInject.current.unshift(checkSubmitStatus)
-            }
+            },
           )
           break
         case 'login_success':
@@ -253,8 +253,8 @@ export default function LoginScreen({ navigation }) {
                 className={classNames(
                   'text-xs pl-2 pb-[2px] dark:text-neutral-300',
                   {
-                    'opacity-0': !values.username
-                  }
+                    'opacity-0': !values.username,
+                  },
                 )}>
                 用户名
               </Text>
@@ -290,8 +290,8 @@ export default function LoginScreen({ navigation }) {
                 className={classNames(
                   'text-xs pl-2 pb-[2px] dark:text-neutral-300',
                   {
-                    'opacity-0': !values.password
-                  }
+                    'opacity-0': !values.password,
+                  },
                 )}>
                 密码
               </Text>
@@ -331,7 +331,7 @@ export default function LoginScreen({ navigation }) {
                     className="rounded-md mb-2 mt-1"
                     style={{
                       width: 300,
-                      height: (captchaImage.height / captchaImage.width) * 300
+                      height: (captchaImage.height / captchaImage.width) * 300,
                     }}
                   />
                 </Pressable>
@@ -345,8 +345,8 @@ export default function LoginScreen({ navigation }) {
                 className={classNames(
                   'text-xs pl-2 pb-[2px] dark:text-neutral-300',
                   {
-                    'opacity-0': !values.captcha
-                  }
+                    'opacity-0': !values.captcha,
+                  },
                 )}>
                 验证码
               </Text>
@@ -389,8 +389,8 @@ export default function LoginScreen({ navigation }) {
                   'bg-neutral-900 active:opacity-60',
                   'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
                   {
-                    'opacity-60': isSubmitting
-                  }
+                    'opacity-60': isSubmitting,
+                  },
                 )}
                 onPress={(e) => {
                   if (isSubmitting) {

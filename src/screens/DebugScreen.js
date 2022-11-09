@@ -1,22 +1,15 @@
 import { useCallback, useMemo, useRef } from 'react'
 import {
-  Button,
   SafeAreaView,
   StyleSheet,
-  Text,
   useWindowDimensions,
   View,
 } from 'react-native'
 import { Dimensions } from 'react-native'
-import { ScrollView, TextInput } from 'react-native-gesture-handler'
-import HTML, { CustomTextualRenderer } from 'react-native-render-html'
 import { SelectableText } from '@alentoma/react-native-selectable-text'
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
 import HtmlRender from '@/components/HtmlRender'
 import { useSWR } from '@/utils/swr'
-
-import TopicInfo from './TopicScreen/TopicInfo'
 
 const fSize = 30
 var p = {

@@ -8,7 +8,7 @@ const CACHE_KEY = '$app$/viewed-topics'
 const INIT_STATE = {
   version: 'v2',
   ids: [],
-  data: {}
+  data: {},
 }
 
 const mappedToV2 = (list) => {
@@ -21,19 +21,19 @@ const mappedToV2 = (list) => {
   return {
     ...INIT_STATE,
     ids,
-    data
+    data,
   }
 }
 
 export const ViewedTopicsContext = createContext({
   hasViewed: () => false,
-  touchViewed: () => undefined
+  touchViewed: () => undefined,
 })
 
 export default function ViewedTopicsService(props) {
   const [state, setState] = useCachedState(CACHE_KEY, INIT_STATE)
   const {
-    data: { showHasViewed }
+    data: { showHasViewed },
   } = useAppSettings()
 
   const service = useMemo(() => {
@@ -45,7 +45,7 @@ export default function ViewedTopicsService(props) {
         touchViewed: (topic) => {
           setState((prev) => {
             const index = prev.ids.findIndex(
-              (id) => String(id) === String(topic.id)
+              (id) => String(id) === String(topic.id),
             )
             let updatedIds
             if (index === -1) {
@@ -54,7 +54,7 @@ export default function ViewedTopicsService(props) {
               updatedIds = [
                 topic.id,
                 ...prev.ids.slice(0, index),
-                ...prev.ids.slice(index + 1)
+                ...prev.ids.slice(index + 1),
               ]
             }
             return {
@@ -64,12 +64,12 @@ export default function ViewedTopicsService(props) {
                 ...prev.data,
                 [topic.id]: {
                   ...topic,
-                  viewed_at: Date.now()
-                }
-              }
+                  viewed_at: Date.now(),
+                },
+              },
             }
           })
-        }
+        },
       }
     }
     // v1 ...
@@ -88,12 +88,12 @@ export default function ViewedTopicsService(props) {
             newCache = [
               { ...topic, viewed_at: Date.now() },
               ...prev.slice(0, index),
-              ...prev.slice(index + 1)
+              ...prev.slice(index + 1),
             ]
           }
           return mappedToV2(newCache)
         })
-      }
+      },
     }
   }, [state, setState])
 

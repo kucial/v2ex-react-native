@@ -45,7 +45,7 @@ export const useCachedState = (cacheKey, initialState = null, revalidate) => {
       console.log('update cache', cacheKey)
       setJSON(cacheKey, value)
     }, 600),
-    [cacheKey]
+    [cacheKey],
   )
   const [state, setState] = useState(() => {
     let cache = getJSON(cacheKey, initialState)
@@ -74,10 +74,10 @@ export const useColorScheme = (delay = 250) => {
       },
       delay,
       {
-        leading: false
-      }
+        leading: false,
+      },
     ),
-    []
+    [],
   )
   useEffect(() => {
     const subscription = Appearance.addChangeListener(onColorSchemeChange)

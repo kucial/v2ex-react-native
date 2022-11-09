@@ -29,26 +29,26 @@ export default function NodeScreen({ route, navigation }) {
     shouldRetryOnError: false,
     onError(err) {
       alert.alertWithType('error', '错误', err.message || '请求资源失败')
-    }
+    },
   })
   const getKey = useCallback(
     (index) => {
       return `/page/go/${name}/feed.json?p=${index + 1}`
     },
-    [name]
+    [name],
   )
 
   const node = nodeSwr.data || brief || {}
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: node.title
+      title: node.title,
     })
   }, [node.title])
 
   const htmlProps = useMemo(() => {
     return {
       source: { html: node.header },
-      baseStyle: tw('text-sm')
+      baseStyle: tw('text-sm'),
     }
   }, [node])
 
@@ -60,7 +60,7 @@ export default function NodeScreen({ route, navigation }) {
             <FastImage
               className="w-[60px] h-[60px] mr-3"
               source={{
-                uri: node.avatar_large
+                uri: node.avatar_large,
               }}></FastImage>
           ) : (
             <View className="w-[60px] h-[60px] mr-3 bg-neutral-100 dark:bg-neutral-750"></View>
@@ -92,8 +92,8 @@ export default function NodeScreen({ route, navigation }) {
                 className={classNames(
                   'h-[38px] rounded-lg border border-neutral-500 px-3 items-center justify-center active:opacity-60',
                   {
-                    'opacity-60': collecting
-                  }
+                    'opacity-60': collecting,
+                  },
                 )}
                 disabled={collecting || node.collected === undefined}
                 onPress={composeAuthedNavigation(() => {
@@ -106,7 +106,7 @@ export default function NodeScreen({ route, navigation }) {
                     .then((result) => {
                       nodeSwr.mutate((data) => ({
                         ...data,
-                        ...result
+                        ...result,
                       }))
                       mutate('/page/my/nodes.json')
                     })
@@ -124,11 +124,11 @@ export default function NodeScreen({ route, navigation }) {
               </Pressable>
               <Pressable
                 className={classNames(
-                  'ml-2 h-[38px] rounded-lg border border-neutral-500 px-3 items-center justify-center active:opacity-60'
+                  'ml-2 h-[38px] rounded-lg border border-neutral-500 px-3 items-center justify-center active:opacity-60',
                 )}
                 onPress={composeAuthedNavigation(() => {
                   navigation.push('new-topic', {
-                    node
+                    node,
                   })
                 })}>
                 <Text className="dark:text-neutral-300">创建新主题</Text>
@@ -154,11 +154,11 @@ NodeScreen.propTypes = {
   route: PropTypes.shape({
     params: PropTypes.shape({
       name: PropTypes.string,
-      brief: PropTypes.object
-    })
+      brief: PropTypes.object,
+    }),
   }),
   navigation: PropTypes.shape({
     setOptions: PropTypes.func,
-    push: PropTypes.func
-  })
+    push: PropTypes.func,
+  }),
 }

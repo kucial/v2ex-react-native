@@ -4,12 +4,12 @@ import {
   IMGElementContainer,
   IMGElementContentError,
   useIMGElementState,
-  useIMGElementStateWithCache
+  useIMGElementStateWithCache,
 } from 'react-native-render-html'
 
 import {
   useCachedImageDimensions,
-  useImageDimensionCache
+  useImageDimensionCache,
 } from './ImageDimensionCache'
 import { useImageViewing } from './ImageViewingService'
 
@@ -17,17 +17,17 @@ const IMGElementContentSuccess = ({
   source,
   imageStyle,
   dimensions,
-  onError
+  onError,
 }) => {
   const cache = useImageDimensionCache()
   const onImageError = useCallback(
     ({ nativeEvent: { error } }) => onError?.(error),
-    [onError]
+    [onError],
   )
   const onLoad = useCallback((e) => {
     cache.update(source.uri, {
       width: e.nativeEvent.width,
-      height: e.nativeEvent.height
+      height: e.nativeEvent.height,
     })
   }, [])
 

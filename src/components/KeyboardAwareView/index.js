@@ -8,7 +8,7 @@ class KeyboardAwareView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      height: new Animated.Value(0)
+      height: new Animated.Value(0),
     }
     this.debug = false
   }
@@ -48,13 +48,13 @@ class KeyboardAwareView extends React.Component {
         Animated.timing(this.state.height, {
           toValue: maxHeight,
           duration: this.props.animated ? 200 : 0,
-          useNativeDriver: this.props.useNativeDriver || false
+          useNativeDriver: this.props.useNativeDriver || false,
         }).start()
 
         this.debugLog(
           'InnerView height should be ...' + maxHeight,
           remainScreenMaxHeight,
-          outerViewMaxHeight
+          outerViewMaxHeight,
         )
         //requestAnimationFrame(() => {
         //  this.innerView.measure((ox, oy, width, height, px, py) => {
@@ -86,7 +86,7 @@ class KeyboardAwareView extends React.Component {
         Animated.timing(this.state.height, {
           toValue: maxHeight,
           duration: this.props.animated ? 200 : 0,
-          useNativeDriver: this.props.useNativeDriver || false
+          useNativeDriver: this.props.useNativeDriver || false,
         }).start()
 
         this.debugLog('ScrollView height should be ...' + maxHeight)
@@ -106,7 +106,7 @@ class KeyboardAwareView extends React.Component {
           Animated.timing(this.state.height, {
             toValue: height,
             duration: 0,
-            useNativeDriver: this.props.useNativeDriver || false
+            useNativeDriver: this.props.useNativeDriver || false,
           }).start()
 
           if (Platform.OS === 'ios') {

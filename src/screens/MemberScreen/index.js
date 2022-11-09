@@ -26,13 +26,13 @@ export default function MemberScreen({ route, navigation }) {
       {
         value: 'topics',
         label: '主题',
-        component: (props) => <MemberTopics {...props} username={username} />
+        component: (props) => <MemberTopics {...props} username={username} />,
       },
       {
         value: 'replies',
         label: '回复',
-        component: (props) => <MemberReplies {...props} username={username} />
-      }
+        component: (props) => <MemberReplies {...props} username={username} />,
+      },
     ]
   }, [username])
 
@@ -47,14 +47,14 @@ export default function MemberScreen({ route, navigation }) {
       <Tab.Navigator
         screenOptions={{
           tabBarScrollEnabled: false,
-          lazy: true
+          lazy: true,
         }}>
         {tabs.map((tab) => (
           <Tab.Screen
             key={tab.value}
             name={tab.value}
             options={{
-              tabBarLabel: tab.label
+              tabBarLabel: tab.label,
             }}>
             {tab.component}
           </Tab.Screen>

@@ -3,7 +3,7 @@ import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import {
   ChatBubbleLeftRightIcon,
-  HeartIcon
+  HeartIcon,
 } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 import classNames from 'classnames'
@@ -34,7 +34,7 @@ function ReplyRow(props) {
       <View
         className={classNames(
           'border-b bg-white border-neutral-200',
-          'dark:bg-neutral-900 dark:border-neutral-600'
+          'dark:bg-neutral-900 dark:border-neutral-600',
         )}>
         <View className="flex-1 py-2 pl-1">
           <View className="flex flex-row mb-2">
@@ -66,7 +66,7 @@ function ReplyRow(props) {
         // isPivot
         //   ? 'bg-yellow-50 dark:bg-[#2a2720]'
         //   : 'bg-white dark:bg-neutral-900',
-        'dark:border-neutral-600'
+        'dark:border-neutral-600',
       )}>
       <View className="flex flex-row pl-2">
         <View className="mr-2">
@@ -74,13 +74,13 @@ function ReplyRow(props) {
             hitSlop={3}
             onPress={() => {
               navigation.push('member', {
-                username: member.username
+                username: member.username,
               })
             }}>
             <FastImage
               source={{
                 uri: member.avatar_normal,
-                priority: FastImage.priority.low
+                priority: FastImage.priority.low,
               }}
               className="w-[24px] h-[24px] rounded"
             />
@@ -94,7 +94,7 @@ function ReplyRow(props) {
                 className="active:opacity-60"
                 onPress={() => {
                   navigation.push('member', {
-                    username: member.username
+                    username: member.username,
                   })
                 }}>
                 <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-300">
@@ -162,10 +162,10 @@ function ReplyRow(props) {
               source={{
                 html: showMarkdown
                   ? marked(data.content, (err, result) =>
-                      err ? err.message : `<div>${result}</div>`
+                      err ? err.message : `<div>${result}</div>`,
                     )
                   : data.content_rendered,
-                baseUrl: 'https://v2ex.com'
+                baseUrl: 'https://v2ex.com',
               }}
             />
           </View>
@@ -177,7 +177,7 @@ function ReplyRow(props) {
                   'h-[36px] px-2',
                   '-m-2 flex flex-row items-center justify-center rounded-full',
                   'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                  'relative z-10'
+                  'relative z-10',
                 )}
                 onPress={composeAuthedNavigation(() => {
                   props.onReply(data)
@@ -197,7 +197,7 @@ function ReplyRow(props) {
                     'h-[36px] px-2',
                     '-m-2 flex flex-row items-center justify-center rounded-full',
                     'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                    'relative z-10'
+                    'relative z-10',
                   )}
                   onPress={composeAuthedNavigation(() => {
                     props.onThank(data)
@@ -216,7 +216,7 @@ function ReplyRow(props) {
                     'h-[36px] px-2',
                     '-m-2 flex flex-row items-center justify-center rounded-full',
                     'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                    'relative z-10'
+                    'relative z-10',
                   )}
                   onPress={() => {
                     props.onShowConversation(data)
@@ -236,7 +236,7 @@ function ReplyRow(props) {
                   'h-[36px] w-[36px]',
                   '-my-2 flex flex-row items-center justify-center rounded-full',
                   'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                  'relative z-10'
+                  'relative z-10',
                 )}
                 onPress={() => {
                   setMarkdownVisible((prev) => !prev)
@@ -268,7 +268,7 @@ ReplyRow.propTypes = {
   onReply: PropTypes.func,
   hasConversation: PropTypes.bool,
   isPivot: PropTypes.bool,
-  onShowConversation: PropTypes.func
+  onShowConversation: PropTypes.func,
 }
 
 export default memo(ReplyRow)

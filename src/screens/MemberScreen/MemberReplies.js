@@ -33,7 +33,7 @@ const MemberReplyRow = (props) => {
               className="active:opacity-60"
               onPress={() => {
                 navigation.push('topic', {
-                  id: data.topic.id
+                  id: data.topic.id,
                 })
               }}>
               <Text className="my-1 text-neutral-700 dark:text-neutral-300">
@@ -47,7 +47,7 @@ const MemberReplyRow = (props) => {
             contentWidth={width - 24}
             source={{
               html: data.content_rendered,
-              baseUrl: 'https://v2ex.com'
+              baseUrl: 'https://v2ex.com',
             }}
           />
         </View>
@@ -80,11 +80,11 @@ export default function MemberReplies(props) {
     (index) => {
       return `/page/member/${props.username}/replies.json?p=${index + 1}`
     },
-    [props.username]
+    [props.username],
   )
 
   const listSwr = useSWRInfinite(getKey, undefined, {
-    shouldRetryOnError: false
+    shouldRetryOnError: false,
   })
 
   const listItems = useMemo(() => {
@@ -108,7 +108,7 @@ export default function MemberReplies(props) {
       },
       keyExtractor(item, index) {
         return item?.id || index
-      }
+      },
     }
   }, [])
 
@@ -139,5 +139,5 @@ export default function MemberReplies(props) {
   )
 }
 MemberReplies.propTypes = {
-  username: PropTypes.string
+  username: PropTypes.string,
 }

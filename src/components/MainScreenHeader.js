@@ -3,7 +3,7 @@ import {
   ClockIcon,
   DocumentPlusIcon,
   EnvelopeIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
 } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
@@ -22,18 +22,18 @@ export default function MainScreenHeader(props) {
       className={classNames(
         'w-full flex-row items-center pl-4',
         'bg-white',
-        'dark:bg-neutral-900'
+        'dark:bg-neutral-900',
       )}
       style={{
         height: Platform.OS === 'android' ? 48 : 48 + Constants.statusBarHeight,
-        paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight
+        paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
       }}>
       <View className="flex-1">
         <View className="">
           <Text
             className="font-bold text-[19px]"
             style={{
-              color
+              color,
             }}>
             {title}
           </Text>

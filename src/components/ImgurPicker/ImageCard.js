@@ -17,21 +17,21 @@ export default function ImageCard(props) {
             source={
               data?.link
                 ? {
-                    uri: getImageLink(data, 'l')
+                    uri: getImageLink(data, 'l'),
                   }
                 : imagePlaceholder
             }
             resizeMode="cover"
             style={{
               justifyContent: 'center',
-              flex: 1
+              flex: 1,
             }}
           />
         </View>
       </View>
       <Pressable
         className={classNames(
-          'absolute right-0 top-0 p-2 items-center justify-center active:opacity-60'
+          'absolute right-0 top-0 p-2 items-center justify-center active:opacity-60',
         )}
         onPress={(e) => {
           e.stopPropagation()
@@ -40,7 +40,7 @@ export default function ImageCard(props) {
         <View
           className={classNames(
             'w-[18px] h-[18px] rounded-full items-center justify-center',
-            selected ? 'bg-neutral-800' : 'border'
+            selected ? 'bg-neutral-800' : 'border',
           )}>
           {selected && <CheckIcon size={12} color="white" />}
         </View>

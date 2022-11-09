@@ -9,7 +9,7 @@ import {
   BlockText,
   Box,
   InlineBox,
-  InlineText
+  InlineText,
 } from '@/components/Skeleton/Elements'
 
 function NodeTopicRow(props) {
@@ -22,7 +22,7 @@ function NodeTopicRow(props) {
         className={classNames(
           'border-b flex flex-row items-center',
           'border-neutral-200 bg-white',
-          'dark:border-neutral-700 dark:bg-neutral-900'
+          'dark:border-neutral-700 dark:bg-neutral-900',
         )}>
         {showAvatar ? (
           <View className="px-2 py-2 self-start">
@@ -54,12 +54,12 @@ function NodeTopicRow(props) {
       className={classNames(
         'border-b flex flex-row items-center active:opacity-50',
         'border-neutral-200 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900'
+        'dark:border-neutral-700 dark:bg-neutral-900',
       )}
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
-          brief: props.data
+          brief: props.data,
         })
       }}>
       {showAvatar ? (
@@ -68,14 +68,14 @@ function NodeTopicRow(props) {
             onPress={() => {
               navigation.navigate('member', {
                 username: member.username,
-                brief: member
+                brief: member,
               })
             }}>
             <FastImage
               className="w-[24px] h-[24px] rounded"
               source={{
                 uri: member.avatar_normal,
-                priority: FastImage.priority.low
+                priority: FastImage.priority.low,
               }}
             />
           </FixedPressable>

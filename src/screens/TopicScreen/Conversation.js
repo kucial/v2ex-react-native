@@ -7,7 +7,7 @@ export default function Conversation({
   pivot,
   onReply,
   onThank,
-  navigation
+  navigation,
 }) {
   return (
     <View>

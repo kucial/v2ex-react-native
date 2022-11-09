@@ -18,9 +18,9 @@ const getStyleValue = (style, key) => {
     merged = style.reduce(
       (m, next) => ({
         ...m,
-        ...next
+        ...next,
       }),
-      {}
+      {},
     )
   } else {
     merged = style || {}
@@ -50,21 +50,21 @@ export function InlineText(props) {
       style={{
         ...tw('flex flex-row items-center'),
         height: getStyleValue(props.style, 'lineHeight') || 24,
-        width
+        width,
       }}>
       <View
         style={[
           tw(
             `${
               textColor ? '' : 'bg-neutral-100 dark:bg-neutral-750'
-            } rounded w-full animate-pulse`
+            } rounded w-full animate-pulse`,
           ),
           {
-            height: getStyleValue(props.style, 'fontSize') || 16
+            height: getStyleValue(props.style, 'fontSize') || 16,
           },
           textColor && {
-            backgroundColor: textColor
-          }
+            backgroundColor: textColor,
+          },
         ]}
       />
     </View>
@@ -105,7 +105,7 @@ export function InlineBox(props) {
       style={[
         tw('bg-neutral-100 dark:bg-neutral-750'),
         props.style,
-        width && { width }
+        width && { width },
       ]}>
       <Text> </Text>
     </View>

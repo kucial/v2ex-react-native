@@ -14,7 +14,7 @@ export default function SubmitButton(props) {
         className={classNames(
           'w-[62px] h-[62px] items-center justify-center rounded-full shadow-sm active:opacity-60',
           'bg-neutral-900',
-          'dark:bg-amber-50'
+          'dark:bg-amber-50',
         )}
         style={props.disabled && { opacity: 0.5 }}
         onPress={props.onPress}

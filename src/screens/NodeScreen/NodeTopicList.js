@@ -32,7 +32,7 @@ export default function NodeTopicList(props) {
       if (node && nodeSwr) {
         nodeSwr.mutate((prev) => deepmerge(prev, node), false)
       }
-    }
+    },
   })
 
   const scrollToRefresh = useCallback(() => {
@@ -43,7 +43,7 @@ export default function NodeTopicList(props) {
       listSwr.setSize(1)
       const params = {
         offset: scrollY.current > 0 ? 0 : -60,
-        animated: true
+        animated: true,
       }
       listViewRef.current.scrollToOffset(params)
     } else {
@@ -70,7 +70,7 @@ export default function NodeTopicList(props) {
       },
       keyExtractor(item, index) {
         return item?.id || `index-${index}`
-      }
+      },
     }
   }, [hasViewed, settings])
 
@@ -93,7 +93,7 @@ export default function NodeTopicList(props) {
             Date.now() - toBackDate > 60 * 1000 &&
             shouldFetch(
               listSwr,
-              settings.autoRefresh && settings.autoRefreshDuration
+              settings.autoRefresh && settings.autoRefreshDuration,
             )
           ) {
             scrollToRefresh()
@@ -101,7 +101,7 @@ export default function NodeTopicList(props) {
             toBackDate = Date.now()
           }
           appState = nextAppState
-        }
+        },
       )
       return () => {
         subscription.remove()
@@ -112,7 +112,7 @@ export default function NodeTopicList(props) {
   useEffect(() => {
     if (currentListRef) {
       currentListRef.current = {
-        scrollToRefresh
+        scrollToRefresh,
       }
     }
   }, [isFocused, scrollToRefresh])

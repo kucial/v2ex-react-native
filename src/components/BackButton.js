@@ -13,7 +13,7 @@ function BackButton({ tintColor, onPress, style }) {
         size={28}
         color={tintColor}
         style={{
-          marginLeft: -4
+          marginLeft: -4,
         }}
       />
     </Pressable>
@@ -30,7 +30,7 @@ export const headerLeft = ({ tintColor, canGoBack, label }) => {
       tintColor={tintColor}
       onPress={navigation.goBack}
       style={{
-        marginLeft: -16
+        marginLeft: -16,
       }}
       backImage={() => (
         <View
@@ -39,13 +39,13 @@ export const headerLeft = ({ tintColor, canGoBack, label }) => {
             paddingRight: label ? 6 : 10,
             height: 44,
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}>
           <ChevronLeftIcon
             size={28}
             color={tintColor}
             style={{
-              marginLeft: -4
+              marginLeft: -4,
             }}
           />
         </View>

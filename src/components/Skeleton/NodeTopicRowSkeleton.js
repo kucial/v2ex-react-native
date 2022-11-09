@@ -9,7 +9,7 @@ export default function NodeTopicRowSkeleton() {
       className={classNames(
         'flex flex-row items-center border-b  active:opacity-60 p-2',
         'border-neutral-200 bg-white',
-        'dark:border-neutral-600 dark:bg-neutral-900'
+        'dark:border-neutral-600 dark:bg-neutral-900',
       )}>
       <View className="mr-2 self-start">
         <InlineBox className="w-[24px] h-[24px] rounded" />

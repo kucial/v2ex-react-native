@@ -5,7 +5,7 @@ import { Linking } from 'react-native'
 import {
   ArrowTopRightOnSquareIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
 } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
 import { WebView } from 'react-native-webview'
@@ -16,7 +16,7 @@ export default function BrowserScreen({ route, navigation }) {
   const webviewRef = useRef()
   const [historyState, setHistoryState] = useState({
     canGoBack: false,
-    canGoForward: false
+    canGoForward: false,
   })
 
   useLayoutEffect(() => {
@@ -29,7 +29,7 @@ export default function BrowserScreen({ route, navigation }) {
           }}>
           <ArrowTopRightOnSquareIcon size={24} color={props.tintColor} />
         </Pressable>
-      )
+      ),
     })
   }, [])
   return (
@@ -44,7 +44,7 @@ export default function BrowserScreen({ route, navigation }) {
         onNavigationStateChange={(navState) => {
           setHistoryState({
             canGoBack: navState.canGoBack,
-            canGoForward: navState.canGoForward
+            canGoForward: navState.canGoForward,
           })
         }}
       />
@@ -58,8 +58,8 @@ export default function BrowserScreen({ route, navigation }) {
               className={classNames(
                 'basis-1/2 h-[44px] items-center justify-center active:opacity-60 active:bg-white',
                 {
-                  'opacity-50': !historyState.canGoBack
-                }
+                  'opacity-50': !historyState.canGoBack,
+                },
               )}
               disabled={!historyState.canGoBack}
               onPress={() => {
@@ -71,8 +71,8 @@ export default function BrowserScreen({ route, navigation }) {
               className={classNames(
                 'basis-1/2 h-[44px] items-center justify-center active:opacity-60 active:bg-white',
                 {
-                  'opacity-50': !historyState.canGoForward
-                }
+                  'opacity-50': !historyState.canGoForward,
+                },
               )}
               disabled={!historyState.canGoForward}
               onPress={() => {

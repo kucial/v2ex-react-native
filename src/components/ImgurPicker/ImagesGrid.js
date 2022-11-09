@@ -20,7 +20,7 @@ export default function ImagesView(props) {
     const imageItems = imagesSwr.data?.data
     return {
       images: imageItems?.map((item) => ({
-        uri: item.link
+        uri: item.link,
       })),
       FooterComponent: ({ imageIndex }) => {
         const image = imageItems[imageIndex]
@@ -46,7 +46,7 @@ export default function ImagesView(props) {
                     '-mr-1 mr-2',
                     selected
                       ? 'bg-neutral-300'
-                      : 'border-[1.5px] border-neutral-300'
+                      : 'border-[1.5px] border-neutral-300',
                   )}>
                   {selected && <CheckIcon size={12} color="#111" />}
                 </View>
@@ -66,7 +66,7 @@ export default function ImagesView(props) {
             </View>
           </View>
         )
-      }
+      },
     }
   }, [imagesSwr.data, props.selected])
 

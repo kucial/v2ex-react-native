@@ -10,7 +10,7 @@ import * as Sentry from 'sentry-expo'
 const REQUEST_TIMEOUT = 1000 * 10
 const instance = axios.create({
   baseURL: 'https://www.v2ex.com',
-  timeout: REQUEST_TIMEOUT
+  timeout: REQUEST_TIMEOUT,
 })
 
 instance.interceptors.response.use(
@@ -19,7 +19,7 @@ instance.interceptors.response.use(
   },
   function (error) {
     return Promise.reject(error)
-  }
+  },
 )
 
 const OFFICIAL_ENDPOINTS = {
@@ -30,10 +30,10 @@ const OFFICIAL_ENDPOINTS = {
   '/api/topics/hot.json': {},
   '/api/topics/latest.json': {},
   '/api/topics/show.json': {
-    mapData: (data) => data[0]
+    mapData: (data) => data[0],
   },
   '/api/replies/show.json': {},
-  '/api/members/show.json': {}
+  '/api/members/show.json': {},
 }
 
 const CUSTOM_ENDPOINTS = {
@@ -58,8 +58,8 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       })()
-      `
-    ]
+      `,
+    ],
   },
   // params: tab={tab}
   '/page/index/topics.json': {
@@ -105,8 +105,8 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       }());
-    `
-    ]
+    `,
+    ],
   },
 
   '/page/recent/topics.json': {
@@ -158,8 +158,8 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       }());
-      `
-    ]
+      `,
+    ],
   },
 
   '/page/t/:id/topic.json': {
@@ -231,8 +231,8 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       }())
-      `
-    ]
+      `,
+    ],
   },
 
   '/page/t/:id/replies.json': {
@@ -360,8 +360,8 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
       true;
-      `
-    ]
+      `,
+    ],
   },
 
   '/page/t/:id/thank-reply.json': {
@@ -468,9 +468,9 @@ const CUSTOM_ENDPOINTS = {
               message: err.message
             }))
           }
-        }())`
+        }())`,
       ]
-    }
+    },
   },
 
   // post reply
@@ -555,9 +555,9 @@ const CUSTOM_ENDPOINTS = {
             }))
           }
         }())
-        `
+        `,
       ]
-    }
+    },
   },
 
   // post collect
@@ -583,8 +583,8 @@ const CUSTOM_ENDPOINTS = {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             collected: !!document.querySelector('a.op[href^="/unfavorite"]'),
           }))
-        }())`
-    ]
+        }())`,
+    ],
   },
 
   // post uncollect
@@ -610,8 +610,8 @@ const CUSTOM_ENDPOINTS = {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             collected: !!document.querySelector('a.op[href^="/unfavorite"]'),
           }))
-        }())`
-    ]
+        }())`,
+    ],
   },
 
   // post thank
@@ -638,8 +638,8 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       }())
-      `
-    ]
+      `,
+    ],
   },
 
   '/page/t/:id/block.json': {
@@ -679,8 +679,8 @@ const CUSTOM_ENDPOINTS = {
               message: err.message
             }))
           }
-        }())`
-    ]
+        }())`,
+    ],
   },
 
   '/page/t/:id/unblock.json': {
@@ -719,8 +719,8 @@ const CUSTOM_ENDPOINTS = {
             message: err.message
           }))
         }
-      }())`
-    ]
+      }())`,
+    ],
   },
 
   '/page/planes/node-groups.json': {
@@ -758,8 +758,8 @@ const CUSTOM_ENDPOINTS = {
         }))
       }
     }());
-    `
-    ]
+    `,
+    ],
   },
 
   '/page/go/:name/node.json': {
@@ -792,8 +792,8 @@ const CUSTOM_ENDPOINTS = {
             message: err.message
           }))
         }
-      }())`
-    ]
+      }())`,
+    ],
   },
 
   '/page/go/:name/feed.json': {
@@ -876,8 +876,8 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
       true;
-    `
-    ]
+    `,
+    ],
   },
 
   '/page/go/:name/collect.json': {
@@ -921,8 +921,8 @@ const CUSTOM_ENDPOINTS = {
             message: err.message
           }))
         }
-      }())`
-    ]
+      }())`,
+    ],
   },
 
   '/page/go/:name/uncollect.json': {
@@ -966,8 +966,8 @@ const CUSTOM_ENDPOINTS = {
             message: err.message
           }))
         }
-      }())`
-    ]
+      }())`,
+    ],
   },
 
   '/page/member/:username/topics.json': {
@@ -1035,8 +1035,8 @@ const CUSTOM_ENDPOINTS = {
         }))
       }
     }());
-    `
-    ]
+    `,
+    ],
   },
 
   '/page/member/:username/replies.json': {
@@ -1090,8 +1090,8 @@ const CUSTOM_ENDPOINTS = {
         }))
       }
     }());
-    `
-    ]
+    `,
+    ],
   },
 
   '/page/notifications.json': {
@@ -1151,8 +1151,8 @@ const CUSTOM_ENDPOINTS = {
             message: err.message
           }))
         }
-      }());`
-    ]
+      }());`,
+    ],
   },
 
   '/page/my/topics.json': {
@@ -1204,8 +1204,8 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       }())
-      `
-    ]
+      `,
+    ],
   },
 
   '/page/my/nodes.json': {
@@ -1232,8 +1232,8 @@ const CUSTOM_ENDPOINTS = {
             message: err.message
           }))
         }
-      }())`
-    ]
+      }())`,
+    ],
   },
 
   // <input type="button" class="super special button" value="2 条未读提醒" onclick="location.href = '/notifications';" style="margin: 0 10px 0 2px; flex: 1 1 1px; line-height: 18px;">
@@ -1262,8 +1262,8 @@ const CUSTOM_ENDPOINTS = {
           }))
         }
       }())
-      `
-    ]
+      `,
+    ],
   },
 
   '/custom/auth/current-user.json': {
@@ -1309,8 +1309,8 @@ const CUSTOM_ENDPOINTS = {
       }
     }());
     true;
-    `
-    ]
+    `,
+    ],
   },
 
   '/custom/auth/logout.json': {
@@ -1347,14 +1347,14 @@ const CUSTOM_ENDPOINTS = {
             success: true,
           }))
         }
-      }())`
-    ]
-  }
+      }())`,
+    ],
+  },
 }
 
 const getMatchedOfficialConfig = (url) => {
   const entry = Object.entries(OFFICIAL_ENDPOINTS).find(
-    ([endpoint]) => url.indexOf(endpoint) > -1
+    ([endpoint]) => url.indexOf(endpoint) > -1,
   )
   return entry?.[1]
 }
@@ -1366,12 +1366,12 @@ const request = async (url, config = {}) => {
     return instance({
       method: 'GET',
       url,
-      ...config
+      ...config,
     }).then(
       officalRequestConfig.mapData ||
         function (data) {
           return data
-        }
+        },
     )
   }
 
@@ -1395,7 +1395,7 @@ const request = async (url, config = {}) => {
 
   urlParams = {
     ...urlParams,
-    ...parse(url.split('?')[1] || '')
+    ...parse(url.split('?')[1] || ''),
   }
 
   return manager.fetch({
@@ -1403,8 +1403,8 @@ const request = async (url, config = {}) => {
     ...requestEntry[1],
     params: {
       ...(config.params || {}),
-      ...urlParams
-    }
+      ...urlParams,
+    },
   })
 }
 
@@ -1414,7 +1414,7 @@ const manager = {
   fetch: () => {
     const error = new Error('WebView Fetcher not initialized')
     return Promise.reject(error)
-  }
+  },
 }
 
 const getUrl = (config) => {
@@ -1478,7 +1478,7 @@ export const FetcherWebView = () => {
             Sentry.Native.addBreadcrumb({
               level: 'info',
               category: 'fetch',
-              message: url
+              message: url,
             })
             return () => {
               console.log('unmount', url)
@@ -1500,7 +1500,7 @@ export const FetcherWebView = () => {
                       Sentry.Native.addBreadcrumb({
                         level: 'debug',
                         category: 'fetcher',
-                        message: 'inject script from `timeout`'
+                        message: 'inject script from `timeout`',
                       })
                       ref.current.injectJavaScript(script)
                     }
@@ -1525,7 +1525,7 @@ export const FetcherWebView = () => {
                   Sentry.Native.addBreadcrumb({
                     level: 'debug',
                     category: 'fetcher',
-                    message: 'inject script from onLoad'
+                    message: 'inject script from onLoad',
                   })
                   ref.current.injectJavaScript(script)
                 }
@@ -1541,7 +1541,7 @@ export const FetcherWebView = () => {
                         Sentry.Native.addBreadcrumb({
                           level: 'debug',
                           category: 'fetcher',
-                          message: 'inject script from `DocumentReady` event'
+                          message: 'inject script from `DocumentReady` event',
                         })
                         ref.current.injectJavaScript(script)
                       }
@@ -1573,7 +1573,7 @@ export const FetcherWebView = () => {
                 err.toJSON = function () {
                   return {
                     message: this.message,
-                    code: this.code
+                    code: this.code,
                   }
                 }
                 reject(err)
@@ -1590,7 +1590,7 @@ export const FetcherWebView = () => {
                 err.toJSON = function () {
                   return {
                     message: this.message,
-                    code: this.code
+                    code: this.code,
                   }
                 }
                 reject(err)
@@ -1605,11 +1605,11 @@ export const FetcherWebView = () => {
         }
         setStack((prev) => ({
           ...prev,
-          [key]: Wrapped
+          [key]: Wrapped,
         }))
       })
     },
-    [setStack]
+    [setStack],
   )
   manager.fetch = fetcher
 

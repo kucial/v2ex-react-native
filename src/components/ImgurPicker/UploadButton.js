@@ -32,15 +32,15 @@ export default function UploadButton(props) {
         image: {
           uri: imageInfo.uri,
           name: imageInfo.fileName || filename,
-          type
+          type,
         },
         type: 'file',
         name: imageInfo.fileName,
-        album: album?.deletehash
+        album: album?.deletehash,
       })
       return imgurRes.data
     },
-    [imgur, album]
+    [imgur, album],
   )
   if (!imgur) {
     return null
@@ -57,7 +57,7 @@ export default function UploadButton(props) {
         }
         const result = await ImagePicker.launchImageLibraryAsync({
           allowsMultipleSelection: true,
-          mediaTypes: ImagePicker.MediaTypeOptions.Images
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
           // allowsEditing: true
           // base64: true
         })
@@ -71,7 +71,7 @@ export default function UploadButton(props) {
             uploaded = await Promise.all(
               result.selected.map((item) => {
                 return uploadImage(item, album)
-              })
+              }),
             )
           } else {
             const imageEntity = await uploadImage(result, album)

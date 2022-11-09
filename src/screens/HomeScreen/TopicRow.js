@@ -16,7 +16,7 @@ export default function TopicRow(props) {
         className={classNames(
           'border-b flex flex-row items-center',
           'border-neutral-200 bg-white',
-          'dark:border-neutral-700 dark:bg-neutral-900'
+          'dark:border-neutral-700 dark:bg-neutral-900',
         )}>
         <View className="flex-1 py-2 pl-1">
           <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
@@ -58,12 +58,12 @@ export default function TopicRow(props) {
       className={classNames(
         'border-b flex flex-row items-center active:opacity-50',
         'border-neutral-200 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900'
+        'dark:border-neutral-700 dark:bg-neutral-900',
       )}
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
-          brief: props.data
+          brief: props.data,
         })
       }}>
       {showAvatar ? (
@@ -72,12 +72,12 @@ export default function TopicRow(props) {
             onPress={() => {
               navigation.navigate('member', {
                 username: member.username,
-                brief: member
+                brief: member,
               })
             }}>
             <FastImage
               source={{
-                uri: member.avatar_mini
+                uri: member.avatar_mini,
               }}
               className="w-[24px] h-[24px] rounded"
             />
@@ -96,7 +96,7 @@ export default function TopicRow(props) {
               onPress={() => {
                 navigation.navigate('node', {
                   name: node.name,
-                  brief: node
+                  brief: node,
                 })
               }}>
               <Text className="text-xs text-neutral-500 dark:text-neutral-300">
@@ -112,7 +112,7 @@ export default function TopicRow(props) {
               onPress={() => {
                 navigation.navigate('member', {
                   username: member.username,
-                  brief: member
+                  brief: member,
                 })
               }}>
               <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-300">
@@ -141,7 +141,7 @@ export default function TopicRow(props) {
                     hitSlop={4}
                     onPress={() => {
                       navigation.push('member', {
-                        username: data.last_reply_by
+                        username: data.last_reply_by,
                       })
                     }}>
                     <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-300">

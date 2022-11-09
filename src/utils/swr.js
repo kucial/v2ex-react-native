@@ -58,7 +58,7 @@ export const useSWR = (...args) => {
   let options = {
     revalidateOnMount: false,
     shouldRetryOnError: false,
-    initOnMount: true
+    initOnMount: true,
   }
   const key = args[0]
   const lastArg = args[args.length - 1]
@@ -66,7 +66,7 @@ export const useSWR = (...args) => {
   if (typeof lastArg === 'object') {
     options = {
       ...options,
-      ...args[1]
+      ...args[1],
     }
     swr = useSWRBase(...args.slice(0, -1), options)
   } else {
@@ -139,7 +139,7 @@ export const cacheProvider = (cache) => {
     },
     flush: () => {
       storage.clearAll()
-    }
+    },
   }
 
   return swrCache

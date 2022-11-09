@@ -20,7 +20,7 @@ const TopicRow = (props) => {
       onPress={() => {
         navigation.push('topic', {
           id: data.id,
-          brief: data
+          brief: data,
         })
       }}>
       {showAvatar ? (
@@ -29,12 +29,12 @@ const TopicRow = (props) => {
             onPress={() => {
               navigation.navigate('member', {
                 username: member.username,
-                brief: member
+                brief: member,
               })
             }}>
             <FastImage
               source={{
-                uri: member.avatar_large
+                uri: member.avatar_large,
               }}
               className="w-[24px] h-[24px] rounded"
             />
@@ -53,7 +53,7 @@ const TopicRow = (props) => {
               onPress={() => {
                 navigation.navigate('node', {
                   name: node.name,
-                  brief: node
+                  brief: node,
                 })
               }}>
               <Text className="text-neutral-500 text-xs dark:text-neutral-300">
@@ -69,7 +69,7 @@ const TopicRow = (props) => {
               onPress={() => {
                 navigation.navigate('member', {
                   username: member.username,
-                  brief: member
+                  brief: member,
                 })
               }}>
               <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-400">
@@ -103,12 +103,12 @@ const TideTopicRow = (props) => {
       className={classNames(
         'border-b flex flex-row items-center active:opacity-50',
         'border-neutral-200 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900'
+        'dark:border-neutral-700 dark:bg-neutral-900',
       )}
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
-          brief: props.data
+          brief: props.data,
         })
       }}>
       {showAvatar ? (
@@ -117,12 +117,12 @@ const TideTopicRow = (props) => {
             onPress={() => {
               navigation.navigate('member', {
                 username: member.username,
-                brief: member
+                brief: member,
               })
             }}>
             <FastImage
               source={{
-                uri: member.avatar_large
+                uri: member.avatar_large,
               }}
               className="w-[24px] h-[24px] rounded"
             />
@@ -134,7 +134,7 @@ const TideTopicRow = (props) => {
       <View
         className={classNames(
           'flex-1 pt-1 pb-2',
-          props.viewed && 'opacity-70'
+          props.viewed && 'opacity-70',
         )}>
         <Text className="text-[16px] leading-[22px] text-neutral-700 dark:text-neutral-300">
           {title}
@@ -146,7 +146,7 @@ const TideTopicRow = (props) => {
             onPress={() => {
               navigation.navigate('node', {
                 name: node.name,
-                brief: node
+                brief: node,
               })
             }}>
             <Text className="text-xs text-neutral-500 dark:text-neutral-300">
@@ -184,9 +184,9 @@ export default function ViewedTopicsScreen({ navigation }) {
             showAvatar={settings.feedShowAvatar}
           />
         ),
-      keyExtractor: (item) => item.id
+      keyExtractor: (item) => item.id,
     }),
-    [settings.feedLayout, settings.showAvatar, navigation, getItems]
+    [settings.feedLayout, settings.showAvatar, navigation, getItems],
   )
 
   useLayoutEffect(() => {
@@ -200,18 +200,18 @@ export default function ViewedTopicsScreen({ navigation }) {
               {
                 options: ['取消', '清除缓存'],
                 cancelButtonIndex: 0,
-                destructiveButtonIndex: 1
+                destructiveButtonIndex: 1,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
                   clear()
                 }
-              }
+              },
             )
           }}>
           <EllipsisHorizontalIcon size={24} color={props.tintColor} />
         </Pressable>
-      )
+      ),
     })
   }, [])
 

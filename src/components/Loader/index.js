@@ -8,7 +8,7 @@ import loadingAnimation from './loading.json'
 
 const Loader = (
   { style, color, size = 28, speed = 1.8, autoPlay = true, ...props },
-  ref
+  ref,
 ) => {
   const { colorScheme } = useColorScheme()
   const innerRef = useRef()
@@ -22,9 +22,9 @@ const Loader = (
       speed={speed}
       style={[
         {
-          height: size
+          height: size,
         },
-        style
+        style,
       ]}
       source={loadingAnimation}
       colorFilters={[
@@ -32,8 +32,10 @@ const Loader = (
           keypath: 'Line_2',
           color:
             color ||
-            (colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900])
-        }
+            (colorScheme === 'dark'
+              ? colors.neutral[300]
+              : colors.neutral[900]),
+        },
       ]}
       ref={composeRefs(innerRef, ref)}
       {...props}

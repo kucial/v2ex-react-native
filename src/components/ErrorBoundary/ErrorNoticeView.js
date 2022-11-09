@@ -34,7 +34,7 @@ export default function ErrorNoticeView(props) {
           <Pressable
             className={classNames(
               'h-[50px] rounded-lg items-center justify-center active:opacity-60',
-              'bg-neutral-900 dark:bg-amber-50'
+              'bg-neutral-900 dark:bg-amber-50',
             )}
             onPress={props.onReset}>
             <Text className="text-base text-white dark:text-neutral-900">

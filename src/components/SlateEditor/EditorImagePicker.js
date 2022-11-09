@@ -11,7 +11,7 @@ export default function EditorImagePicker(props) {
         editor.insertImage({
           url: image.link,
           width: image.width,
-          height: image.height
+          height: image.height,
         })
         if (props.onSubmit) {
           props.onSubmit()

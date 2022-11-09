@@ -2,21 +2,21 @@ const hrefMap = {
   'https://(?:www\\.)?v2ex.com/t/(\\d+)(#\\w+)?$': (match) => ({
     name: 'topic',
     params: {
-      id: match[1]
-    }
+      id: match[1],
+    },
   }),
   'https://(?:www\\.)?v2ex.com/member/(.*)$': (match) => ({
     name: 'member',
     params: {
-      username: match[1]
-    }
+      username: match[1],
+    },
   }),
   'https://(?:www\\.)?v2ex.com/go/([\\w_]*)?$': (match) => ({
     name: 'node',
     params: {
-      name: match[1]
-    }
-  })
+      name: match[1],
+    },
+  }),
 }
 
 export const getScreenInfo = (href) => {

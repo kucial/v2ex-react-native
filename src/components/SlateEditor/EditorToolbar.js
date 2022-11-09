@@ -19,7 +19,7 @@ import {
   TitleIcon,
   UnderlineIcon,
   UndoIcon,
-  UnorderedListIcon
+  UnorderedListIcon,
 } from './EditorIcons'
 
 function ToolbarButton({ active, disabled, onPress, Icon, iconProps }) {
@@ -27,7 +27,7 @@ function ToolbarButton({ active, disabled, onPress, Icon, iconProps }) {
   const { color } = tw(
     active
       ? 'text-white dark:text-amber-50'
-      : 'text-neutral-800 dark:text-neutral-200'
+      : 'text-neutral-800 dark:text-neutral-200',
   )
   return (
     <Pressable
@@ -38,8 +38,8 @@ function ToolbarButton({ active, disabled, onPress, Icon, iconProps }) {
           'bg-neutral-900 text-white dark:bg-neutral-600': active,
           'active:bg-neutral-100 active:bg-neutral-600': !active,
           'active:opacity-60': !disabled,
-          'opacity-50': disabled
-        }
+          'opacity-50': disabled,
+        },
       )}
       onPress={onPress}>
       <Icon size={22} color={color} {...iconProps} />
@@ -52,7 +52,7 @@ function Divider({ margin = true }) {
     <View
       className={classNames(
         'h-[18px] w-[1px] bg-neutral-300 dark:bg-neutral-600',
-        margin && 'mx-1'
+        margin && 'mx-1',
       )}></View>
   )
 }
@@ -74,7 +74,7 @@ export default function EditorToolbar(props) {
         contentContainerStyle={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center'
+          alignItems: 'center',
         }}>
         <ToolbarButton
           disabled={!editor.canUndo()}

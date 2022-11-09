@@ -13,7 +13,7 @@ export const AuthServiceContext = createContext({
   logout: () => Promise.resolve(),
   composeAuthedNavigation: (callback) => {
     return callback || function () {}
-  }
+  },
 })
 let onceLogined = false
 const mapStatus = (swr) => {
@@ -40,7 +40,7 @@ export default function AuthService(props) {
   const navigation = useNavigation()
   const userSwr = useSWR('/custom/auth/current-user.json', {
     revalidateOnMount: true,
-    revalidateOnFocus: true
+    revalidateOnFocus: true,
   })
   const nextAction = useRef()
   const alert = useAlertService()
@@ -98,12 +98,12 @@ export default function AuthService(props) {
             ...data,
             meta: {
               ...data.meta,
-              ...patch
-            }
+              ...patch,
+            },
           }),
-          false
+          false,
         )
-      }
+      },
     }
   }, [userSwr])
 

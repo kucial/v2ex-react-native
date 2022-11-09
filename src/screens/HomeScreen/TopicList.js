@@ -26,7 +26,7 @@ function TopicList(props) {
     shouldRetryOnError: false,
     onError(err) {
       alert.alertWithType('error', '错误', err.message || '请求资源失败')
-    }
+    },
   })
 
   const scrollToRefresh = useCallback(() => {
@@ -38,7 +38,7 @@ function TopicList(props) {
       listSwr.setSize(1)
       listViewRef.current.scrollToOffset({
         offset: scrollY.current > 0 ? 0 : -60,
-        animated: true
+        animated: true,
       })
     } else {
       listSwr.mutate().catch(() => {})
@@ -63,9 +63,9 @@ function TopicList(props) {
             showLastReplyMember={settings.feedShowLastReplyMember}
           />
         ),
-      keyExtractor: (item, index) => item?.id || `index-${index}`
+      keyExtractor: (item, index) => item?.id || `index-${index}`,
     }),
-    [hasViewed, settings]
+    [hasViewed, settings],
   )
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function TopicList(props) {
             Date.now() - toBackDate > 60 * 1000 &&
             shouldFetch(
               listSwr,
-              settings.autoRefresh && settings.autoRefreshDuration
+              settings.autoRefresh && settings.autoRefreshDuration,
             )
           ) {
             scrollToRefresh()
@@ -95,7 +95,7 @@ function TopicList(props) {
             toBackDate = Date.now()
           }
           appState = nextAppState
-        }
+        },
       )
       return () => {
         subscription.remove()
@@ -105,7 +105,7 @@ function TopicList(props) {
 
   useEffect(() => {
     currentListRef.current = {
-      scrollToRefresh
+      scrollToRefresh,
     }
   }, [isFocused, scrollToRefresh])
 

@@ -18,7 +18,7 @@ const CACHE_KEY = '$app$/home-screen-index'
 export default function HomeScreen(props) {
   const {
     data: { homeTabs },
-    initHomeTabs
+    initHomeTabs,
   } = useAppSettings()
   const { navigation } = props
   const { width } = useWindowDimensions()
@@ -36,7 +36,7 @@ export default function HomeScreen(props) {
         return {
           key,
           title: tab.label,
-          tab: tab
+          tab: tab,
         }
       })
       .filter(Boolean)
@@ -97,18 +97,18 @@ export default function HomeScreen(props) {
             indicatorStyle={tw('bg-neutral-800  dark:bg-neutral-300')}
             style={tw('bg-white dark:bg-neutral-900')}
             labelStyle={tw(
-              'text-neutral-900 dark:text-neutral-200 text-[13px]'
+              'text-neutral-900 dark:text-neutral-200 text-[13px]',
             )}
             tabStyle={{
               flexShrink: 0,
               width: 'auto',
               height: 42,
-              paddingTop: 4
+              paddingTop: 4,
             }}
             contentContainerStyle={{
               display: 'flex',
               flexDirection: 'row',
-              overflow: 'scroll'
+              overflow: 'scroll',
             }}
             onTabPress={({ route }) => {
               const currentRoute = routes[index]
@@ -129,7 +129,7 @@ export default function HomeScreen(props) {
             }}
           />
         )
-      }
+      },
     }
   }, [routes, index, isFocused])
 

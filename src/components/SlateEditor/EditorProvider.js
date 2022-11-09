@@ -20,7 +20,7 @@ const EditorProvider = forwardRef((props, ref) => {
     isReady: false,
     meta: {},
     hasFocus: false,
-    viewport: {} // size
+    viewport: {}, // size
   })
   const operations = useMemo(() => {
     const mapMethods = (methods) => {
@@ -37,8 +37,8 @@ const EditorProvider = forwardRef((props, ref) => {
               JSON.stringify({
                 requestId,
                 method,
-                args
-              })
+                args,
+              }),
             )
           })
         }
@@ -59,7 +59,7 @@ const EditorProvider = forwardRef((props, ref) => {
       'insertImage',
       'base64Encode',
       'undo',
-      'redo'
+      'redo',
     ])
   }, [])
   const editor = useMemo(() => {
@@ -118,7 +118,7 @@ const EditorProvider = forwardRef((props, ref) => {
                 .then(() => {
                   setState((prev) => ({
                     ...prev,
-                    isReady: true
+                    isReady: true,
                   }))
                 })
                 .catch((err) => {
@@ -130,32 +130,32 @@ const EditorProvider = forwardRef((props, ref) => {
             case 'meta':
               setState((prev) => ({
                 ...prev,
-                meta: data.payload
+                meta: data.payload,
               }))
               break
             case 'viewport':
               setState((prev) => ({
                 ...prev,
-                viewport: data.payload
+                viewport: data.payload,
               }))
               break
             case 'selection':
               // TODO: check if is equal
               setState((prev) => ({
                 ...prev,
-                ...data.payload
+                ...data.payload,
               }))
               break
             case 'focus':
               setState((prev) => ({
                 ...prev,
-                hasFocus: true
+                hasFocus: true,
               }))
               break
             case 'blur':
               setState((prev) => ({
                 ...prev,
-                hasFocus: false
+                hasFocus: false,
               }))
               break
             default:
@@ -163,7 +163,7 @@ const EditorProvider = forwardRef((props, ref) => {
           }
         }
       },
-      ...operations
+      ...operations,
     }
   }, [state, operations])
   useImperativeHandle(ref, () => editor)

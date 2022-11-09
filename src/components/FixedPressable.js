@@ -9,7 +9,7 @@ export default function FixedPressable({ onPress, onPressIn, ...props }) {
 
     _touchActivatePositionRef.current = {
       pageX,
-      pageY
+      pageY,
     }
 
     onPressIn?.(e)
@@ -27,7 +27,7 @@ export default function FixedPressable({ onPress, onPressIn, ...props }) {
         onPress?.(e)
       }
     },
-    [onPress]
+    [onPress],
   )
 
   return (

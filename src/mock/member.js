@@ -18,5 +18,5 @@ export const member = {
   twitter: '',
   url: 'https://www.v2ex.com/u/luffy',
   username: 'luffy',
-  website: ''
+  website: '',
 }

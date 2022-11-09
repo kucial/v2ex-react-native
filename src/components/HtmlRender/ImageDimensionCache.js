@@ -4,7 +4,7 @@ const fetched = {}
 
 const ImageDimensionsContext = createContext({
   update: (key, value) => (fetched[key] = value),
-  get: (key) => fetched[key]
+  get: (key) => fetched[key],
 })
 
 export const ImageDimensionsProvider = (props) => (

@@ -5,7 +5,7 @@ import { PhotoIcon } from 'react-native-heroicons/outline'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
-  BottomSheetTextInput
+  BottomSheetTextInput,
 } from '@gorhom/bottom-sheet'
 import classNames from 'classnames'
 import { encode } from 'js-base64'
@@ -41,15 +41,15 @@ export default function TopicReplyForm(props) {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     revalidateIfStale: false,
-    refreshInterval: 0
+    refreshInterval: 0,
   })
 
   const pickerRef = useRef()
   const inputSelection = useRef()
   const { handleSubmit, control, getValues, setValue, watch } = useForm({
     defaultValues: cacheSwr.data || {
-      content: context.target ? `@${context.target.member.username} ` : ''
-    }
+      content: context.target ? `@${context.target.member.username} ` : '',
+    },
     // defaultValues: cacheSwr.data
   })
 
@@ -69,7 +69,7 @@ export default function TopicReplyForm(props) {
         control={control}
         render={({
           field: { onChange, onBlur, value },
-          fieldState: { isTouched, error }
+          fieldState: { isTouched, error },
         }) => {
           return (
             <View
@@ -77,7 +77,7 @@ export default function TopicReplyForm(props) {
                 'flex-1 border w-full px-2 py-1 rounded-lg dark:bg-neutral-900',
                 isTouched && error
                   ? 'border-red-700 dark:border-rose-500'
-                  : 'border-neutral-400 dark:border-neutral-700'
+                  : 'border-neutral-400 dark:border-neutral-700',
               )}>
               <BottomSheetTextInput
                 autoFocus
@@ -126,7 +126,7 @@ export default function TopicReplyForm(props) {
                 const replaced = [
                   text.slice(0, selection.start),
                   textToReplace,
-                  text.slice(selection.end)
+                  text.slice(selection.end),
                 ].join('')
                 setValue('content', replaced)
               }
@@ -140,7 +140,7 @@ export default function TopicReplyForm(props) {
             className={classNames(
               'h-[40px] min-w-[80px] items-center justify-center px-3 rounded-md',
               'bg-neutral-900 active:opacity-60',
-              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60'
+              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
             )}
             onPress={(e) => {
               Keyboard.dismiss()
@@ -163,7 +163,7 @@ export default function TopicReplyForm(props) {
             <ImgurPicker
               onConfigSettings={() => {
                 navigation.push('imgur-settings', {
-                  autoBack: true
+                  autoBack: true,
                 })
               }}
               onSubmit={(images) => {
@@ -173,7 +173,7 @@ export default function TopicReplyForm(props) {
                   [content, images.map((i) => i.link)]
                     .flat()
                     .filter(Boolean)
-                    .join('\n') + '\n'
+                    .join('\n') + '\n',
                 )
                 pickerRef.current.dismiss()
               }}

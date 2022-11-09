@@ -17,7 +17,7 @@ function NodeTopicRow(props) {
         className={classNames(
           'border-b flex flex-row items-center',
           'border-neutral-200 bg-white',
-          'dark:border-neutral-700 dark:bg-neutral-900'
+          'dark:border-neutral-700 dark:bg-neutral-900',
         )}>
         {showAvatar ? (
           <View className="px-2 py-2 self-start">
@@ -52,7 +52,7 @@ function NodeTopicRow(props) {
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
-          brief: props.data
+          brief: props.data,
         })
       }}>
       {showAvatar ? (
@@ -61,14 +61,14 @@ function NodeTopicRow(props) {
             onPress={() => {
               navigation.navigate('member', {
                 username: member.username,
-                brief: member
+                brief: member,
               })
             }}>
             <FastImage
               className="w-[24px] h-[24px] rounded"
               source={{
                 uri: member.avatar_normal,
-                priority: FastImage.priority.low
+                priority: FastImage.priority.low,
               }}
             />
           </FixedPressable>
@@ -80,7 +80,7 @@ function NodeTopicRow(props) {
       <View
         className={classNames(
           'flex-1 pt-1 pb-2',
-          props.viewed && 'opacity-70'
+          props.viewed && 'opacity-70',
         )}>
         <Text className="text-[16px] leading-[22px] text-neutral-700 dark:text-neutral-300">
           {data.title}

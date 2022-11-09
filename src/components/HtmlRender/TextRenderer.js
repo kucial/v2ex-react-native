@@ -1,5 +1,5 @@
-import React, { createContext, useContext } from 'react'
-import { requireNativeComponent, Text, TextInput, View } from 'react-native'
+import { useContext } from 'react'
+import { Text } from 'react-native'
 import { getNativePropsForTNode } from 'react-native-render-html'
 import { SelectableText } from '@alentoma/react-native-selectable-text'
 
