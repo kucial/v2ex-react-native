@@ -327,7 +327,7 @@ index 5770684..65db09b 100644
  @end
  
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
-index eb5e69e..420099d 100644
+index eb5e69e..5be213b 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 +++ b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 @@ -1,23 +1,23 @@
@@ -380,7 +380,7 @@ index eb5e69e..420099d 100644
  
  UITextPosition *selectionStart;
  UITextPosition* beginning;
-@@ -38,45 +38,52 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+@@ -38,45 +38,54 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
  
          _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
          _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -399,6 +399,8 @@ index eb5e69e..420099d 100644
 -        _backedTextInputView.textInputDelegate = self;
          _backedTextInputView.editable = NO;
          _backedTextInputView.selectable = YES;
++        // 处理显示不全的情况
++        _backedTextInputView.layoutManager.allowsNonContiguousLayout = NO;
 +        // TODO: may handle default context menu from js
          _backedTextInputView.contextMenuHidden = YES;
  
@@ -447,7 +449,7 @@ index eb5e69e..420099d 100644
          [_backedTextInputView addGestureRecognizer:singleTapGesture];
  
          [self setUserInteractionEnabled:YES];
-@@ -85,7 +92,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+@@ -85,7 +94,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
      return self;
  }
  
@@ -456,7 +458,7 @@ index eb5e69e..420099d 100644
  {
      if (!_backedTextInputView.isFirstResponder) {
          [_backedTextInputView becomeFirstResponder];
-@@ -98,7 +105,7 @@ -(void) _handleGesture
+@@ -98,7 +107,7 @@ -(void) _handleGesture
      NSMutableArray *menuControllerItems = [NSMutableArray arrayWithCapacity:self.menuItems.count];
  
      for(NSString *menuItemName in self.menuItems) {
@@ -465,7 +467,7 @@ index eb5e69e..420099d 100644
          UIMenuItem *item = [[UIMenuItem alloc] initWithTitle: menuItemName
                                                        action: NSSelectorFromString(sel)];
  
-@@ -112,24 +119,56 @@ -(void) _handleGesture
+@@ -112,24 +121,56 @@ -(void) _handleGesture
  
  -(void) handleSingleTap: (UITapGestureRecognizer *) gesture
  {
@@ -540,7 +542,7 @@ index eb5e69e..420099d 100644
  }
  
  -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
-@@ -150,7 +189,7 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
+@@ -150,7 +191,7 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
              break;
          case UIGestureRecognizerStateEnded:
              selectionStart = nil;
@@ -549,7 +551,7 @@ index eb5e69e..420099d 100644
              return;
  
          default:
-@@ -162,25 +201,32 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
+@@ -162,25 +203,32 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
      const NSInteger location = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionStart];
      const NSInteger endLocation = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionEnd];
  
@@ -587,7 +589,7 @@ index eb5e69e..420099d 100644
          [super setAttributedText:str];
      } else {
          [super setAttributedText:attributedText];
-@@ -220,7 +266,7 @@ - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
+@@ -220,7 +268,7 @@ - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
  - (void)forwardInvocation:(NSInvocation *)invocation
  {
      NSString *sel = NSStringFromSelector([invocation selector]);
@@ -596,7 +598,7 @@ index eb5e69e..420099d 100644
      if (match.location == 0) {
          [self tappedMenuItem:[sel substringFromIndex:17]];
      } else {
-@@ -237,7 +283,7 @@ - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+@@ -237,7 +285,7 @@ - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
  {
      if(selectionStart != nil) {return NO;}
      NSString *sel = NSStringFromSelector(action);
@@ -605,7 +607,7 @@ index eb5e69e..420099d 100644
  
      if (match.location == 0) {
          return YES;
-@@ -272,4 +318,29 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+@@ -272,4 +320,29 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
      return [super hitTest:point withEvent:event];
  }
  
