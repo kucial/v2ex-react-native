@@ -6,21 +6,17 @@
 
 ## 截图
 
-<div style="overflow: auto;">
-<img style="max-width: 360px; float:left; margin-right: 12px; margin-bottom: 12px;" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/01.png" alt="screenshot 01" />
-<img style="max-width: 360px; float:left; margin-right: 12px; margin-bottom: 12px;" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/02.png" alt="screenshot 02" />
-<img style="max-width: 360px; float:left; margin-right: 12px; margin-bottom: 12px;" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/03.png" alt="screenshot 03" />
-<img style="max-width: 360px; float:left; margin-right: 12px; margin-bottom: 12px;" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/04.png" alt="screenshot 04" />
-</div>
+<img width="350px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/01.png" alt="screenshot 01" />
+<img width="350px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/02.png" alt="screenshot 02" />
+<img width="350px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/03.png" alt="screenshot 03" />
+<img width="350px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/04.png" alt="screenshot 04" />
 
 ### Dark Mode
 
-<div style="overflow: auto;">
-<img style="max-width: 360px; float:left; margin-right: 12px; margin-bottom: 12px;" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d01.png" alt="screenshot d01" />
-<img style="max-width: 360px; float:left; margin-right: 12px; margin-bottom: 12px;" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d02.png" alt="screenshot d02" />
-<img style="max-width: 360px; float:left; margin-right: 12px; margin-bottom: 12px;" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d03.png" alt="screenshot d03" />
-<img style="max-width: 360px; float:left; margin-right: 12px; margin-bottom: 12px;" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d04.png" alt="screenshot d04" />
-</div>
+<img width="350px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d01.png" alt="screenshot d01" />
+<img width="350px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d02.png" alt="screenshot d02" />
+<img width="350px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d03.png" alt="screenshot d03" />
+<img width="350px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d04.png" alt="screenshot d04" />
 
 ## 主要开发库
 
