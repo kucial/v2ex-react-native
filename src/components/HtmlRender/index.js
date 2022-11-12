@@ -214,7 +214,7 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
           renderersProps={renderersProps}
           defaultTextProps={defaultTextProps}
           customHTMLElementModels={customHTMLElementModels}
-          // bypassAnonymousTPhrasingNodes={false}
+          bypassAnonymousTPhrasingNodes={false}
           {...props}
         />
       </RenderContext.Provider>
