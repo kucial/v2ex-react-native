@@ -9,7 +9,7 @@ platform :ios, podfile_properties['ios.deploymentTarget'] || '12.4'
 install! 'cocoapods',
   :deterministic_uuids => false
 
-target 'V2EX' do
+target 'R2V' do
   use_expo_modules!
   config = use_native_modules!
 
@@ -29,9 +29,9 @@ target 'V2EX' do
   # Uncomment to opt-in to using Flipper
   # Note that if you have use_frameworks! enabled, Flipper will not work
   #
-  if !ENV['CI']
-    use_flipper!()
-  end
+  # if !ENV['CI']
+  #   use_flipper!()
+  # end
 
   post_install do |installer|
     react_native_post_install(installer)

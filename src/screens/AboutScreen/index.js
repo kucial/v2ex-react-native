@@ -18,6 +18,7 @@ import storage from '@/utils/storage'
 
 export default function AboutScreen() {
   const { colorScheme } = useColorScheme()
+
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-1 px-4 pb-8 items-center justify-center">

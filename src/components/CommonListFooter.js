@@ -15,7 +15,7 @@ export default function CommonListFooter(props) {
   return (
     <View
       sentry-label="ListFooter"
-      className="min-h-[60px] py-4 flex flex-row items-center justify-center">
+      className="min-h-[60px] py-4 flex flex-col items-center justify-center">
       {isLoadingMore(listSwr) && (
         <View className="w-full flex flex-row items-center justify-center">
           <Loader />

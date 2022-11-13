@@ -16,7 +16,6 @@
       "distribution": "internal",
       "env": {
         "CI": "true",
-        "DEVELOPMENT_LANGUAGE": "zh-Hans",
         "IMGUR_CLIENT_ID": "eb2dd6d8927e275",
         "SENTRY_URL": "https://sentry.kongkx.com",
         "SENTRY_ORG": "kucial",
@@ -26,6 +25,7 @@
       }
     },
     "production": {
+      "autoIncrement": true,
       "env": {
         "CI": "true",
         "IMGUR_CLIENT_ID": "eb2dd6d8927e275",
