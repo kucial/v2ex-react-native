@@ -315,6 +315,7 @@ function TopicScreen({ navigation, route }) {
         },
       })
         .then(({ data }) => {
+          alert.alertWithType?.('success', '已感谢')
           listSwr.mutate((currentData) => {
             const targetIndex = currentData[p - 1].data.findIndex(
               (item) => item.id === reply.id,
