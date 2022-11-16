@@ -1350,6 +1350,94 @@ const CUSTOM_ENDPOINTS = {
       }())`,
     ],
   },
+
+  '/custom/daily-sign-in.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/mission/daily',
+    scripts: [
+      `(function() {
+        try {
+          const btn = document.querySelector('input.super.normal.button')
+          if (btn?.value === '查看我的账户余额') {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              code: 'DAILY_SIGNED',
+              message: '今日登录奖励已领取'
+            }))
+          } else if (btn) {
+            btn.click();
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              code: 'UNEXPECTED_DOM',
+              data: {
+                location: window.location.href,
+                body: document.body.outerHTML,
+              }
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const btn = document.querySelector('input.super.normal.button')
+          if (btn?.value === '查看我的账户余额') {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              success: true,
+              message: '签到成功'
+            }))
+          } else if (btn) {
+            btn.click();
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              code: 'UNEXPECTED_DOM',
+              data: {
+                location: window.location.href,
+                body: document.body.outerHTML,
+              }
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const btn = document.querySelector('input.super.normal.button')
+          if (btn?.value === '查看我的账户余额') {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              success: true,
+              message: '签到成功'
+            }))
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              code: 'UNEXPECTED_DOM',
+              data: {
+                location: window.location.href,
+                body: document.body.outerHTML,
+                step: 3,
+              }
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+    ],
+  },
 }
 
 const getMatchedOfficialConfig = (url) => {

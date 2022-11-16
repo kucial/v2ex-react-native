@@ -1,78 +1,82 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
 import { AppState } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import useSWR from 'swr'
 
+import { useCachedState } from '@/hooks'
 import fetcher from '@/utils/fetcher'
+
+const CACHE_KEY = '$app$/current-user'
+const INIT_STATE = {
+  user: null,
+  meta: null,
+  status: 'none', // 'loading' | 'authed' | 'visitor' | failed' | 'logout' | 'none',
+}
+
+import { getJSON, setJSON } from '@/utils/storage'
 
 import { useAlertService } from './AlertService'
 export const AuthServiceContext = createContext({
-  user: null,
-  status: 'none', // none | loading | authed | failed | failed | logout
+  ...INIT_STATE,
   fetchCurrentUser: () => Promise.reject(new Error('no initialized')),
   logout: () => Promise.resolve(),
   composeAuthedNavigation: (callback) => {
     return callback || function () {}
   },
 })
-let onceLogined = false
-const mapStatus = (swr) => {
-  if (swr.isValidating) {
-    return 'loading'
-  }
-  if (swr.data) {
-    if (swr.data?.data) {
-      onceLogined = true
-      return 'authed'
-    }
-
-    return 'visitor'
-  }
-  if (swr.error) {
-    return 'failed'
-  }
-  if (onceLogined) {
-    return 'logout'
-  }
-  return 'none'
-}
 export default function AuthService(props) {
   const navigation = useNavigation()
-  const userSwr = useSWR('/custom/auth/current-user.json', {
-    revalidateOnMount: true,
-    revalidateOnFocus: true,
+  const [state, setState] = useCachedState(CACHE_KEY, INIT_STATE, (pre) => {
+    pre.status = 'none'
+    return pre
   })
+
   const nextAction = useRef()
+  const dailySigning = useRef(false)
   const alert = useAlertService()
   const service = useMemo(() => {
-    const user = userSwr.data?.data
-    const meta = userSwr.data?.meta
-    const status = mapStatus(userSwr)
+    const fetchCurrentUser = async () => {
+      setState((prev) => ({
+        ...prev,
+        status: 'loading',
+      }))
+      try {
+        const res = await fetcher('/custom/auth/current-user.json')
+        setState(() => ({
+          user: res.data,
+          meta: res.meta,
+          status: res.data ? 'authed' : 'visitor',
+        }))
+      } catch (err) {
+        setState(() => ({
+          error: err,
+          status: 'failed',
+        }))
+      }
+    }
+    const logout = async () => {
+      try {
+        await fetcher('/custom/auth/logout.json')
+      } catch (err) {
+        alert.alertWithType('error', '错误', err.message)
+      } finally {
+        fetchCurrentUser()
+      }
+    }
 
     return {
-      user,
-      meta,
-      status,
-      fetchCurrentUser: userSwr.mutate,
-      logout: async function () {
-        try {
-          await fetcher('/custom/auth/logout.json')
-        } catch (err) {
-          alert.alertWithType('error', '错误', err.message)
-        } finally {
-          userSwr.mutate()
-        }
-      },
+      ...state,
+      fetchCurrentUser,
+      logout,
       goToSigninSreen() {
         navigation.navigate('signin')
       },
       composeAuthedNavigation: (callback) => {
         return (...args) => {
-          if (status === 'loading') {
+          if (state.status === 'loading') {
             alert.alertWithType('info', '提示', '正在验证登录状态，请稍候')
             return
           }
-          if (!user) {
+          if (!state.user) {
             navigation.navigate('signin')
             if (callback) {
               nextAction.current = () => {
@@ -93,27 +97,22 @@ export default function AuthService(props) {
         return undefined
       },
       updateMeta: (patch) => {
-        userSwr.mutate(
-          (data) => ({
-            ...data,
-            meta: {
-              ...data.meta,
-              ...patch,
-            },
-          }),
-          false,
-        )
+        setState((prev) => ({
+          ...prev,
+          meta: {
+            ...prev.meta,
+            ...patch,
+          },
+        }))
       },
     }
-  }, [userSwr])
+  }, [state])
 
   useEffect(() => {
     let appState = AppState.currentState
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (appState.match(/inactive|background/) && nextAppState === 'active') {
-        fetcher('/custom/auth/current-user.json').then((res) => {
-          userSwr.mutate(res, false)
-        })
+        service.fetchCurrentUser()
       }
       appState = nextAppState
     })
@@ -121,7 +120,40 @@ export default function AuthService(props) {
     return () => {
       subscription.remove()
     }
-  }, [userSwr.mutate])
+  }, [service.fetchCurrentUser])
+
+  useEffect(() => {
+    if (service.status === 'authed' && !dailySigning.current) {
+      const date = new Date().toLocaleDateString()
+      const key = `$app$/sign_in/${date}`
+      if (!getJSON(key)) {
+        dailySigning.current = true
+        fetcher('/custom/daily-sign-in.json')
+          .then(() => {
+            setJSON(key, 1)
+            alert.alertWithType('success', '成功', '签到成功')
+          })
+          .catch((err) => {
+            console.log(err)
+            if (err.code === 'DAILY_SIGNED') {
+              setJSON(key, 1)
+              alert.alertWithType('info', '提示', err.message)
+            } else {
+              alert.alertWithType('error', '错误', err.message)
+            }
+          })
+          .finally(() => {
+            dailySigning.current = false
+          })
+      }
+    }
+  }, [service.status])
+
+  useEffect(() => {
+    service.fetchCurrentUser()
+  }, [])
+
+  console.log('service status', service.status)
 
   return (
     <AuthServiceContext.Provider value={service}>
