@@ -109,6 +109,7 @@ function TopicInfo(props) {
                 {...htmlRenderProps}
                 source={{
                   html: subtle.content_rendered,
+                  baseUrl: 'https://v2ex.com',
                 }}
               />
             </View>

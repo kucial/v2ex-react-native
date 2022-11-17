@@ -47,7 +47,7 @@ export default function NodeScreen({ route, navigation }) {
 
   const htmlProps = useMemo(() => {
     return {
-      source: { html: node.header },
+      source: { html: node.header, baseUrl: 'https://v2ex.com' },
       baseStyle: tw('text-sm'),
     }
   }, [node])
