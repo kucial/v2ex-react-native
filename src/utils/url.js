@@ -1,17 +1,17 @@
 const hrefMap = {
-  'https://(?:www\\.)?v2ex.com/t/(\\d+)(#\\w+)?$': (match) => ({
+  'https://(?:\\w+\\.)?v2ex.com/t/(\\d+)(#\\w+)?$': (match) => ({
     name: 'topic',
     params: {
       id: match[1],
     },
   }),
-  'https://(?:www\\.)?v2ex.com/member/(.*)$': (match) => ({
+  'https://(?:\\w+\\.)?v2ex.com/member/(.*)$': (match) => ({
     name: 'member',
     params: {
       username: match[1],
     },
   }),
-  'https://(?:www\\.)?v2ex.com/go/([\\w_]*)?$': (match) => ({
+  'https://(?:\\w+\\.)?v2ex.com/go/([\\w_]*)?$': (match) => ({
     name: 'node',
     params: {
       name: match[1],
@@ -33,5 +33,5 @@ export const getScreenInfo = (href) => {
 }
 
 export const isAppLink = (href) => {
-  return /^https:\/\/(?:www\.)?v2ex.com/.test(href)
+  return /^https?:\/\/(?:\w+\.)?v2ex.com/.test(href)
 }
