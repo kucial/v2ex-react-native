@@ -1,4 +1,9 @@
-import { getScreenInfo, isAppLink } from '../url'
+import {
+  getImgurPostImageLink,
+  getScreenInfo,
+  isAppLink,
+  isImgurPostLink,
+} from '../url'
 describe('url utils', () => {
   describe('getScreenInfo', () => {
     it('[topic link] https://www.v2ex.com/t/871066', () => {
@@ -53,5 +58,21 @@ describe('url utils', () => {
         expect(isAppLink(link)).toBe(true)
       })
     }
+  })
+
+  describe('isImgurPostLink', () => {
+    const links = ['https://imgur.com/OforKLX']
+    for (const link of links) {
+      it(link, () => {
+        expect(isImgurPostLink(link)).toBe(true)
+      })
+    }
+  })
+
+  describe('getImgurPostImageLink', () => {
+    it('https://imgur.com/OforKLX', () => {
+      const link = getImgurPostImageLink('https://imgur.com/OforKLX')
+      expect(link).toEqual('https://i.imgur.com/OforKLX.png')
+    })
   })
 })

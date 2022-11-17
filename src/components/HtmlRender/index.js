@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import BaseRender, { useInternalRenderer } from 'react-native-render-html'
 import WebView from 'react-native-webview'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
@@ -12,7 +12,12 @@ import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
 
 import { useAlertService } from '@/containers/AlertService'
-import { getScreenInfo, isAppLink } from '@/utils/url'
+import {
+  getImgurPostImageLink,
+  getScreenInfo,
+  isAppLink,
+  isImgurPostLink,
+} from '@/utils/url'
 
 import AnchorRenderer from './AnchorRenderer'
 import { RenderContext } from './context'
@@ -45,6 +50,7 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
   const { colorScheme } = useColorScheme()
   const navigation = useNavigation()
   const alert = useAlertService()
+  const viewingRef = useRef()
 
   const styles = useMemo(() => {
     const baseFontSize = baseStyle?.fontSize || 16
@@ -166,6 +172,12 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
             return
           }
         }
+        if (isImgurPostLink(url) && viewingRef.current) {
+          console.log(viewingRef.current)
+          viewingRef.current.open(getImgurPostImageLink(url))
+          return
+          // OPEN URL
+        }
         WebBrowser.openBrowserAsync(url).catch((err) => {
           Sentry.Native.captureException(err)
           console.log(err)
@@ -205,7 +217,7 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
   )
 
   return (
-    <ImageViewingService>
+    <ImageViewingService ref={viewingRef}>
       <RenderContext.Provider value={renderContext}>
         <BaseRender
           WebView={WebView}

@@ -1,3 +1,4 @@
+import { forwardRef, useImperativeHandle } from 'react'
 import { createContext, useContext, useMemo, useRef, useState } from 'react'
 import { Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
@@ -5,7 +6,7 @@ import ImageView from 'react-native-image-viewing'
 
 const ServiceContext = createContext()
 
-export default function ImageViewingService(props) {
+const ImageViewingService = forwardRef((props, ref) => {
   const [viewIndex, setViewIndex] = useState(-1)
   const imagesRef = useRef([])
 
@@ -27,6 +28,8 @@ export default function ImageViewingService(props) {
     }
   }, [])
 
+  useImperativeHandle(ref, () => service, [service])
+
   return (
     <ServiceContext.Provider value={service}>
       {props.children}
@@ -46,6 +49,10 @@ export default function ImageViewingService(props) {
       />
     </ServiceContext.Provider>
   )
-}
+})
+
+ImageViewingService.displayName = 'ImageViewingService'
+
+export default ImageViewingService
 
 export const useImageViewing = () => useContext(ServiceContext)

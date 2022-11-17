@@ -1,14 +1,27 @@
+import { useEffect } from 'react'
 import { Text } from 'react-native'
 import {
   getNativePropsForTNode,
   useNormalizedUrl,
 } from 'react-native-render-html'
-import { useAElementProps } from 'react-native-render-html/src/renderers/ARenderer'
+
+import { getImgurPostImageLink, isImgurPostLink } from '@/utils/url'
+
+import { useImageViewing } from './ImageViewingService'
 
 export default function AnchorRenderer(props) {
   const renderProps = getNativePropsForTNode(props)
   const url = useNormalizedUrl(props.tnode.attributes.href)
-  const { onPress } = useAElementProps(props)
+  const service = useImageViewing()
+  useEffect(() => {
+    if (isImgurPostLink(url)) {
+      const imageUri = getImgurPostImageLink(url)
+      service.add(imageUri)
+      return () => {
+        service.remove(imageUri)
+      }
+    }
+  }, [url])
 
   return (
     <Text
