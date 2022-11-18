@@ -111,7 +111,7 @@ export default function AuthService(props) {
   useEffect(() => {
     let appState = AppState.currentState
     const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+      if (appState.match(/background/) && nextAppState === 'active') {
         service.fetchCurrentUser()
       }
       appState = nextAppState
@@ -123,7 +123,7 @@ export default function AuthService(props) {
   }, [service.fetchCurrentUser])
 
   useEffect(() => {
-    if (service.status === 'authed' && !dailySigning.current) {
+    if (service.user?.id && !dailySigning.current) {
       const date = new Date().toLocaleDateString()
       const key = `$app$/sign_in/${date}`
       if (!getJSON(key)) {
@@ -147,13 +147,11 @@ export default function AuthService(props) {
           })
       }
     }
-  }, [service.status])
+  }, [service.user?.id])
 
   useEffect(() => {
     service.fetchCurrentUser()
   }, [])
-
-  console.log('service status', service.status)
 
   return (
     <AuthServiceContext.Provider value={service}>
