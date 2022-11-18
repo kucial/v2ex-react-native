@@ -70,6 +70,23 @@ export default function ViewedTopicsService(props) {
             }
           })
         },
+        removeItem: (topic) => {
+          setState((prev) => {
+            const { ids, data } = prev
+            const index = ids.findIndex((id) => String(id) === String(topic.id))
+            if (index > -1) {
+              const newIds = [...ids.slice(0, index), ...ids.slice(index + 1)]
+              const mapped = { ...data }
+              delete mapped[topic.id]
+              return {
+                ...prev,
+                ids: newIds,
+                data: mapped,
+              }
+            }
+            return prev
+          })
+        },
       }
     }
     // v1 ...
@@ -78,6 +95,15 @@ export default function ViewedTopicsService(props) {
       hasViewed: (id) =>
         showHasViewed && state.some((t) => String(t.id) === String(id)),
       clear: () => setState([]),
+      removeItem: (topic) => {
+        setState((prev) => {
+          const index = prev.findIndex((t) => String(t.id) === String(topic.id))
+          if (index === -1) {
+            return mappedToV2(prev)
+          }
+          return mappedToV2([...prev.slice(0, index), ...prev.slice(index + 1)])
+        })
+      },
       touchViewed: (topic) => {
         setState((prev) => {
           const index = prev.findIndex((t) => String(t.id) === String(topic.id))

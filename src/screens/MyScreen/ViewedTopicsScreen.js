@@ -1,15 +1,46 @@
 import { useLayoutEffect, useMemo } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
-import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
+import {
+  EllipsisHorizontalIcon,
+  TrashIcon,
+} from 'react-native-heroicons/outline'
+import SwipeableItem, {
+  useSwipeableItemParams,
+} from 'react-native-swipeable-item'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
+import colors from 'tailwindcss/colors'
+import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import FixedPressable from '@/components/FixedPressable'
 import TimeAgo from '@/components/TimeAgo'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+
+const UnderlayLeft = (props) => {
+  const { close } = useSwipeableItemParams()
+  const { colorScheme } = useColorScheme()
+  return (
+    <View className="h-full flex-row flex-row justify-end bg-red-600 dark:bg-rose-500">
+      <Pressable
+        className={classNames(
+          'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',
+          'active:opacity-70',
+        )}
+        onPress={() => {
+          close().then(() => {
+            props.onDelete()
+          })
+        }}>
+        <TrashIcon
+          color={colorScheme === 'dark' ? colors.neutral[100] : colors.white}
+        />
+      </Pressable>
+    </View>
+  )
+}
 
 const TopicRow = (props) => {
   const { navigation, data, showAvatar } = props
@@ -164,29 +195,53 @@ const TideTopicRow = (props) => {
 }
 
 export default function ViewedTopicsScreen({ navigation }) {
-  const { getItems, clear } = useViewedTopics()
+  const { getItems, clear, removeItem } = useViewedTopics()
   const { showActionSheetWithOptions } = useActionSheet()
   const { data: settings } = useAppSettings()
   const { renderItem, keyExtractor, data } = useMemo(
     () => ({
       data: getItems(),
-      renderItem: ({ item }) =>
-        settings.feedLayout === 'tide' ? (
-          <TideTopicRow
-            data={item}
-            navigation={navigation}
-            showAvatar={settings.feedShowAvatar}
-          />
-        ) : (
-          <TopicRow
-            data={item}
-            navigation={navigation}
-            showAvatar={settings.feedShowAvatar}
-          />
-        ),
+      renderItem: ({ item, index }) => {
+        const inner =
+          settings.feedLayout === 'tide' ? (
+            <TideTopicRow
+              data={item}
+              navigation={navigation}
+              showAvatar={settings.feedShowAvatar}
+            />
+          ) : (
+            <TopicRow
+              data={item}
+              navigation={navigation}
+              showAvatar={settings.feedShowAvatar}
+            />
+          )
+
+        return (
+          <SwipeableItem
+            key={item.id}
+            swipeEnabled
+            snapPointsLeft={[60]}
+            renderUnderlayLeft={() => (
+              <UnderlayLeft
+                onDelete={() => {
+                  removeItem(item)
+                }}
+              />
+            )}>
+            <View className="bg-white dark:bg-neutral-900">{inner}</View>
+          </SwipeableItem>
+        )
+      },
       keyExtractor: (item) => item.id,
     }),
-    [settings.feedLayout, settings.showAvatar, navigation, getItems],
+    [
+      settings.feedLayout,
+      settings.showAvatar,
+      navigation,
+      getItems,
+      removeItem,
+    ],
   )
 
   useLayoutEffect(() => {
