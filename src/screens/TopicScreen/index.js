@@ -60,7 +60,7 @@ const REPLY_PAGE_SIZE = 100
 const getPageNum = (num) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id) => `https://v2ex.com/t/${id}`
 
-const replyModalSnapPoints = ['20%']
+const replyModalSnapPoints = ['25%']
 const conversationSnapPoints = ['60%', '90%']
 
 const renderBackdrop = (props) => {

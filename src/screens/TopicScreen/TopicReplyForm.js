@@ -74,14 +74,19 @@ export default function TopicReplyForm(props) {
           return (
             <View
               className={classNames(
-                'flex-1 border w-full px-2 py-1 rounded-lg dark:bg-neutral-900',
+                'flex-1 w-full rounded-lg bg-neutral-100 dark:bg-neutral-900',
                 isTouched && error
-                  ? 'border-red-700 dark:border-rose-500'
-                  : 'border-neutral-400 dark:border-neutral-700',
+                  ? 'border border-red-700 dark:border-rose-500'
+                  : 'border border-neutral-400 dark:border-neutral-700',
               )}>
               <BottomSheetTextInput
                 autoFocus
-                style={[tw('w-full dark:text-neutral-200')]}
+                style={[
+                  tw(
+                    'w-full h-full rounded-lg px-2 py-1 dark:text-neutral-200',
+                  ),
+                  isTouched && error && tw('bg-red-500/10'),
+                ]}
                 selectionColor={
                   colorScheme === 'dark'
                     ? colors.amber[50]
