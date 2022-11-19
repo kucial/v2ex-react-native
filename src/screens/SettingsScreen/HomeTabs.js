@@ -256,7 +256,7 @@ export function HomeTabs(props) {
     update,
     initHomeTabs,
   } = useAppSettings()
-  const [tabs, setTabs] = useState(homeTabs)
+  const [tabs, setTabs] = useState(homeTabs || [])
   const { colorScheme } = useColorScheme()
   const sheetRef = useRef()
   const { showActionSheetWithOptions } = useActionSheet()
