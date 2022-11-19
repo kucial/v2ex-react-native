@@ -327,7 +327,7 @@ index 5770684..65db09b 100644
  @end
  
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
-index eb5e69e..5be213b 100644
+index eb5e69e..4b71e7d 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 +++ b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 @@ -1,23 +1,23 @@
@@ -607,7 +607,7 @@ index eb5e69e..5be213b 100644
  
      if (match.location == 0) {
          return YES;
-@@ -272,4 +320,29 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+@@ -272,4 +320,30 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
      return [super hitTest:point withEvent:event];
  }
  
@@ -627,11 +627,12 @@ index eb5e69e..5be213b 100644
 +            break;
 +    }
 +
-+
-+    self.onUrlPress(@{
-+        @"url": URL.absoluteString,
-+        @"interaction": action,
-+    });
++    if (URL) {
++        self.onUrlPress(@{
++            @"url": URL.absoluteString,
++            @"interaction": action,
++        });
++    }
 +
 +    return NO;
 +}
