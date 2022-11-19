@@ -970,6 +970,222 @@ const CUSTOM_ENDPOINTS = {
     ],
   },
 
+  '/page/member/:username/info.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/member/:username',
+    getScripts: ({ params }) => {
+      return [
+        `(function() {
+          try {
+            const meta = {
+              blocked: !!document.querySelector('.button[value=Unblock]'),
+              watched: !!document.querySelector('.inverse[value=取消特别关注]')
+            }
+            fetch("/api/members/show.json?username=${params.username}").then(
+              (res) => res.json()
+            ).then((user) => {
+              user.meta = meta;
+              window.ReactNativeWebView.postMessage(JSON.stringify(user))
+            }).catch((err) => {
+              window.ReactNativeWebView.postMessage(JSON.stringify({
+                error: true,
+                message: err.message
+              }))
+            })
+          } catch (err) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: err.message
+            }))
+          }
+        }())`,
+      ]
+    },
+  },
+  '/page/member/:username/watch.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/member/:username',
+    scripts: [
+      `(function() {
+        try {
+          const btn = document.querySelector('.special[value=加入特别关注]');
+          if (btn) {
+            const match = /href\\s+=\\s+'(.*)';/.exec(btn.getAttribute('onclick'))
+            if (match) {
+              const link = match[1];
+              location.href = link;
+              return;
+            }
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: "未找到相关入口",
+            data: {
+              body: document.body.outerHTML,
+            }
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const meta = {
+            blocked: !!document.querySelector('.button[value=Unblock]'),
+            watched: !!document.querySelector('.inverse[value=取消特别关注]')
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify(meta))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+    ],
+  },
+
+  '/page/member/:username/unwatch.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/member/:username',
+    scripts: [
+      `(function() {
+        try {
+          const btn = document.querySelector('.button[value=取消特别关注]');
+          if (btn) {
+            const match = /href\\s+=\\s+'(.*)';/.exec(btn.getAttribute('onclick'))
+            if (match) {
+              const link = match[1];
+              location.href = link;
+              return;
+            }
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: "未找到相关入口",
+            data: {
+              body: document.body.outerHTML,
+            }
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const meta = {
+            blocked: !!document.querySelector('.button[value=Unblock]'),
+            watched: !!document.querySelector('.inverse[value=取消特别关注]')
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify(meta))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+    ],
+  },
+
+  '/page/member/:username/block.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/member/:username',
+    scripts: [
+      `(function() {
+        try {
+          const btn = document.querySelector('.button[value=Block]');
+          if (btn) {
+            const match = /href\\s+=\\s+'(.*)';/.exec(btn.getAttribute('onclick'))
+            if (match) {
+              const link = match[1];
+              location.href = link;
+              return;
+            }
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: "未找到相关入口",
+            data: {
+              body: document.body.outerHTML,
+            }
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const meta = {
+            blocked: !!document.querySelector('.button[value=Unblock]'),
+            watched: !!document.querySelector('.inverse[value=取消特别关注]')
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify(meta))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+    ],
+  },
+
+  '/page/member/:username/unblock.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/member/:username',
+    scripts: [
+      `(function() {
+        try {
+          const btn = document.querySelector('.button[value=Unblock]');
+          if (btn) {
+            const match = /href\\s+=\\s+'(.*)';/.exec(btn.getAttribute('onclick'))
+            if (match) {
+              const link = match[1];
+              location.href = link;
+              return;
+            }
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: "未找到相关入口",
+            data: {
+              body: document.body.outerHTML,
+            }
+          }))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+      `(function() {
+        try {
+          const meta = {
+            blocked: !!document.querySelector('.button[value=Unblock]'),
+            watched: !!document.querySelector('.inverse[value=取消特别关注]')
+          }
+          window.ReactNativeWebView.postMessage(JSON.stringify(meta))
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())`,
+    ],
+  },
+
   '/page/member/:username/topics.json': {
     host: 'https://www.v2ex.com',
     pathname: '/member/:username/topics',
@@ -1024,6 +1240,7 @@ const CUSTOM_ENDPOINTS = {
             total: Number(pageText.split('/')[1])
           }
         }
+
         window.ReactNativeWebView.postMessage(JSON.stringify({
           data,
           pagination,

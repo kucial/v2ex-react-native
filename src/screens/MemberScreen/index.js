@@ -12,7 +12,9 @@ const Tab = createMaterialTopTabNavigator()
 
 export default function MemberScreen({ route, navigation }) {
   const { username } = route.params
-  const memberSwr = useSWR(`/api/members/show.json?username=${username}`)
+  const memberSwr = useSWR(`/page/member/${username}/info.json`, {
+    revalidateOnMount: true,
+  })
   // useEffect(() => {
   //   if (memberSwr.data) {
   //     navigation.setParams({
