@@ -31,21 +31,6 @@ export default function NodesScreen({ navigation }) {
   const filterInput = useRef()
   const listRef = useRef()
 
-  useFocusEffect(
-    useCallback(() => {
-      const unsubscribe = navigation.addListener('tabPress', (e) => {
-        listRef.current?.scrollToLocation({
-          viewOffset: 0,
-          animated: true,
-          itemIndex: 0,
-          sectionIndex: 0,
-        })
-      })
-
-      return unsubscribe
-    }, []),
-  )
-
   const { sections, renderItem } = useMemo(() => {
     return {
       sections: [
@@ -104,6 +89,23 @@ export default function NodesScreen({ navigation }) {
       },
     }
   }, [commonNodesSwr.data, collectedNodesSwr.data, filter])
+
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = navigation.addListener('tabPress', (e) => {
+        if (sections.length) {
+          listRef.current?.scrollToLocation({
+            viewOffset: 0,
+            animated: true,
+            itemIndex: 0,
+            sectionIndex: 0,
+          })
+        }
+      })
+
+      return unsubscribe
+    }, [sections]),
+  )
 
   return (
     <View className="flex-1">
