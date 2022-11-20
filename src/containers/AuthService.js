@@ -46,6 +46,7 @@ export default function AuthService(props) {
           meta: res.meta,
           status: res.data ? 'authed' : 'visitor',
         }))
+        return res.data
       } catch (err) {
         setState(() => ({
           error: err,
@@ -112,7 +113,32 @@ export default function AuthService(props) {
     let appState = AppState.currentState
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (appState.match(/background/) && nextAppState === 'active') {
-        service.fetchCurrentUser()
+        service.fetchCurrentUser().then((user) => {
+          if (user && !dailySigning.current) {
+            const date = new Date().toLocaleDateString()
+            const key = `$app$/daily_sign_in/${date}`
+            if (!getJSON(key)) {
+              dailySigning.current = true
+              fetcher('/custom/daily-sign-in.json')
+                .then(() => {
+                  setJSON(key, 1)
+                  alert.alertWithType('success', '成功', '签到成功')
+                })
+                .catch((err) => {
+                  console.log(err)
+                  if (err.code === 'DAILY_SIGNED') {
+                    setJSON(key, 1)
+                    alert.alertWithType('info', '提示', err.message)
+                  } else {
+                    alert.alertWithType('error', '错误', err.message)
+                  }
+                })
+                .finally(() => {
+                  dailySigning.current = false
+                })
+            }
+          }
+        })
       }
       appState = nextAppState
     })
@@ -121,33 +147,6 @@ export default function AuthService(props) {
       subscription.remove()
     }
   }, [service.fetchCurrentUser])
-
-  useEffect(() => {
-    if (service.user?.id && !dailySigning.current) {
-      const date = new Date().toLocaleDateString()
-      const key = `$app$/sign_in/${date}`
-      if (!getJSON(key)) {
-        dailySigning.current = true
-        fetcher('/custom/daily-sign-in.json')
-          .then(() => {
-            setJSON(key, 1)
-            alert.alertWithType('success', '成功', '签到成功')
-          })
-          .catch((err) => {
-            console.log(err)
-            if (err.code === 'DAILY_SIGNED') {
-              setJSON(key, 1)
-              alert.alertWithType('info', '提示', err.message)
-            } else {
-              alert.alertWithType('error', '错误', err.message)
-            }
-          })
-          .finally(() => {
-            dailySigning.current = false
-          })
-      }
-    }
-  }, [service.user?.id])
 
   useEffect(() => {
     service.fetchCurrentUser()
