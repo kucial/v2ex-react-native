@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
-import { AppState } from 'react-native'
+import { AppState, InteractionManager } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
 import { useCachedState } from '@/hooks'
@@ -11,10 +11,19 @@ const INIT_STATE = {
   meta: null,
   status: 'none', // 'loading' | 'authed' | 'visitor' | failed' | 'logout' | 'none',
 }
+const CHECK_STATUS_DELAY = 2000
 
 import { getJSON, setJSON } from '@/utils/storage'
 
 import { useAlertService } from './AlertService'
+
+const getUTCDateString = () => {
+  const date = new Date()
+  return `${date.getUTCFullYear()}-${('0' + (date.getUTCMonth() + 1)).slice(
+    -2,
+  )}-${date.getUTCDate()}`
+}
+
 export const AuthServiceContext = createContext({
   ...INIT_STATE,
   fetchCurrentUser: () => Promise.reject(new Error('no initialized')),
@@ -111,34 +120,40 @@ export default function AuthService(props) {
 
   useEffect(() => {
     let appState = AppState.currentState
+    let timer
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (appState.match(/background/) && nextAppState === 'active') {
-        service.fetchCurrentUser().then((user) => {
-          if (user && !dailySigning.current) {
-            const date = new Date().toLocaleDateString()
-            const key = `$app$/daily_sign_in/${date}`
-            if (!getJSON(key)) {
-              dailySigning.current = true
-              fetcher('/custom/daily-sign-in.json')
-                .then(() => {
-                  setJSON(key, 1)
-                  alert.alertWithType('success', '成功', '签到成功')
-                })
-                .catch((err) => {
-                  console.log(err)
-                  if (err.code === 'DAILY_SIGNED') {
+        timer = setTimeout(() => {
+          InteractionManager.runAfterInteractions(async () => {
+            try {
+              const user = await service.fetchCurrentUser()
+              if (user && !dailySigning.current) {
+                const key = `$app$/daily_sign_in/${getUTCDateString()}`
+                if (!getJSON(key)) {
+                  try {
+                    dailySigning.current = true
+                    await fetcher('/custom/daily-sign-in.json')
                     setJSON(key, 1)
-                    alert.alertWithType('info', '提示', err.message)
-                  } else {
-                    alert.alertWithType('error', '错误', err.message)
+                    alert.alertWithType('success', '成功', '签到成功')
+                  } catch (err) {
+                    console.log(err)
+                    if (err.code === 'DAILY_SIGNED') {
+                      setJSON(key, 1)
+                      alert.alertWithType('info', '提示', err.message)
+                    } else {
+                      alert.alertWithType('error', '错误', err.message)
+                    }
+                  } finally {
+                    dailySigning.current = false
                   }
-                })
-                .finally(() => {
-                  dailySigning.current = false
-                })
-            }
-          }
-        })
+                }
+              }
+            } catch (err) {}
+          })
+        }, CHECK_STATUS_DELAY)
+      } else {
+        clearTimeout(timer)
+        timer = undefined
       }
       appState = nextAppState
     })
