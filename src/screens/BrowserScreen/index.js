@@ -11,6 +11,8 @@ import { NProgress } from 'react-native-nprogress'
 import { WebView } from 'react-native-webview'
 import classNames from 'classnames'
 
+import { USER_AGENT } from '@/constants'
+
 export default function BrowserScreen({ route, navigation }) {
   const [loading, setLoading] = useState(false)
   const webviewRef = useRef()
@@ -36,6 +38,7 @@ export default function BrowserScreen({ route, navigation }) {
     <View style={{ flex: 1 }}>
       <WebView
         pullToRefreshEnabled
+        userAgent={USER_AGENT}
         ref={webviewRef}
         style={{ flex: 1 }}
         source={{ uri: route.params.url }}

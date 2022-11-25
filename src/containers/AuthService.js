@@ -64,12 +64,28 @@ export default function AuthService(props) {
       }
     }
     const logout = async () => {
+      let prevStatus
       try {
-        await fetcher('/custom/auth/logout.json')
+        setState((prev) => {
+          prevStatus = prev.status
+          return {
+            ...prev,
+            status: 'logingout',
+          }
+        })
+        const result = await fetcher('/custom/auth/logout.json')
+        if (result.success) {
+          setState(() => ({
+            ...INIT_STATE,
+            status: 'logout',
+          }))
+        }
       } catch (err) {
         alert.alertWithType('error', '错误', err.message)
-      } finally {
-        fetchCurrentUser()
+        setState((prev) => ({
+          ...prev,
+          status: prevStatus,
+        }))
       }
     }
 
@@ -119,6 +135,9 @@ export default function AuthService(props) {
   }, [state])
 
   useEffect(() => {
+    if (!service.user) {
+      return
+    }
     let appState = AppState.currentState
     let timer
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -161,7 +180,7 @@ export default function AuthService(props) {
     return () => {
       subscription.remove()
     }
-  }, [service.fetchCurrentUser])
+  }, [service.fetchCurrentUser, service.user])
 
   useEffect(() => {
     service.fetchCurrentUser()

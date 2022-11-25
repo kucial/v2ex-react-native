@@ -26,6 +26,7 @@ import {
   EditorRender,
   EditorToolbar,
 } from '@/components/SlateEditor'
+import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import nodes from '@/mock/nodes'
 
@@ -317,6 +318,7 @@ export default function NewTopicScreen(props) {
           <WebView
             originWhitelist={['*']}
             injectedJavaScript={domReadyMessage}
+            userAgent={USER_AGENT}
             source={{
               uri: `https://www.v2ex.com/write?node=${values.node.name}`,
             }}

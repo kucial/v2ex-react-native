@@ -238,10 +238,11 @@ function TopicScreen({ navigation, route }) {
                   '取消',
                   '在内部 WebView 打开',
                   '在外部浏览器中打开',
+                  '屏蔽用户',
                   topic?.blocked ? '取消忽略主题' : '忽略主题',
                 ],
                 cancelButtonIndex: 0,
-                destructiveButtonIndex: 3,
+                destructiveButtonIndex: 4,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
@@ -251,29 +252,50 @@ function TopicScreen({ navigation, route }) {
                 } else if (buttonIndex === 2) {
                   Linking.openURL(getTopicLink(id))
                 } else if (buttonIndex === 3) {
+                  const username = topic.member?.username
+                  if (!username) {
+                    return
+                  }
+                  composeAuthedNavigation(() => {
+                    aIndicator.show()
+                    fetcher(`/page/member/${username}/block.json`)
+                      .then(() => {
+                        alert.alertWithType('success', '操作成功', '已屏蔽用户')
+                      })
+                      .catch((err) => {
+                        alert.alertWithType('error', '错误', err.message)
+                      })
+                      .finally(() => {
+                        aIndicator.hide()
+                      })
+                  })()
+                } else if (buttonIndex === 4) {
                   const endpoint = topic?.blocked
                     ? `/page/t/${id}/unblock.json`
                     : `/page/t/${id}/block.json`
-                  aIndicator.show()
-                  fetcher(endpoint)
-                    .then((result) => {
-                      topicSwr.data &&
-                        topicSwr.mutate((prev) => ({
-                          ...prev,
-                          ...result,
-                        }))
-                      alert.alertWithType(
-                        'success',
-                        '操作成功',
-                        result.blocked ? '已忽略主题' : '已撤销主题忽略',
-                      )
-                    })
-                    .catch((err) => {
-                      alert.alertWithType('error', '错误', err.message)
-                    })
-                    .finally(() => {
-                      aIndicator.hide()
-                    })
+
+                  composeAuthedNavigation(() => {
+                    aIndicator.show()
+                    fetcher(endpoint)
+                      .then((result) => {
+                        topicSwr.data &&
+                          topicSwr.mutate((prev) => ({
+                            ...prev,
+                            ...result,
+                          }))
+                        alert.alertWithType(
+                          'success',
+                          '操作成功',
+                          result.blocked ? '已忽略主题' : '已撤销主题忽略',
+                        )
+                      })
+                      .catch((err) => {
+                        alert.alertWithType('error', '错误', err.message)
+                      })
+                      .finally(() => {
+                        aIndicator.hide()
+                      })
+                  })()
                 }
               },
             )

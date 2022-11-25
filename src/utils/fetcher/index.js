@@ -1,11 +1,15 @@
+import './scripts'
+
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { View } from 'react-native'
+import { DeviceInfo, View } from 'react-native'
 import WebView from 'react-native-webview'
 import axios from 'axios'
 import pathMatch from 'path-match'
 import { parse as pathParse } from 'path-to-regexp'
 import { parse, stringify } from 'qs'
 import * as Sentry from 'sentry-expo'
+
+import { USER_AGENT } from '@/constants'
 
 const REQUEST_TIMEOUT = 1000 * 10
 const instance = axios.create({
@@ -70,7 +74,7 @@ const CUSTOM_ENDPOINTS = {
       (function() {
         try {
           const itemNodes = document.querySelectorAll('#Wrapper .content .cell.item')
-          const items = [...itemNodes].map((d) => {
+          const items = Array.from(itemNodes).map((d) => {
             const member = {
               avatar_mini: d.querySelector('td:nth-child(1) img').src,
               username: d.querySelector('td:nth-child(3) span strong a').textContent,
@@ -82,8 +86,10 @@ const CUSTOM_ENDPOINTS = {
             const title = d.querySelector('.item_title a').textContent;
             const id = d.querySelector('.item_title a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0];
             const last_reply_time = d.querySelector('td:nth-child(3) span:last-child').textContent.split('•')[0].trim();
-            const last_reply_by =  d.querySelector('td:nth-child(3) span:last-child a')?.textContent
-            const replies = d.querySelector('.count_livid')?.textContent;
+            const lastReplyDom = d.querySelector('td:nth-child(3) span:last-child a');
+            const last_reply_by =  lastReplyDom && lastReplyDom.textContent;
+            const repliesCountDom = d.querySelector('.count_livid');
+            const replies = repliesCountDom && repliesCountDom.textContent;
             return {
               member,
               node,
@@ -129,8 +135,10 @@ const CUSTOM_ENDPOINTS = {
             const title = d.querySelector('.item_title a').textContent;
             const id = d.querySelector('.item_title a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0];
             const last_reply_time = d.querySelector('td:nth-child(3) span:last-child').textContent.split('•')[0].trim();
-            const last_reply_by =  d.querySelector('td:nth-child(3) > span:last-child a[href^="/member/"]')?.textContent;
-            const replies = d.querySelector('.count_livid')?.textContent;
+            const lastReplyDom = d.querySelector('td:nth-child(3) > span:last-child a[href^="/member/"]');
+            const last_reply_by = lastReplyDom ? lastReplyDom.textContent : undefined;
+            const replyCountDom = d.querySelector('.count_livid');
+            const replies = replyCountDom ? replyCountDom.textContent : 0;
             return {
               member,
               node,
@@ -191,7 +199,7 @@ const CUSTOM_ENDPOINTS = {
             const infoDom = rDom.parentElement.children[0]
             const compos = infoDom.textContent.trim().split('•');
             replies = Number(compos[0].replace('条回复', ''))
-            last_reply_time = compos[1]?.trim();
+            last_reply_time = compos[1] && compos[1].trim();
           }
           const metaDom = document.querySelector('#Wrapper .header > small.gray');
           const metaMatch = /at(.*)/.exec(metaDom.textContent.trim())
@@ -205,11 +213,12 @@ const CUSTOM_ENDPOINTS = {
               content_rendered: d.querySelector('.topic_content').innerHTML.trim()
             })
           })
+          const contentDom = document.querySelector('#Wrapper .cell .topic_content');
 
           const topic = {
             id: Number(window.location.pathname.replace('/t/', '')),
             title: document.querySelector('#Wrapper .header h1').textContent.trim(),
-            content_rendered: document.querySelector('#Wrapper .cell .topic_content')?.innerHTML.trim(),
+            content_rendered: contentDom ? contentDom.innerHTML.trim() : '',
             replies,
             last_reply_time,
             created_time,
@@ -283,9 +292,10 @@ const CUSTOM_ENDPOINTS = {
 
           let pagination = { current: 1, total: 1 };
           const paginationCell = document.querySelector('#Wrapper .box:nth-child(5) .cell:nth-child(2):not([id^=r_])')
-          const cell2 = items[0]?.previousElementSibling;
+          const cell2 = items[0] && items[0].previousElementSibling;
           if (paginationCell && cell2 === paginationCell) {
-            pagination.current = Number(paginationCell.querySelector('.page_current')?.textContent);
+            const pageCurrentDom = paginationCell.querySelector('.page_current');
+            pagination.current = pageCurrentDom ? Number(pageCurrentDom.textContent) : 1;
             const total = /\\d+/.exec(paginationCell.querySelector('div:nth-child(2)').textContent);
             pagination.total = Number(total)
           }
@@ -621,7 +631,7 @@ const CUSTOM_ENDPOINTS = {
     scripts: [
       `(function() {
         try {
-          const thankScript = document.querySelector('#topic_thank a')?.getAttribute('onclick');
+          const thankScript = document.querySelector('#topic_thank a').getAttribute('onclick');
           const scriptMatch = /thankTopic\\((\\d+),'(.*)'\\)/.exec(thankScript)
           if (scriptMatch) {
             thankTopic(scriptMatch[0], scriptMatch[1])
@@ -776,9 +786,9 @@ const CUSTOM_ENDPOINTS = {
           const data = {
             title: document.querySelector('.node-breadcrumb').lastChild.textContent.trim(),
             name: ${JSON.stringify(params.name)},
-            header: d.querySelector('.intro')?.innerHTML,
+            header: d.querySelector('.intro') && d.querySelector('.intro').innerHTML,
             topics: Number(d.querySelector('.topic-count strong').textContent) || 0,
-            avatar_large: d.querySelector('.page-content-header img')?.src,
+            avatar_large: d.querySelector('.page-content-header img') && d.querySelector('.page-content-header img').src,
             collected: !!d.querySelector('a[href^="/unfavorite/node"]'),
             theme: {
               backgroundColor: window.getComputedStyle(headerDom)['background-color'],
@@ -812,11 +822,11 @@ const CUSTOM_ENDPOINTS = {
             const avatar_normal = d.querySelector('td:nth-child(1) a img').src;
             const id = d.querySelector('.item_title a').href.replace(new RegExp('.*\/t\/'), '').split('#')[0];
             const title = d.querySelector('.topic-link').textContent;
-            const replies = Number(d.querySelector('.count_livid')?.textContent.trim() || 0);
+            const replies = Number(d.querySelector('.count_livid') ? d.querySelector('.count_livid').textContent.trim() : 0);
             const last_reply_by = d.querySelector('td:nth-child(3) .small strong').textContent;
             const metaText =  d.querySelector('td:nth-child(3) .small').textContent;
-            const characterMatch = /(\\d+)/.exec(metaText.split('•')?.[1] || '');
-            const clickMatch = /(\\d+)/.exec(metaText.split('•')?.[2] || '');
+            const characterMatch = /(\\d+)/.exec(metaText.split('•')[1] || '');
+            const clickMatch = /(\\d+)/.exec(metaText.split('•')[2] || '');
 
             return {
               id,
@@ -828,7 +838,8 @@ const CUSTOM_ENDPOINTS = {
               member: { username, avatar_normal },
             }
           }).filter(Boolean);
-          const pageText = document.querySelector('#Wrapper .content > .box:nth-child(2) .inner td[align=center]')?.textContent
+          const pageDom = document.querySelector('#Wrapper .content > .box:nth-child(2) .inner td[align=center]')
+          const pageText = pageDom && pageDom.textContent;
           let pagination;
           if (pageText) {
             pagination = {
@@ -846,7 +857,7 @@ const CUSTOM_ENDPOINTS = {
             const data = {
               title: document.querySelector('.node-breadcrumb').lastChild.textContent.trim(),
               name: ${JSON.stringify(params.name)},
-              header: d.querySelector('.intro')?.innerHTML,
+              header: d.querySelector('.intro') ?  d.querySelector('.intro').innerHTML : '',
               topics: Number(d.querySelector('.topic-count strong').textContent) || 0,
               avatar_large: d.querySelector('.page-content-header img')?.src,
               collected: !!d.querySelector('a[href^="/unfavorite/node"]'),
@@ -1194,7 +1205,11 @@ const CUSTOM_ENDPOINTS = {
     (function() {
       try {
         const cells = document.querySelectorAll('#Wrapper .content .box .cell')
-        if (cells.length === 1 && cells[0].querySelector('img')?.src.indexOf('lock') > -1) {
+        if (
+          cells.length === 1
+          && cells[0].querySelector('img')
+          && cells[0].querySelector('img').src.indexOf('lock') > -1
+        ) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             error: true,
             code: 'member_locked',
@@ -1489,9 +1504,9 @@ const CUSTOM_ENDPOINTS = {
     scripts: [
       `
     (function() {
-      if (!window.ReactNativeWebView) { return; }
       try {
-        const username = document.querySelector('#menu-entry img.avatar')?.getAttribute('alt');
+        const avatarDom = document.querySelector('#menu-entry img.avatar');
+        const username = avatarDom && avatarDom.getAttribute('alt');
         if (!username) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             data: null,
@@ -1556,15 +1571,19 @@ const CUSTOM_ENDPOINTS = {
         }
       }());
     `,
-      // check if logout sccess
       `(function() {
+      try {
         const logoutAnchor = document.querySelector('a[href^="/signout"]');
-        if (!logoutAnchor) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            success: true,
-          }))
-        }
-      }())`,
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          success: !logoutAnchor
+        }))
+      } catch (err) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({
+          error: true,
+          message: err.message
+        }))
+      }
+    }())`,
     ],
   },
 
@@ -1575,7 +1594,7 @@ const CUSTOM_ENDPOINTS = {
       `(function() {
         try {
           const btn = document.querySelector('input.super.normal.button')
-          if (btn?.value === '查看我的账户余额') {
+          if (btn && btn.value === '查看我的账户余额') {
             window.ReactNativeWebView.postMessage(JSON.stringify({
               error: true,
               code: 'DAILY_SIGNED',
@@ -1603,7 +1622,7 @@ const CUSTOM_ENDPOINTS = {
       `(function() {
         try {
           const btn = document.querySelector('input.super.normal.button')
-          if (btn?.value === '查看我的账户余额') {
+          if (btn && btn.value === '查看我的账户余额') {
             window.ReactNativeWebView.postMessage(JSON.stringify({
               success: true,
               message: '签到成功'
@@ -1630,7 +1649,7 @@ const CUSTOM_ENDPOINTS = {
       `(function() {
         try {
           const btn = document.querySelector('input.super.normal.button')
-          if (btn?.value === '查看我的账户余额') {
+          if (btn && btn.value === '查看我的账户余额') {
             window.ReactNativeWebView.postMessage(JSON.stringify({
               success: true,
               message: '签到成功'
@@ -1773,6 +1792,7 @@ export const FetcherWebView = () => {
     (config) => {
       return new Promise((resolve, reject) => {
         const key = config.key || counter++
+        console.log('======fetch config: ', config)
         function Wrapped(props) {
           const ref = useRef()
           const timerRef = useRef()
@@ -1795,6 +1815,7 @@ export const FetcherWebView = () => {
               source={{ uri: url }}
               injectedJavaScript={domReadyMessage}
               originWhitelist={['*']}
+              userAgent={USER_AGENT}
               // sharedCookiesEnabled={true}
               onLoadStart={() => {
                 console.log(`load start: ${url}`)
@@ -1920,7 +1941,7 @@ export const FetcherWebView = () => {
 
   return (
     <View
-    // style={{ flex: 1 }}
+    // style={{ height: 200 }}
     >
       {Object.entries(stack).map(([key, Compo]) => (
         <Compo key={key} />

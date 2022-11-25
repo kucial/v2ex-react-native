@@ -59,50 +59,22 @@ export default function DebugScreen() {
   const id = 893807
   const topicSwr = useSWR(`/api/topics/show.json?id=${id}`)
 
-  // variables
-  const snapPoints = useMemo(() => ['25%', '50%'], [])
-
-  // callbacks
-  const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present()
-  }, [])
-  const handleSheetChanges = useCallback((index) => {
-    console.log('handleSheetChanges', index)
-  }, [])
   const { width } = useWindowDimensions()
+
+  console.log(topicSwr.data)
 
   // renders
   // return null
   return (
     <SafeAreaView style={styles.container}>
-      {[...new Array(10)].map((_, index) => (
-        <View
-          key={index}
-          style={{
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-          }}>
-          {/* <View>
-            <TextInput
-              style={{
-                fontSize: 16,
-                lineHeight: 20,
-              }}
-              value="一台高性能主机，供客厅以及各个房间使用，如果真的可以这样做，键盘鼠标视频布线该怎么办"
-              scrollEnabled={false}
-              multiline
-            />
-          </View> */}
-          {topicSwr && (
-            <HtmlRender
-              contentWidth={width - 32}
-              source={{
-                html: topicSwr.data.content_rendered,
-              }}
-            />
-          )}
-        </View>
-      ))}
+      {topicSwr?.data && (
+        <HtmlRender
+          contentWidth={width - 32}
+          source={{
+            html: topicSwr.data.content_rendered,
+          }}
+        />
+      )}
     </SafeAreaView>
   )
 }

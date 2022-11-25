@@ -19,6 +19,7 @@ import { useColorScheme } from 'tailwindcss-react-native'
 
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
+import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 
@@ -28,7 +29,7 @@ const extractImageCaptcha = `
     const message = document.querySelector('#Wrapper .topic_content').textContent.trim();
     const info = document.querySelector('#Wrapper .dock_area').textContent.trim();
     window.ReactNativeWebView.postMessage(JSON.stringify({
-      type: 'cooldonw',
+      type: 'cooldown',
       payload: {
         message,
         info,
@@ -98,6 +99,11 @@ const checkSubmitStatus = `
       type: 'login_success',
       payload: { username }
     }));
+  } else if (location.pathname === '/') {
+    window.ReactNativeWebView.postMessage(JSON.stringify({
+      type: 'timeout',
+      payload: ['请求超时'],
+    }));
   } else {
     const problems = [
       ...document.querySelectorAll('.problem ul li')
@@ -127,6 +133,9 @@ const getSubmitScripts = (values) => {
         inputEls[2].value = '${captcha}';
     }
     form.submit();
+    setTimeout(() => {
+      window.location = '/';
+    }, 5000)
   }())`
 }
 
@@ -190,8 +199,15 @@ export default function LoginScreen({ navigation }) {
           setError(data.payload)
           webviewRef.current.injectJavaScript(extractImageCaptcha)
           break
-        case 'colldown':
+        case 'timeout':
+          setIsSubmitting(false)
+          setError(data.payload)
+          scriptsToInject.current.unshift(extractImageCaptcha)
+          webviewRef.current.injectJavaScript(`window.location = '/signin'`)
+          break
+        case 'cooldown':
           setError([data.payload.message, data.payload.info])
+          break
         default:
           console.log('NOT_HANDLED_MESSAGE: ', data)
       }
@@ -217,7 +233,7 @@ export default function LoginScreen({ navigation }) {
   }, [])
 
   const values = watch()
-
+  console.log('scriptsToInject.current', scriptsToInject.current.length)
   return (
     <View className="flex-1 bg-white dark:bg-neutral-800">
       <View className="u-absolute left-1 top-1">
@@ -438,10 +454,13 @@ export default function LoginScreen({ navigation }) {
               </Pressable> */}
             </View>
           </KeyboardAvoidingView>
-          <View style={{ height: 0 }}>
+          <View
+          // style={{ height: 300 }}
+          >
             <WebView
               ref={webviewRef}
               originWhitelist={['*']}
+              userAgent={USER_AGENT}
               source={{ uri: 'https://www.v2ex.com/signin' }}
               onLoad={() => {
                 const toInject = scriptsToInject.current.shift()
