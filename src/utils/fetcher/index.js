@@ -733,6 +733,47 @@ const CUSTOM_ENDPOINTS = {
     ],
   },
 
+  // report
+  '/page/t/:id/report.json': {
+    host: 'https://www.v2ex.com',
+    pathname: '/t/:id',
+    getScripts: ({ params }) => [
+      `(function() {
+        try {
+          const anchor = [...document.querySelectorAll('.box a')].find((a) => a.innerText === '报告这个主题')
+          if (anchor) {
+            const scriptMatch = /href = '(.*)';/.exec(anchor.getAttribute('onclick'))
+            if (scriptMatch) {
+              location.href = scriptMatch[1]
+            }
+          } else {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              reported: [...document.querySelectorAll('span.fade')].some((d) => d.innerText === '你已对本主题进行了报告'),
+            }))
+          }
+        } catch (err) {
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            error: true,
+            message: err.message
+          }))
+        }
+      }())
+      `,
+      `(function() {
+          try {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              reported: [...document.querySelectorAll('span.fade')].some((d) => d.innerText === '你已对本主题进行了报告')
+            }))
+          } catch (err) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              error: true,
+              message: err.message
+            }))
+          }
+        }())`,
+    ],
+  },
+
   '/page/planes/node-groups.json': {
     host: 'https://www.v2ex.com',
     pathname: '/planes',

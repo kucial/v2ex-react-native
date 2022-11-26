@@ -240,9 +240,10 @@ function TopicScreen({ navigation, route }) {
                   '在外部浏览器中打开',
                   '屏蔽用户',
                   topic?.blocked ? '取消忽略主题' : '忽略主题',
+                  '举报',
                 ],
                 cancelButtonIndex: 0,
-                destructiveButtonIndex: 4,
+                destructiveButtonIndex: 5,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
@@ -288,6 +289,33 @@ function TopicScreen({ navigation, route }) {
                           '操作成功',
                           result.blocked ? '已忽略主题' : '已撤销主题忽略',
                         )
+                      })
+                      .catch((err) => {
+                        alert.alertWithType('error', '错误', err.message)
+                      })
+                      .finally(() => {
+                        aIndicator.hide()
+                      })
+                  })()
+                } else if (buttonIndex === 5) {
+                  composeAuthedNavigation(() => {
+                    aIndicator.show()
+                    fetcher(`/page/t/${id}/report.json`)
+                      .then((result) => {
+                        topicSwr.data &&
+                          topicSwr.mutate((prev) => ({
+                            ...prev,
+                            ...result,
+                          }))
+                        if (result.reported) {
+                          alert.alertWithType('success', '成功', '已举报主题')
+                        } else {
+                          alert.alertWithType(
+                            'error',
+                            '错误',
+                            '未成功举报举报主题',
+                          )
+                        }
                       })
                       .catch((err) => {
                         alert.alertWithType('error', '错误', err.message)
