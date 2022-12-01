@@ -13,10 +13,10 @@ import { useColorScheme } from 'tailwindcss-react-native'
 
 import { useAlertService } from '@/containers/AlertService'
 import {
-  getImgurPostImageLink,
+  getImgurResourceImageLink,
   getScreenInfo,
   isAppLink,
-  isImgurPostLink,
+  isImgurResourceLink,
 } from '@/utils/url'
 
 import AnchorRenderer from './AnchorRenderer'
@@ -172,9 +172,9 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
             return
           }
         }
-        if (isImgurPostLink(url) && viewingRef.current) {
+        if (isImgurResourceLink(url) && viewingRef.current) {
           console.log(viewingRef.current)
-          viewingRef.current.open(getImgurPostImageLink(url))
+          viewingRef.current.open(getImgurResourceImageLink(url))
           return
           // OPEN URL
         }

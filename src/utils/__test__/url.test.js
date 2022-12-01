@@ -1,8 +1,8 @@
 import {
-  getImgurPostImageLink,
+  getImgurResourceImageLink,
   getScreenInfo,
   isAppLink,
-  isImgurPostLink,
+  isImgurResourceLink,
 } from '../url'
 describe('url utils', () => {
   describe('getScreenInfo', () => {
@@ -60,18 +60,24 @@ describe('url utils', () => {
     }
   })
 
-  describe('isImgurPostLink', () => {
+  describe('isImgurResourceLink', () => {
     const links = ['https://imgur.com/OforKLX']
     for (const link of links) {
       it(link, () => {
-        expect(isImgurPostLink(link)).toBe(true)
+        expect(isImgurResourceLink(link)).toBe(true)
+      })
+    }
+    const excepts = ['https://imgur.com/a/WdEWePU']
+    for (const link of excepts) {
+      it(link, () => {
+        expect(isImgurResourceLink(link)).toBe(false)
       })
     }
   })
 
   describe('getImgurPostImageLink', () => {
     it('https://imgur.com/OforKLX', () => {
-      const link = getImgurPostImageLink('https://imgur.com/OforKLX')
+      const link = getImgurResourceImageLink('https://imgur.com/OforKLX')
       expect(link).toEqual('https://i.imgur.com/OforKLX.png')
     })
   })

@@ -5,7 +5,7 @@ import {
   useNormalizedUrl,
 } from 'react-native-render-html'
 
-import { getImgurPostImageLink, isImgurPostLink } from '@/utils/url'
+import { getImgurResourceImageLink, isImgurResourceLink } from '@/utils/url'
 
 import { useImageViewing } from './ImageViewingService'
 
@@ -14,8 +14,8 @@ export default function AnchorRenderer(props) {
   const url = useNormalizedUrl(props.tnode.attributes.href)
   const service = useImageViewing()
   useEffect(() => {
-    if (isImgurPostLink(url)) {
-      const imageUri = getImgurPostImageLink(url)
+    if (isImgurResourceLink(url)) {
+      const imageUri = getImgurResourceImageLink(url)
       service.add(imageUri)
       return () => {
         service.remove(imageUri)
