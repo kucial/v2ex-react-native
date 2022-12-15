@@ -438,6 +438,8 @@ PODS:
   - RNSentry (4.2.2):
     - React-Core
     - Sentry (= 7.22.0)
+  - RNStoreReview (0.3.0):
+    - React-Core
   - RNSVG (13.3.0):
     - React-Core
   - SDWebImage (5.11.1):
@@ -526,6 +528,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
+  - RNStoreReview (from `../node_modules/react-native-store-review`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -687,6 +690,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSentry:
     :path: "../node_modules/@sentry/react-native"
+  RNStoreReview:
+    :path: "../node_modules/react-native-store-review"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   Yoga:
@@ -772,6 +777,7 @@ SPEC CHECKSUMS:
   RNReanimated: aaf0af38841d8fc482117e7a0c1a3f99a8ba74f4
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSentry: f03937a2cf86c7029ba31fbbf5618c55d223cd62
+  RNStoreReview: 18cf6adbd193eadb049d2f6c37ef2ab3d5a28706
   RNSVG: 1869ad9534459f24caaa0416a4764548c2aeedad
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d

@@ -69,40 +69,46 @@ export default function AboutScreen() {
             </Pressable>
           </View>
         </View>
-        <View className="py-2 w-full">
-          <Pressable
-            className={classNames(
-              'h-[50px] rounded-md flex items-center justify-center mt-4',
-              'bg-neutral-900 active:opacity-60',
-              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
-            )}
-            onPress={() => {
-              // clear swr cache
-              const keys = storage.getAllKeys()
-              keys.forEach((key) => {
-                if (/\$app\$/.test(key)) {
-                  return
-                }
-                storage.delete(key)
-              })
-              FastImage.clearDiskCache()
-              RNRestart.Restart()
-            }}>
-            <Text className="text-white dark:text-neutral-900">清除缓存</Text>
-          </Pressable>
-          <Pressable
-            className={classNames(
-              'h-[50px] rounded-md flex items-center justify-center mt-4',
-              'bg-neutral-900 active:opacity-60',
-              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
-            )}
-            onPress={() => {
-              storage.clearAll()
-              FastImage.clearDiskCache()
-              RNRestart.Restart()
-            }}>
-            <Text className="text-white dark:text-rose-500">重置</Text>
-          </Pressable>
+        <View className="py-2 w-full flex flex-row">
+          <View className="basis-1/2 pr-2">
+            <Pressable
+              className={classNames(
+                'h-[50px] rounded-md flex items-center justify-center mt-4',
+                'bg-white active:opacity-60',
+                'dark:bg-neutral-900 dark:opacity-90 dark:active:opacity-60',
+              )}
+              onPress={() => {
+                // clear swr cache
+                const keys = storage.getAllKeys()
+                keys.forEach((key) => {
+                  if (/\$app\$/.test(key)) {
+                    return
+                  }
+                  storage.delete(key)
+                })
+                FastImage.clearDiskCache()
+                RNRestart.Restart()
+              }}>
+              <Text className="text-neutral-800 dark:text-neutral-300">
+                清除缓存
+              </Text>
+            </Pressable>
+          </View>
+          <View className="basis-1/2 pl-2">
+            <Pressable
+              className={classNames(
+                'h-[50px] rounded-md flex items-center justify-center mt-4',
+                'bg-white active:opacity-60',
+                'dark:bg-neutral-900 dark:opacity-90 dark:active:opacity-60',
+              )}
+              onPress={() => {
+                storage.clearAll()
+                FastImage.clearDiskCache()
+                RNRestart.Restart()
+              }}>
+              <Text className="text-red-500 dark:text-rose-500">重置</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </SafeAreaView>

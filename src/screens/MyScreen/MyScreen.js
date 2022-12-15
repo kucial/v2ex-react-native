@@ -5,7 +5,9 @@ import {
   Cog6ToothIcon,
   DocumentIcon,
   InformationCircleIcon,
+  StarIcon,
 } from 'react-native-heroicons/outline'
+import * as StoreReview from 'react-native-store-review'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
 import { useColorScheme } from 'tailwindcss-react-native'
@@ -183,6 +185,13 @@ export default function MyScreen({ navigation }) {
           }}
           icon={<InformationCircleIcon size={24} color={iconColor} />}
           title="关于"
+        />
+        <LineItem
+          onPress={() => {
+            StoreReview.requestReview()
+          }}
+          icon={<StarIcon size={24} color={iconColor} />}
+          title="五星好评"
           isLast
         />
       </LineItemGroup>
