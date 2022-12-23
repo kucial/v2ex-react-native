@@ -10,6 +10,7 @@ import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
+import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 
 const htmlBaseStyle = {
@@ -20,14 +21,15 @@ const NotificationRow = (props) => {
   const { data } = props
   const navigation = useNavigation()
   const { width } = useWindowDimensions()
+  const { styles, theme } = useTheme()
   if (!data) {
     return (
       <View
         className={classNames(
-          'border-b flex flex-row items-start active:opacity-60 p-2',
-          'border-b-neutral-300 bg-white',
-          'dark:bg-neutral-900 dark:border-neutral-600',
-        )}>
+          'flex flex-row items-start p-2',
+          'active:opacity-60',
+        )}
+        style={[styles.layer1, styles.border_b, styles.border_light]}>
         <View className="mr-2">
           <Box className="w-[24px] h-[24px] rounded" />
         </View>
@@ -35,10 +37,13 @@ const NotificationRow = (props) => {
           <View className="flex flex-row">
             <BlockText lines={2} className="leading-5" />
           </View>
-          <View className="bg-neutral-100 dark:bg-neutral-800 mt-1 p-1 rounded">
+          <View className="mt-1 p-1 rounded" style={styles.layer2}>
             <BlockText
               lines={[1, 3]}
-              className="leading-5 text-neutral-200 dark:text-neutral-700"
+              style={{
+                color: theme.colors.meta,
+                lineHeight: 20,
+              }}
             />
           </View>
         </View>
@@ -51,9 +56,10 @@ const NotificationRow = (props) => {
     case 'collect':
       header = (
         <View className="flex flex-row">
-          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
+          <Text className="leading-5" style={styles.text_meta}>
             <Text
-              className="text-neutral-600 font-medium dark:text-neutral-400"
+              className="font-medium"
+              style={styles.text_desc}
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
@@ -64,8 +70,7 @@ const NotificationRow = (props) => {
             </Text>
             <Text className="">{' 收藏了你发布的主题 '}</Text>
             <Text
-              className="text-neutral-600 dark:text-neutral-400"
-              style={{ paddingHorizontal: 8 }}
+              style={[{ paddingHorizontal: 8 }, styles.text_desc]}
               onPress={() => {
                 navigation.push('topic', {
                   id: data.topic.id,
@@ -74,7 +79,7 @@ const NotificationRow = (props) => {
               {data.topic.title}
             </Text>
             <Text> </Text>
-            <Text className="px-2 text-neutral-300">{data.time}</Text>
+            <Text className="px-2">{data.time}</Text>
           </Text>
         </View>
       )
@@ -82,9 +87,10 @@ const NotificationRow = (props) => {
     case 'thank':
       header = (
         <View className="flex flex-row">
-          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
+          <Text className="leading-5" style={styles.text_meta}>
             <Text
-              className="text-neutral-600 font-medium dark:text-neutral-400"
+              className="font-medium"
+              style={styles.text_desc}
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
@@ -95,8 +101,7 @@ const NotificationRow = (props) => {
             </Text>
             <Text className="">{' 感谢了你发布的主题 '}</Text>
             <Text
-              className="text-neutral-600 dark:text-neutral-400"
-              style={{ paddingHorizontal: 8 }}
+              style={[{ paddingHorizontal: 8 }, styles.text_desc]}
               onPress={() => {
                 navigation.push('topic', {
                   id: data.topic.id,
@@ -105,7 +110,7 @@ const NotificationRow = (props) => {
               {data.topic.title}
             </Text>
             <Text> </Text>
-            <Text className="px-2 text-neutral-300">{data.time}</Text>
+            <Text className="px-2">{data.time}</Text>
           </Text>
         </View>
       )
@@ -113,9 +118,10 @@ const NotificationRow = (props) => {
     case 'thank_reply':
       header = (
         <View className="flex flex-row">
-          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
+          <Text className="leading-5" style={styles.text_meta}>
             <Text
-              className="text-neutral-600 font-medium dark:text-neutral-400"
+              className="font-medium"
+              style={styles.text_desc}
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
@@ -126,8 +132,7 @@ const NotificationRow = (props) => {
             </Text>
             <Text className="">{' 感谢了你在主题 '}</Text>
             <Text
-              className="text-neutral-600 dark:text-neutral-400"
-              style={{ paddingHorizontal: 8 }}
+              style={[{ paddingHorizontal: 8 }, styles.text_desc]}
               onPress={() => {
                 navigation.push('topic', {
                   id: data.topic.id,
@@ -136,7 +141,7 @@ const NotificationRow = (props) => {
               {data.topic.title}
             </Text>
             <Text>{' 的回复 '}</Text>
-            <Text className="text-neutral-300">{data.time}</Text>
+            <Text>{data.time}</Text>
           </Text>
         </View>
       )
@@ -145,9 +150,10 @@ const NotificationRow = (props) => {
     default:
       header = (
         <View className="flex flex-row">
-          <Text className="leading-5 text-neutral-400 dark:text-neutral-500">
+          <Text className="leading-5" style={styles.text_meta}>
             <Text
-              className="text-neutral-600 font-medium dark:text-neutral-400"
+              className="font-medium"
+              style={styles.text_desc}
               onPress={() => {
                 navigation.push('member', {
                   username: data.member.username,
@@ -158,8 +164,7 @@ const NotificationRow = (props) => {
             </Text>
             <Text className="">{' 在 '}</Text>
             <Text
-              className="text-neutral-600 dark:text-neutral-400"
-              style={{ paddingHorizontal: 8 }}
+              style={[{ paddingHorizontal: 8 }, styles.text_desc]}
               onPress={() => {
                 navigation.push('topic', {
                   id: data.topic.id,
@@ -168,7 +173,7 @@ const NotificationRow = (props) => {
               {data.topic.title}
             </Text>
             <Text>{' 里回复了你 '}</Text>
-            <Text className="text-neutral-300">{data.time}</Text>
+            <Text className="text-sm">{data.time}</Text>
           </Text>
         </View>
       )
@@ -178,10 +183,10 @@ const NotificationRow = (props) => {
     <View
       sentry-label="NotificationRow"
       className={classNames(
-        'border-b flex flex-row items-start active:opacity-60 p-2',
-        'border-b-neutral-300 bg-white',
-        'dark:bg-neutral-900 dark:border-neutral-600',
-      )}>
+        'flex flex-row items-start p-2',
+        'active:opacity-60',
+      )}
+      style={[styles.layer1, styles.border_b, styles.border_light]}>
       <View className="mr-2">
         <Pressable
           hitSlop={4}
@@ -203,7 +208,7 @@ const NotificationRow = (props) => {
       <View className="flex-1">
         {header}
         {data.content_rendered && (
-          <View className="bg-neutral-100 mt-1 p-1 rounded dark:bg-neutral-800">
+          <View className="mt-1 p-1 rounded" style={styles.layer2}>
             <HtmlRender
               contentWidth={width - 24 - 8 - 8 - 8}
               source={{

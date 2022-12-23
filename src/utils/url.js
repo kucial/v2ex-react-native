@@ -5,10 +5,13 @@ const hrefMap = {
       id: match[1],
     },
   }),
-  'https://(?:\\w+\\.)?v2ex.com/member/(.*)$': (match) => ({
+  'https://(?:\\w+\\.)?v2ex\\.com/member/([^/]+)(?:/(topics|replies))?$': (
+    match,
+  ) => ({
     name: 'member',
     params: {
       username: match[1],
+      tab: match[2],
     },
   }),
   'https://(?:\\w+\\.)?v2ex.com/go/([\\w_]*)?$': (match) => ({

@@ -2,17 +2,16 @@ import { useMemo, useState } from 'react'
 import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
 import ImageView from 'react-native-image-viewing'
 import classNames from 'classnames'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import CheckIcon from '@/components/CheckIcon'
+import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing } from '@/utils/swr'
 
 import ImageCard from './ImageCard'
 
 export default function ImagesView(props) {
   const { imagesSwr } = props
-  const { colorScheme } = useColorScheme()
+  const theme = useTheme()
 
   const [viewIndex, setViewIndex] = useState(-1)
 
@@ -76,9 +75,7 @@ export default function ImagesView(props) {
     <ScrollView
       refreshControl={
         <RefreshControl
-          tintColor={
-            colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-          }
+          tintColor={theme.colors.refresh_tint}
           refreshing={isRefreshing(imagesSwr)}
           onRefresh={() => {
             imagesSwr.mutate()

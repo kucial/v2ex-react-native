@@ -1,8 +1,7 @@
 import { RefreshControl, ScrollView, View } from 'react-native'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
+import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing } from '@/utils/swr'
 
 import AlbumAdd from './AlbumAdd'
@@ -11,14 +10,12 @@ import AlbumCard from './AlbumCard'
 export default function Albums(props) {
   const imgur = useImgurService()
   const albumsSwr = imgur.useAlbums()
-  const { colorScheme } = useColorScheme()
+  const theme = useTheme()
   return (
     <ScrollView
       refreshControl={
         <RefreshControl
-          tintColor={
-            colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-          }
+          tintColor={theme.colors.refresh_tint}
           refreshing={isRefreshing(albumsSwr)}
           onRefresh={() => {
             albumsSwr.mutate()

@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from 'react-native'
 import PropTypes from 'prop-types'
 
+import { useTheme } from '@/containers/ThemeService'
 import {
   hasReachEnd,
   isEmptyList,
@@ -12,6 +13,7 @@ import Loader from './Loader'
 
 export default function CommonListFooter(props) {
   const { data: listSwr } = props
+  const { styles } = useTheme()
   return (
     <View
       sentry-label="ListFooter"
@@ -24,18 +26,17 @@ export default function CommonListFooter(props) {
       {shouldShowError(listSwr) && (
         <View className="w-full px-4 items-center">
           <View className="my-4">
-            <Text className="text-neutral-800 dark:text-neutral-300">
-              {listSwr.error.message}
-            </Text>
+            <Text style={styles.text}>{listSwr.error.message}</Text>
           </View>
           {listSwr.error.code !== 'member_locked' && (
             <View className="flex flex-row justify-center mb-4">
               <Pressable
-                className="px-4 h-[44px] w-[120px] rounded-full bg-neutral-900 dark:bg-amber-50 text-white items-center justify-center active:opacity-60"
+                className="px-4 h-[44px] w-[120px] rounded-full items-center justify-center active:opacity-60"
+                style={styles.btn_primary.bg}
                 onPress={() => {
                   listSwr.mutate()
                 }}>
-                <Text className="text-white dark:text-neutral-800">重试</Text>
+                <Text style={styles.btn_primary.text}>重试</Text>
               </Pressable>
             </View>
           )}
@@ -44,13 +45,13 @@ export default function CommonListFooter(props) {
       {hasReachEnd(listSwr) &&
         (isEmptyList(listSwr) ? (
           <View className="w-full flex flex-row justify-center py-4">
-            <Text className="text-neutral-400">
+            <Text style={styles.text_meta}>
               {props.emptyMessage || '还没有内容哦'}
             </Text>
           </View>
         ) : (
           <View className="w-full flex flex-row justify-center py-4">
-            <Text className="text-neutral-400">到达底部啦</Text>
+            <Text style={styles.text_meta}>到达底部啦</Text>
           </View>
         ))}
     </View>

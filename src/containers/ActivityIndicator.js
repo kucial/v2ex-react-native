@@ -3,6 +3,8 @@ import { useWindowDimensions, View } from 'react-native'
 
 import Loader from '@/components/Loader'
 
+import { useTheme } from './ThemeService'
+
 const ActivityIndicatorContext = createContext({
   show: () => {},
   hide: () => {},
@@ -13,6 +15,7 @@ const INDICATOR_HEIGHT = 64
 export default function ActivityIndicatorProvider(props) {
   const [visible, setVisible] = useState(false)
   const { width, height } = useWindowDimensions()
+  const { theme } = useTheme()
 
   const service = useMemo(() => ({
     show: () => setVisible(true),
@@ -33,9 +36,10 @@ export default function ActivityIndicatorProvider(props) {
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 12,
-          }}
-          className="bg-neutral-100/80 dark:bg-neutral-900/90">
-          <Loader size={30} color="#333" autoPlay />
+            backgroundColor: theme.colors.bg_layer3,
+            opacity: 80,
+          }}>
+          <Loader size={30} color={theme.colors.refresh_tint} autoPlay />
         </View>
       )}
     </ActivityIndicatorContext.Provider>

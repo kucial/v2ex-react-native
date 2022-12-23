@@ -9,13 +9,13 @@ import { Pressable, Text, TextInput, View } from 'react-native'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
+
+import { useTheme } from '@/containers/ThemeService'
 
 function SearchInput(props, ref) {
   const [text, setText] = useState(props.initialValue || '')
   const searchInput = useRef()
-  const { colorScheme } = useColorScheme()
+  const { theme, styles } = useTheme()
 
   const service = useMemo(
     () => ({
@@ -44,13 +44,10 @@ function SearchInput(props, ref) {
       style={props.style}>
       <View className="relative flex-1 py-2">
         <TextInput
-          className="bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 rounded-lg flex-1 px-2 h-[36px] text-[16px] leading-[20px]"
-          selectionColor={
-            colorScheme === 'dark' ? colors.amber[50] : colors.neutral[600]
-          }
-          placeholderTextColor={
-            colorScheme === 'dark' ? colors.neutral[500] : colors.neutral[400]
-          }
+          className="rounded-lg flex-1 px-2 h-[36px] text-[16px] leading-[20px]"
+          style={[styles.text, styles.input.bg]}
+          selectionColor={theme.colors.primary}
+          placeholderTextColor={theme.colors.text_placeholder}
           ref={searchInput}
           placeholder={props.placeholder}
           returnKeyType="search"
@@ -69,14 +66,7 @@ function SearchInput(props, ref) {
               onPress={() => {
                 service.reset()
               }}>
-              <XMarkIcon
-                size={18}
-                color={
-                  colorScheme === 'dark'
-                    ? colors.amber[50]
-                    : colors.neutral[600]
-                }
-              />
+              <XMarkIcon size={18} color={theme.colors.primary} />
             </Pressable>
           </View>
         )}

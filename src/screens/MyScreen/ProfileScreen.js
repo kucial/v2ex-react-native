@@ -1,9 +1,12 @@
 import { Text, View } from 'react-native'
 
+import { useTheme } from '@/containers/ThemeService'
+
 export default function ProfileScreen() {
+  const { styles } = useTheme()
   return (
     <View className="py-8">
-      <Text className="text-center text-neutral-800 dark:text-neutral-300">
+      <Text className="text-center" style={styles.text}>
         ProfileScreen
       </Text>
     </View>

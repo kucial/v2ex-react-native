@@ -87,7 +87,8 @@ React Native + Tailwindcss + SWR
 
 - react-native
 - react-navigation -- 页面导航
-- tailwindcss-react-native -- 样式系统
+- ~~tailwindcss-react-native -- 样式系统~~
+- nativewind + custom theme provider -- 样式主题系统
 - sentry-expo -- 错误跟踪
 - MMKV -- 存储
 - swr -- 请求管理

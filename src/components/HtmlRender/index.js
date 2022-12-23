@@ -8,10 +8,9 @@ import * as WebBrowser from 'expo-web-browser'
 import { decode } from 'js-base64'
 import PropTypes from 'prop-types'
 import * as Sentry from 'sentry-expo'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import { useAlertService } from '@/containers/AlertService'
+import { useTheme } from '@/containers/ThemeService'
 import {
   getImgurResourceImageLink,
   getScreenInfo,
@@ -47,7 +46,7 @@ const MENU_ITEM_COPY = '复制'
 const MENU_ITEM_BASE64_DECODE = 'Base64 解码'
 
 function RenderHtml({ tagsStyles, baseStyle, ...props }) {
-  const { colorScheme } = useColorScheme()
+  const { theme } = useTheme()
   const navigation = useNavigation()
   const alert = useAlertService()
   const viewingRef = useRef()
@@ -56,8 +55,7 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
     const baseFontSize = baseStyle?.fontSize || 16
     return {
       body: {
-        color:
-          colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[700],
+        color: theme.colors.text,
         fontSize: baseFontSize,
         lineHeight: baseFontSize * 1.33,
       },
@@ -99,8 +97,7 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
         marginVertical: baseFontSize,
       },
       pre: {
-        backgroundColor:
-          colorScheme === 'dark' ? colors.neutral[800] : colors.neutral[100],
+        backgroundColor: theme.colors.bg_pre,
         paddingHorizontal: (12 / 16) * baseFontSize,
         lineHeight: 1.25 * baseFontSize,
       },
@@ -116,24 +113,21 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }) {
       },
       p: {
         marginTop: 0,
-        lineHeight: 1.25 * baseFontSize,
-        marginBottom: baseFontSize,
       },
       a: {
         textDecorationLine: 'none',
-        color: colorScheme === 'dark' ? colors.sky[300] : colors.blue[600],
+        color: theme.colors.text_link,
       },
       blockquote: {
         marginLeft: 0,
         paddingLeft: baseFontSize * 1.5,
         paddingVertical: baseFontSize * 0.25,
         borderLeftWidth: 2,
-        borderLeftColor:
-          colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900],
+        borderLeftColor: theme.colors.text,
       },
       ...(tagsStyles || {}),
     }
-  }, [tagsStyles, baseStyle, colorScheme])
+  }, [tagsStyles, baseStyle, theme])
   const renderersProps = useMemo(() => {
     return {
       // a: {

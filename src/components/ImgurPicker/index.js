@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 
 import { useImgurService } from '@/containers/ImgurService'
+import { useTheme } from '@/containers/ThemeService'
 import { getJSON, setJSON } from '@/utils/storage'
 
 import Album from './AlbumImages'
@@ -14,6 +15,7 @@ import SubmitButton from './SubmitButton'
 const CACHE_KEY = '$app$/ui/imgur-picker-stack'
 
 export default function ImgurPicker(props) {
+  const { theme, styles } = useTheme()
   const imgur = useImgurService()
   const navigation = useNavigation()
   const [stack, setStack] = useState(getJSON(CACHE_KEY, [{ name: 'landing' }]))
@@ -50,7 +52,7 @@ export default function ImgurPicker(props) {
         className="flex flex-1 p-8 items-center justify-center w-full"
         style={props.style}>
         <View className="my-5">
-          <Text className="text-[16px] dark:text-neutral-200">
+          <Text className="text-[16px]" style={styles.text}>
             Imgur 服务还未设置
           </Text>
         </View>
@@ -58,11 +60,11 @@ export default function ImgurPicker(props) {
           <Pressable
             className={classNames(
               'h-[44px] w-[200px] rounded-md flex items-center justify-center mt-4',
-              'bg-neutral-900 active:opacity-60',
-              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
+              'active:opacity-60',
             )}
+            style={styles.btn_primary.bg}
             onPress={props.onConfigSettings}>
-            <Text className="text-white dark:text-neutral-900">前往设置</Text>
+            <Text style={styles.btn_primary.text}>前往设置</Text>
           </Pressable>
         )}
       </View>

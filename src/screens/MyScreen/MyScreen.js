@@ -9,15 +9,14 @@ import {
 } from 'react-native-heroicons/outline'
 import * as StoreReview from 'react-native-store-review'
 import classNames from 'classnames'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import { LineItem, LineItemGroup } from '@/components/LineItem'
 import { Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
+import { useTheme } from '@/containers/ThemeService'
 
 export default function MyScreen({ navigation }) {
-  const { colorScheme } = useColorScheme()
+  const { theme, styles } = useTheme()
   useEffect(() => {
     navigation.setOptions({
       title: '我的',
@@ -42,7 +41,8 @@ export default function MyScreen({ navigation }) {
     case 'authed':
       header = (
         <Pressable
-          className="flex flex-row py-3 px-4 bg-white active:opacity-60 dark:bg-neutral-900"
+          className="flex flex-row py-3 px-4 active:opacity-60"
+          style={styles.layer1}
           onPress={() => {
             navigation.push('profile')
           }}>
@@ -51,11 +51,13 @@ export default function MyScreen({ navigation }) {
             className="w-[40px] h-[40px] bg-neutral-100 mr-3"
           />
           <View className="flex-1">
-            <Text className="text-base font-semibold mt-[-1px] mb-[1px] dark:text-neutral-300">
+            <Text
+              className="text-base font-semibold mt-[-1px] mb-[1px]"
+              style={styles.text}>
               {currentUser.username}
             </Text>
             <View>
-              <Text className="text-neutral-500 text-xs dark:text-neutral-400">
+              <Text className="text-xs" style={styles.text_meta}>
                 V2EX 第 {currentUser.id} 号会员
               </Text>
             </View>
@@ -67,13 +69,14 @@ export default function MyScreen({ navigation }) {
     case 'logout':
       header = (
         <Pressable
-          className="flex flex-row py-3 px-4 bg-white items-center active:opacity-60 dark:bg-neutral-900"
+          className="flex flex-row py-3 px-4 items-center active:opacity-60"
+          style={styles.layer1}
           onPress={() => {
             goToSigninSreen()
           }}>
           <Box key={authStatus} className="w-[40px] h-[40px] mr-3" />
           <View className="flex-1">
-            <Text className="text-base font-semibold mb-1 dark:text-neutral-300">
+            <Text className="text-base font-semibold mb-1" style={styles.text}>
               未登录
             </Text>
           </View>
@@ -83,8 +86,8 @@ export default function MyScreen({ navigation }) {
     case 'loading':
     default:
       header = (
-        <View className="flex flex-row py-3 px-4 bg-white dark:bg-neutral-900">
-          <FastImage className="w-[40px] h-[40px] bg-neutral-100 mr-3" />
+        <View className="flex flex-row py-3 px-4" style={styles.layer1}>
+          <Box className="w-[40px] h-[40px] mr-3" />
           <View className="flex-1">
             <InlineText
               className="text-base font-semibold mb-1"
@@ -97,8 +100,7 @@ export default function MyScreen({ navigation }) {
       )
   }
 
-  const iconColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[900]
+  const iconColor = theme.colors.primary
 
   return (
     <View className="flex flex-col flex-1 py-2">
@@ -135,8 +137,10 @@ export default function MyScreen({ navigation }) {
           disabled={authStatus === 'loading'}
           isLast
           extra={
-            <View className="bg-neutral-100 px-1 py-1 rounded dark:bg-neutral-750">
-              <Text className="text-xs text-neutral-400">本地缓存</Text>
+            <View className="px-1 py-1 rounded" style={styles.layer3}>
+              <Text className="text-xs" style={styles.text_meta}>
+                本地缓存
+              </Text>
             </View>
           }
           onPress={() => {
@@ -200,9 +204,9 @@ export default function MyScreen({ navigation }) {
         <View className="px-4 py-8 flex-1 justify-end">
           <Pressable
             className={classNames(
-              'flex flex-row items-center justify-center h-[44px] rounded-md bg-neutral-50 active:opacity-60 active:bg-red-100',
-              'dark:bg-rose-800/5',
+              'flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60',
             )}
+            style={{ backgroundColor: theme.colors.bg_danger_mask }}
             onPress={() => {
               Alert.alert('确认要退出登录吗?', '', [
                 {
@@ -215,7 +219,7 @@ export default function MyScreen({ navigation }) {
                 },
               ])
             }}>
-            <Text className="text-red-700 dark:text-rose-300">退出登录</Text>
+            <Text style={styles.text_danger}>退出登录</Text>
           </Pressable>
         </View>
       )}

@@ -3,10 +3,11 @@ import { Pressable, Text, View } from 'react-native'
 import { useWindowDimensions } from 'react-native'
 import { TabBar, TabView } from 'react-native-tab-view'
 import { useIsFocused } from '@react-navigation/native'
-import { useTailwind } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
 
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/hooks'
 
 import NodeTopicList from '../NodeScreen/NodeTopicList'
@@ -23,6 +24,7 @@ export default function HomeScreen(props) {
   const { navigation } = props
   const { width } = useWindowDimensions()
   const [error, setError] = useState()
+  const { theme, styles } = useTheme()
   const routes = useMemo(() => {
     if (!homeTabs) {
       return null
@@ -48,7 +50,6 @@ export default function HomeScreen(props) {
     }
     return val >= routes.length ? 0 : val
   })
-  const tw = useTailwind()
 
   const currentListRef = useRef()
   const tabIdleForRefresh = useRef()
@@ -94,11 +95,10 @@ export default function HomeScreen(props) {
           <TabBar
             {...props}
             scrollEnabled
-            indicatorStyle={tw('bg-neutral-800  dark:bg-neutral-300')}
-            style={tw('bg-white dark:bg-neutral-900')}
-            labelStyle={tw(
-              'text-neutral-900 dark:text-neutral-200 text-[13px]',
-            )}
+            indicatorStyle={{
+              backgroundColor: theme.colors.primary,
+            }}
+            style={styles.layer1}
             tabStyle={{
               flexShrink: 0,
               width: 'auto',
@@ -109,6 +109,20 @@ export default function HomeScreen(props) {
               display: 'flex',
               flexDirection: 'row',
               overflow: 'scroll',
+            }}
+            renderLabel={(props) => {
+              return (
+                <Text
+                  style={{
+                    color: props.focused
+                      ? theme.colors.primary
+                      : theme.colors.text,
+                    fontWeight: props.focused ? '600' : '400',
+                    fontSize: 13,
+                  }}>
+                  {props.route.title}
+                </Text>
+              )
             }}
             onTabPress={({ route }) => {
               const currentRoute = routes[index]
@@ -131,7 +145,7 @@ export default function HomeScreen(props) {
         )
       },
     }
-  }, [routes, index, isFocused])
+  }, [routes, index, isFocused, theme])
 
   useEffect(() => {
     if (!homeTabs) {

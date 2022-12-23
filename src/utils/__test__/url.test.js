@@ -44,6 +44,18 @@ describe('url utils', () => {
       expect(info.name).toBe('topic')
       expect(info.params.id).toBe('2343')
     })
+    it('[menber replies] https://www.v2ex.com/member/wanacry/replies', () => {
+      const info = getScreenInfo('https://www.v2ex.com/member/wanacry/replies')
+      expect(info.name).toBe('member')
+      expect(info.params.username).toBe('wanacry')
+      expect(info.params.tab).toBe('replies')
+    })
+    it('[menber topics] https://www.v2ex.com/member/wanacry/replies', () => {
+      const info = getScreenInfo('https://www.v2ex.com/member/wanacry/topics')
+      expect(info.name).toBe('member')
+      expect(info.params.username).toBe('wanacry')
+      expect(info.params.tab).toBe('topics')
+    })
   })
 
   describe('isAppLink', () => {
@@ -52,6 +64,7 @@ describe('url utils', () => {
       'https://hk.v2ex.com/go/create',
       'https://www.v2ex.com/t/871066',
       'http://www.v2ex.com/t/871066',
+      'https://www.v2ex.com/member/wanacry/replies',
     ]
     for (const link of links) {
       it(link, () => {

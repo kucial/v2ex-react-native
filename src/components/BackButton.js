@@ -3,11 +3,10 @@ import { ChevronLeftIcon } from 'react-native-heroicons/outline'
 import { HeaderBackButton } from '@react-navigation/elements'
 import { useNavigation } from '@react-navigation/native'
 
-function BackButton({ tintColor, onPress, style }) {
+function BackButton({ tintColor, onPress }) {
   return (
     <Pressable
       className="w-[44px] h-[44px] rounded-full items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-      style={style}
       onPress={onPress}>
       <ChevronLeftIcon
         size={28}

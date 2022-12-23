@@ -9,8 +9,6 @@ import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 import classNames from 'classnames'
 import { marked } from 'marked'
 import PropTypes from 'prop-types'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import HtmlRender from '@/components/HtmlRender'
 import MarkdownFilledIcon from '@/components/MarkdownFilledIcon'
@@ -18,6 +16,7 @@ import MarkdownIcon from '@/components/MarkdownIcon'
 import ReplyIcon from '@/components/ReplyIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
+import { useTheme } from '@/containers/ThemeService'
 
 function ReplyRow(props) {
   const { width } = useWindowDimensions()
@@ -25,17 +24,14 @@ function ReplyRow(props) {
   const { data, isPivot } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
-  const { colorScheme } = useColorScheme()
-  const iconColor =
-    colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[600]
+  const { theme, styles } = useTheme()
+
+  const iconColor = theme.colors.text_meta
+  const likedActiveColor = theme.colors.bg_liked
 
   if (!data) {
     return (
-      <View
-        className={classNames(
-          'border-b bg-white border-neutral-200',
-          'dark:bg-neutral-900 dark:border-neutral-600',
-        )}>
+      <View style={[styles.layer1, styles.border_b]}>
         <View className="flex-1 py-2 pl-1">
           <View className="flex flex-row mb-2">
             <View className="flex flex-row items-center flex-1 pl-1 ">
@@ -59,15 +55,8 @@ function ReplyRow(props) {
   const { member } = data
   return (
     <View
-      style={props.style}
-      className={classNames(
-        'border-b border-neutral-200 pt-2',
-        isPivot && 'bg-yellow-700/5',
-        // isPivot
-        //   ? 'bg-yellow-50 dark:bg-[#2a2720]'
-        //   : 'bg-white dark:bg-neutral-900',
-        'dark:border-neutral-600',
-      )}>
+      className={classNames('pt-2', isPivot && 'bg-yellow-700/5')}
+      style={[styles.border_b, styles.border_light, props.style]}>
       <View className="flex flex-row pl-2">
         <View className="mr-2">
           <Pressable
@@ -97,51 +86,62 @@ function ReplyRow(props) {
                     username: member.username,
                   })
                 }}>
-                <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-300">
+                <Text className="font-bold text-xs" style={styles.text_desc}>
                   {member.username}
                 </Text>
               </Pressable>
               {data.member_is_op && (
-                <View className="ml-2 px-1 rounded border border-blue-600 dark:border-sky-300">
-                  <Text className="text-[10px] font-medium leading-[17px] text-blue-600 dark:text-sky-300">
+                <View
+                  className="ml-2 px-1 rounded"
+                  style={[
+                    styles.border,
+                    {
+                      borderColor: theme.colors.badge,
+                    },
+                  ]}>
+                  <Text
+                    className="text-[10px] font-medium leading-[17px]"
+                    style={{ color: theme.colors.badge }}>
                     OP
                   </Text>
                 </View>
               )}
               {data.member_is_mod && (
-                <View className="ml-2 px-1 rounded border border-blue-600 bg-blue-600 dark:border-sky-300 dark:bg-sky-400/90">
-                  <Text className="text-[10px] font-medium leading-[17px] text-white dark:text-neutral-100">
+                <View
+                  className="ml-2 px-1 rounded"
+                  style={[
+                    styles.border,
+                    styles.badge.bg,
+                    {
+                      borderColor: theme.colors.badge,
+                      backgroundColor: theme.colors.badge,
+                    },
+                  ]}>
+                  <Text
+                    className="text-[10px] font-medium leading-[17px]"
+                    style={styles.badge.text}>
                     MOD
                   </Text>
                 </View>
               )}
               <View className="ml-2">
-                <Text className="text-xs text-neutral-400 dark:text-neutral-300">
+                <Text className="text-xs" style={styles.text_meta}>
                   {data.reply_time}
                 </Text>
               </View>
               {data.reply_device && (
-                <Text className="ml-2 text-xs text-neutral-400 dark:text-neutral-300">
+                <Text className="ml-2 text-xs" style={styles.text_meta}>
                   {data.reply_device}
                 </Text>
               )}
               {!!data.thanks_count && (
                 <>
                   <View className="relative top-[1px] mx-1">
-                    <Text className="text-neutral-400 dark:text-neutral-300">
-                      ·
-                    </Text>
+                    <Text style={styles.text_meta}>·</Text>
                   </View>
                   <View className="flex flex-row items-center">
-                    <FilledHeartIcon
-                      size={14}
-                      color={
-                        colorScheme === 'dark'
-                          ? colors.rose[400]
-                          : colors.red[600]
-                      }
-                    />
-                    <Text className="text-xs text-neutral-400 ml-1 dark:text-neutral-300">
+                    <FilledHeartIcon size={14} color={likedActiveColor} />
+                    <Text className="text-xs ml-1" style={styles.text_meta}>
                       {data.thanks_count}
                     </Text>
                   </View>
@@ -150,13 +150,17 @@ function ReplyRow(props) {
             </View>
             <View className="pr-1 justify-center">
               <View className="px-[3px] rounded-full">
-                <Text className="text-xs text-neutral-400 dark:text-neutral-300">
+                <Text className="text-xs" style={styles.text_meta}>
                   #{data.num}
                 </Text>
               </View>
             </View>
           </View>
-          <View className="pr-2 min-h-[28px]">
+          <View
+            className="pr-2 min-h-[28px]"
+            style={{
+              marginBottom: showMarkdown ? -14 : 0,
+            }}>
             <HtmlRender
               contentWidth={width - 24 - 8 - 8 - 16}
               source={{
@@ -244,11 +248,7 @@ function ReplyRow(props) {
                 {showMarkdown ? (
                   <MarkdownFilledIcon
                     size={20}
-                    color={
-                      colorScheme === 'dark'
-                        ? colors.emerald[200]
-                        : colors.green[700]
-                    }
+                    color={theme.colors.bg_markdown}
                   />
                 ) : (
                   <MarkdownIcon size={20} color={iconColor} />
@@ -271,4 +271,4 @@ ReplyRow.propTypes = {
   onShowConversation: PropTypes.func,
 }
 
-export default memo(ReplyRow)
+export default ReplyRow

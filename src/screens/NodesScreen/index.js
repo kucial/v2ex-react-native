@@ -1,11 +1,10 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { RefreshControl, SectionList, Text, View } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import SearchInput from '@/components/SearchInput'
 import { useAuthService } from '@/containers/AuthService'
+import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/hooks'
 import { isRefreshing, useSWR } from '@/utils/swr'
 
@@ -16,7 +15,8 @@ const CACHE_KEY = '$app$/nodes-filter'
 
 export default function NodesScreen({ navigation }) {
   const { status } = useAuthService()
-  const { colorScheme } = useColorScheme()
+
+  const { theme, styles } = useTheme()
 
   const [filter, setFilter] = useCachedState(CACHE_KEY, '')
 
@@ -69,13 +69,17 @@ export default function NodesScreen({ navigation }) {
         switch (item.type) {
           case 'public':
             return (
-              <View className="mx-1 bg-white dark:bg-neutral-900 rounded-b-sm shadow mb-4">
+              <View
+                className="mx-1 rounded-b-sm shadow mb-4"
+                style={styles.layer1}>
                 <CommonNodes data={item.nodes} filter={filter} />
               </View>
             )
           case 'self':
             return (
-              <View className="mx-1 bg-white dark:bg-neutral-900 rounded-b-sm shadow mb-4">
+              <View
+                className="mx-1 rounded-b-sm shadow mb-4"
+                style={styles.layer1}>
                 <CollectedNodes data={item.nodes} />
               </View>
             )
@@ -109,7 +113,7 @@ export default function NodesScreen({ navigation }) {
 
   return (
     <View className="flex-1">
-      <View className="bg-white dark:bg-neutral-900 mb-1">
+      <View className="mb-1" style={styles.layer1}>
         <SearchInput
           placeholder="查询"
           initialValue={filter}
@@ -132,9 +136,11 @@ export default function NodesScreen({ navigation }) {
         renderSectionHeader={({ section }) => {
           return (
             <View className="mx-1">
-              <View className="bg-white dark:bg-neutral-900 flex flex-row justify-between items-center border-b border-b-neutral-400 px-3 dark:border-neutral-600 rounded-t-sm">
+              <View
+                className="flex flex-row justify-between items-center px-3 rounded-t-sm"
+                style={[styles.layer1, styles.border_b]}>
                 <View className="py-2">
-                  <Text className="font-medium dark:text-neutral-300">
+                  <Text className="font-medium" style={styles.text}>
                     {section.title}
                   </Text>
                 </View>
@@ -144,9 +150,7 @@ export default function NodesScreen({ navigation }) {
         }}
         refreshControl={
           <RefreshControl
-            tintColor={
-              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-            }
+            tintColor={theme.colors.refresh_tint}
             refreshing={
               isRefreshing(commonNodesSwr) ||
               (hasAuthed && isRefreshing(collectedNodesSwr))

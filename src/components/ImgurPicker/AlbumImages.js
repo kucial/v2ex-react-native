@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { InteractionManager, SafeAreaView, Text, View } from 'react-native'
+import { hairlineWidth } from 'nativewind'
 import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
+import { useTheme } from '@/containers/ThemeService'
 
 import BackButton from '../BackButton'
 import ImagesGrid from './ImagesGrid'
@@ -11,9 +12,9 @@ import UploadButton from './UploadButton'
 
 export default function AlbumView(props) {
   const { album } = props
-  const { colorScheme } = useColorScheme()
   const imgur = useImgurService()
   const imagesSwr = imgur.useAlbumImages(album.id)
+  const { theme, styles } = useTheme()
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -31,20 +32,22 @@ export default function AlbumView(props) {
   return (
     <View className="flex flex-1">
       <SafeAreaView>
-        <View className="flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1 border-b border-neutral-300 dark:border-neutral-600">
+        <View
+          className="flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1 border-b"
+          style={{
+            borderColor: theme.colors.border,
+            borderWidth: hairlineWidth(),
+          }}>
           <View className="w-[56px]">
             <BackButton
-              tintColor={
-                colorScheme === 'dark'
-                  ? colors.neutral[300]
-                  : colors.neutral[900]
-              }
+              tintColor={theme.colors.text}
               onPress={props.onCancel}
             />
           </View>
           <View className="flex-1 px-1">
             <Text
-              className="text-center font-medium text-base dark:text-neutral-300"
+              className="text-center font-medium text-base"
+              style={styles.text}
               numberOfLines={1}
               ellipsizeMode="tail">
               {album.title}
@@ -53,11 +56,7 @@ export default function AlbumView(props) {
           <View className="w-[56px] items-end">
             <UploadButton
               onUploaded={imagesSwr.mutate}
-              tintColor={
-                colorScheme === 'dark'
-                  ? colors.neutral[300]
-                  : colors.neutral[900]
-              }
+              tintColor={theme.colors.text}
             />
           </View>
         </View>

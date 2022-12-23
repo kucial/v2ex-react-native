@@ -1,8 +1,8 @@
 import { Pressable, ScrollView, View } from 'react-native'
 import classNames from 'classnames'
-import { useTailwind } from 'tailwindcss-react-native'
+import colors from 'tailwindcss/colors'
 
-import { useAlertService } from '@/containers/AlertService'
+import { useTheme } from '@/containers/ThemeService'
 
 import { useEditor } from './context'
 import {
@@ -23,51 +23,65 @@ import {
 } from './EditorIcons'
 
 function ToolbarButton({ active, disabled, onPress, Icon, iconProps }) {
-  const tw = useTailwind()
-  const { color } = tw(
-    active
-      ? 'text-white dark:text-amber-50'
-      : 'text-neutral-800 dark:text-neutral-200',
-  )
+  const { theme } = useTheme()
+  let color
+  if (active) {
+    color = theme.colors.text_primary_inverse
+  } else {
+    color = theme.colors.text
+  }
   return (
     <Pressable
       disabled={disabled}
       className={classNames(
-        'w-[42px] h-[42px] rounded-md bg-white dark:bg-neutral-750 flex items-center justify-center',
+        'w-[42px] h-[42px] rounded-md flex items-center justify-center',
         {
-          'bg-neutral-900 text-white dark:bg-neutral-600': active,
-          'active:bg-neutral-100 active:bg-neutral-600': !active,
           'active:opacity-60': !disabled,
           'opacity-50': disabled,
         },
       )}
+      style={[
+        {
+          backgroundColor: active
+            ? theme.colors.primary
+            : theme.colors.bg_footer,
+        },
+      ]}
       onPress={onPress}>
       <Icon size={22} color={color} {...iconProps} />
     </Pressable>
   )
 }
 
-function Divider({ margin = true }) {
+function Divider({ margin = true, color }) {
   return (
     <View
-      className={classNames(
-        'h-[18px] w-[1px] bg-neutral-300 dark:bg-neutral-600',
-        margin && 'mx-1',
-      )}></View>
+      className={classNames('h-[18px] w-[1px]', margin && 'mx-1')}
+      style={{
+        backgroundColor: color,
+      }}></View>
   )
 }
 
 export default function EditorToolbar(props) {
   const editor = useEditor()
-  const alert = useAlertService()
+  const { theme, styles } = useTheme()
+
   if (props.showOnFocus && !editor.hasFocus()) {
     return null
   }
   return (
     <View
       sentry-label="EditorToolbar"
-      style={[props.style]}
-      className="bg-white flex flex-row border-t border-neutral-300 dark:bg-neutral-750 dark:border-neutral-600">
+      className="flex flex-row"
+      style={[
+        props.style,
+        styles.border_t,
+        styles.border_light,
+        {
+          backgroundColor: theme.colors.bg_footer,
+        },
+      ]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -92,7 +106,7 @@ export default function EditorToolbar(props) {
           }}
           Icon={RedoIcon}
         />
-        <Divider />
+        <Divider color={theme.colors.border} />
         <ToolbarButton
           active={editor.isMarkActive('bold')}
           onPress={() => {
@@ -121,7 +135,7 @@ export default function EditorToolbar(props) {
           }}
           Icon={Base64Icon}
         />
-        <Divider />
+        <Divider color={theme.colors.border} />
         <ToolbarButton
           active={editor.isBlockActive('heading-two')}
           onPress={() => {
@@ -167,7 +181,7 @@ export default function EditorToolbar(props) {
           }}
           Icon={OrderedListIcon}
         />
-        <Divider />
+        <Divider color={theme.colors.border} />
         <ToolbarButton
           disabled={!editor.canIndent()}
           onPress={() => {

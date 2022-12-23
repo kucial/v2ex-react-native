@@ -1,12 +1,14 @@
 import { Text, View } from 'react-native'
 
+import { useTheme } from '@/containers/ThemeService'
+
 export default function ErrorNotice(props) {
+  const { styles } = useTheme()
+
   return (
-    <View
-      className="min-h-[60px] py-5 bg-neutral-50 dark:bg-neutral-800"
-      style={props.style}>
+    <View className="min-h-[60px] py-5" style={[props.style, styles.layer2]}>
       <View className="flex flex-row items-center justify-center">
-        <Text className="my-md text-center dark:text-neutral-300">
+        <Text className="my-md text-center" style={styles.text}>
           {props.error.message}
         </Text>
       </View>

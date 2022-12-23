@@ -38,7 +38,6 @@ import classNames from 'classnames'
 import deepmerge from 'deepmerge'
 import { useSWRConfig } from 'swr'
 import useSWRInfinite from 'swr/infinite'
-import { useTailwind } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
@@ -47,6 +46,7 @@ import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
+import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import fetcher from '@/utils/fetcher'
 import { isLoading, isRefreshing, shouldLoadMore, useSWR } from '@/utils/swr'
@@ -175,12 +175,11 @@ function TopicScreen({ navigation, route }) {
   const { composeAuthedNavigation } = useAuthService()
   const aIndicator = useActivityIndicator()
 
-  const tw = useTailwind()
-  const { color: iconColor } = tw('color-neutral-800 dark:color-neutral-400')
-  const { color: collectActiveColor } = tw(
-    'color-yellow-400 dark:color-yellow-200',
-  )
-  const { color: likedActiveColor } = tw('color-red-700 dark:color-rose-400')
+  const { theme, styles } = useTheme()
+
+  const iconColor = theme.colors.text_meta
+  const collectActiveColor = theme.colors.bg_collected
+  const likedActiveColor = theme.colors.bg_liked
 
   const topicSwr = useSWR(`/api/topics/show.json?id=${id}`)
   const listSwr = useSWRInfinite(
@@ -328,7 +327,7 @@ function TopicScreen({ navigation, route }) {
               },
             )
           }}>
-          <EllipsisHorizontalIcon size={24} color={iconColor} />
+          <EllipsisHorizontalIcon size={24} color={theme.colors.primary} />
         </Pressable>
       ),
     })
@@ -431,7 +430,7 @@ function TopicScreen({ navigation, route }) {
       renderReply({ item }) {
         return (
           <ReplyRow
-            className="bg-white dark:bg-neutral-900"
+            style={styles.layer1}
             navigation={navigation}
             data={item}
             onReply={initReply}
@@ -466,7 +465,7 @@ function TopicScreen({ navigation, route }) {
 
   const baseContent = (
     <>
-      <View className="bg-white py-3 px-4 mb-2 shadow-sm dark:bg-neutral-900">
+      <View className="py-3 px-4 mb-2 shadow-sm" style={styles.layer1}>
         <TopicInfo data={topic} navigation={navigation} />
         {!topicSwr.data && topicSwr.error && !isLoading(topicSwr) && (
           <ErrorNotice
@@ -475,13 +474,14 @@ function TopicScreen({ navigation, route }) {
               <View className="mt-2 flex flex-row justify-center">
                 <Pressable
                   className={classNames(
-                    'px-4 h-[44px] w-[120px] rounded-full bg-neutral-900 items-center justify-center active:opacity-60',
-                    'dark:bg-amber-50',
+                    'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
+                    'active:opacity-60',
                   )}
+                  style={[styles.btn_primary.bg]}
                   onPress={() => {
                     topicSwr.mutate()
                   }}>
-                  <Text className="text-white dark:text-neutral-800">重试</Text>
+                  <Text style={styles.btn_primary.text}>重试</Text>
                 </Pressable>
               </View>
             }
@@ -495,14 +495,9 @@ function TopicScreen({ navigation, route }) {
       </View>
       {!!topic.replies && (
         <View
-          className={classNames(
-            'px-3 py-2 border-b',
-            'bg-white border-neutral-300',
-            'dark:bg-neutral-900 dark:border-neutral-600',
-          )}>
-          <Text className="text-neutral-600 dark:text-neutral-300">
-            {topic.replies} 条回复
-          </Text>
+          className={classNames('px-3 py-2')}
+          style={[styles.layer1, styles.border_b]}>
+          <Text style={styles.text_desc}>{topic.replies} 条回复</Text>
         </View>
       )}
 
@@ -536,16 +531,19 @@ function TopicScreen({ navigation, route }) {
         }}
         refreshing={isRefreshing(listSwr)}
       />
-      <SafeAreaView className="u-absolute bottom-0 left-0 w-full bg-white border-t border-t-neutral-200 dark:bg-neutral-800 dark:border-neutral-600">
+      <SafeAreaView
+        className="u-absolute bottom-0 left-0 w-full"
+        style={[styles.overlay, styles.border_t, styles.border_light]}>
         <View className="h-[48px] flex flex-row items-center pl-3 pr-1">
           <View className="flex-1 mr-2">
             <Pressable
               hitSlop={5}
-              className="h-[32px] w-full justify-center px-3 bg-neutral-100 rounded-full active:opacity-60 dark:bg-neutral-900"
+              className="h-[32px] w-full justify-center px-3 rounded-full active:opacity-60"
+              style={styles.overlay_input.bg}
               onPress={() => {
                 initReply()
               }}>
-              <Text className="text-neutral-800 text-sm dark:text-neutral-300">
+              <Text className="text-sm" style={styles.text_placeholder}>
                 发表评论
               </Text>
             </Pressable>
@@ -607,7 +605,7 @@ function TopicScreen({ navigation, route }) {
                   <StarIcon size={24} color={iconColor} />
                 )}
               </View>
-              <Text className="text-neutral-600 dark:text-neutral-300 text-[10px]">
+              <Text className="text-[10px]" style={styles.text_meta}>
                 收藏
               </Text>
             </Pressable>
@@ -647,7 +645,7 @@ function TopicScreen({ navigation, route }) {
                   <HeartIcon size={24} color={iconColor} />
                 )}
               </View>
-              <Text className="text-neutral-600 dark:text-neutral-300 text-[9px]">
+              <Text className="text-[10px]" style={styles.text_meta}>
                 感谢
               </Text>
             </Pressable>
@@ -676,7 +674,7 @@ function TopicScreen({ navigation, route }) {
               <View className="my-1">
                 <ShareIcon size={24} color={iconColor} />
               </View>
-              <Text className="text-neutral-600 dark:text-neutral-300 text-[9px]">
+              <Text className="text-[10px]" style={styles.text_meta}>
                 分享
               </Text>
             </Pressable>
@@ -688,8 +686,10 @@ function TopicScreen({ navigation, route }) {
         index={0}
         snapPoints={conversationSnapPoints}
         backdropComponent={renderBackdrop}
-        backgroundStyle={tw('bg-white dark:bg-neutral-800')}
-        handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}>
+        backgroundStyle={styles.overlay}
+        handleIndicatorStyle={{
+          backgroundColor: theme.colors.bg_bottom_sheet_handle,
+        }}>
         {conversationContext && (
           <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
             <Converation
@@ -707,8 +707,10 @@ function TopicScreen({ navigation, route }) {
         index={0}
         snapPoints={replyModalSnapPoints}
         backdropComponent={renderBackdrop}
-        backgroundStyle={tw('bg-white dark:bg-neutral-800')}
-        handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}>
+        backgroundStyle={styles.overlay}
+        handleIndicatorStyle={{
+          backgroundColor: theme.colors.bg_bottom_sheet_handle,
+        }}>
         {replyContext && (
           <TopicReplyForm
             navigation={navigation}

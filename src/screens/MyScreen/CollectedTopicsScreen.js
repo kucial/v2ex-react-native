@@ -4,19 +4,23 @@ import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import { FlashList } from '@shopify/flash-list'
 import useSWRInfinite from 'swr/infinite'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
+import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 
 const CollectedTopicRow = (props) => {
   const { data } = props
   const navigation = useNavigation()
 
+  const { styles } = useTheme()
+
   if (!data) {
     return (
-      <View className="border-b border-neutral-200 bg-white flex flex-row items-center p-2 active:opacity-60 dark:bg-neutral-900 dark:border-neutral-700">
+      <View
+        className="flex flex-row items-center p-2"
+        style={[styles.layer1, styles.border_b, styles.border_light]}>
         <View className="self-start">
           <Box className="w-[24px] h-[24px] rounded" />
         </View>
@@ -37,7 +41,8 @@ const CollectedTopicRow = (props) => {
 
   return (
     <Pressable
-      className="border-b border-neutral-200 bg-white flex flex-row items-center p-2 active:opacity-60 dark:bg-neutral-900 dark:border-neutral-700"
+      className="flex flex-row items-center p-2 active:opacity-60"
+      style={[styles.layer1, styles.border_b, styles.border_light]}
       onPress={() => {
         if (data) {
           navigation.push('topic', {
@@ -66,24 +71,27 @@ const CollectedTopicRow = (props) => {
       </View>
       <View className="flex-1 pl-2">
         <View className="">
-          <Text className="text-base text-neutral-700 dark:text-neutral-300">
+          <Text className="text-base" style={styles.text}>
             {data.title}
           </Text>
           <View className="mt-2 flex flex-row flex-wrap items-center">
             <Pressable
               hitSlop={4}
-              className="py-[2px] px-[6px] rounded bg-neutral-100 active:opacity-60 dark:bg-neutral-750"
+              className="py-[2px] px-[6px] rounded active:opacity-60"
+              style={styles.layer3}
               onPress={() => {
                 navigation.push('node', {
                   name: data.node.name,
                   brief: data.node,
                 })
               }}>
-              <Text className="text-neutral-500 text-xs dark:text-neutral-300">
+              <Text className="text-xs" style={styles.text_meta}>
                 {data.node.title}
               </Text>
             </Pressable>
-            <Text className="text-neutral-400 px-1">•</Text>
+            <Text className="px-1" style={styles.text_meta}>
+              •
+            </Text>
             <Pressable
               className="px-1 active:opacity-60"
               hitSlop={4}
@@ -92,20 +100,26 @@ const CollectedTopicRow = (props) => {
                   username: data.member.username,
                 })
               }}>
-              <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-400">
+              <Text className="text-xs font-bold" style={styles.text_desc}>
                 {data.member.username}
               </Text>
             </Pressable>
-            <Text className="text-neutral-400 px-1">•</Text>
+            <Text className="px-1" style={styles.text_meta}>
+              •
+            </Text>
 
-            <Text className="text-xs text-neutral-400">
+            <Text className="text-xs" style={styles.text_meta}>
               {data?.last_reply_time}
             </Text>
             {data?.last_reply_by && (
               <>
-                <Text className="text-neutral-400 px-1">•</Text>
+                <Text className="px-1" style={styles.text_meta}>
+                  •
+                </Text>
                 <View className="flex flex-row items-center">
-                  <Text className="text-xs text-neutral-400">最后回复来自</Text>
+                  <Text className="text-xs" style={styles.text_meta}>
+                    最后回复来自
+                  </Text>
                   <Pressable
                     className="px-1 active:opacity-60"
                     hitSlop={4}
@@ -114,7 +128,9 @@ const CollectedTopicRow = (props) => {
                         username: data.last_reply_by,
                       })
                     }}>
-                    <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-400">
+                    <Text
+                      className="text-xs font-bold"
+                      style={styles.text_desc}>
                       {data.last_reply_by}
                     </Text>
                   </Pressable>
@@ -126,10 +142,8 @@ const CollectedTopicRow = (props) => {
       </View>
       <View className="w-[64px] flex flex-row justify-end pr-1">
         {data && !!data.replies && (
-          <View className="rounded-full text-xs px-2 bg-neutral-400 dark:bg-neutral-600">
-            <Text className="text-white dark:text-neutral-300">
-              {data.replies}
-            </Text>
+          <View className="rounded-full text-xs px-2" style={styles.tag.bg}>
+            <Text style={styles.tag.text}>{data.replies}</Text>
           </View>
         )}
       </View>
@@ -138,7 +152,6 @@ const CollectedTopicRow = (props) => {
 }
 
 export default function CollectedTopicsScreen() {
-  const { colorScheme } = useColorScheme()
   const getKey = useCallback((index) => {
     return `/page/my/topics.json?p=${index + 1}`
   }, [])

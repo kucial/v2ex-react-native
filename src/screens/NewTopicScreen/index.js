@@ -15,7 +15,6 @@ import { addBreadcrumb, captureMessage } from '@sentry/react-native'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
 import colors from 'tailwindcss/colors'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import KeyboardAwareView from '@/components/KeyboardAwareView'
 import KeyboardDismiss from '@/components/KeyboardDismiss'
@@ -28,6 +27,7 @@ import {
 } from '@/components/SlateEditor'
 import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
+import { useTheme } from '@/containers/ThemeService'
 import nodes from '@/mock/nodes'
 
 import NodeSelect from './NodeSelect'
@@ -49,8 +49,8 @@ const renderBackdrop = (props) => {
 }
 
 export default function NewTopicScreen(props) {
+  const { theme, styles } = useTheme()
   const { route, navigation } = props
-  const { colorScheme } = useColorScheme()
   const titleInput = useRef()
   const editorRef = useRef()
   const pickerModalRef = useRef()
@@ -64,8 +64,6 @@ export default function NewTopicScreen(props) {
   const editorRenderContainer = useRef()
   const webviewRef = useRef()
   const webviewScripts = useRef([])
-
-  const tw = useTailwind()
 
   const [imagePickerOpened, showImagePicker] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -142,7 +140,7 @@ export default function NewTopicScreen(props) {
   }, [values])
 
   return (
-    <View className="flex-1 bg-white dark:bg-neutral-900">
+    <View className="flex-1" style={styles.layer1}>
       <KeyboardAwareView animated>
         <SafeAreaView className="flex-1">
           <EditorProvider ref={editorRef}>
@@ -161,24 +159,16 @@ export default function NewTopicScreen(props) {
                 scrollEventThrottle={16}>
                 <View className="px-4 my-3">
                   <View className="mb-1">
-                    <Text className="font-medium px-2 dark:text-neutral-300">
+                    <Text className="font-medium px-2" style={styles.text}>
                       标题
                     </Text>
                   </View>
                   <View>
                     <TextInput
-                      className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-800 dark:text-neutral-300"
-                      selectionColor={
-                        colorScheme === 'dark'
-                          ? colors.amber[50]
-                          : colors.neutral[600]
-                      }
-                      placeholderTextColor={
-                        colorScheme === 'dark'
-                          ? colors.neutral[500]
-                          : colors.neutral[400]
-                      }
-                      style={{ fontSize: 16 }}
+                      className="h-[44px] px-2 mb-2 rounded-md"
+                      style={[styles.layer2, styles.text, { fontSize: 16 }]}
+                      selectionColor={theme.colors.primary}
+                      placeholderTextColor={theme.colors.text_placeholder}
                       placeholder="请输入主题标题"
                       onChangeText={(value) =>
                         setValues((prev) => ({
@@ -193,7 +183,7 @@ export default function NewTopicScreen(props) {
                 </View>
                 <View className="px-4 my-3">
                   <View className="mb-1">
-                    <Text className="font-medium px-2 dark:text-neutral-300">
+                    <Text className="font-medium px-2" style={styles.text}>
                       节点
                     </Text>
                   </View>
@@ -202,14 +192,17 @@ export default function NewTopicScreen(props) {
                       options={nodes}
                       value={values.node}
                       renderLabel={(n) => (
-                        <Text className="text-neutral-900 dark:text-neutral-400">
+                        <Text style={styles.text}>
                           {n.title} / {n.name}
                         </Text>
                       )}
+                      placeholderStyle={{
+                        color: theme.colors.text_placeholder,
+                      }}
                       className={classNames(
-                        'h-[44px] px-2 bg-neutral-100 mb-2 rounded-md flex flex-row items-center',
-                        'dark:bg-neutral-800',
+                        'h-[44px] px-2 mb-2 rounded-md flex flex-row items-center',
                       )}
+                      style={[styles.layer2]}
                       filterPlaceholder="查询"
                       placeholder="请输入主题节点"
                       onChange={(node) => {
@@ -223,13 +216,14 @@ export default function NewTopicScreen(props) {
                 </View>
                 <View className="px-4 my-3">
                   <View className="mb-1">
-                    <Text className="font-medium px-2 dark:text-neutral-300">
+                    <Text className="font-medium px-2" style={styles.text}>
                       正文
                     </Text>
                   </View>
                   <View>
                     <View
-                      className="bg-neutral-100 dark:bg-neutral-800 mb-2 rounded-md overflow-hidden px-2 py-[10px]"
+                      className="mb-2 rounded-md overflow-hidden px-2 py-[10px]"
+                      style={styles.layer2}
                       ref={editorRenderContainer}>
                       <EditorRender
                         placeholder="如果标题能够表达完整内容，则正文可以为空"
@@ -247,23 +241,17 @@ export default function NewTopicScreen(props) {
                   <Pressable
                     className={classNames(
                       'h-[50px] rounded-lg items-center justify-center active:opacity-60',
-                      isValid
-                        ? 'bg-neutral-900 dark:bg-amber-50'
-                        : 'bg-neutral-900/60 dark:bg-amber-50/70',
+                      isValid && 'opacity-60',
                     )}
+                    style={styles.btn_primary.bg}
                     disabled={!isValid || isSubmitting}
                     onPress={handleSubmit}>
                     {isSubmitting ? (
-                      <Loader
-                        size={20}
-                        color={
-                          colorScheme === 'dark'
-                            ? colors.neutral[900]
-                            : colors.neutral[100]
-                        }
-                      />
+                      <Loader size={20} />
                     ) : (
-                      <Text className="text-base text-white dark:text-neutral-900">
+                      <Text
+                        className="text-base"
+                        style={styles.btn_primary.text}>
                         发布
                       </Text>
                     )}
@@ -289,8 +277,10 @@ export default function NewTopicScreen(props) {
               index={0}
               snapPoints={pickerSnapPoints}
               backdropComponent={renderBackdrop}
-              backgroundStyle={tw('bg-white dark:bg-neutral-800')}
-              handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}
+              backgroundStyle={styles.overlay}
+              handleIndicatorStyle={{
+                backgroundColor: theme.colors.bg_bottom_sheet_handle,
+              }}
               onDismiss={() => {
                 showImagePicker(false)
                 editorRef.current?.focus()

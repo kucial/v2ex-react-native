@@ -1,15 +1,20 @@
 import { useCallback, useMemo, useRef } from 'react'
 import {
+  Pressable,
   SafeAreaView,
   StyleSheet,
+  Text,
   useWindowDimensions,
   View,
 } from 'react-native'
 import { Dimensions } from 'react-native'
 import { SelectableText } from '@alentoma/react-native-selectable-text'
+import { NativeWindStyleSheet } from 'nativewind'
 
-import HtmlRender from '@/components/HtmlRender'
-import { useSWR } from '@/utils/swr'
+import ErrorNoticeView from '@/components/ErrorBoundary/ErrorNoticeView'
+import ErrorNotice from '@/components/ErrorNotice'
+import Loader from '@/components/Loader'
+import { useTheme } from '@/containers/ThemeService'
 
 const fSize = 30
 var p = {
@@ -53,42 +58,34 @@ function DivRenderer({ TDefaultRenderer, ...props }) {
   )
 }
 
-export default function DebugScreen() {
+const INDICATOR_WIDTH = 64
+const INDICATOR_HEIGHT = 64
+
+export default function DebugScreen(props) {
   // ref
-  const bottomSheetModalRef = useRef(null)
-  const id = 893807
-  const topicSwr = useSWR(`/api/topics/show.json?id=${id}`)
-
-  const { width } = useWindowDimensions()
-
-  console.log(topicSwr.data)
+  const { theme, styles } = useTheme()
+  const { width, height } = useWindowDimensions()
 
   // renders
   // return null
+
   return (
-    <SafeAreaView style={styles.container}>
-      {topicSwr?.data && (
-        <HtmlRender
-          contentWidth={width - 32}
-          source={{
-            html: topicSwr.data.content_rendered,
-          }}
-        />
-      )}
-    </SafeAreaView>
+    <View style={{ backgroundColor: theme.colors.bg_layer1, flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <Pressable
+          className="px-4 h-[44px] w-[120px] rounded-full items-center justify-center active:opacity-60"
+          style={{
+            backgroundColor: theme.colors.primary,
+          }}>
+          <Text style={{ color: theme.colors.text_primary_inverse }}>重试</Text>
+        </Pressable>
+
+        <ErrorNotice error={new Error('Debug')} />
+
+        <View className="dark:bg-rose-600/10">
+          <Text style={styles.text}>11123123123</Text>
+        </View>
+      </SafeAreaView>
+    </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    // padding: 24,
-    backgroundColor: 'transparent',
-    // position: 'absolute',
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-})

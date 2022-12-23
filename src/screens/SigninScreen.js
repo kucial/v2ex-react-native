@@ -14,14 +14,13 @@ import {
 import FastImage from 'react-native-fast-image'
 import WebView from 'react-native-webview'
 import classNames from 'classnames'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
 import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
+import { useTheme } from '@/containers/ThemeService'
 
 const extractImageCaptcha = `
 (function() {
@@ -140,7 +139,7 @@ const getSubmitScripts = (values) => {
 }
 
 export default function LoginScreen({ navigation }) {
-  const { colorScheme } = useColorScheme()
+  const { theme, styles } = useTheme()
   const [captchaImage, setCaptchaImage] = useState()
   const webviewRef = useRef()
   const nameInput = useRef()
@@ -233,14 +232,11 @@ export default function LoginScreen({ navigation }) {
   }, [])
 
   const values = watch()
-  console.log('scriptsToInject.current', scriptsToInject.current.length)
   return (
-    <View className="flex-1 bg-white dark:bg-neutral-800">
+    <View className="flex-1" style={styles.overlay}>
       <View className="u-absolute left-1 top-1">
         <BackButton
-          tintColor={
-            colorScheme === 'dark' ? colors.neutral['400'] : colors.neutral[800]
-          }
+          tintColor={theme.colors.text}
           onPress={() => {
             navigation.goBack()
           }}
@@ -249,12 +245,6 @@ export default function LoginScreen({ navigation }) {
       <ScrollView className="flex-1 w-full ">
         <View className="flex flex-row justify-center mt-1">
           <View style={{ width: 94, height: 30 }}></View>
-          {/* <Logo
-            style={{ width: 94, height: 30 }}
-            color={
-              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[800]
-            }
-          /> */}
         </View>
         <Pressable
           className="w-full"
@@ -266,29 +256,20 @@ export default function LoginScreen({ navigation }) {
             className="flex-1 w-full items-center">
             <View className="py-4 px-8 w-full">
               <Text
-                className={classNames(
-                  'text-xs pl-2 pb-[2px] dark:text-neutral-300',
-                  {
-                    'opacity-0': !values.username,
-                  },
-                )}>
+                className={classNames('text-xs pl-2 pb-[2px]', {
+                  'opacity-0': !values.username,
+                })}
+                style={styles.text}>
                 用户名
               </Text>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-900 dark:text-neutral-300"
-                    selectionColor={
-                      colorScheme === 'dark'
-                        ? colors.amber[50]
-                        : colors.neutral[600]
-                    }
-                    placeholderTextColor={
-                      colorScheme === 'dark'
-                        ? colors.neutral[500]
-                        : colors.neutral[400]
-                    }
+                    className="h-[44px] px-2 mb-2 rounded-md"
+                    style={[styles.text, styles.overlay_input.bg]}
+                    selectionColor={theme.colors.primary}
+                    placeholderTextColor={theme.colors.text_placeholder}
                     onBlur={onBlur}
                     placeholder="用户名"
                     onChangeText={(value) => onChange(value)}
@@ -303,29 +284,20 @@ export default function LoginScreen({ navigation }) {
                 rules={{ required: true }}
               />
               <Text
-                className={classNames(
-                  'text-xs pl-2 pb-[2px] dark:text-neutral-300',
-                  {
-                    'opacity-0': !values.password,
-                  },
-                )}>
+                className={classNames('text-xs pl-2 pb-[2px]', {
+                  'opacity-0': !values.password,
+                })}
+                style={styles.text}>
                 密码
               </Text>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-900 dark:text-neutral-300"
-                    selectionColor={
-                      colorScheme === 'dark'
-                        ? colors.amber[50]
-                        : colors.neutral[600]
-                    }
-                    placeholderTextColor={
-                      colorScheme === 'dark'
-                        ? colors.neutral[500]
-                        : colors.neutral[400]
-                    }
+                    className="h-[44px] px-2 mb-2 rounded-md"
+                    style={[styles.text, styles.overlay_input.bg]}
+                    selectionColor={theme.colors.primary}
+                    placeholderTextColor={theme.colors.text_placeholder}
                     onBlur={onBlur}
                     placeholder="密码"
                     onChangeText={(value) => onChange(value)}
@@ -353,34 +325,25 @@ export default function LoginScreen({ navigation }) {
                 </Pressable>
               ) : (
                 <View
-                  style={{ width: 300, height: 75 }}
-                  className="rounded-md mb-2 mt-1 bg-neutral-100 dark:bg-neutral-900"
+                  style={[{ width: 300, height: 75 }, styles.layer1]}
+                  className="rounded-md mb-2 mt-1"
                 />
               )}
               <Text
-                className={classNames(
-                  'text-xs pl-2 pb-[2px] dark:text-neutral-300',
-                  {
-                    'opacity-0': !values.captcha,
-                  },
-                )}>
+                className={classNames('text-xs pl-2 pb-[2px]', {
+                  'opacity-0': !values.captcha,
+                })}
+                style={styles.text}>
                 验证码
               </Text>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="h-[44px] px-2 bg-neutral-100 mb-2 rounded-md dark:bg-neutral-900 dark:text-neutral-300"
-                    selectionColor={
-                      colorScheme === 'dark'
-                        ? colors.amber[50]
-                        : colors.neutral[600]
-                    }
-                    placeholderTextColor={
-                      colorScheme === 'dark'
-                        ? colors.neutral[500]
-                        : colors.neutral[400]
-                    }
+                    className="h-[44px] px-2 mb-2 rounded-md"
+                    style={[styles.text, styles.overlay_input.bg]}
+                    selectionColor={theme.colors.primary}
+                    placeholderTextColor={theme.colors.text_placeholder}
                     onBlur={onBlur}
                     placeholder="验证码"
                     onChangeText={(value) => onChange(value)}
@@ -402,12 +365,12 @@ export default function LoginScreen({ navigation }) {
               <Pressable
                 className={classNames(
                   'h-[44px] rounded-md flex items-center justify-center mt-4',
-                  'bg-neutral-900 active:opacity-60',
-                  'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
+                  'active:opacity-60',
                   {
                     'opacity-60': isSubmitting,
                   },
                 )}
+                style={styles.btn_primary.bg}
                 onPress={(e) => {
                   if (isSubmitting) {
                     return
@@ -415,16 +378,9 @@ export default function LoginScreen({ navigation }) {
                   handleSubmit(submitLoginForm)(e)
                 }}>
                 {isSubmitting ? (
-                  <Loader
-                    size={20}
-                    color={
-                      colorScheme === 'dark'
-                        ? colors.neutral[900]
-                        : colors.neutral[100]
-                    }
-                  />
+                  <Loader size={20} color={styles.btn_primary.text.color} />
                 ) : (
-                  <Text className="text-white text-base dark:text-neutral-900">
+                  <Text className="text-base" style={styles.btn_primary.text}>
                     登录
                   </Text>
                 )}

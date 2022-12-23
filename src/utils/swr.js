@@ -17,6 +17,9 @@ export const hasReachEnd = (listSwr) => {
   if (!listSwr.data?.length) {
     return false
   }
+  if (listSwr.isValidating) {
+    return false
+  }
   const pagination = listSwr.data[0].pagination || { total: 1 }
   if (pagination.total > listSwr.size) {
     return false

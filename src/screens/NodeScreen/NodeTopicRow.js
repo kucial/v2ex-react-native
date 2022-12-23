@@ -11,19 +11,18 @@ import {
   InlineBox,
   InlineText,
 } from '@/components/Skeleton/Elements'
+import { useTheme } from '@/containers/ThemeService'
 
 function NodeTopicRow(props) {
   const navigation = useNavigation()
+  const { styles } = useTheme()
   const { data, showAvatar } = props
 
   if (!data) {
     return (
       <View
-        className={classNames(
-          'border-b flex flex-row items-center',
-          'border-neutral-200 bg-white',
-          'dark:border-neutral-700 dark:bg-neutral-900',
-        )}>
+        className={classNames('flex flex-row items-center')}
+        style={[styles.layer1, styles.border_b, styles.border_light]}>
         {showAvatar ? (
           <View className="px-2 py-2 self-start">
             <InlineBox className="w-[24px] h-[24px] rounded" />
@@ -51,11 +50,8 @@ function NodeTopicRow(props) {
 
   return (
     <FixedPressable
-      className={classNames(
-        'border-b flex flex-row items-center active:opacity-50',
-        'border-neutral-200 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900',
-      )}
+      className={classNames('flex flex-row items-center', 'active:opacity-50')}
+      style={[styles.layer1, styles.border_b, styles.border_light]}
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
@@ -85,25 +81,29 @@ function NodeTopicRow(props) {
       )}
 
       <View className={classNames('flex-1 py-2', props.viewed && 'opacity-70')}>
-        <Text className="text-base text-neutral-700 dark:text-neutral-300">
+        <Text className="text-base" style={styles.text}>
           {data.title}
         </Text>
         <View className="mt-2 flex flex-row">
-          <Text className="text-xs font-semibold text-neutral-400">
+          <Text className="text-xs font-semibold" style={styles.text_desc}>
             {member.username}
           </Text>
           {!!data.characters && (
             <>
-              <Text className="text-xs text-neutral-400 px-1">·</Text>
-              <Text className="text-xs text-neutral-400">
+              <Text className="text-xs px-1" style={styles.text_meta}>
+                ·
+              </Text>
+              <Text className="text-xs" style={styles.text_meta}>
                 {data.characters} 字符
               </Text>
             </>
           )}
           {!!data.clicks && (
             <>
-              <Text className="text-xs text-neutral-400 px-1">·</Text>
-              <Text className="text-xs text-neutral-400">
+              <Text className="text-xs px-1" style={styles.text_meta}>
+                ·
+              </Text>
+              <Text className="text-xs" style={styles.text_meta}>
                 {data.clicks} 次点击
               </Text>
             </>
@@ -113,10 +113,8 @@ function NodeTopicRow(props) {
 
       <View className="w-[80px] flex flex-row items-center justify-end pr-2">
         {!!data.replies && (
-          <View className="rounded-full text-xs px-2 bg-neutral-400 dark:bg-neutral-600">
-            <Text className="text-white dark:text-neutral-300">
-              {data.replies}
-            </Text>
+          <View className="rounded-full px-2" style={styles.tag.bg}>
+            <Text style={styles.tag.text}>{data.replies}</Text>
           </View>
         )}
       </View>

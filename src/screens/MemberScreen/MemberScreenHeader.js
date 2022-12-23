@@ -4,14 +4,13 @@ import FastImage from 'react-native-fast-image'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import Constants from 'expo-constants'
-import colors from 'tailwindcss/colors'
-import { useTailwind } from 'tailwindcss-react-native'
 
 import BackButton from '@/components/BackButton'
 import OutlinedText from '@/components/OutlinedText'
 import { Box } from '@/components/Skeleton/Elements'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
+import { useTheme } from '@/containers/ThemeService'
 import fetcher from '@/utils/fetcher'
 import { localTime } from '@/utils/time'
 
@@ -22,8 +21,8 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
   const { brief, username } = route.params
   const data = swr.data || brief || { username }
   const { showActionSheetWithOptions } = useActionSheet()
-  const tw = useTailwind()
-  const { color: tintColor } = tw('color-neutral-900 dark:text-neutral-300')
+  const { theme, styles } = useTheme()
+  const tintColor = theme.colors.primary
   const alert = useAlertService()
   const aIndicator = useActivityIndicator()
   const openActionSheet = useCallback(() => {
@@ -87,7 +86,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
   }, [data.meta?.blocked, data.meta?.watched, data.username])
 
   return (
-    <View className="bg-white w-full dark:bg-neutral-900">
+    <View className="w-full" style={styles.layer1}>
       <View
         style={{
           position: 'absolute',
@@ -96,7 +95,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           zIndex: 10,
         }}>
         <BackButton
-          tintColor={colors.neutral[900]}
+          tintColor={tintColor}
           onPress={() => {
             navigation.goBack()
           }}
@@ -117,10 +116,13 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
       </View>
       <View className="relative">
         <View
-          className="bg-neutral-100 dark:bg-neutral-900 flex flex-row items-end"
-          style={{
-            height: Constants.statusBarHeight + HEADER_CANVAS_HEIGHT,
-          }}>
+          className="flex flex-row items-end"
+          style={[
+            {
+              height: Constants.statusBarHeight + HEADER_CANVAS_HEIGHT,
+            },
+            styles.layer1,
+          ]}>
           <ImageBackground
             style={{ width: '100%', height: '100%', position: 'absolute' }}
             source={{ uri: data.avatar_large }}
@@ -149,11 +151,13 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
           }}>
           {data.avatar_large ? (
             <FastImage
-              className="w-full h-full rounded-full bg-white border-white dark:border-neutral-900"
+              className="w-full h-full rounded-full"
               style={{
                 width: AVATAR_SIZE,
                 height: AVATAR_SIZE,
                 borderWidth: 3,
+                borderColor: theme.colors.bg_layer1,
+                backgroundColor: theme.colors.text_placeholder,
               }}
               source={{ uri: data.avatar_large }}
             />

@@ -11,10 +11,10 @@ import classNames from 'classnames'
 import { encode } from 'js-base64'
 import useSWR from 'swr'
 import colors from 'tailwindcss/colors'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import ImgurPicker from '@/components/ImgurPicker'
 import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
+import { useTheme } from '@/containers/ThemeService'
 
 const pickerSnapPoints = ['90%']
 
@@ -32,9 +32,8 @@ const renderBackdrop = (props) => {
 // NEXT: reply cache.
 export default function TopicReplyForm(props) {
   const { context, navigation } = props
+  const { theme, styles } = useTheme()
   const [imagePickerOpened, showImagePicker] = useState(false)
-  const { colorScheme } = useColorScheme()
-  const tw = useTailwind()
   // Use SWR as cache.
   const cacheSwr = useSWR(props.cacheKey, () => Promise.resolve(), {
     revalidateOnMount: false,
@@ -60,8 +59,7 @@ export default function TopicReplyForm(props) {
     }
   }, [])
 
-  const iconColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[900]
+  const iconColor = theme.colors.text
 
   return (
     <View className="px-3 flex flex-col flex-1">
@@ -73,25 +71,32 @@ export default function TopicReplyForm(props) {
         }) => {
           return (
             <View
-              className={classNames(
-                'flex-1 w-full rounded-lg bg-neutral-100 dark:bg-neutral-900',
-                isTouched && error
-                  ? 'border border-red-700 dark:border-rose-500'
-                  : 'border border-neutral-400 dark:border-neutral-700',
-              )}>
+              className={classNames('flex-1 w-full rounded-lg')}
+              style={[
+                styles.border,
+                styles.overlay_input.bg,
+                isTouched &&
+                  error && {
+                    borderColor: theme.colors.danger,
+                  },
+              ]}>
               <BottomSheetTextInput
                 autoFocus
                 style={[
-                  tw(
-                    'w-full h-full rounded-lg px-2 py-1 dark:text-neutral-200',
-                  ),
-                  isTouched && error && tw('bg-red-500/10'),
+                  {
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 8,
+                    paddingHorizontal: 8,
+                    paddingVertical: 1,
+                    color: theme.colors.text,
+                  },
+                  isTouched &&
+                    error && {
+                      backgroundColor: colors.red[500] + '26',
+                    },
                 ]}
-                selectionColor={
-                  colorScheme === 'dark'
-                    ? colors.amber[50]
-                    : colors.neutral[900]
-                }
+                selectionColor={theme.colors.primary}
                 onChangeText={(val) => {
                   onChange(val)
                 }}
@@ -144,14 +149,14 @@ export default function TopicReplyForm(props) {
           <Pressable
             className={classNames(
               'h-[40px] min-w-[80px] items-center justify-center px-3 rounded-md',
-              'bg-neutral-900 active:opacity-60',
-              'dark:bg-amber-50 dark:opacity-90 dark:active:opacity-60',
+              'active:opacity-60',
             )}
+            style={styles.btn_primary.bg}
             onPress={(e) => {
               Keyboard.dismiss()
               handleSubmit(props.onSubmit)(e)
             }}>
-            <Text className="text-white dark:text-neutral-900">提交</Text>
+            <Text style={styles.btn_primary.text}>提交</Text>
           </Pressable>
         </View>
         <BottomSheetModal
@@ -159,8 +164,10 @@ export default function TopicReplyForm(props) {
           index={0}
           snapPoints={pickerSnapPoints}
           backdropComponent={renderBackdrop}
-          backgroundStyle={tw('bg-white dark:bg-neutral-800')}
-          handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}
+          backgroundStyle={styles.overlay}
+          handleIndicatorStyle={{
+            backgroundColor: theme.colors.bg_bottom_sheet_handle,
+          }}
           onDismiss={() => {
             showImagePicker(false)
           }}>

@@ -4,11 +4,13 @@ import FastImage from 'react-native-fast-image'
 
 import HtmlRender from '@/components/HtmlRender'
 import { Box } from '@/components/Skeleton/Elements'
+import { useTheme } from '@/containers/ThemeService'
 
 function TopicInfo(props) {
   const { data: topic, navigation } = props
   const { member, node } = topic
   const { width } = useWindowDimensions()
+  const { styles } = useTheme()
 
   const htmlRenderProps = useMemo(() => {
     if (!topic) {
@@ -55,13 +57,13 @@ function TopicInfo(props) {
                     username: member.username,
                   })
                 }}>
-                <Text className="font-medium dark:text-neutral-300">
+                <Text className="font-medium" style={styles.text_meta}>
                   {member.username}
                 </Text>
               </Pressable>
             </View>
             <View className="ml-2">
-              <Text className="text-neutral-400 text-xs dark:text-neutral-300">
+              <Text className="text-xs" style={styles.text_meta}>
                 {topic.created_time}
               </Text>
             </View>
@@ -70,7 +72,8 @@ function TopicInfo(props) {
         <View>
           {node && (
             <Pressable
-              className="py-1 px-[6px] rounded bg-neutral-100 active:opacity-50 dark:bg-neutral-750"
+              className="py-1 px-[6px] rounded active:opacity-50"
+              style={styles.layer2}
               hitSlop={6}
               onPress={() => {
                 navigation.push('node', {
@@ -78,17 +81,13 @@ function TopicInfo(props) {
                   brief: node,
                 })
               }}>
-              <Text className="text-neutral-500 dark:text-neutral-300">
-                {node.title}
-              </Text>
+              <Text style={styles.text_meta}>{node.title}</Text>
             </Pressable>
           )}
         </View>
       </View>
-      <View className="pb-2 border-b border-b-neutral-300 border-solid mb-2 dark:border-b-neutral-600">
-        <Text
-          selectable
-          className="text-lg font-semibold dark:text-neutral-300">
+      <View className="pb-2 border-solid mb-2" style={[styles.border_b]}>
+        <Text selectable className="text-lg font-semibold" style={styles.text}>
           {topic.title}
         </Text>
       </View>
@@ -99,7 +98,8 @@ function TopicInfo(props) {
         <View className="mt-2">
           {topic.subtles.map((subtle, index) => (
             <View
-              className="-mx-2 pl-4 pr-2 py-2 border-t border-neutral-300 dark:border-neutral-700 bg-[#ffff0008] dark:bg-[#ffff8808]"
+              className="-mx-2 pl-4 pr-2 py-2"
+              style={[styles.border_t, styles.border_light, styles.highlight]}
               key={index}>
               <View className="mb-1">
                 <Text className="text-xs text-neutral-500">{subtle.meta}</Text>

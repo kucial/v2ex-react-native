@@ -8,7 +8,7 @@ module.exports = function (api) {
         {
           root: ['./'],
           alias: {
-            '^@/(.+)': './src/\\1'
+            '^@/(.+)': './src/\\1',
           },
           extensions: [
             '.ios.js',
@@ -18,11 +18,11 @@ module.exports = function (api) {
             '.json',
             '.tsx',
             '.ts',
-            '.native.js'
-          ]
-        }
+            '.native.js',
+          ],
+        },
       ],
-      'tailwindcss-react-native/babel',
+      'nativewind/babel',
       [
         'module:react-native-dotenv',
         {
@@ -32,11 +32,11 @@ module.exports = function (api) {
           allowlist: null,
           safe: false,
           allowUndefined: true,
-          verbose: false
-        }
+          verbose: false,
+        },
       ],
       process.env.NODE_ENV === 'production' && 'transform-remove-console',
-      'react-native-reanimated/plugin'
-    ].filter(Boolean)
+      'react-native-reanimated/plugin',
+    ].filter(Boolean),
   }
 }

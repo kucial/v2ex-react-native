@@ -8,8 +8,8 @@ import {
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
+import { useTheme } from '@/containers/ThemeService'
 import { useSWR } from '@/utils/swr'
 
 const pickerSnapPoints = ['50%']
@@ -26,8 +26,7 @@ const renderBackdrop = (props) => {
 
 export default function NodeSelect(props) {
   const nodesSwr = useSWR('/api/nodes/all.json')
-  const { colorScheme } = useColorScheme()
-  const tw = useTailwind()
+  const { theme, styles } = useTheme()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
   const selectRef = useRef()
@@ -56,11 +55,8 @@ export default function NodeSelect(props) {
             selectRef.current?.close()
           }}>
           <View
-            className={classNames(
-              'h-[50px] flex flex-row items-center border-b pr-3',
-              'border-neutral-300',
-              'dark:border-neutral-600',
-            )}>
+            className={classNames('h-[50px] flex flex-row items-center pr-3')}
+            style={[styles.border_b, styles.border_light]}>
             {props.renderLabel(item)}
           </View>
         </Pressable>
@@ -81,7 +77,7 @@ export default function NodeSelect(props) {
         {props.value ? (
           <Text className="text-[16px]">{props.renderLabel(props.value)}</Text>
         ) : (
-          <Text className="text-neutral-400 dark:text-neutral-500 text-[16px]">
+          <Text className="text-[16px]" style={props.placeholderStyle}>
             {props.placeholder}
           </Text>
         )}
@@ -91,29 +87,27 @@ export default function NodeSelect(props) {
         index={0}
         snapPoints={pickerSnapPoints}
         backdropComponent={renderBackdrop}
-        backgroundStyle={tw('bg-white dark:bg-neutral-800')}
-        handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}
+        backgroundStyle={styles.overlay}
+        handleIndicatorStyle={{
+          backgroundColor: theme.colors.bg_bottom_sheet_handle,
+        }}
         onDismiss={() => {
           setOpen(false)
         }}>
         {open && (
-          <View className="flex-1 w-full bg-white dark:bg-neutral-800">
+          <View className="flex-1 w-full">
             <View className="p-3">
               <BottomSheetTextInput
                 autoFocus={!props.value}
-                style={tw(
-                  'h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300',
-                )}
-                selectionColor={
-                  colorScheme === 'dark'
-                    ? colors.amber[50]
-                    : colors.neutral[600]
-                }
-                placeholderTextColor={
-                  colorScheme === 'dark'
-                    ? colors.neutral[500]
-                    : colors.neutral[400]
-                }
+                style={{
+                  height: 36,
+                  paddingHorizontal: 8,
+                  borderRadius: 6,
+                  backgroundColor: theme.colors.bg_input,
+                  color: theme.colors.text,
+                }}
+                selectionColor={theme.colors.primary}
+                placeholderTextColor={theme.colors.text_placeholder}
                 placeholder={props.filterPlaceholder}
                 returnKeyType="search"
                 value={filter}

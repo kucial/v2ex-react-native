@@ -2,12 +2,14 @@
 import { createContext, useContext, useMemo, useRef } from 'react'
 import DropdownAlert from 'react-native-dropdownalert'
 import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
+
+import { useTheme } from './ThemeService'
 const AlterService = createContext()
 
 export default function AlertService(props) {
+  const { theme } = useTheme()
   const ref = useRef()
-  const { colorScheme } = useColorScheme()
+
   const service = useMemo(() => {
     return new Proxy(
       {},
@@ -47,9 +49,9 @@ export default function AlertService(props) {
           backgroundColor: 'transparent',
           marginBottom: 2,
         }}
-        successColor={colorScheme === 'dark' ? colors.emerald[400] : undefined}
-        errorColor={colorScheme === 'dark' ? colors.rose[600] : undefined}
-        infoColor={colorScheme === 'dark' ? colors.cyan[500] : undefined}
+        successColor={theme.colors.success}
+        errorColor={theme.colors.danger}
+        infoColor={theme.colors.info}
       />
     </AlterService.Provider>
   )

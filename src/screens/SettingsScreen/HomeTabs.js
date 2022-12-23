@@ -30,17 +30,19 @@ import {
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import colors from 'tailwindcss/colors'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { useTheme } from '@/containers/ThemeService'
 import { useSWR } from '@/utils/swr'
 
 const UnderlayLeft = (props) => {
   const { close } = useSwipeableItemParams()
-  const { colorScheme } = useColorScheme()
+  const { styles } = useTheme()
   return (
-    <View className="h-full flex-row flex-row justify-end bg-red-600 dark:bg-rose-500">
+    <View
+      className="h-full flex-row flex-row justify-end"
+      style={styles.btn_danger.bg}>
       <Pressable
         className={classNames(
           'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',
@@ -51,9 +53,7 @@ const UnderlayLeft = (props) => {
             props.onDelete()
           })
         }}>
-        <TrashIcon
-          color={colorScheme === 'dark' ? colors.neutral[100] : colors.white}
-        />
+        <TrashIcon color={styles.btn_danger.text.color} />
       </Pressable>
     </View>
   )
@@ -61,30 +61,30 @@ const UnderlayLeft = (props) => {
 
 const LineItem = (props) => {
   const { close, openDirection } = useSwipeableItemParams()
+  const { styles } = useTheme()
   return (
     <Pressable
       className={classNames(
         'min-h-[50px] flex flex-row items-center pl-4',
-        'bg-white dark:bg-neutral-900',
         openDirection !== 'none' &&
           'active:bg-neutral-100 dark:active:bg-neutral-800',
       )}
+      style={[styles.layer1, props.style]}
       onPress={() => {
         if (openDirection !== 'none') {
           close()
         }
       }}
       disabled={props.disabled}
-      onLongPress={props.onLongPress}
-      style={props.style}>
+      onLongPress={props.onLongPress}>
       <View
-        className={classNames('h-full flex-1 flex flex-row', {
-          'border-b border-b-neutral-300 dark:border-neutral-600':
-            !props.isLast,
-        })}>
+        className={classNames('h-full flex-1 flex flex-row')}
+        style={!props.isLast && [styles.border_b, styles.border_bottom]}>
         <View className="flex-1 flex flex-row items-center">
           {props.icon && <View className="mr-3">{props.icon}</View>}
-          <Text className="text-base dark:text-neutral-300">{props.title}</Text>
+          <Text className="text-base" style={styles.text}>
+            {props.title}
+          </Text>
         </View>
         {props.extra && (
           <View className="h-full flex flex-row items-center pr-3">
@@ -109,10 +109,10 @@ const renderBackdrop = (props) => {
 }
 const AddTabPanelSheet = forwardRef((props, ref) => {
   const nodesSwr = useSWR('/api/nodes/all.json')
-  const { colorScheme } = useColorScheme()
-  const tintColor =
-    colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-  const tw = useTailwind()
+  const { theme, styles } = useTheme()
+
+  const tintColor = theme.colors.text
+
   const [filter, setFilter] = useState('')
   const [index, setIndex] = useState(1)
   const filtered = useMemo(() => {
@@ -141,15 +141,15 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
           })
         }}>
         <View
-          className={classNames(
-            'h-[50px] flex flex-row items-center border-b pr-3',
-            'border-neutral-300',
-            'dark:border-neutral-600',
-            index === 0 && 'border-t',
-          )}>
+          className={classNames('h-[50px] flex flex-row items-center pr-3')}
+          style={[
+            styles.border_b,
+            styles.border_light,
+            index === 0 && styles.border_t,
+          ]}>
           <RectangleStackIcon size={18} color={tintColor} />
           <View className="ml-3">
-            <Text className="dark:text-neutral-300">{item.title}</Text>
+            <Text style={styles.text}>{item.title}</Text>
           </View>
         </View>
       </Pressable>
@@ -160,7 +160,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
     <>
       <View>
         <View className="px-3 py-1">
-          <Text className="text-xs text-neutral-600 dark:text-netural-400">
+          <Text className="text-xs" style={styles.text_meta}>
             已禁用
           </Text>
         </View>
@@ -177,14 +177,16 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
             }}>
             <View
               className={classNames(
-                'h-[50px] flex flex-row items-center border-b pr-3',
-                'border-neutral-300',
-                'dark:border-neutral-600',
-                index === 0 && 'border-t',
-              )}>
+                'h-[50px] flex flex-row items-center  pr-3',
+              )}
+              style={[
+                styles.border_b,
+                styles.border_light,
+                index === 0 && styles.border_t,
+              ]}>
               <HomeModernIcon size={18} color={tintColor} />
               <View className="ml-3">
-                <Text className="dark:text-neutral-300">{item.label}</Text>
+                <Text style={styles.text}>{item.label}</Text>
               </View>
             </View>
           </Pressable>
@@ -192,7 +194,7 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
       </View>
       <View className="mt-3">
         <View className="px-3 py-1">
-          <Text className="text-xs text-neutral-600 dark:text-netural-400">
+          <Text className="text-xs" style={styles.text_meta}>
             节点
           </Text>
         </View>
@@ -206,26 +208,28 @@ const AddTabPanelSheet = forwardRef((props, ref) => {
       index={index}
       snapPoints={pickerSnapPoints}
       backdropComponent={renderBackdrop}
-      backgroundStyle={tw('bg-white dark:bg-neutral-800')}
-      handleIndicatorStyle={tw('bg-neutral-300 dark:bg-neutral-400')}
+      backgroundStyle={styles.overlay}
+      handleIndicatorStyle={{
+        backgroundColor: theme.colors.bg_bottom_sheet_handle,
+      }}
       onDismiss={() => {
         setIndex(1)
       }}>
-      <View className="flex-1 h-full w-full bg-white dark:bg-neutral-800">
+      <View className="flex-1 h-full w-full">
         <View className="p-3">
           <BottomSheetTextInput
             onFocus={() => {
               setIndex(0)
             }}
-            style={tw(
-              'h-[36px] px-2 bg-neutral-100 rounded-md dark:bg-neutral-700 dark:text-neutral-300',
-            )}
-            selectionColor={
-              colorScheme === 'dark' ? colors.amber[50] : colors.neutral[600]
-            }
-            placeholderTextColor={
-              colorScheme === 'dark' ? colors.neutral[500] : colors.neutral[400]
-            }
+            style={{
+              height: 36,
+              paddingHorizontal: 8,
+              borderRadius: 6,
+              backgroundColor: theme.colors.bg_input,
+              color: theme.colors.text,
+            }}
+            selectionColor={theme.colors.primary}
+            placeholderTextColor={theme.colors.text_placeholder}
             placeholder={'查找'}
             returnKeyType="search"
             value={filter}
@@ -251,13 +255,13 @@ AddTabPanelSheet.displayName = 'AddTabPanelSheet'
 
 export function HomeTabs(props) {
   const { navigation } = props
+  const { theme, styles } = useTheme()
   const {
     data: { homeTabs },
     update,
     initHomeTabs,
   } = useAppSettings()
   const [tabs, setTabs] = useState(homeTabs || [])
-  const { colorScheme } = useColorScheme()
   const sheetRef = useRef()
   const { showActionSheetWithOptions } = useActionSheet()
   const aIndicator = useActivityIndicator()
@@ -292,12 +296,7 @@ export function HomeTabs(props) {
               },
             )
           }}>
-          <EllipsisHorizontalIcon
-            size={24}
-            color={
-              colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[800]
-            }
-          />
+          <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
         </Pressable>
       ),
     })
@@ -319,8 +318,7 @@ export function HomeTabs(props) {
   const renderItem = useCallback(
     ({ item, drag, isActive, index }) => {
       let icon
-      const tintColor =
-        colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
+      const tintColor = theme.colors.text
       if (item.type === 'node') {
         icon = <RectangleStackIcon size={18} color={tintColor} />
       } else {
@@ -397,16 +395,12 @@ export function HomeTabs(props) {
         <Pressable
           className={classNames(
             'w-[62px] h-[62px] items-center justify-center rounded-full shadow-sm active:opacity-60',
-            'bg-neutral-900',
-            'dark:bg-amber-50',
           )}
+          style={styles.btn_primary.bg}
           onPress={() => {
             sheetRef.current?.present()
           }}>
-          <PlusIcon
-            color={colorScheme === 'dark' ? colors.neutral[900] : 'white'}
-            size={22}
-          />
+          <PlusIcon color={styles.btn_primary.text.color} size={22} />
         </Pressable>
       </View>
       <AddTabPanelSheet

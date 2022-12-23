@@ -5,19 +5,18 @@ import classNames from 'classnames'
 
 import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
+import { useTheme } from '@/containers/ThemeService'
 
 export default function TopicRow(props) {
   const { data, showAvatar, showLastReplyMember } = props
   const navigation = useNavigation()
+  const { styles } = useTheme()
 
   if (!data) {
     return (
       <View
-        className={classNames(
-          'border-b flex flex-row items-center',
-          'border-neutral-200 bg-white',
-          'dark:border-neutral-700 dark:bg-neutral-900',
-        )}>
+        className={classNames('flex flex-row items-center')}
+        style={[styles.layer1, styles.border_b, styles.border_light]}>
         <View className="flex-1 py-2 pl-1">
           <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
             {showAvatar && <Box className="w-[24px] h-[24px] rounded" />}
@@ -26,7 +25,7 @@ export default function TopicRow(props) {
                 <InlineText className="text-xs"></InlineText>
               </View>
             </View>
-            <Text className="text-neutral-200 dark:text-neutral-500">·</Text>
+            <Text style={styles.text_meta}>·</Text>
             <View className="relative">
               <InlineText width={[56, 80]} className="text-xs"></InlineText>
             </View>
@@ -55,11 +54,8 @@ export default function TopicRow(props) {
   return (
     <FixedPressable
       sentry-label="TopicRow"
-      className={classNames(
-        'border-b flex flex-row items-center active:opacity-50',
-        'border-neutral-200 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900',
-      )}
+      className={classNames('flex flex-row items-center', 'active:opacity-50')}
+      style={[styles.layer1, styles.border_b, styles.border_light]}
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
@@ -92,19 +88,20 @@ export default function TopicRow(props) {
           <View>
             <FixedPressable
               hitSlop={4}
-              className="py-[2px] px-[6px] rounded bg-neutral-100 active:opacity-60 dark:bg-neutral-750"
+              className="py-[2px] px-[6px] rounded active:opacity-60"
+              style={styles.layer2}
               onPress={() => {
                 navigation.navigate('node', {
                   name: node.name,
                   brief: node,
                 })
               }}>
-              <Text className="text-xs text-neutral-500 dark:text-neutral-300">
+              <Text className="text-xs" style={styles.text_desc}>
                 {node.title}
               </Text>
             </FixedPressable>
           </View>
-          <Text className="text-neutral-400 dark:text-neutral-300">·</Text>
+          <Text style={styles.text_meta}>·</Text>
           <View className="relative top-[1px]">
             <FixedPressable
               className="active:opacity-60"
@@ -115,25 +112,27 @@ export default function TopicRow(props) {
                   brief: member,
                 })
               }}>
-              <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-300">
+              <Text className="font-bold text-xs" style={styles.text_desc}>
                 {member.username}
               </Text>
             </FixedPressable>
           </View>
         </View>
         <View>
-          <Text className="text-base text-neutral-700 dark:text-neutral-300">
+          <Text className="text-base" style={styles.text}>
             {title}
           </Text>
           <View className="mt-2 flex flex-row items-center">
-            <Text className="text-xs text-neutral-400">
+            <Text className="text-xs" style={styles.text_meta}>
               {data?.last_reply_time}
             </Text>
             {showLastReplyMember && data?.last_reply_by && (
               <>
-                <Text className="text-neutral-400 text-xs px-2">•</Text>
+                <Text className="text-xs px-2" style={styles.text_meta}>
+                  •
+                </Text>
                 <View className="flex flex-row items-center">
-                  <Text className="text-xs text-neutral-400 dark:text-neutral-300">
+                  <Text className="text-xs" style={styles.text_meta}>
                     最后回复来自
                   </Text>
                   <FixedPressable
@@ -144,7 +143,9 @@ export default function TopicRow(props) {
                         username: data.last_reply_by,
                       })
                     }}>
-                    <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                    <Text
+                      className="text-xs font-bold"
+                      style={styles.text_desc}>
                       {data.last_reply_by}
                     </Text>
                   </FixedPressable>
@@ -156,8 +157,8 @@ export default function TopicRow(props) {
       </View>
       <View className="w-[80px] flex flex-row justify-end pr-4">
         {!!replies && (
-          <View className="rounded-full text-xs px-2 bg-neutral-400 dark:bg-neutral-600">
-            <Text className="text-white dark:text-neutral-300">{replies}</Text>
+          <View className="rounded-full text-xs px-2" style={styles.tag.bg}>
+            <Text style={styles.tag.text}>{replies}</Text>
           </View>
         )}
       </View>

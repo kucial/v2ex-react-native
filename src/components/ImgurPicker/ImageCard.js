@@ -4,15 +4,21 @@ import classNames from 'classnames'
 
 import CheckIcon from '@/components/CheckIcon'
 import { getImageLink } from '@/containers/ImgurService'
+import { useTheme } from '@/containers/ThemeService'
 
 import imagePlaceholder from './assets/image-placeholder.png'
 
 export default function ImageCard(props) {
   const { data, selected } = props
+  const { theme } = useTheme()
   return (
     <Pressable className="active:opacity-50 relative" onPress={props.onPress}>
       <View className="w-full pt-[100%] overflow-hidden">
-        <View className="absolute inset-0 w-full bg-neutral-100 dark:bg-netural-600">
+        <View
+          className="absolute inset-0 w-full"
+          style={{
+            backgroundColor: theme.colors.text_placeholder,
+          }}>
           <FastImage
             source={
               data?.link

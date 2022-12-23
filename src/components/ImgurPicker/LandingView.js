@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { SafeAreaView, Text, View } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
+import { hairlineWidth } from 'nativewind'
 import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
+
+import { useTheme } from '@/containers/ThemeService'
 
 import BackButton from '../BackButton'
 import Albums from './Albums'
@@ -11,43 +13,32 @@ import UploadButton from './UploadButton'
 
 export default function Landing(props) {
   const [tabIndex, setTabIndex] = useState(0)
-  const { colorScheme } = useColorScheme()
+  const { theme, styles } = useTheme()
 
   return (
     <View className="flex flex-1">
       <SafeAreaView>
-        <View className="border-b border-neutral-300 dark:border-neutral-600 pt-1">
+        <View className="pt-1" style={styles.border_b}>
           <View className="flex flex-row items-center min-h-[44px] px-1">
             <View className="w-[56px]">
               {props.onCancel && (
                 <BackButton
-                  tintColor={
-                    colorScheme === 'dark'
-                      ? colors.neutral[300]
-                      : colors.neutral[800]
-                  }
+                  tintColor={theme.colors.text}
                   onPress={props.onCancel}
                 />
               )}
             </View>
             <View className="flex-1 px-1">
               <Text
-                className="text-center font-medium text-base dark:text-neutral-300"
+                className="text-center font-medium text-base"
+                style={styles.text}
                 numberOfLines={1}
                 ellipsizeMode="tail">
                 Imgur 图床
               </Text>
             </View>
             <View className="w-[56px] items-end">
-              {tabIndex === 0 && (
-                <UploadButton
-                  tintColor={
-                    colorScheme === 'dark'
-                      ? colors.neutral[300]
-                      : colors.neutral[800]
-                  }
-                />
-              )}
+              {tabIndex === 0 && <UploadButton tintColor={theme.colors.text} />}
               {/* {!!props.selected.length && (
                 <Pressable
                   className="h-[44px] items-center justify-center px-1 rounded-full active:bg-neutral-100"

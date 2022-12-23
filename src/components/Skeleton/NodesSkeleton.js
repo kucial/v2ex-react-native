@@ -1,9 +1,12 @@
 import { useMemo } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 
+import { useTheme } from '@/containers/ThemeService'
+
 import { InlineBox, InlineText, valueInRange } from './Elements'
 
 function NodeSection(props) {
+  const { styles } = useTheme()
   const nodes = useMemo(() => {
     if (Array.isArray(props.nodes)) {
       return Math.round(valueInRange(props.nodes))
@@ -12,14 +15,14 @@ function NodeSection(props) {
   }, [props.nodes])
 
   return (
-    <View className="bg-white dark:bg-neutral-900 mx-1 mt-1 mb-4 rounded-sm shadow">
+    <View className="mx-1 mt-1 mb-4 rounded-sm shadow" style={styles.layer1}>
       <View className="flex flex-row justify-between items-center border-b border-b-neutral-400 px-3">
         <View className="py-2">
           <InlineText className="font-medium" width={[56, 80]} />
         </View>
         <View className="flex flex-row">
           <InlineText className="text-xs" width={[56, 80]} />
-          <Text className="color-neutral-200 px-1 text-xs dark:color-neutral-400">
+          <Text className="px-1 text-xs" style={styles.text_meta}>
             •
           </Text>
           <InlineText className="text-xs" width={64} />
@@ -29,7 +32,8 @@ function NodeSection(props) {
         {[...new Array(nodes)].map((_, index) => (
           <InlineBox
             key={index}
-            className="py-2 px-2 border-neutral-400 rounded-lg mr-2 mb-2"
+            className="py-2 px-2 rounded-lg mr-2 mb-2"
+            style={styles.border}
             width={[56, 80]}></InlineBox>
         ))}
       </View>

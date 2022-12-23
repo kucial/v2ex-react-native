@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Text, View } from 'react-native'
-import { useTailwind } from 'tailwindcss-react-native'
+
+import { useTheme } from '@/containers/ThemeService'
 
 const randomPercentage = () => {
   return (Math.max(0.3, Math.random()) * 100).toFixed() + '%'
@@ -29,7 +30,7 @@ const getStyleValue = (style, key) => {
 }
 
 export function InlineText(props) {
-  const tw = useTailwind()
+  const { theme } = useTheme()
   const width = useMemo(() => {
     if (Array.isArray(props.width)) {
       return valueInRange(props.width)
@@ -47,23 +48,17 @@ export function InlineText(props) {
 
   return (
     <View
+      className="flex flex-row items-center"
       style={{
-        ...tw('flex flex-row items-center'),
         height: getStyleValue(props.style, 'lineHeight') || 24,
         width,
       }}>
       <View
+        className="rounded w-full animate-pulse"
         style={[
-          tw(
-            `${
-              textColor ? '' : 'bg-neutral-100 dark:bg-neutral-750'
-            } rounded w-full animate-pulse`,
-          ),
           {
             height: getStyleValue(props.style, 'fontSize') || 16,
-          },
-          textColor && {
-            backgroundColor: textColor,
+            backgroundColor: textColor || theme.colors.skeleton,
           },
         ]}
       />
@@ -91,7 +86,7 @@ export function BlockText(props) {
 }
 
 export function InlineBox(props) {
-  const tw = useTailwind()
+  const { theme } = useTheme()
   const width = useMemo(() => {
     if (Array.isArray(props.width)) {
       return valueInRange(props.width)
@@ -103,9 +98,11 @@ export function InlineBox(props) {
   return (
     <View
       style={[
-        tw('bg-neutral-100 dark:bg-neutral-750'),
         props.style,
         width && { width },
+        {
+          backgroundColor: theme.colors.skeleton,
+        },
       ]}>
       <Text> </Text>
     </View>
@@ -113,8 +110,15 @@ export function InlineBox(props) {
 }
 
 export function Box(props) {
+  const { theme } = useTheme()
   return (
-    <View className="bg-neutral-100 dark:bg-neutral-750" style={props.style}>
+    <View
+      style={[
+        {
+          backgroundColor: theme.colors.skeleton,
+        },
+        props.style,
+      ]}>
       {props.children}
     </View>
   )

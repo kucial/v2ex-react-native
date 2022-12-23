@@ -11,7 +11,7 @@ import MemberTopics from './MemberTopics'
 const Tab = createMaterialTopTabNavigator()
 
 export default function MemberScreen({ route, navigation }) {
-  const { username } = route.params
+  const { username, tab } = route.params
   const memberSwr = useSWR(`/page/member/${username}/info.json`, {
     revalidateOnMount: true,
   })
@@ -47,6 +47,7 @@ export default function MemberScreen({ route, navigation }) {
         navigation={navigation}
       />
       <Tab.Navigator
+        initialRouteName={tab}
         screenOptions={{
           tabBarScrollEnabled: false,
           lazy: true,

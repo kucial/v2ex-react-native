@@ -1,10 +1,15 @@
 import { Text, View } from 'react-native'
 
+import { useTheme } from '@/containers/ThemeService'
+
 import { BlockText, Box, InlineText } from './Elements'
 
 export default function TopicRowSkeleton() {
+  const { styles } = useTheme()
   return (
-    <View className="border-b border-neutral-200 dark:border-neutral-600 flex flex-row items-center bg-white dark:bg-neutral-900">
+    <View
+      className="flex flex-row items-center"
+      style={[styles.layer1, styles.border_b, styles.border_light]}>
       <View className="flex-1 py-2 pl-1">
         <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
           <Box className="w-[24px] h-[24px] rounded" />
@@ -13,7 +18,7 @@ export default function TopicRowSkeleton() {
               <InlineText className="text-xs"></InlineText>
             </View>
           </View>
-          <Text className="text-neutral-200 dark:text-neutral-500">·</Text>
+          <Text style={styles.text_meta}>·</Text>
           <View className="relative">
             <InlineText width={[56, 80]} className="text-xs"></InlineText>
           </View>

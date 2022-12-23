@@ -4,28 +4,35 @@ import { useNavigation } from '@react-navigation/native'
 import { FlashList } from '@shopify/flash-list'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
+import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 
 const MemberReplyRow = (props) => {
   const { width } = useWindowDimensions()
   const navigation = useNavigation()
   const { data } = props
+  const { styles } = useTheme()
   if (data) {
     // console.log(data)
     return (
-      <View className="w-full bg-white border-b border-b-neutral-300 dark:bg-neutral-900 dark:border-b-neutral-600">
+      <View
+        className="w-full"
+        style={[styles.layer1, styles.border_b, styles.border_light]}>
         <View className="p-1">
-          <View className="bg-neutral-100 px-2 pb-1 pt-2 dark:bg-neutral-800">
+          <View className="px-2 pb-1 pt-2" style={styles.layer2}>
             <View className="flex flex-row">
               <View className="flex-1">
-                <Text className="text-neutral-600 text-xs dark:text-neutral-400">{`回复了${data.topic.member.username} 创建的主题 › `}</Text>
+                <Text
+                  className="text-xs"
+                  style={
+                    styles.text_meta
+                  }>{`回复了${data.topic.member.username} 创建的主题 › `}</Text>
               </View>
-              <Text className="text-neutral-600 text-xs dark:text-neutral-400">
+              <Text className="text-xs" style={styles.text_meta}>
                 {data.reply_time}
               </Text>
             </View>
@@ -36,7 +43,7 @@ const MemberReplyRow = (props) => {
                   id: data.topic.id,
                 })
               }}>
-              <Text className="my-1 text-neutral-700 dark:text-neutral-300">
+              <Text className="my-1" style={styles.text}>
                 {data.topic.title}
               </Text>
             </Pressable>
@@ -55,16 +62,13 @@ const MemberReplyRow = (props) => {
     )
   }
   return (
-    <View className="bg-white px-1 border-b border-b-neutral-300 dark:bg-neutral-900 dark:border-b-neutral-600">
+    <View
+      className="w-full"
+      style={[styles.layer1, styles.border_b, styles.border_light]}>
       <View className="p-1">
-        <View className="bg-neutral-100 px-1 pb-1 pt-1 rounded-sm dark:bg-neutral-800">
-          <InlineText
-            className="text-xs text-neutral-200 dark:text-neutral-600"
-            width="80%"></InlineText>
-          <BlockText
-            className="text-neutral-200 dark:text-neutral-600"
-            lines={[1, 2]}
-          />
+        <View className="px-1 pb-1 pt-1 rounded-sm" style={styles.layer2}>
+          <InlineText className="text-xs" width="80%"></InlineText>
+          <BlockText lines={[1, 2]} />
         </View>
       </View>
       <View className="py-1 px-2">
@@ -75,7 +79,6 @@ const MemberReplyRow = (props) => {
 }
 
 export default function MemberReplies(props) {
-  const { colorScheme } = useColorScheme()
   const getKey = useCallback(
     (index) => {
       return `/page/member/${props.username}/replies.json?p=${index + 1}`

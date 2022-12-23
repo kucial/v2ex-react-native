@@ -1,5 +1,4 @@
 // eslint-disable-next-line simple-import-sort/imports
-import './wdyr'
 import { registerRootComponent } from 'expo'
 
 import App from './App'

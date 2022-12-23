@@ -5,6 +5,7 @@ import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { useTheme } from '@/containers/ThemeService'
 
 const styleLabels = {
   normal: '默认',
@@ -39,13 +40,11 @@ const NormalTopicRowDemo = (props) => {
   const { node, member, title, replies, last_reply_time, last_reply_by } =
     props.data
   const { showAvatar, showLastReplyMember } = props
+  const { styles } = useTheme()
   return (
     <View
-      className={classNames(
-        'border-b flex flex-row items-center active:opacity-50',
-        'border-neutral-300 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900',
-      )}>
+      className={classNames('flex flex-row items-center')}
+      style={[styles.layer1, styles.border_b, styles.border_light]}>
       {showAvatar ? (
         <View className="px-2 py-2 self-start">
           <FastImage
@@ -61,34 +60,42 @@ const NormalTopicRowDemo = (props) => {
       <View className={classNames('flex-1 py-2')}>
         <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
           <View>
-            <View className="py-[2px] px-[6px] rounded bg-neutral-100 active:opacity-60 dark:bg-neutral-750">
-              <Text className="text-xs text-neutral-500 dark:text-neutral-300">
+            <View
+              className="py-[2px] px-[6px] rounded active:opacity-60"
+              style={styles.layer2}>
+              <Text className="text-xs" style={styles.text_desc}>
                 {node.title}
               </Text>
             </View>
           </View>
-          <Text className="text-neutral-400 dark:text-neutral-300">·</Text>
+          <Text style={styles.text_meta}>·</Text>
           <View className="relative top-[1px]">
-            <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-300">
+            <Text className="font-bold text-xs" style={styles.text_desc}>
               {member.username}
             </Text>
           </View>
         </View>
         <View>
-          <Text className="text-base text-neutral-700 dark:text-neutral-300">
+          <Text className="text-base" style={styles.text}>
             {title}
           </Text>
           <View className="mt-2 flex flex-row items-center">
-            <Text className="text-xs text-neutral-400">{last_reply_time}</Text>
+            <Text className="text-xs" style={styles.text_meta}>
+              {last_reply_time}
+            </Text>
             {showLastReplyMember && (
               <>
-                <Text className="text-neutral-400 text-xs px-2">•</Text>
+                <Text className="text-xs px-2" style={styles.text_meta}>
+                  •
+                </Text>
                 <View className="flex flex-row items-center">
-                  <Text className="text-xs text-neutral-400 dark:text-neutral-300">
+                  <Text className="text-xs" style={styles.text_meta}>
                     最后回复来自
                   </Text>
                   <View className="px-1 active:opacity-60" hitSlop={4}>
-                    <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                    <Text
+                      className="text-xs font-bold"
+                      style={styles.text_desc}>
                       {last_reply_by}
                     </Text>
                   </View>
@@ -100,8 +107,8 @@ const NormalTopicRowDemo = (props) => {
       </View>
       <View className="w-[80px] flex flex-row justify-end pr-4">
         {!!replies && (
-          <View className="rounded-full text-xs px-2 bg-neutral-400 dark:bg-neutral-600">
-            <Text className="text-white dark:text-neutral-300">{replies}</Text>
+          <View className="rounded-full px-2" style={styles.tag.bg}>
+            <Text style={styles.tag.text}>{replies}</Text>
           </View>
         )}
       </View>
@@ -109,16 +116,14 @@ const NormalTopicRowDemo = (props) => {
   )
 }
 const TideTopicRowDemo = (props) => {
+  const { styles } = useTheme()
   const { node, member, title, replies, last_reply_time, last_reply_by } =
     props.data
   const { showAvatar, showLastReplyMember } = props
   return (
     <View
-      className={classNames(
-        'border-b flex flex-row items-center active:opacity-50',
-        'border-neutral-300 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900',
-      )}>
+      className={classNames('flex flex-row items-center')}
+      style={[styles.layer1, styles.border_b, styles.border_light]}>
       {showAvatar ? (
         <View className="px-2 py-2 self-start">
           <FastImage
@@ -134,25 +139,33 @@ const TideTopicRowDemo = (props) => {
 
       <View className={classNames('flex-1 pt-1 pb-2')}>
         <View>
-          <Text className="text-[16px] leading-[22px] text-neutral-700 dark:text-neutral-300">
+          <Text className="text-base leading-[22px]" style={styles.text}>
             {title}
           </Text>
           <View className="mt-1 flex flex-row items-center">
-            <View className="py-[2px] px-[6px] mr-2 rounded bg-neutral-100 active:opacity-60 dark:bg-neutral-750">
-              <Text className="text-xs text-neutral-500 dark:text-neutral-300">
+            <View
+              className="py-[2px] px-[6px] mr-2 rounded active:opacity-60"
+              style={styles.layer2}>
+              <Text className="text-xs" style={styles.text_desc}>
                 {node.title}
               </Text>
             </View>
-            <Text className="text-xs text-neutral-400">{last_reply_time}</Text>
+            <Text className="text-xs" style={styles.text_meta}>
+              {last_reply_time}
+            </Text>
             {showLastReplyMember && (
               <>
-                <Text className="text-neutral-400 text-xs px-1">•</Text>
+                <Text className="text-xs px-1" style={styles.text_meta}>
+                  •
+                </Text>
                 <View className="flex flex-row items-center">
-                  <Text className="text-xs text-neutral-400 dark:text-neutral-300">
+                  <Text className="text-xs" style={styles.text_meta}>
                     最后回复来自
                   </Text>
                   <View className="px-1 active:opacity-60" hitSlop={4}>
-                    <Text className="text-xs font-bold text-neutral-700 dark:text-neutral-300">
+                    <Text
+                      className="text-xs font-bold"
+                      style={styles.text_desc}>
                       {last_reply_by}
                     </Text>
                   </View>
@@ -163,8 +176,8 @@ const TideTopicRowDemo = (props) => {
         </View>
       </View>
       <View className="flex flex-row justify-end pl-1 pr-2">
-        <View className="rounded-full px-1 bg-neutral-400 dark:bg-neutral-600">
-          <Text className="text-white text-xs dark:text-neutral-300">
+        <View className="rounded-full px-1" style={styles.tag.bg}>
+          <Text className="text-xs" style={styles.tag.text}>
             {replies}
           </Text>
         </View>
@@ -176,6 +189,7 @@ const TideTopicRowDemo = (props) => {
 export function PreferenceSettings({ navigation }) {
   const { data, update } = useAppSettings()
   const [state, setState] = useState(data)
+  const { styles } = useTheme()
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
@@ -187,10 +201,10 @@ export function PreferenceSettings({ navigation }) {
   }, [navigation, data, state])
 
   return (
-    <View className="flex-1 bg-white dark:bg-neutral-900">
+    <View className="flex-1" style={styles.layer1}>
       <View className="mt-2">
-        <View className="px-4 py-2 border-b border-neutral-300 dark:border-neutral-700">
-          <Text className="text-lg font-medium dark:text-neutral-300">
+        <View className="px-4 py-2" style={[styles.border_b]}>
+          <Text className="text-lg font-medium" style={styles.text}>
             显示
           </Text>
         </View>
@@ -213,11 +227,8 @@ export function PreferenceSettings({ navigation }) {
         </View>
 
         <Pressable
-          className={classNames(
-            'pl-4',
-            'bg-white dark:bg-neutral-900',
-            'active:opacity-50',
-          )}
+          className={classNames('pl-4', 'active:opacity-50')}
+          style={styles.layer1}
           onPress={() => {
             const next = state.feedLayout === 'normal' ? 'tide' : 'normal'
             setState((prev) => ({
@@ -226,28 +237,28 @@ export function PreferenceSettings({ navigation }) {
             }))
           }}>
           <View
-            className={classNames(
-              'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700',
-            )}>
+            className={classNames('min-h-[52px] flex flex-row items-center')}
+            style={[styles.border_b]}>
             <View className="flex-1">
-              <Text className="text-base dark:text-neutral-300">列表布局</Text>
+              <Text className="text-base" style={styles.text}>
+                列表布局
+              </Text>
             </View>
             <View className="mr-4 px-2">
-              <Text className="text-neutral-700 dark:text-neutral-400">
+              <Text style={styles.text_desc}>
                 {styleLabels[state.feedLayout]}
               </Text>
             </View>
           </View>
         </Pressable>
-        <View className={classNames('pl-4', 'bg-white dark:bg-neutral-900')}>
+        <View className={classNames('pl-4')} style={styles.layer1}>
           <View
-            className={classNames(
-              'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700',
-            )}>
+            className={classNames('min-h-[52px] flex flex-row items-center')}
+            style={styles.border_b}>
             <View className="flex-1">
-              <Text className="text-base dark:text-neutral-300">显示头像</Text>
+              <Text className="text-base" style={styles.text}>
+                显示头像
+              </Text>
             </View>
             <View className="mr-2 px-2">
               <Switch
@@ -262,14 +273,12 @@ export function PreferenceSettings({ navigation }) {
             </View>
           </View>
         </View>
-        <View className={classNames('pl-4', 'bg-white dark:bg-neutral-900')}>
+        <View className={classNames('pl-4')} style={styles.layer1}>
           <View
-            className={classNames(
-              'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700',
-            )}>
+            className={classNames('min-h-[52px] flex flex-row items-center')}
+            style={styles.border_b}>
             <View className="flex-1">
-              <Text className="text-base dark:text-neutral-300">
+              <Text className="text-base" style={styles.text}>
                 显示最后回复用户
               </Text>
             </View>
@@ -286,14 +295,14 @@ export function PreferenceSettings({ navigation }) {
             </View>
           </View>
         </View>
-        <View className={classNames('pl-4', 'bg-white dark:bg-neutral-900')}>
+        <View className={classNames('pl-4')} style={styles.layer1}>
           <View
-            className={classNames(
-              'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700',
-            )}>
+            className={classNames('min-h-[52px] flex flex-row items-center')}
+            style={styles.border_b}>
             <View className="flex-1">
-              <Text className="text-base dark:text-neutral-300">已读提示</Text>
+              <Text className="text-base" style={styles.text}>
+                已读提示
+              </Text>
             </View>
             <View className="mr-2 px-2">
               <Switch
@@ -310,22 +319,23 @@ export function PreferenceSettings({ navigation }) {
         </View>
       </View>
       <View className="mt-4">
-        <View className="px-4 py-2 border-b border-neutral-300 dark:border-neutral-700">
-          <Text className="text-lg font-medium dark:text-neutral-300">
-            刷新
+        <View className="px-4 py-2" style={styles.border_b}>
+          <Text className="text-lg font-medium" style={styles.text}>
+            内容刷新
           </Text>
         </View>
 
         <View
           sentry-label="AutoRefrehLineItem"
-          className={classNames('pl-4', 'bg-white dark:bg-neutral-900')}>
+          className={classNames('pl-4')}
+          style={styles.layer1}>
           <View
-            className={classNames(
-              'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700',
-            )}>
+            className={classNames('min-h-[52px] flex flex-row items-center')}
+            style={styles.border_b}>
             <View className="flex-1">
-              <Text className="text-base dark:text-neutral-300">自动刷新</Text>
+              <Text className="text-base" style={styles.text}>
+                自动刷新
+              </Text>
             </View>
             <View className="mr-2 px-2">
               <Switch
@@ -342,11 +352,8 @@ export function PreferenceSettings({ navigation }) {
         </View>
 
         <Pressable
-          className={classNames(
-            'pl-4',
-            'bg-white dark:bg-neutral-900',
-            'active:opacity-50',
-          )}
+          className={classNames('pl-4', 'active:opacity-50')}
+          style={styles.layer1}
           onPress={() => {
             const index = refreshDurationOptions.findIndex(
               (o) => o.value === state.autoRefreshDuration,
@@ -360,15 +367,15 @@ export function PreferenceSettings({ navigation }) {
             }))
           }}>
           <View
-            className={classNames(
-              'min-h-[52px] flex flex-row items-center',
-              'border-b border-neutral-300 dark:border-neutral-700',
-            )}>
+            className={classNames('min-h-[52px] flex flex-row items-center')}
+            style={styles.border_b}>
             <View className="flex-1">
-              <Text className="text-base dark:text-neutral-300">刷新间隔</Text>
+              <Text className="text-base" style={styles.text}>
+                刷新间隔
+              </Text>
             </View>
             <View className="mr-2 px-2">
-              <Text className="text-neutral-700 dark:text-neutral-400">
+              <Text style={styles.text_desc}>
                 {state.autoRefreshDuration} 分钟
               </Text>
             </View>

@@ -11,30 +11,31 @@ import RNRestart from 'react-native-restart'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
 import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import GithubIcon from '@/components/GithubIcon'
+import { useTheme } from '@/containers/ThemeService'
 import storage from '@/utils/storage'
 
 export default function AboutScreen() {
-  const { colorScheme } = useColorScheme()
-
+  const { theme, styles } = useTheme()
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-1 px-4 pb-8 items-center justify-center">
-        <View className="bg-white dark:bg-neutral-900 w-full py-3 rounded-lg">
+        <View className="w-full py-3 rounded-lg" style={styles.layer1}>
           <View className="my-2">
-            <Text className="text-2xl font-bold text-center dark:text-neutral-200">
+            <Text
+              className="text-2xl font-bold text-center"
+              style={styles.text}>
               R2V
             </Text>
           </View>
           <View className="my-2">
-            <Text className="text-base text-center dark:text-neutral-200">
+            <Text className="text-base text-center" style={styles.text}>
               V2EX 第三方客户端
             </Text>
           </View>
           <View>
-            <Text className="text-center dark:text-neutral-200">
+            <Text className="text-center" style={styles.text}>
               {Constants.manifest.version}
               <Text className="ml-2">
                 {Platform.OS === 'ios' && Constants.manifest.ios.buildNumber}
@@ -46,7 +47,7 @@ export default function AboutScreen() {
 
           {Constants.manifest.extra.buildTime && (
             <View className="mt-2">
-              <Text className="text-sm text-neutral-600 dark:text-neutral-400 text-center">
+              <Text className="text-sm text-center" style={styles.text_meta}>
                 构建时间: {Constants.manifest.extra.buildTime}
               </Text>
             </View>
@@ -58,13 +59,7 @@ export default function AboutScreen() {
               onPress={() => {
                 Linking.openURL('https://github.com/kucial/v2ex-react-native')
               }}>
-              <GithubIcon
-                color={
-                  colorScheme === 'dark'
-                    ? colors.neutral[300]
-                    : colors.neutral[800]
-                }
-              />
+              <GithubIcon color={theme.colors.text} />
               {/* <Text className="ml-1">issues</Text> */}
             </Pressable>
           </View>
@@ -74,9 +69,9 @@ export default function AboutScreen() {
             <Pressable
               className={classNames(
                 'h-[50px] rounded-md flex items-center justify-center mt-4',
-                'bg-white active:opacity-60',
-                'dark:bg-neutral-900 dark:opacity-90 dark:active:opacity-60',
+                'active:opacity-60',
               )}
+              style={[styles.layer1]}
               onPress={() => {
                 // clear swr cache
                 const keys = storage.getAllKeys()
@@ -89,24 +84,22 @@ export default function AboutScreen() {
                 FastImage.clearDiskCache()
                 RNRestart.Restart()
               }}>
-              <Text className="text-neutral-800 dark:text-neutral-300">
-                清除缓存
-              </Text>
+              <Text style={styles.text}>清除缓存</Text>
             </Pressable>
           </View>
           <View className="basis-1/2 pl-2">
             <Pressable
               className={classNames(
                 'h-[50px] rounded-md flex items-center justify-center mt-4',
-                'bg-white active:opacity-60',
-                'dark:bg-neutral-900 dark:opacity-90 dark:active:opacity-60',
+                'active:opacity-60',
               )}
+              style={[styles.layer1]}
               onPress={() => {
                 storage.clearAll()
                 FastImage.clearDiskCache()
                 RNRestart.Restart()
               }}>
-              <Text className="text-red-500 dark:text-rose-500">重置</Text>
+              <Text style={styles.text_danger}>重置</Text>
             </Pressable>
           </View>
         </View>

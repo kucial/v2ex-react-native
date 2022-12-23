@@ -11,10 +11,9 @@ import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
 import WebView from 'react-native-webview'
 import Constants from 'expo-constants'
-import colors from 'tailwindcss/colors'
-import { useColorScheme } from 'tailwindcss-react-native'
 
 import BackButton from '@/components/BackButton'
+import { useTheme } from '@/containers/ThemeService'
 import { getJSON, setJSON } from '@/utils/storage'
 import { getScreenInfo } from '@/utils/url'
 
@@ -46,8 +45,8 @@ const topicLinkCapture = `(function() {
 const CACHE_KEY = '$app$/ui/search-keyword'
 
 export default function SearchScreen({ navigation }) {
+  const { theme, styles } = useTheme()
   const searchInput = useRef()
-  const { colorScheme } = useColorScheme()
   const [keyword, setKeyword] = useState(getJSON(CACHE_KEY))
   const [loading, setLoading] = useState(false)
   useEffect(() => {
@@ -64,17 +63,19 @@ export default function SearchScreen({ navigation }) {
   return (
     <View className="flex-1">
       <View
-        className="bg-white w-full flex-row items-center pl-1 dark:bg-neutral-900"
-        style={{
-          height:
-            Platform.OS === 'android' ? 58 : 48 + Constants.statusBarHeight,
-          paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
-        }}>
+        className="w-full flex-row items-center pl-1"
+        style={[
+          {
+            height:
+              Platform.OS === 'android' ? 58 : 48 + Constants.statusBarHeight,
+            paddingTop:
+              Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
+          },
+          styles.layer1,
+        ]}>
         <View className="mr-1">
           <BackButton
-            tintColor={
-              colorScheme === 'dark' ? colors.neutral[300] : colors.neutral[900]
-            }
+            tintColor={theme.colors.text}
             onPress={() => {
               navigation.goBack()
             }}
@@ -83,16 +84,10 @@ export default function SearchScreen({ navigation }) {
         <View className="flex flex-row flex-1 pr-3 items-center">
           <View className="relative flex-1 py-[6px]">
             <TextInput
-              className="bg-neutral-100 rounded-lg flex-1 px-2 text-base dark:bg-neutral-800 dark:text-neutral-200"
-              placeholderTextColor={
-                colorScheme === 'dark'
-                  ? colors.neutral[500]
-                  : colors.neutral[400]
-              }
-              selectionColor={
-                colorScheme === 'dark' ? colors.amber[50] : colors.neutral[600]
-              }
-              style={{ lineHeight: 20 }}
+              className="rounded-lg flex-1 px-2 text-base"
+              style={[styles.input_bg, styles.text, { lineHeight: 20 }]}
+              selectionColor={theme.colors.primary}
+              placeholderTextColor={theme.colors.text_placeholder}
               defaultValue={keyword || ''}
               ref={searchInput}
               placeholder="输入关键词"
@@ -111,14 +106,7 @@ export default function SearchScreen({ navigation }) {
                     searchInput.current?.clear()
                     searchInput.current?.focus()
                   }}>
-                  <XMarkIcon
-                    size={18}
-                    color={
-                      colorScheme === 'dark'
-                        ? colors.neutral[500]
-                        : colors.neutral[400]
-                    }
-                  />
+                  <XMarkIcon size={18} color={theme.colors.text} />
                 </Pressable>
               </View>
             )}
@@ -126,7 +114,9 @@ export default function SearchScreen({ navigation }) {
           <Pressable
             hitSlop={6}
             className="rounded px-3 py-[10px] ml-2 active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600">
-            <Text className="text-neutral-900 font-medium tracking-wide text-md dark:text-amber-50">
+            <Text
+              className="font-medium tracking-wide text-md"
+              style={styles.text_primary}>
               搜索
             </Text>
           </Pressable>

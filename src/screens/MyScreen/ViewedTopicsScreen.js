@@ -11,19 +11,20 @@ import SwipeableItem, {
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
-import colors from 'tailwindcss/colors'
-import { useColorScheme, useTailwind } from 'tailwindcss-react-native'
 
 import FixedPressable from '@/components/FixedPressable'
 import TimeAgo from '@/components/TimeAgo'
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 
 const UnderlayLeft = (props) => {
   const { close } = useSwipeableItemParams()
-  const { colorScheme } = useColorScheme()
+  const { styles } = useTheme()
   return (
-    <View className="h-full flex-row flex-row justify-end bg-red-600 dark:bg-rose-500">
+    <View
+      className="h-full flex-row flex-row justify-end"
+      style={styles.btn_danger.bg}>
       <Pressable
         className={classNames(
           'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',
@@ -34,9 +35,7 @@ const UnderlayLeft = (props) => {
             props.onDelete()
           })
         }}>
-        <TrashIcon
-          color={colorScheme === 'dark' ? colors.neutral[100] : colors.white}
-        />
+        <TrashIcon color={styles.btn_danger.text.color} />
       </Pressable>
     </View>
   )
@@ -45,9 +44,11 @@ const UnderlayLeft = (props) => {
 const TopicRow = (props) => {
   const { navigation, data, showAvatar } = props
   const { node, member, title } = data
+  const { styles } = useTheme()
   return (
     <FixedPressable
-      className="border-b border-neutral-200 bg-white flex flex-row items-center active:opacity-50 dark:bg-neutral-900 dark:border-neutral-600"
+      className="flex flex-row items-center active:opacity-50"
+      style={[styles.layer1, styles.border_b, styles.border_light]}
       onPress={() => {
         navigation.push('topic', {
           id: data.id,
@@ -80,19 +81,20 @@ const TopicRow = (props) => {
           <View>
             <FixedPressable
               hitSlop={4}
-              className="py-[2px] px-[6px] rounded bg-neutral-100 active:opacity-60 dark:bg-neutral-750"
+              className="py-[2px] px-[6px] rounded active:opacity-60"
+              style={styles.layer2}
               onPress={() => {
                 navigation.navigate('node', {
                   name: node.name,
                   brief: node,
                 })
               }}>
-              <Text className="text-neutral-500 text-xs dark:text-neutral-300">
+              <Text className="text-xs" style={styles.text_desc}>
                 {node.title}
               </Text>
             </FixedPressable>
           </View>
-          <Text className="text-neutral-400">·</Text>
+          <Text style={styles.text_meta}>·</Text>
           <View className="relative top-[1px]">
             <FixedPressable
               className="active:opacity-60"
@@ -103,19 +105,21 @@ const TopicRow = (props) => {
                   brief: member,
                 })
               }}>
-              <Text className="font-bold text-xs text-neutral-700 dark:text-neutral-400">
+              <Text className="font-bold text-xs" style={styles.text_desc}>
                 {member.username}
               </Text>
             </FixedPressable>
           </View>
         </View>
         <View>
-          <Text className="text-base text-neutral-700 dark:text-neutral-300">
+          <Text className="text-base" style={styles.text}>
             {title}
           </Text>
           <View className="mt-2 flex flex-row items-center">
-            <Text className="text-xs text-neutral-400 mr-2">上次查看</Text>
-            <Text className="text-xs text-neutral-400">
+            <Text className="text-xs mr-2" style={styles.text_meta}>
+              上次查看
+            </Text>
+            <Text className="text-xs" style={styles.text_meta}>
               <TimeAgo date={data.viewed_at} />
             </Text>
           </View>
@@ -128,14 +132,12 @@ const TopicRow = (props) => {
 const TideTopicRow = (props) => {
   const { navigation, data, showAvatar } = props
   const { node, member, title } = data
+  const { styles } = useTheme()
   return (
     <FixedPressable
       sentry-label="TideTopicRow"
-      className={classNames(
-        'border-b flex flex-row items-center active:opacity-50',
-        'border-neutral-200 bg-white',
-        'dark:border-neutral-700 dark:bg-neutral-900',
-      )}
+      className={classNames('flex flex-row items-center', 'active:opacity-50')}
+      style={[styles.layer1, styles.border_b, styles.border_light]}
       onPress={() => {
         navigation.push('topic', {
           id: props.data.id,
@@ -167,25 +169,28 @@ const TideTopicRow = (props) => {
           'flex-1 pt-1 pb-2',
           props.viewed && 'opacity-70',
         )}>
-        <Text className="text-[16px] leading-[22px] text-neutral-700 dark:text-neutral-300">
+        <Text className="text-base leading-[22px]" style={styles.text}>
           {title}
         </Text>
         <View className="mt-1 flex flex-row flex-wrap items-center">
           <FixedPressable
             hitSlop={4}
-            className="py-[2px] px-[6px] mr-[6px] rounded bg-neutral-100 active:opacity-60 dark:bg-neutral-750"
+            className="py-[2px] px-[6px] mr-[6px] rounded active:opacity-60"
+            style={styles.layer2}
             onPress={() => {
               navigation.navigate('node', {
                 name: node.name,
                 brief: node,
               })
             }}>
-            <Text className="text-xs text-neutral-500 dark:text-neutral-300">
+            <Text className="text-xs" style={styles.text_desc}>
               {node.title}
             </Text>
           </FixedPressable>
-          <Text className="text-xs text-neutral-400 mr-2">上次查看</Text>
-          <Text className="text-xs text-neutral-400">
+          <Text className="text-xs mr-2" style={styles.text_meta}>
+            上次查看
+          </Text>
+          <Text className="text-xs" style={styles.text_meta}>
             <TimeAgo date={data.viewed_at} />
           </Text>
         </View>
@@ -198,6 +203,7 @@ export default function ViewedTopicsScreen({ navigation }) {
   const { getItems, clear, removeItem } = useViewedTopics()
   const { showActionSheetWithOptions } = useActionSheet()
   const { data: settings } = useAppSettings()
+  const { styles } = useTheme()
   const { renderItem, keyExtractor, data } = useMemo(
     () => ({
       data: getItems(),
@@ -229,7 +235,7 @@ export default function ViewedTopicsScreen({ navigation }) {
                 }}
               />
             )}>
-            <View className="bg-white dark:bg-neutral-900">{inner}</View>
+            <View style={styles.layer1}>{inner}</View>
           </SwipeableItem>
         )
       },
@@ -278,20 +284,20 @@ export default function ViewedTopicsScreen({ navigation }) {
       estimatedItemSize={110}
       ListEmptyComponent={() => (
         <View className="items-center py-9">
-          <Text className="text-neutral-600 dark:text-neutral-400">
-            你还没有查看过任何一个主题哦～
-          </Text>
+          <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
         </View>
       )}
-      ListFooterComponent={() => (
-        <View
-          sentry-label="ListFooter"
-          className="min-h-[60px] py-4 flex flex-row items-center justify-center">
-          <View className="w-full flex flex-row justify-center py-4">
-            <Text className="text-neutral-400">到达底部啦</Text>
+      ListFooterComponent={() =>
+        !!data.length && (
+          <View
+            sentry-label="ListFooter"
+            className="min-h-[60px] py-4 flex flex-row items-center justify-center">
+            <View className="w-full flex flex-row justify-center py-4">
+              <Text style={styles.text_meta}>到达底部啦</Text>
+            </View>
           </View>
-        </View>
-      )}
+        )
+      }
     />
   )
 }

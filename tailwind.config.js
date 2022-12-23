@@ -6,10 +6,13 @@ module.exports = {
       colors: {
         neutral: {
           750: '#333333',
-          950: '#101010'
-        }
-      }
-    }
+          950: '#101010',
+        },
+      },
+      borderWidth: {
+        // DEFAULT: hairlineWidth(),
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 }

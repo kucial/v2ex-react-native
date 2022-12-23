@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Appearance } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { debounce, throttle } from 'lodash'
+import { debounce } from 'lodash'
 
 import { getJSON, setJSON } from './utils/storage'
 import { getScreenInfo } from './utils/url'
@@ -63,28 +62,4 @@ export const useCachedState = (cacheKey, initialState = null, revalidate) => {
   }, [state])
 
   return [state, setState]
-}
-
-export const useColorScheme = (delay = 250) => {
-  const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme())
-  const onColorSchemeChange = useCallback(
-    throttle(
-      ({ colorScheme }) => {
-        setColorScheme(colorScheme)
-      },
-      delay,
-      {
-        leading: false,
-      },
-    ),
-    [],
-  )
-  useEffect(() => {
-    const subscription = Appearance.addChangeListener(onColorSchemeChange)
-    return () => {
-      onColorSchemeChange.cancel()
-      subscription.remove()
-    }
-  }, [])
-  return colorScheme
 }
