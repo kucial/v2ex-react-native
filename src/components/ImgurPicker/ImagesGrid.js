@@ -11,7 +11,7 @@ import ImageCard from './ImageCard'
 
 export default function ImagesView(props) {
   const { imagesSwr } = props
-  const theme = useTheme()
+  const { theme } = useTheme()
 
   const [viewIndex, setViewIndex] = useState(-1)
 

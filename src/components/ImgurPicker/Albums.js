@@ -10,7 +10,7 @@ import AlbumCard from './AlbumCard'
 export default function Albums(props) {
   const imgur = useImgurService()
   const albumsSwr = imgur.useAlbums()
-  const theme = useTheme()
+  const { theme } = useTheme()
   return (
     <ScrollView
       refreshControl={
