@@ -2,10 +2,6 @@ import { forwardRef, useCallback, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import classNames from 'classnames'
 import { Pressable, Text, View } from 'react-native'
-import {
-  HomeModernIcon,
-  RectangleStackIcon,
-} from 'react-native-heroicons/outline'
 import { FlashList } from '@shopify/flash-list'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -17,6 +13,8 @@ import {
 } from '@gorhom/bottom-sheet'
 import { HomeTabOption } from '@/types/v2ex'
 import { getNodes } from '@/utils/v2ex-client'
+
+import TypeIcon from './TypeIcon'
 
 const pickerSnapPoints = ['50%', '85%']
 const renderBackdrop = (props) => {
@@ -75,7 +73,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
             styles.border_light,
             index === 0 && styles.border_t,
           ]}>
-          <RectangleStackIcon size={18} color={tintColor} />
+          <TypeIcon size={18} color={tintColor} type="node" />
           <View className="ml-3">
             <Text style={styles.text}>{item.title}</Text>
           </View>
@@ -112,7 +110,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
                 styles.border_light,
                 index === 0 && styles.border_t,
               ]}>
-              <HomeModernIcon size={18} color={tintColor} />
+              <TypeIcon type={item.type} size={18} color={tintColor} />
               <View className="ml-3">
                 <Text style={styles.text}>{item.label}</Text>
               </View>

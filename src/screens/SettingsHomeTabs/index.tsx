@@ -126,7 +126,6 @@ export default function HomeTabs(props: ScreenProps) {
   const [tabs, setTabs] = useState<HomeTabOption[]>(homeTabs || [])
   const sheetRef = useRef<BottomSheetModal>()
   const { showActionSheetWithOptions } = useActionSheet()
-  const aIndicator = useActivityIndicator()
   const alert = useAlertService()
 
   useLayoutEffect(() => {
@@ -144,16 +143,30 @@ export default function HomeTabs(props: ScreenProps) {
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
-                  aIndicator.show('INIT_TAB')
+                  alert.alertWithType(
+                    'info',
+                    '提示',
+                    '正在重新获取首页标签初始设置',
+                    undefined,
+                    0,
+                  )
                   initHomeTabs()
                     .then((newTabs) => {
                       setTabs(newTabs)
+                      alert.closeAction(undefined, () => {
+                        alert.alertWithType(
+                          'success',
+                          '成功',
+                          '首页标签已重置',
+                          undefined,
+                          1000,
+                        )
+                      })
                     })
                     .catch((err) => {
-                      alert.alertWithType('error', '错误', err.message)
-                    })
-                    .finally(() => {
-                      aIndicator.hide('INIT_TAB')
+                      alert.closeAction(undefined, () => {
+                        alert.alertWithType('error', '错误', err.message)
+                      })
                     })
                 }
               },
@@ -263,7 +276,7 @@ export default function HomeTabs(props: ScreenProps) {
           onPress={() => {
             sheetRef.current?.present()
           }}>
-          <PlusIcon color={styles.btn_primary__text.color} size={22} />
+          <PlusIcon color={styles.btn_primary__text.color} size={24} />
         </Pressable>
       </View>
       <AddTabPanelSheet
