@@ -59,6 +59,7 @@ import Conversation from './Conversation'
 import ReplyRow from './ReplyRow'
 import TopicInfo from './TopicInfo'
 import TopicReplyForm from './TopicReplyForm'
+import Pager from './Pager'
 import { TopicDetail, TopicReply } from '@/types/v2ex'
 
 const REPLY_PAGE_SIZE = 100
@@ -182,7 +183,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const [conversationContext, setConversationContext] = useState(null)
   const { data: settings } = useAppSettings()
 
-  const listRef = useRef()
+  const listRef = useRef<FlashList<TopicReply>>()
   const replyModalRef = useRef<BottomSheetModal>()
   const conversationModalRef = useRef<BottomSheetModal>()
   const { composeAuthedNavigation } = useAuthService()
@@ -207,6 +208,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       revalidateOnReconnect: false,
     },
   )
+
+  const topic = topicSwr.data || (brief as TopicDetail)
+  const isFallback = topic === brief
+
   const listSwr = useSWRInfinite(
     useCallback(
       (index): [string, number, number] => {
@@ -216,18 +221,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     ),
     ([_, id, page]) => v2exClient.getTopicReplies({ id, p: page }),
     {
+      initialSize: Math.max(1, Math.ceil((topic?.replies || 0) / 100)),
       revalidateOnMount: true,
       revalidateOnFocus: false,
       onSuccess: (data) => {
         const topic = data[data.length - 1]?.meta?.topic
         if (topic) {
-          topicSwr.mutate(
-            (prev) =>
-              deepmerge(prev, topic, {
-                arrayMerge: (a, b) => b,
-              }),
-            false,
-          )
+          topicSwr.mutate(topic, false)
           touchViewed(topic)
         }
       },
@@ -247,9 +247,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     }, [])
     return items
   }, [listSwr])
-
-  const topic = topicSwr.data || (brief as TopicDetail)
-  const isFallback = topic === brief
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -576,15 +573,47 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
       {(!!topic.replies || !!topic.clicks) && (
         <View
-          className={classNames('px-3 py-2 flex flex-row')}
+          className={classNames(
+            'px-3 py-2 flex flex-row justify-between items-center',
+          )}
           style={[styles.layer1, styles.border_b]}>
-          <Text className="text-xs pr-2" style={styles.text_desc}>
-            {topic.replies} 条回复
-          </Text>
-          {topic.clicks && (
-            <Text className="text-xs" style={styles.text_meta}>
-              {topic.clicks} 次点击
+          <View className="flex flex-row">
+            <Text className="text-xs pr-2" style={styles.text_desc}>
+              {topic.replies} 条回复
             </Text>
+            {topic.clicks && (
+              <Text className="text-xs" style={styles.text_meta}>
+                {topic.clicks} 次点击
+              </Text>
+            )}
+          </View>
+
+          {listSwr.data?.length && !listSwr.isValidating && (
+            <Pager
+              className="self-end"
+              max={Math.ceil(topic.replies / 100)}
+              onSelect={async (val) => {
+                if (val === Infinity) {
+                  const maxPage = Math.ceil(topic.replies / 100)
+                  console.log(listSwr.size, maxPage)
+                  if (maxPage > listSwr.size) {
+                    try {
+                      aIndicator.show(`TOPIC_TO_BOTTOM:${topic.id}`)
+                      await listSwr.setSize(maxPage)
+                    } finally {
+                      aIndicator.hide(`TOPIC_TO_BOTTOM:${topic.id}`)
+                    }
+                  }
+                  setTimeout(() => {
+                    listRef.current.scrollToIndex({
+                      index: topic.replies - 1,
+                      animated: true,
+                    })
+                  })
+                } else {
+                }
+              }}
+            />
           )}
         </View>
       )}
@@ -608,7 +637,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         ListFooterComponent={
           <CommonListFooter data={listSwr} emptyMessage="目前尚无回复" />
         }
-        estimatedItemSize={117}
+        estimatedItemSize={140}
         onEndReachedThreshold={0.4}
         onEndReached={handleReachEnd}
         onRefresh={() => {

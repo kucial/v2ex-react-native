@@ -156,7 +156,6 @@ export function nodeDetailFromPage($: CheerioAPI, name: string) {
 }
 
 export function getMarkdown(html: string) {
-  console.log(html);
   return html
     .replace(/<br><br>/g, '\n\n')
     .replace(/(```\w+)<br>/g, `$1\n`)
