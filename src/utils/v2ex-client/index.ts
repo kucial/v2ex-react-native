@@ -340,8 +340,8 @@ export async function unblockTopic(
       blocked: !success,
     }
   }
-
 }
+
 export async function reportTopic(
   { id, once = ONCP }: { id: TopicId, once?: string }
 ): Promise<StatusResponse<Pick<TopicDetail, 'reported'>>> {
@@ -360,6 +360,32 @@ export async function reportTopic(
     data: {
       reported,
     }
+  }
+}
+
+export async function appendTopic({
+  id,
+  once = ONCP,
+  content
+}: { id: number, once?: string, content: string }): Promise<StatusResponse<TopicDetail>> {
+  let postOnce = once;
+  if (postOnce === ONCP) {
+    const onceRes = await fetchOnce();
+    postOnce = onceRes.data
+  }
+  const { data: html } = await request({
+    url: `/append/topic/${id}`,
+    method: 'POST',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+    },
+    data: stringify({ content, once: postOnce })
+  })
+  const $ = load(html);
+  return {
+    success: true,
+    message: '附言成功',
+    data: topicDetailFromPage($, id),
   }
 }
 

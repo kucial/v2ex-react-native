@@ -78,6 +78,7 @@ export function topicDetailFromPage($: CheerioAPI, id: string | number) {
     subtles,
     collected: !!$('a.op[href^="/unfavorite"]').length,
     thanked: !!$('#topic_thank .topic_thanked').length,
+    canAppend: !!$('a[href^="/append/topic"]').length,
     blocked: $('a.tb').map((i, el) => $(el).text()).get().some((val) => val === '取消忽略'),
   }
 }

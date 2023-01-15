@@ -49,20 +49,17 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { useAppSettings } from '@/containers/AppSettingsService'
 
 import { isLoading, isRefreshing, shouldLoadMore } from '@/utils/swr'
 import * as v2exClient from '@/utils/v2ex-client'
 import { setJSON } from '@/utils/storage'
 
-import Converation from './Conversation'
+import Conversation from './Conversation'
 import ReplyRow from './ReplyRow'
 import TopicInfo from './TopicInfo'
 import TopicReplyForm from './TopicReplyForm'
 import { TopicDetail, TopicReply } from '@/types/v2ex'
-
-type ReplyContext = {
-  target?: TopicReply
-}
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
@@ -166,6 +163,11 @@ const getRelatedReplies = (pivot: TopicReply, replyList: TopicReply[]) => {
   return list
 }
 
+type ReplyContext = {
+  type: 'reply' | 'append'
+  target?: TopicReply
+}
+
 type TopicScreenProps = NativeStackScreenProps<AppStackParamList, 'topic'>
 
 function TopicScreen({ navigation, route }: TopicScreenProps) {
@@ -178,6 +180,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const { touchViewed } = useViewedTopics()
 
   const [conversationContext, setConversationContext] = useState(null)
+  const { data: settings } = useAppSettings()
 
   const listRef = useRef()
   const replyModalRef = useRef<BottomSheetModal>()
@@ -372,17 +375,17 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     }
   }, [topic?.title])
 
-  const [replyContext, setReplyContext] = useState(null)
+  const [replyContext, setReplyContext] = useState<ReplyContext>(null)
   const initReply = useCallback(
     (reply = null) => {
-      setReplyContext({ target: reply })
+      setReplyContext({ target: reply, type: 'reply' })
       replyModalRef.current?.present()
     },
     [id],
   )
   const getReplyFormCacheKey = useCallback(
     (context: ReplyContext) => {
-      return `$app$/topic-reply:${id}/${context.target?.id || 'root'}`
+      return `$app$/topic-${context.type}:${id}/${context.target?.id || 'root'}`
     },
     [id, replyContext],
   )
@@ -420,35 +423,52 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   )
 
   const handleSubmitReply = useCallback(
-    async (values) => {
+    async (values: { content: string }) => {
       replyModalRef.current?.dismiss()
       setReplyContext(null)
       const KEY = `topic-reply:${id}`
       aIndicator.show(KEY)
       try {
-        try {
-          const { data: reply } = await v2exClient.postReply({
-            id,
-            content: values.content,
-          })
-          const p = getPageNum(reply.num)
-          listSwr.mutate(
-            (currentData) => {
-              const pageData = currentData[p - 1]
-              if (pageData?.data.length === 100 || !pageData) {
-                listSwr.setSize(p)
-              } else {
-                pageData.data.push(reply)
-              }
-              return currentData
-            },
-            // , false
-          )
-          const cacheKey = getReplyFormCacheKey(replyContext)
-          setJSON(cacheKey, undefined)
-          alert.alertWithType('success', '', '回复成功')
-        } catch (err) {
-          alert.alertWithType('error', '', err.message)
+        switch (replyContext.type) {
+          case 'reply':
+            try {
+              const { data: reply } = await v2exClient.postReply({
+                id,
+                content: values.content,
+              })
+              const p = getPageNum(reply.num)
+              listSwr.mutate(
+                (currentData) => {
+                  const pageData = currentData[p - 1]
+                  if (pageData?.data.length === 100 || !pageData) {
+                    listSwr.setSize(p)
+                  } else {
+                    pageData.data.push(reply)
+                  }
+                  return currentData
+                },
+                // , false
+              )
+              const cacheKey = getReplyFormCacheKey(replyContext)
+              setJSON(cacheKey, undefined)
+              alert.alertWithType('success', '成功', '回复成功')
+            } catch (err) {
+              alert.alertWithType('error', '错误', err.message)
+            }
+            break
+          case 'append':
+            try {
+              const { data: topic } = await v2exClient.appendTopic({
+                id,
+                content: values.content,
+              })
+              topicSwr.mutate(topic, false)
+              const cacheKey = getReplyFormCacheKey(replyContext)
+              setJSON(cacheKey, undefined)
+              alert.alertWithType('success', '成功', '附言成功')
+            } catch (err) {
+              alert.alertWithType('error', '错误', err.message)
+            }
         }
       } finally {
         aIndicator.hide(KEY)
@@ -475,6 +495,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         return (
           <ReplyRow
             style={styles.layer1}
+            showAvatar={settings.feedShowAvatar}
             navigation={navigation}
             data={item}
             onReply={initReply}
@@ -536,7 +557,23 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             <BlockText lines={[5, 10]} />
           </View>
         )}
+        {topic.canAppend && (
+          <View className="flex flex-row justify-end relative bottom-[-6px]">
+            <Pressable
+              className="px-3 h-[36px] rounded items-center justify-center active:opacity-60"
+              style={styles.layer2}
+              onPress={() => {
+                setReplyContext({
+                  type: 'append',
+                })
+                replyModalRef.current?.present()
+              }}>
+              <Text style={styles.text}>附言</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
+
       {(!!topic.replies || !!topic.clicks) && (
         <View
           className={classNames('px-3 py-2 flex flex-row')}
@@ -753,7 +790,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         }}>
         {conversationContext && (
           <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
-            <Converation
+            <Conversation
+              showAvatar={settings.feedShowAvatar}
               navigation={navigation}
               data={conversation}
               pivot={conversationContext}

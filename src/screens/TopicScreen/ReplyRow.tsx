@@ -34,11 +34,12 @@ type ReplyRowProps = {
   onReply(data: TopicReply): void
   onShowConversation?: (data: TopicReply) => void
   onThank(data: TopicReply): void
+  showAvatar?: boolean
 }
 
 function ReplyRow(props: ReplyRowProps) {
   const { width } = useWindowDimensions()
-  const { navigation } = props
+  const { navigation, showAvatar = true } = props
   const { data, isPivot } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
@@ -49,21 +50,23 @@ function ReplyRow(props: ReplyRowProps) {
 
   if (!data) {
     return (
-      <View style={[styles.layer1, styles.border_b]}>
-        <View className="flex-1 py-2 pl-1">
-          <View className="flex flex-row mb-2">
-            <View className="flex flex-row items-center flex-1 pl-1 ">
-              <Box className="w-[24px] h-[24px] rounded" />
-              <View className="ml-2">
-                <InlineText className="text-xs" width={120}></InlineText>
+      <View className="py-2" style={[styles.layer1, styles.border_b]}>
+        <View className="flex flex-row pl-2">
+          {showAvatar && <Box className="w-[24px] h-[24px] rounded mr-2" />}
+          <View className="ml-1">
+            <View className="flex flex-row">
+              <View className="flex flex-row items-center flex-1">
+                <View className="">
+                  <InlineText className="text-xs" width={120}></InlineText>
+                </View>
+              </View>
+              <View className="pr-2 space-x-2 justify-center">
+                <InlineText className="text-xs" width={24}></InlineText>
               </View>
             </View>
-            <View className="pr-2 space-x-2 justify-center">
-              <InlineText className="text-xs" width={24}></InlineText>
+            <View className="pr-2">
+              <BlockText lines={[2, 4]} />
             </View>
-          </View>
-          <View className="pl-[34px] pr-4">
-            <BlockText lines={[2, 4]} />
           </View>
         </View>
       </View>
@@ -76,23 +79,28 @@ function ReplyRow(props: ReplyRowProps) {
       className={classNames('pt-2', isPivot && 'bg-yellow-700/5')}
       style={[styles.border_b, styles.border_light, props.style]}>
       <View className="flex flex-row pl-2">
-        <View className="mr-2">
-          <Pressable
-            hitSlop={3}
-            onPress={() => {
-              navigation.push('member', {
-                username: member.username,
-              })
-            }}>
-            <FastImage
-              source={{
-                uri: member.avatar_normal,
-                priority: FastImage.priority.low,
-              }}
-              className="w-[24px] h-[24px] rounded"
-            />
-          </Pressable>
-        </View>
+        {showAvatar ? (
+          <View className="mr-2">
+            <Pressable
+              hitSlop={3}
+              onPress={() => {
+                navigation.push('member', {
+                  username: member.username,
+                })
+              }}>
+              <FastImage
+                source={{
+                  uri: member.avatar_normal,
+                  priority: FastImage.priority.low,
+                }}
+                className="w-[24px] h-[24px] rounded"
+              />
+            </Pressable>
+          </View>
+        ) : (
+          <View className="mr-1"></View>
+        )}
+
         <View className="flex-1">
           <View className="flex flex-row mb-2">
             <View className="flex flex-row items-center flex-1">

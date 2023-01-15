@@ -38,6 +38,7 @@ type TextSelection = {
 type TopicReplyFormProps = {
   cacheKey: string
   context: {
+    type: 'reply' | 'append'
     target?: TopicReply
   }
   onSubmit: (values: { content: string }) => Promise<void>
@@ -177,7 +178,9 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
               Keyboard.dismiss()
               handleSubmit(props.onSubmit)(e)
             }}>
-            <Text style={styles.btn_primary__text}>提交</Text>
+            <Text style={styles.btn_primary__text}>
+              {context.type === 'reply' ? '回复' : '附言'}
+            </Text>
           </Pressable>
         </View>
         <BottomSheetModal

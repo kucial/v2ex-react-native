@@ -95,7 +95,8 @@ export type TopicDetail = TopicBasic & {
   thanked?: boolean,
   blocked?: boolean,
   reported?: boolean,
-  clicks?: number
+  clicks?: number,
+  canAppend?: boolean,
 }
 
 export type ViewedTopic = TopicDetail & {
