@@ -8,6 +8,8 @@ import {
   StarIcon,
   PhotoIcon,
   Bars3Icon,
+  DocumentPlusIcon,
+  EyeIcon,
 } from 'react-native-heroicons/outline'
 import * as StoreReview from 'react-native-store-review'
 import classNames from 'classnames'
@@ -15,6 +17,7 @@ import { CompositeScreenProps } from '@react-navigation/native'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
+import ReplyIcon from '@/components/ReplyIcon'
 import { LineItem, LineItemGroup } from '@/components/LineItem'
 import { Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
@@ -109,60 +112,75 @@ export default function MyScreen({ navigation }: ScreenProps) {
     <ScrollView className="flex flex-col flex-1 py-2">
       <LineItemGroup>{header}</LineItemGroup>
 
-      <LineItemGroup>
-        <LineItem
-          title="创建的主题"
-          icon={<DocumentIcon size={24} color={iconColor} />}
-          disabled={authStatus === 'loading'}
-          onPress={composeAuthedNavigation(() => {
-            navigation.push('created-topics')
-          })}
-        />
-        <LineItem
-          title="收藏的主题"
-          icon={<DocumentIcon size={24} color={iconColor} />}
-          disabled={authStatus === 'loading'}
-          onPress={composeAuthedNavigation(() => {
-            navigation.push('collected-topics')
-          })}
-        />
-        <LineItem
-          title="回复的主题"
-          icon={<DocumentIcon size={24} color={iconColor} />}
-          disabled={authStatus === 'loading'}
-          onPress={composeAuthedNavigation(() => {
-            navigation.push('replied-topics')
-          })}
-        />
-        <LineItem
-          title="浏览的主题"
-          icon={<DocumentIcon size={24} color={iconColor} />}
-          disabled={authStatus === 'loading'}
-          isLast
-          extra={
-            <View className="px-1 py-1 rounded" style={styles.layer2}>
-              <Text className="text-xs" style={styles.text_meta}>
-                本地缓存
-              </Text>
-            </View>
-          }
-          onPress={() => {
-            navigation.push('viewed-topics')
-          }}
-        />
-      </LineItemGroup>
+      <View className="flex flex-wrap flex-row flex-1 mx-2 my-1">
+        <View className="basis-1/2 px-2 my-2">
+          <LineItem
+            title="创建的主题"
+            isLast
+            className="overflow-hidden rounded-lg shadow-xs"
+            icon={<DocumentPlusIcon size={22} color={iconColor} />}
+            disabled={authStatus === 'loading'}
+            onPress={composeAuthedNavigation(() => {
+              navigation.push('created-topics')
+            })}
+          />
+        </View>
+        <View className="basis-1/2 px-2 my-2">
+          <LineItem
+            title="收藏的主题"
+            isLast
+            className="overflow-hidden rounded-lg shadow-xs"
+            icon={<StarIcon size={22} color={iconColor} />}
+            disabled={authStatus === 'loading'}
+            onPress={composeAuthedNavigation(() => {
+              navigation.push('collected-topics')
+            })}
+          />
+        </View>
+        <View className="basis-1/2 px-2 my-2">
+          <LineItem
+            title="回复的主题"
+            isLast
+            className="overflow-hidden rounded-lg shadow-xs"
+            icon={<ReplyIcon size={22} color={iconColor} />}
+            disabled={authStatus === 'loading'}
+            onPress={composeAuthedNavigation(() => {
+              navigation.push('replied-topics')
+            })}
+          />
+        </View>
+        <View className="basis-1/2 px-2 my-2">
+          <LineItem
+            title="浏览的主题"
+            isLast
+            className="overflow-hidden rounded-lg shadow-xs"
+            icon={<EyeIcon size={22} color={iconColor} />}
+            disabled={authStatus === 'loading'}
+            // extra={
+            //   <View className="rounded" style={styles.layer2}>
+            //     <Text className="text-xs" style={styles.text_meta}>
+            //       缓存
+            //     </Text>
+            //   </View>
+            // }
+            onPress={() => {
+              navigation.push('viewed-topics')
+            }}
+          />
+        </View>
+      </View>
 
       <LineItemGroup>
         <LineItem
-          title="主题标签"
-          icon={<Bars3Icon size={24} color={iconColor} />}
+          title="主题标签设置"
+          icon={<Bars3Icon size={22} color={iconColor} />}
           onPress={() => {
             navigation.push('home-tab-settings')
           }}
         />
         <LineItem
           title="偏好设置"
-          icon={<Cog6ToothIcon size={24} color={iconColor} />}
+          icon={<Cog6ToothIcon size={22} color={iconColor} />}
           onPress={() => {
             navigation.push('preference-settings')
           }}
@@ -172,7 +190,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
           onPress={() => {
             navigation.push('imgur-settings')
           }}
-          icon={<PhotoIcon size={24} color={iconColor} />}
+          icon={<PhotoIcon size={22} color={iconColor} />}
           isLast
         />
       </LineItemGroup>
@@ -182,14 +200,14 @@ export default function MyScreen({ navigation }: ScreenProps) {
           onPress={() => {
             navigation.push('about')
           }}
-          icon={<InformationCircleIcon size={24} color={iconColor} />}
+          icon={<InformationCircleIcon size={22} color={iconColor} />}
           title="关于"
         />
         <LineItem
           onPress={() => {
             StoreReview.requestReview()
           }}
-          icon={<StarIcon size={24} color={iconColor} />}
+          icon={<StarIcon size={22} color={iconColor} />}
           title="五星好评"
           isLast
         />

@@ -7,11 +7,11 @@ export default function ReplyIcon({ size = 24, color }: IconProps) {
       viewBox={`0 0 24 24`}
       width={size}
       height={size}
-      stroke={color}
-      stroke-width="2">
+      stroke={color}>
       <Path
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
         d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
       />
     </Svg>
