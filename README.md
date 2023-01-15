@@ -107,7 +107,3 @@ React Native + Tailwindcss + SWR
 ## ENV 参数
 
 - 本地开发，依赖 `module:react-native-dotenv` + `.env` 来进行设置。 修改 `.env` 后需要注意清理缓存： `expo start -c --dev-client`
-
-## 关于“当前登录用户”
-
-用户登录状态实际从 webview 中获得。登录用户操作的行为都会通过 `webview.injectJavaScript` 来执行。

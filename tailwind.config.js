@@ -9,9 +9,7 @@ module.exports = {
           950: '#101010',
         },
       },
-      borderWidth: {
-        // DEFAULT: hairlineWidth(),
-      },
+      borderWidth: {},
     },
   },
   plugins: [],

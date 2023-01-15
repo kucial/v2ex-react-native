@@ -4,7 +4,7 @@ import { NODE_ENV } from '@env'
 if (NODE_ENV === 'development') {
   const whyDidYouRender = require('@welldone-software/why-did-you-render')
   whyDidYouRender(React, {
-    trackAllPureComponents: false
+    trackAllPureComponents: false,
   })
   console.log('whyDidYouRender loaded')
 }

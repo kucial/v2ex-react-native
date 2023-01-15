@@ -16,22 +16,22 @@
   // 	"description": "Log output to console"
   // }
   "Alert Success": {
-    "scope": "javascript,typescript",
+    "scope": "javascript,typescript,typescriptreact",
     "prefix": "als",
     "body": ["alert.alertWithType('success', '成功', '$1')"]
   },
   "Alert Error": {
-    "scope": "javascript,typescript",
+    "scope": "javascript,typescript,typescriptreact",
     "prefix": "ale",
     "body": ["alert.alertWithType('error', '错误', $1)"]
   },
   "Use ActivityIndicator": {
-    "scope": "javascript,typescript",
+    "scope": "javascript,typescript,typescriptreact",
     "prefix": "uindicator",
     "body": ["const aIndicator = useActivityIndicator()"]
   },
   "Fetcher Script Template": {
-    "scope": "javascript,typescript",
+    "scope": "javascript,typescript,typescriptreact",
     "prefix": "fscript",
     "body": [
       "`(function() {",
