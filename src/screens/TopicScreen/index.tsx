@@ -588,8 +588,9 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             )}
           </View>
 
-          {listSwr.data?.length && !listSwr.isValidating && (
+          {listSwr.data?.length && (
             <Pager
+              disabled={listSwr.isValidating}
               className="self-end"
               max={Math.ceil(topic.replies / 100)}
               onSelect={async (val) => {

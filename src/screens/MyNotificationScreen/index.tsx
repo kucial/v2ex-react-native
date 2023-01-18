@@ -16,6 +16,7 @@ export default function NotificationScreen() {
     return ['/page/notifications.json', index + 1]
   }, [])
   const listSwr = useSWRInfinite(getKey, fetcher, {
+    revalidateOnMount: true,
     onSuccess: () => {
       updateMeta({
         unread_count: 0,

@@ -1,5 +1,27 @@
 # 项目开发笔记
 
+## 本地构建错误
+
+### sentry API 设置
+
+如果出现以下情况
+
+```
+› Executing R2V » Upload Debug Symbols to Sentry
+
+❌  error: API request failed
+```
+
+请在 `ios/.xcode.env.local` 中添加 sentry 相关设置
+
+```bash
+export SENTRY_AUTH_TOKEN="xxxx"
+export SENTRY_URL="https://your-sentry-host"
+export SENTRY_ORG="YOUR_SENTRY_ORG",
+export SENTRY_PROJECT="v2ex-react-native",
+export SENTRY_DSN="YOUR_SENTRY_PROJECT_DSN"
+```
+
 ## `v2ex-client`
 
 应用内对于 v2ex 网站内容的请求，大部分通过 `v2ex-client` 实现。

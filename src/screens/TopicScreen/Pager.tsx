@@ -1,6 +1,6 @@
 import { styled } from 'nativewind'
-import Svg, { Path, Line } from 'react-native-svg'
-import { Pressable, View, ViewStyle, Text } from 'react-native'
+import Svg, { Path } from 'react-native-svg'
+import { Pressable, View, ViewStyle } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -19,6 +19,7 @@ type PagerProps = {
   current?: number
   onSelect(page: number): void
   style?: ViewStyle
+  disabled?: boolean
 }
 
 const Pager = styled((props: PagerProps) => {
@@ -26,6 +27,7 @@ const Pager = styled((props: PagerProps) => {
   return (
     <View className="flex" style={props.style}>
       <Pressable
+        disabled={props.disabled}
         hitSlop={6}
         className="w-6 h-6 items-center justify-center rounded active:opacity-60"
         style={styles.layer2}
