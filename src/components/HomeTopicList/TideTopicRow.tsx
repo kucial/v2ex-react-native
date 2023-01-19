@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import FixedPressable from '@/components/FixedPressable'
+import TriangleCorner from '@/components/TriangleCorner'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 
@@ -45,7 +46,6 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
   }
 
   const { node, member, title, replies } = props.data
-
   return (
     <FixedPressable
       sentry-label="TideTopicRow"
@@ -80,7 +80,7 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
       <View
         className={classNames(
           'flex-1 pt-1 pb-2',
-          props.viewed && 'opacity-70',
+          props.viewedStatus === 'viewed' && 'opacity-70',
         )}>
         <Text className="text-[16px] leading-[22px]" style={styles.text}>
           {title}
@@ -145,6 +145,18 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
           </View>
         )}
       </View>
+      {props.viewedStatus === 'has_update' && (
+        <TriangleCorner
+          corner="top-right"
+          size={12}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            opacity: 0.9,
+          }}
+        />
+      )}
     </FixedPressable>
   )
 }

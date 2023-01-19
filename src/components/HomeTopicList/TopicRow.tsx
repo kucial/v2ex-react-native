@@ -5,6 +5,8 @@ import classNames from 'classnames'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import FixedPressable from '@/components/FixedPressable'
+import TriangleCorner from '@/components/TriangleCorner'
+
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 
@@ -85,7 +87,11 @@ export default function TopicRow(props: HomeFeedRowProps) {
         <View className="pl-3"></View>
       )}
 
-      <View className={classNames('flex-1 py-2', props.viewed && 'opacity-70')}>
+      <View
+        className={classNames(
+          'flex-1 py-2',
+          props.viewedStatus === 'viewed' && 'opacity-70',
+        )}>
         <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
           <View>
             <FixedPressable
@@ -158,12 +164,26 @@ export default function TopicRow(props: HomeFeedRowProps) {
         </View>
       </View>
       <View className="w-[80px] flex flex-row justify-end pr-4">
-        {!!replies && (
-          <View className="rounded-full text-xs px-2" style={styles.tag__bg}>
-            <Text style={styles.tag__text}>{replies}</Text>
-          </View>
-        )}
+        <View className="relative">
+          {!!replies && (
+            <View className="rounded-full text-xs px-2" style={styles.tag__bg}>
+              <Text style={styles.tag__text}>{replies}</Text>
+            </View>
+          )}
+        </View>
       </View>
+      {props.viewedStatus === 'has_update' && (
+        <TriangleCorner
+          corner="top-right"
+          size={14}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            opacity: 0.9,
+          }}
+        />
+      )}
     </FixedPressable>
   )
 }

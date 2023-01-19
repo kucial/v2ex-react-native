@@ -10,6 +10,7 @@ const CACHE_KEY = '$app$/settings'
 const DEFAULT_SETTINGS: AppSettings = {
   homeTabs: undefined, // Array<TabDesc>
   showHasViewed: true,
+  showHasNewReply: true,
 
   theme: 'auto', // 'light' | 'dark' | 'auto'
   // themeColor: '', // 主题强调色

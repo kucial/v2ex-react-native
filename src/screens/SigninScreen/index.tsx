@@ -226,7 +226,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     if (isSubmitting) {
       return
     }
-    // setIsSubmitting(true)
+    setIsSubmitting(true)
     const submitFormScript = getSubmitScripts(data)
     scriptsToInject.current.unshift(checkSubmitStatus)
     webviewRef.current.injectJavaScript(submitFormScript)

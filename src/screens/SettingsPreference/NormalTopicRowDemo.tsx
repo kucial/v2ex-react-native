@@ -2,12 +2,14 @@ import { Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 
+import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
+import { DemoRowProps } from './types'
 
-const NormalTopicRowDemo = (props) => {
+const NormalTopicRowDemo = (props: DemoRowProps) => {
   const { node, member, title, replies, last_reply_time, last_reply_by } =
     props.data
-  const { showAvatar, showLastReplyMember } = props
+  const { showAvatar, showLastReplyMember, viewedStatus } = props
   const { styles } = useTheme()
   return (
     <View
@@ -25,7 +27,11 @@ const NormalTopicRowDemo = (props) => {
       ) : (
         <View className="pl-3"></View>
       )}
-      <View className={classNames('flex-1 py-2')}>
+      <View
+        className={classNames(
+          'flex-1 py-2',
+          viewedStatus === 'viewed' && 'opacity-70',
+        )}>
         <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
           <View>
             <View
@@ -80,6 +86,18 @@ const NormalTopicRowDemo = (props) => {
           </View>
         )}
       </View>
+      {viewedStatus === 'has_update' && (
+        <TriangleCorner
+          corner="top-right"
+          size={14}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            opacity: 0.9,
+          }}
+        />
+      )}
     </View>
   )
 }

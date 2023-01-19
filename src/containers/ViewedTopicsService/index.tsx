@@ -35,6 +35,9 @@ const mappedToV2 = (list: ViewedTopic[]): ViewedTopicState => {
 
 interface ViewedTopicsService {
   hasViewed: (id: string | number) => boolean
+  getViewedStatus(
+    topic: Pick<TopicDetail, 'id' | 'replies'>,
+  ): 'viewed' | 'has_update' | undefined
   getItems: () => TopicDetail[]
   clear: () => void
   touchViewed: (item: TopicDetail) => void
@@ -58,13 +61,30 @@ export default function ViewedTopicsService(props) {
     },
   )
   const {
-    data: { showHasViewed },
+    data: { showHasViewed, showHasNewReply },
   } = useAppSettings()
 
   const service: ViewedTopicsService = useMemo(() => {
     return {
       getItems: () => state.ids.map((id) => state.data[id]),
       hasViewed: (id) => showHasViewed && !!state.data[id],
+      getViewedStatus: (params) => {
+        if (!showHasViewed || !params) {
+          return undefined
+        }
+        if (!showHasNewReply) {
+          return state.data[params.id] ? 'viewed' : undefined
+        }
+        if (!state.data[params.id]) {
+          return undefined
+        }
+        if (state.data[params.id].replies < params.replies) {
+          return 'has_update'
+        }
+        if (state.data[params.id].replies === params.replies) {
+          return 'viewed'
+        }
+      },
       clear: () => setState(INIT_STATE),
       touchViewed: (topic) => {
         setState((prev) => {

@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import FixedPressable from '@/components/FixedPressable'
+import TriangleCorner from '@/components/TriangleCorner'
 import {
   BlockText,
   Box,
@@ -82,7 +83,11 @@ function NodeTopicRow(props: NodeFeedRowProps) {
         <View className="pl-3"></View>
       )}
 
-      <View className={classNames('flex-1 py-2', props.viewed && 'opacity-70')}>
+      <View
+        className={classNames(
+          'flex-1 py-2',
+          props.viewedStatus === 'viewed' && 'opacity-70',
+        )}>
         <Text className="text-base" style={styles.text}>
           {data.title}
         </Text>
@@ -120,6 +125,19 @@ function NodeTopicRow(props: NodeFeedRowProps) {
           </View>
         )}
       </View>
+
+      {props.viewedStatus === 'has_update' && (
+        <TriangleCorner
+          corner="top-right"
+          size={14}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            opacity: 0.9,
+          }}
+        />
+      )}
     </FixedPressable>
   )
 }

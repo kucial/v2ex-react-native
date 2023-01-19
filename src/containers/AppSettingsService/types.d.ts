@@ -4,6 +4,7 @@ import { HomeTabOption } from '@/types/v2ex'
 type AppSettings = {
   homeTabs?: HomeTabOption[],
   showHasViewed: boolean,
+  showHasNewReply: boolean,
   colorScheme?: 'light' | 'dark' | 'auto',
   // @deprecate theme
   theme: 'light' | 'dark' | 'auto',

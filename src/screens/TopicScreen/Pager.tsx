@@ -35,7 +35,7 @@ const Pager = styled((props: PagerProps) => {
           props.onSelect(Infinity)
         }}>
         {/* <Text style={styles.text_desc}>B</Text> */}
-        <ToBottomIcon size={16} color={styles.text_desc.color} />
+        <ToBottomIcon size={16} color={styles.text_meta.color} />
       </Pressable>
     </View>
   )

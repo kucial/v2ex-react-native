@@ -1,14 +1,16 @@
-import { Pressable, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
+import TriangleCorner from '@/components/TriangleCorner'
+import { DemoRowProps } from './types'
 
-const TideTopicRowDemo = (props) => {
+const TideTopicRowDemo = (props: DemoRowProps) => {
   const { styles } = useTheme()
   const { node, member, title, replies, last_reply_time, last_reply_by } =
     props.data
-  const { showAvatar, showLastReplyMember } = props
+  const { showAvatar, showLastReplyMember, viewedStatus } = props
   return (
     <View
       className={classNames('flex flex-row items-center')}
@@ -26,7 +28,11 @@ const TideTopicRowDemo = (props) => {
         <View className="pl-3"></View>
       )}
 
-      <View className={classNames('flex-1 pt-1 pb-2')}>
+      <View
+        className={classNames(
+          'flex-1 pt-1 pb-2',
+          viewedStatus === 'viewed' && 'opacity-70',
+        )}>
         <View>
           <Text className="text-base leading-[22px]" style={styles.text}>
             {title}
@@ -71,6 +77,18 @@ const TideTopicRowDemo = (props) => {
           </Text>
         </View>
       </View>
+      {viewedStatus === 'has_update' && (
+        <TriangleCorner
+          corner="top-right"
+          size={12}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            opacity: 0.9,
+          }}
+        />
+      )}
     </View>
   )
 }

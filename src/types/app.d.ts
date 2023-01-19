@@ -5,7 +5,7 @@ declare global {
     data?: T,
     showAvatar: boolean,
     showLastReplyMember: boolean,
-    viewed: boolean,
+    viewedStatus?: 'viewed' | 'has_update' | undefined,
   }
   type HomeFeedRowProps = FeedRowProps<HomeTopicFeed>
   type NodeFeedRowProps = FeedRowProps<NodeTopicFeed>

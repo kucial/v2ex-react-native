@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Switch } from 'react-native'
 import classNames from 'classnames'
@@ -10,6 +10,7 @@ import { useTheme } from '@/containers/ThemeService'
 import { topic } from './mock'
 import NormalTopicRowDemo from './NormalTopicRowDemo'
 import TideTopicRowDemo from './TideTopicRowDemo'
+import { DemoRowProps } from './types'
 
 const styleLabels = {
   normal: '默认',
@@ -30,6 +31,8 @@ type ScreenProps = NativeStackScreenProps<
 export default function PreferenceSettings({ navigation }: ScreenProps) {
   const { data, update } = useAppSettings()
   const [state, setState] = useState(data)
+  const [viewedStatus, setViewedStatus] =
+    useState<DemoRowProps['viewedStatus']>(undefined)
   const { styles } = useTheme()
 
   useEffect(() => {
@@ -40,6 +43,13 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
     })
     return unsubscribe
   }, [navigation, data, state])
+
+  const timerRef = useRef(null)
+  useEffect(() => {
+    return () => {
+      clearTimeout(timerRef.current)
+    }
+  }, [])
 
   return (
     <View className="flex-1" style={styles.layer1}>
@@ -56,6 +66,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               data={topic}
               showAvatar={state.feedShowAvatar}
               showLastReplyMember={state.feedShowLastReplyMember}
+              viewedStatus={viewedStatus}
             />
           )}
           {state.feedLayout === 'tide' && (
@@ -63,6 +74,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               data={topic}
               showAvatar={state.feedShowAvatar}
               showLastReplyMember={state.feedShowLastReplyMember}
+              viewedStatus={viewedStatus}
             />
           )}
         </View>
@@ -148,12 +160,52 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
             <View className="mr-2 px-2">
               <Switch
                 value={state.showHasViewed}
-                onValueChange={(val) =>
+                onValueChange={(val) => {
                   setState((prev) => ({
                     ...prev,
                     showHasViewed: val,
                   }))
-                }
+                  clearTimeout(timerRef.current)
+                  if (val) {
+                    setViewedStatus('viewed')
+                    timerRef.current = setTimeout(() => {
+                      setViewedStatus(undefined)
+                    }, 2000)
+                  } else {
+                    setViewedStatus(undefined)
+                  }
+                }}
+              />
+            </View>
+          </View>
+        </View>
+        <View className={classNames('pl-4')} style={styles.layer1}>
+          <View
+            className={classNames('min-h-[52px] flex flex-row items-center')}
+            style={styles.border_b}>
+            <View className="flex-1">
+              <Text className="text-base" style={styles.text}>
+                帖子新回复提示
+              </Text>
+            </View>
+            <View className="mr-2 px-2">
+              <Switch
+                value={state.showHasNewReply}
+                onValueChange={(val) => {
+                  setState((prev) => ({
+                    ...prev,
+                    showHasNewReply: val,
+                  }))
+                  clearTimeout(timerRef.current)
+                  if (val) {
+                    setViewedStatus('has_update')
+                    timerRef.current = setTimeout(() => {
+                      setViewedStatus(undefined)
+                    }, 2000)
+                  } else {
+                    setViewedStatus(undefined)
+                  }
+                }}
               />
             </View>
           </View>

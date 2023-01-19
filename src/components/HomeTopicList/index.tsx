@@ -35,7 +35,7 @@ function FeedTopicList(props: FeedTopicListProps) {
   const listViewRef = useRef<FlashList<HomeTopicFeed>>()
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
-  const { hasViewed } = useViewedTopics()
+  const { getViewedStatus } = useViewedTopics()
   const getKey = useCallback(
     (index: number): [string, string, number] => {
       return ['/page/home/feed', tab, index + 1]
@@ -83,14 +83,14 @@ function FeedTopicList(props: FeedTopicListProps) {
         settings.feedLayout === 'tide' ? (
           <TideTopicRow
             data={item}
-            viewed={hasViewed(item?.id)}
+            viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
           />
         ) : (
           <TopicRow
             data={item}
-            viewed={hasViewed(item?.id)}
+            viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
           />
@@ -98,7 +98,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>
         item ? `${item.id}` : `index-${index}`,
     }),
-    [hasViewed, settings],
+    [getViewedStatus, settings],
   )
 
   useEffect(() => {
@@ -110,7 +110,7 @@ function FeedTopicList(props: FeedTopicListProps) {
     }
     if (isFocused) {
       let appState = AppState.currentState
-      let toBackgroundDate
+      let toBackgroundDate: number
       const subscription = AppState.addEventListener(
         'change',
         (nextAppState) => {

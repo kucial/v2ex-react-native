@@ -32,8 +32,8 @@ type NodeTopicListProps = {
 }
 
 export default function NodeTopicList(props: NodeTopicListProps) {
-  const { header, nodeSwr, name, isFocused, currentListRef } = props
-  const { hasViewed } = useViewedTopics()
+  const { header, name, isFocused, currentListRef } = props
+  const { getViewedStatus } = useViewedTopics()
   const alert = useAlertService()
   const { data: settings } = useAppSettings()
   const listViewRef = useRef<FlashList<NodeTopicFeed>>()
@@ -82,14 +82,14 @@ export default function NodeTopicList(props: NodeTopicListProps) {
         return settings.feedLayout === 'tide' ? (
           <TideNodeTopicRow
             data={item}
-            viewed={hasViewed(item?.id)}
+            viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
           />
         ) : (
           <NodeTopicRow
             data={item}
-            viewed={hasViewed(item?.id)}
+            viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
           />
@@ -99,7 +99,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
         return item?.id || `index-${index}`
       },
     }
-  }, [hasViewed, settings])
+  }, [getViewedStatus, settings])
 
   useEffect(() => {
     if (

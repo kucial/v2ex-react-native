@@ -1,4 +1,5 @@
 export const topic = {
+  id: 1,
   member: {
     avatar_normal:
       'https://cdn.v2ex.com/avatar/c4ca/4238/1_xlarge.png?m=1657258945',
