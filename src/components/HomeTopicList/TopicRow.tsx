@@ -175,11 +175,11 @@ export default function TopicRow(props: HomeFeedRowProps) {
       </View>
       {props.viewedStatus === 'has_update' && (
         <TriangleCorner
-          corner="top-right"
-          size={14}
+          corner="top-left"
+          size={10}
           style={{
             position: 'absolute',
-            right: 0,
+            left: 0,
             top: 0,
             opacity: 0.9,
           }}
