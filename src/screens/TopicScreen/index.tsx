@@ -36,7 +36,6 @@ import {
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
-import deepmerge from 'deepmerge'
 import useSWRInfinite from 'swr/infinite'
 import useSWR from 'swr'
 
@@ -59,8 +58,10 @@ import Conversation from './Conversation'
 import ReplyRow from './ReplyRow'
 import TopicInfo from './TopicInfo'
 import TopicReplyForm from './TopicReplyForm'
-import Pager from './Pager'
+import ScrollControl, { ScrollControlProps } from './ScrollControl'
+import { useScrollDirection } from '@/utils/scroll'
 import { TopicDetail, TopicReply } from '@/types/v2ex'
+import { debounce } from 'lodash'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
@@ -514,12 +515,63 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     }
   }, [listSwr, topicSwr])
 
+  const handleNavTo = useCallback((target: number) => {
+    if (target === 0) {
+      listRef.current.scrollToOffset({
+        offset: 0,
+        animated: true,
+      })
+      return
+    }
+    listRef.current.scrollToIndex({
+      index: target - 1,
+      animated: true,
+    })
+  }, [])
+
   const conversation = useMemo(() => {
     if (!conversationContext) {
       return null
     }
     return getRelatedReplies(conversationContext, replyItems)
   }, [conversationContext, replyItems])
+
+  const [scrollControlAction, setScrollControlAction] =
+    useState<ScrollControlProps['action']>('')
+  const directionCallback = useCallback(
+    (direction) => {
+      if (direction === 'down') {
+        setScrollControlAction('to_bottom')
+      } else {
+        setScrollControlAction('to_top')
+      }
+    },
+    [setScrollControlAction],
+  )
+  const { onScroll } = useScrollDirection({
+    callback: directionCallback,
+  })
+
+  const resetScrollControlAction = useCallback(
+    debounce(
+      () => {
+        console.log('....reset...')
+        setScrollControlAction('')
+      },
+      1000,
+      { trailing: true },
+    ),
+    [],
+  )
+  const handleScroll = useCallback((e) => {
+    onScroll(e)
+    resetScrollControlAction()
+  }, [])
+  useEffect(() => {
+    return () => {
+      resetScrollControlAction.cancel()
+    }
+  }, [resetScrollControlAction])
 
   if (!topic) {
     return <TopicSkeleton />
@@ -587,35 +639,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               </Text>
             )}
           </View>
-
-          {listSwr.data?.length && (
-            <Pager
-              disabled={listSwr.isValidating}
-              className="self-end"
-              max={Math.ceil(topic.replies / 100)}
-              onSelect={async (val) => {
-                if (val === Infinity) {
-                  const maxPage = Math.ceil(topic.replies / 100)
-                  console.log(listSwr.size, maxPage)
-                  if (maxPage > listSwr.size) {
-                    try {
-                      aIndicator.show(`TOPIC_TO_BOTTOM:${topic.id}`)
-                      await listSwr.setSize(maxPage)
-                    } finally {
-                      aIndicator.hide(`TOPIC_TO_BOTTOM:${topic.id}`)
-                    }
-                  }
-                  setTimeout(() => {
-                    listRef.current.scrollToIndex({
-                      index: topic.replies - 1,
-                      animated: true,
-                    })
-                  })
-                } else {
-                }
-              }}
-            />
-          )}
         </View>
       )}
 
@@ -648,6 +671,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           listSwr.mutate()
         }}
         refreshing={isRefreshing(listSwr)}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       />
       <SafeAreaView
         className="u-absolute bottom-0 left-0 w-full"
@@ -666,9 +691,14 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               </Text>
             </Pressable>
           </View>
+          <ScrollControl
+            action={scrollControlAction}
+            max={topic.replies}
+            onNavTo={handleNavTo}
+          />
           <View className="flex flex-row px-1">
             <Pressable
-              className="w-[46px] h-[48px] items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+              className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
               onPress={composeAuthedNavigation(() => {
                 if (topic.collected) {
                   topicSwr.mutate(
@@ -734,7 +764,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               </Text>
             </Pressable>
             <Pressable
-              className="w-[46px] h-[48px] items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+              className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
               onPress={composeAuthedNavigation(() => {
                 if (topic.thanked) {
                   alert.alertWithType('info', '', '已感谢过主题')
@@ -778,7 +808,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               </Text>
             </Pressable>
             <Pressable
-              className="w-[46px] h-[48px] items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+              className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
               disabled={!topicSwr.data}
               onPress={async () => {
                 try {

@@ -1,14 +1,15 @@
 import { useCallback, useState, useEffect } from 'react'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import GoogleSign from './GoogleSign'
 
-type SignInType = 'password' | 'google'
-
-import PasswordSign from './PasswordSign'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 
+import PasswordSign from './PasswordSign'
+import GoogleSign from './GoogleSign'
+
+type SignInType = 'password' | 'google'
 type SigninScreenProps = NativeStackScreenProps<AppStackParamList, 'signin'>
+
 export default function SigninScreen(props: SigninScreenProps) {
   const { navigation } = props
   const [type, setType] = useState<SignInType>('password')
