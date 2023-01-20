@@ -8,6 +8,7 @@ import {
 } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
+import * as Haptics from 'expo-haptics'
 import useSWRInfinite from 'swr/infinite'
 import { SWRResponse } from 'swr'
 
@@ -65,6 +66,9 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       return
     }
     if (listSwr.data) {
+      if (settings.hapticsHint) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+      }
       listSwr.setSize(1)
       const params = {
         offset: scrollY.current > 0 ? 0 : -60,

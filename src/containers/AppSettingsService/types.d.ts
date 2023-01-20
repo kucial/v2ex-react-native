@@ -15,6 +15,8 @@ type AppSettings = {
   feedShowViewedHint: boolean,
   autoRefresh: boolean,
   autoRefreshDuration: number, // minutes
+
+  hapticsHint: boolean,
 }
 
 type AppSettingsService = {
