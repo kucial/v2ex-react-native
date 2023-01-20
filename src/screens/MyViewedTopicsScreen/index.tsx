@@ -1,6 +1,5 @@
 import { useLayoutEffect, useMemo } from 'react'
 import { Pressable, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import {
   EllipsisHorizontalIcon,
   TrashIcon,
@@ -21,8 +20,8 @@ import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import ViewedTopicRow from './ViewedTopicRow'
 import TideViewedTopicRow from './TideViewedTopicRow'
 
-const UnderlayLeft = (props) => {
-  const { close } = useSwipeableItemParams()
+const Actions = (props) => {
+  const params = useSwipeableItemParams()
   const { styles } = useTheme()
   return (
     <View
@@ -34,8 +33,8 @@ const UnderlayLeft = (props) => {
           'active:opacity-70',
         )}
         onPress={() => {
-          close().then(() => {
-            props.onDelete()
+          params.close().then(() => {
+            props.onDelete(params.item)
           })
         }}>
         <TrashIcon color={styles.btn_danger__text.color} />
@@ -70,13 +69,8 @@ export default function ViewedTopicsScreen({ navigation }: ScreenProps) {
             key={item.id}
             swipeEnabled
             snapPointsLeft={[60]}
-            renderUnderlayLeft={() => (
-              <UnderlayLeft
-                onDelete={() => {
-                  removeItem(item)
-                }}
-              />
-            )}>
+            overSwipe={60}
+            renderUnderlayLeft={() => <Actions onDelete={removeItem} />}>
             <View style={styles.layer1}>{inner}</View>
           </SwipeableItem>
         )

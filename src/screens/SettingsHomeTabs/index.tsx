@@ -207,6 +207,7 @@ export default function HomeTabs(props: ScreenProps) {
             item={`${item.type}-${item.value}`}
             swipeEnabled={!isActive}
             snapPointsLeft={[60]}
+            overSwipe={60}
             renderUnderlayLeft={() => (
               <UnderlayLeft
                 onDelete={() => {
