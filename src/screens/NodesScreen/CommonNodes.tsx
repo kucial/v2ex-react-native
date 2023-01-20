@@ -20,7 +20,7 @@ export default function Nodes({ data }: { data: NodeBasic[] }) {
             className={classNames(
               'py-2 px-2 rounded-lg mr-2 mb-2 active:opacity-60',
             )}
-            style={[styles.layer2, styles.border]}
+            style={[styles.layer2]}
             onPress={() => {
               navigation.navigate('node', {
                 name: node.name,

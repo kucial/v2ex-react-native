@@ -24,7 +24,7 @@ export default function CollectedNodes(props: { data: NodeExtra[] }) {
               'flex flex-row items-center',
               'active:opacity-60',
             )}
-            style={[styles.layer2, styles.border]}
+            style={[styles.layer2]}
             onPress={() => {
               navigation.navigate('node', {
                 name: node.name,
