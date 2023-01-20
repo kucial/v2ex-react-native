@@ -123,6 +123,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                     onPress={() => {
                       navigation.push('member', {
                         username: data.last_reply_by,
+                        tab: 'replies',
                       })
                     }}>
                     <Text

@@ -17,7 +17,7 @@ declare global {
     'member': {
       username: string,
       brief?: MemberBasic,
-      tab?: string,
+      tab?: 'topics' | 'replies',
     },
     'about': {},
     'new-topic': {

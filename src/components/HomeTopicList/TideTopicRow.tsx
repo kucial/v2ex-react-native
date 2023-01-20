@@ -125,6 +125,7 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
                   onPress={() => {
                     navigation.push('member', {
                       username: data.last_reply_by,
+                      tab: 'replies',
                     })
                   }}>
                   <Text className="text-xs font-bold" style={styles.text_desc}>

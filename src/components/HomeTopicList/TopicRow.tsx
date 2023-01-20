@@ -149,6 +149,7 @@ export default function TopicRow(props: HomeFeedRowProps) {
                     onPress={() => {
                       navigation.push('member', {
                         username: data.last_reply_by,
+                        tab: 'replies',
                       })
                     }}>
                     <Text
