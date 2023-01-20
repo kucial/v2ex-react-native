@@ -183,6 +183,7 @@ export async function getRecentFeeds(
     url: '/recent',
     params: {
       p,
+      d: Date.now()
     }
   })
   const $ = load(html);
