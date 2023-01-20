@@ -30,6 +30,11 @@
     "prefix": "uindicator",
     "body": ["const aIndicator = useActivityIndicator()"]
   },
+  "Import app component": {
+    "scope": "javascript,typescript,typescriptreact",
+    "prefix": "iac",
+    "body": ["import $1 from '@/components/$1'"]
+  },
   "Fetcher Script Template": {
     "scope": "javascript,typescript,typescriptreact",
     "prefix": "fscript",

@@ -231,7 +231,8 @@ export default function AuthServiceProvider(props) {
   }, [service.fetchCurrentUser, service.user, service.fetchedAt])
 
   useEffect(() => {
-    if (shouldCheck(service.fetchedAt)) {
+    if (!service.user || shouldCheck(service.fetchedAt)) {
+      console.log('....fetchCurrentUser when init...')
       service.fetchCurrentUser()
     }
   }, [])

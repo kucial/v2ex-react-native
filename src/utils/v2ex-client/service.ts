@@ -49,7 +49,7 @@ try {
     })
   )
 }
-}())
+}()); true;
 `
 
 const axiosRequestScript = (id: string, config: AxiosRequestConfig) => {
@@ -111,6 +111,11 @@ const axiosRequestScript = (id: string, config: AxiosRequestConfig) => {
 const customScriptGenerators = {
   ['/_custom_/once'](id: string, config: AxiosRequestConfig) {
     return getRequestScript(id, `
+      const params = ${JSON.stringify(config.params)};
+      if (params.refresh) {
+        delete window.V2EX.once
+        lscache.remove('once')
+      }
       const once = await fetchOnce();
       return {
         data: once,

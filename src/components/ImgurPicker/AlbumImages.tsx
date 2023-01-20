@@ -17,11 +17,8 @@ export default function AlbumView(props) {
     <View className="flex flex-1">
       <SafeAreaView>
         <View
-          className="flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1 border-b"
-          style={{
-            borderColor: theme.colors.border,
-            borderWidth: StyleSheet.hairlineWidth,
-          }}>
+          className="flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1"
+          style={[styles.border_b, styles.border_light]}>
           <View className="w-[56px]">
             <BackButton
               tintColor={theme.colors.text}

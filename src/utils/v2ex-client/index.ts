@@ -110,9 +110,10 @@ export const request = instance.request;
 
 export const manager = service;
 
-export async function fetchOnce(): Promise<StatusResponse<string>> {
+export async function fetchOnce(refresh?: boolean): Promise<StatusResponse<string>> {
   const { data } = await request({
     url: '/_custom_/once',
+    params: { refresh }
   })
   return {
     success: true,
