@@ -69,14 +69,13 @@ function FeedTopicList(props: FeedTopicListProps) {
       if (settings.hapticsHint) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
       }
-      listSwr.setSize(1)
+      listSwr.setSize(1).catch(() => {})
       listViewRef.current.scrollToOffset({
         offset: scrollY.current > 0 ? 0 : -60,
         animated: true,
       })
-    } else {
-      listSwr.mutate().catch(() => {})
     }
+    listSwr.mutate().catch(() => {})
   }, [listSwr])
 
   const { renderItem, keyExtractor } = useMemo(
@@ -175,7 +174,8 @@ function FeedTopicList(props: FeedTopicListProps) {
       refreshing={isRefreshing(listSwr) || false}
       onRefresh={() => {
         if (!listSwr.isValidating) {
-          listSwr.setSize(1)
+          listSwr.setSize(1).catch(() => {})
+          listSwr.mutate()
         }
       }}
       ListFooterComponent={() => {

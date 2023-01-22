@@ -69,15 +69,14 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       if (settings.hapticsHint) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
       }
-      listSwr.setSize(1)
+      listSwr.setSize(1).catch(() => {})
       const params = {
         offset: scrollY.current > 0 ? 0 : -60,
         animated: true,
       }
       listViewRef.current.scrollToOffset(params)
-    } else {
-      listSwr.mutate().catch(() => {})
     }
+    listSwr.mutate().catch(() => {})
   }, [listSwr])
 
   const { renderItem, keyExtractor } = useMemo(() => {
@@ -180,7 +179,8 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       refreshing={isRefreshing(listSwr)}
       onRefresh={() => {
         if (!listSwr.isValidating) {
-          listSwr.setSize(1)
+          listSwr.setSize(1).catch(() => {})
+          listSwr.mutate()
         }
       }}
       ListHeaderComponent={header}
