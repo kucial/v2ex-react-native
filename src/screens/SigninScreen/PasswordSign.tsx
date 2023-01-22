@@ -198,7 +198,7 @@ function PasswordSignin(props: PasswordSigninProps) {
       </View>
       <ScrollView className="flex-1 w-full ">
         <View className="flex flex-row justify-center mt-1">
-          <View style={{ width: 94, height: 30 }}></View>
+          {/* <View style={{ width: 94, height: 20 }}></View> */}
         </View>
         <Pressable
           className="w-full"
