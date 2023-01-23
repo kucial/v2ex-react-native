@@ -1,21 +1,34 @@
 /*global Proxy */
-import { createContext, ReactNode, useContext, useRef, useMemo } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useRef,
+  useMemo,
+  forwardRef,
+  useImperativeHandle,
+} from 'react'
 import DropdownAlert from 'react-native-dropdownalert'
 
 import { useTheme } from '../ThemeService'
 const AlertService = createContext<Partial<DropdownAlert>>({})
 
-export default function AlertServiceProvider(props: { children: ReactNode }) {
+const AlertServiceProvider = forwardRef<
+  Partial<DropdownAlert>,
+  {
+    children: ReactNode
+  }
+>((props, ref) => {
   const { theme } = useTheme()
-  const ref = useRef<DropdownAlert>(null)
+  const innerRef = useRef<DropdownAlert>(null)
 
   const service: Partial<DropdownAlert> = useMemo(() => {
     return new Proxy(
       {},
       {
         get: function (_, prop) {
-          if (ref.current) {
-            return ref.current[prop]
+          if (innerRef.current) {
+            return innerRef.current[prop]
           }
           if (typeof prop !== 'symbol') {
             console.warn('alert service instance not ref...')
@@ -26,11 +39,13 @@ export default function AlertServiceProvider(props: { children: ReactNode }) {
     )
   }, [])
 
+  useImperativeHandle(ref, () => service, [])
+
   return (
     <AlertService.Provider value={service}>
       {props.children}
       <DropdownAlert
-        ref={ref}
+        ref={innerRef}
         renderImage={() => null}
         closeInterval={3000}
         defaultContainer={{
@@ -55,6 +70,8 @@ export default function AlertServiceProvider(props: { children: ReactNode }) {
       />
     </AlertService.Provider>
   )
-}
+})
+
+export default AlertServiceProvider
 
 export const useAlertService = () => useContext(AlertService)

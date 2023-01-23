@@ -6,6 +6,9 @@ import ImageView from 'react-native-image-viewing'
 import * as FileSystem from 'expo-file-system'
 import colors from 'tailwindcss/colors'
 
+import Loader from '../Loader'
+import CheckIcon from '../CheckIcon'
+
 type ImageResource = {
   uri: string
 }
@@ -43,6 +46,65 @@ const ServiceContext = createContext<ImageViewingService>(
   {} as ImageViewingService,
 )
 
+const ImageViewingFooter = (props: {
+  images: ImageResource[]
+  imageIndex: number
+}) => {
+  const { images, imageIndex } = props
+  const [saveStatus, setSaveStatus] = useState('')
+
+  return (
+    <View className="flex flex-row justify-between items-center pb-8 px-8">
+      <View>
+        <Text className="text-neutral-500">
+          {imageIndex + 1} / {images.length}
+        </Text>
+      </View>
+      <View>
+        <Pressable
+          className="w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50"
+          hitSlop={6}
+          disabled={saveStatus === 'loading'}
+          onPress={async () => {
+            try {
+              const image = images[imageIndex]
+              setSaveStatus('loading')
+              const downloaded = await downloadImage(image?.uri)
+              if (downloaded) {
+                const result = await Share.share({
+                  url: downloaded.uri,
+                })
+                await FileSystem.deleteAsync(downloaded.uri)
+                console.log(result)
+                if (result.action === 'dismissedAction') {
+                  setSaveStatus('')
+                } else {
+                  // NOTE: dropdown-alert does not work. for z-index info
+                  setSaveStatus('success')
+                }
+              } else {
+                setSaveStatus('')
+              }
+            } catch (err) {
+              console.log(err)
+              setSaveStatus('')
+            }
+          }}>
+          {saveStatus === '' && (
+            <ShareIcon size={14} color={colors.neutral[300]} />
+          )}
+          {saveStatus === 'loading' && (
+            <Loader size={14} color={colors.neutral[300]} />
+          )}
+          {saveStatus === 'success' && (
+            <CheckIcon size={16} color={colors.neutral[300]} />
+          )}
+        </Pressable>
+      </View>
+    </View>
+  )
+}
+
 const ImageViewingServiceProvider = forwardRef<
   ImageViewingService,
   {
@@ -78,41 +140,11 @@ const ImageViewingServiceProvider = forwardRef<
         visible={viewIndex > -1}
         onRequestClose={() => setViewIndex(-1)}
         FooterComponent={({ imageIndex }) => (
-          <View className="flex flex-row justify-between items-center pb-8 px-8">
-            <View>
-              <Text className="text-neutral-500">
-                {imageIndex + 1} / {imageList.current.count()}
-              </Text>
-            </View>
-            <View>
-              <Pressable
-                className="w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50"
-                hitSlop={6}
-                onPress={async () => {
-                  try {
-                    const image = imageList.current.get(imageIndex)
-                    const downloaded = await downloadImage(image?.uri)
-                    if (downloaded) {
-                      const result = await Share.share({
-                        url: downloaded.uri,
-                      })
-                      // if (
-                      //   result.activityType ===
-                      //   'com.apple.UIKit.activity.SaveToCameraRoll'
-                      // ) {
-                      //   alert.alertWithType('success', '成功', '已保存到相册')
-                      // }
-                      await FileSystem.deleteAsync(downloaded.uri)
-                      console.log(result)
-                    }
-                  } catch (err) {
-                    console.log(err)
-                  }
-                }}>
-                <ShareIcon size={14} color={colors.neutral[300]} />
-              </Pressable>
-            </View>
-          </View>
+          <ImageViewingFooter
+            key={`index-${imageIndex}`}
+            images={imageList.current.images}
+            imageIndex={imageIndex}
+          />
         )}
       />
     </ServiceContext.Provider>
