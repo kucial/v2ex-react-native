@@ -42,10 +42,15 @@ const defaultTextProps = { selectable: false }
 const MENU_ITEM_COPY = '复制'
 const MENU_ITEM_BASE64_DECODE = 'Base64 解码'
 
-function HtmlRender({ tagsStyles, baseStyle, ...props }: RenderHTMLProps) {
+function HtmlRender({
+  tagsStyles,
+  baseStyle,
+  navigation,
+  ...props
+}: RenderHTMLProps & {
+  navigation: NativeStackNavigationProp<AppStackParamList>
+}) {
   const { theme } = useTheme()
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
   const alert = useAlertService()
   const viewingRef = useRef<ImageViewingService>(null)
 
@@ -210,7 +215,7 @@ function HtmlRender({ tagsStyles, baseStyle, ...props }: RenderHTMLProps) {
         }
       },
     }),
-    [],
+    [navigation],
   )
 
   return (

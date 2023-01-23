@@ -143,7 +143,11 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
             </View>
             <View>
               {!!node.header && (
-                <HtmlRender contentWidth={width - 100} {...htmlProps} />
+                <HtmlRender
+                  navigation={navigation}
+                  contentWidth={width - 100}
+                  {...htmlProps}
+                />
               )}
             </View>
             <View className="flex flex-row mt-3 mb-2 justify-end mr-1">

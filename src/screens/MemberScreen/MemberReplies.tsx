@@ -53,6 +53,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
         </View>
         <View className="pt-1 pb-2 px-3">
           <HtmlRender
+            navigation={navigation}
             contentWidth={width - 24}
             source={{
               html: data.reply_content_rendered,

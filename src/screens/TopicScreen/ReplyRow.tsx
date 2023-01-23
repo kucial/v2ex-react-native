@@ -232,6 +232,7 @@ function ReplyRow(props: ReplyRowProps) {
               marginBottom: showMarkdown ? -14 : 0,
             }}>
             <HtmlRender
+              navigation={navigation}
               contentWidth={width - 24 - 8 - 8 - 16}
               source={{
                 html: showMarkdown

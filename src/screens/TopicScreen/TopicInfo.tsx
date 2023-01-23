@@ -5,8 +5,13 @@ import FastImage from 'react-native-fast-image'
 import HtmlRender from '@/components/HtmlRender'
 import { Box } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
+import { TopicDetail } from '@/types/v2ex'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
-function TopicInfo(props) {
+function TopicInfo(props: {
+  data: TopicDetail
+  navigation: NativeStackNavigationProp<AppStackParamList>
+}) {
   const { data: topic, navigation } = props
   const { member, node } = topic
   const { width } = useWindowDimensions()
@@ -23,10 +28,10 @@ function TopicInfo(props) {
                 username: member.username,
               })
             }}>
-            {member.avatar_large || member.avatar_normal ? (
+            {member.avatar_normal ? (
               <FastImage
                 source={{
-                  uri: member.avatar_large || member.avatar_normal,
+                  uri: member.avatar_normal,
                   priority: 'low',
                 }}
                 className="w-[32px] h-[32px] rounded"
@@ -80,6 +85,7 @@ function TopicInfo(props) {
       </View>
       {!!topic.content_rendered && (
         <HtmlRender
+          navigation={navigation}
           contentWidth={width - 32}
           baseStyle={{
             fontSize: 16,
@@ -101,6 +107,7 @@ function TopicInfo(props) {
                 <Text className="text-xs text-neutral-500">{subtle.meta}</Text>
               </View>
               <HtmlRender
+                navigation={navigation}
                 contentWidth={width - 32}
                 baseStyle={{
                   fontSize: 16,
