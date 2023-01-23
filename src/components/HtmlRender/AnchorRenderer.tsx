@@ -9,6 +9,7 @@ import {
 import { getImgurResourceImageLink, isImgurResourceLink } from '@/utils/url'
 
 import { useImageViewing } from './ImageViewingService'
+import React from 'react'
 
 const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
   const renderProps = getNativePropsForTNode(props)

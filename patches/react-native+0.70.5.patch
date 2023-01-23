@@ -1,64 +1,18 @@
-diff --git a/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h b/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h
-index 9d0affa..a7e7fe3 100644
---- a/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h
-+++ b/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.h
-@@ -19,6 +19,7 @@ extern NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName;
- }
- 
- @property (nonatomic, strong) RCTTextAttributes *textAttributes;
-+// @property (nonatomic, copy, nullable) NSString *url;
- 
- - (NSAttributedString *)attributedTextWithBaseTextAttributes:(nullable RCTTextAttributes *)baseTextAttributes;
- 
 diff --git a/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.m b/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.m
-index 23d38d1..382a1a2 100644
+index 23d38d1..f1f2a55 100644
 --- a/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.m
 +++ b/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextShadowView.m
-@@ -35,7 +35,6 @@ - (instancetype)init
-   if (self = [super init]) {
-     _textAttributes = [RCTTextAttributes new];
-   }
--
-   return self;
- }
- 
-@@ -93,11 +92,14 @@ - (NSAttributedString *)attributedTextWithBaseTextAttributes:(nullable RCTTextAt
-   for (RCTShadowView *shadowView in self.reactSubviews) {
-     // Special Case: RCTRawTextShadowView
-     if ([shadowView isKindOfClass:[RCTRawTextShadowView class]]) {
-+      // NSLog(@"RCTRawTextShadowView shadowView");
+@@ -96,8 +96,8 @@ - (NSAttributedString *)attributedTextWithBaseTextAttributes:(nullable RCTTextAt
        RCTRawTextShadowView *rawTextShadowView = (RCTRawTextShadowView *)shadowView;
        NSString *text = rawTextShadowView.text;
-+
        if (text) {
 -        NSAttributedString *rawTextAttributedString =
 -          [[NSAttributedString alloc] initWithString:[textAttributes applyTextAttributesToText:text]
-+
 +        NSMutableAttributedString *rawTextAttributedString =
 +          [[NSMutableAttributedString alloc] initWithString:[textAttributes applyTextAttributesToText:text]
                                            attributes:textAttributes.effectiveTextAttributes];
          [attributedText appendAttributedString:rawTextAttributedString];
        }
-@@ -107,6 +109,7 @@ - (NSAttributedString *)attributedTextWithBaseTextAttributes:(nullable RCTTextAt
-     // Special Case: RCTBaseTextShadowView
-     if ([shadowView isKindOfClass:[RCTBaseTextShadowView class]]) {
-       RCTBaseTextShadowView *baseTextShadowView = (RCTBaseTextShadowView *)shadowView;
-+
-       NSAttributedString *baseTextAttributedString =
-         [baseTextShadowView attributedTextWithBaseTextAttributes:textAttributes];
-       [attributedText appendAttributedString:baseTextAttributedString];
-@@ -125,10 +128,10 @@ - (NSAttributedString *)attributedTextWithBaseTextAttributes:(nullable RCTTextAt
-     [attributedText appendAttributedString:embeddedShadowViewAttributedString];
-   }
- 
-+
-   [attributedText endEditing];
- 
-   [self clearLayout];
--
-   cachedAttributedText = [attributedText copy];
-   cachedTextAttributes = textAttributes;
- 
 diff --git a/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.m b/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.m
 index fee8647..66836b0 100644
 --- a/node_modules/react-native/Libraries/Text/BaseText/RCTBaseTextViewManager.m
@@ -83,7 +37,7 @@ index a95536d..5bcecda 100644
  #pragma mark - Inheritance
  
 diff --git a/node_modules/react-native/Libraries/Text/RCTTextAttributes.m b/node_modules/react-native/Libraries/Text/RCTTextAttributes.m
-index 01131cf..78fd9b5 100644
+index 01131cf..ad36c01 100644
 --- a/node_modules/react-native/Libraries/Text/RCTTextAttributes.m
 +++ b/node_modules/react-native/Libraries/Text/RCTTextAttributes.m
 @@ -77,6 +77,7 @@ - (void)applyTextAttributes:(RCTTextAttributes *)textAttributes
@@ -115,84 +69,6 @@ index 01131cf..78fd9b5 100644
  }
  
  @end
-\ No newline at end of file
-diff --git a/node_modules/react-native/Libraries/Text/RawText/RCTRawTextShadowView.m b/node_modules/react-native/Libraries/Text/RawText/RCTRawTextShadowView.m
-index 9ddb69f..5d3d380 100644
---- a/node_modules/react-native/Libraries/Text/RawText/RCTRawTextShadowView.m
-+++ b/node_modules/react-native/Libraries/Text/RawText/RCTRawTextShadowView.m
-@@ -19,6 +19,11 @@ - (void)setText:(NSString *)text
-   }
- }
- 
-+- (void)setUrl:(NSString *)url
-+{
-+  NSLog(@"setUrl: %@", url);
-+}
-+
- - (void)dirtyLayout
- {
-   [self.superview dirtyLayout];
-diff --git a/node_modules/react-native/Libraries/Text/Text.js b/node_modules/react-native/Libraries/Text/Text.js
-index b27e534..93740b6 100644
---- a/node_modules/react-native/Libraries/Text/Text.js
-+++ b/node_modules/react-native/Libraries/Text/Text.js
-@@ -73,6 +73,7 @@ const Text: React.AbstractComponent<
-             onLongPress,
-             onPress,
-             onPressIn(event) {
-+              console.log('...in...')
-               setHighlighted(!suppressHighlighting);
-               onPressIn?.(event);
-             },
-diff --git a/node_modules/react-native/Libraries/Text/Text/RCTTextShadowView.m b/node_modules/react-native/Libraries/Text/Text/RCTTextShadowView.m
-index 5e39196..c6e043e 100644
---- a/node_modules/react-native/Libraries/Text/Text/RCTTextShadowView.m
-+++ b/node_modules/react-native/Libraries/Text/Text/RCTTextShadowView.m
-@@ -83,7 +83,6 @@ - (void)uiManagerWillPerformMounting
-   CGRect contentFrame = self.contentFrame;
-   NSTextStorage *textStorage = [self textStorageAndLayoutManagerThatFitsSize:self.contentFrame.size
-                                                           exclusiveOwnership:YES];
--
-   NSNumber *tag = self.reactTag;
-   NSMutableArray<NSNumber *> *descendantViewTags = [NSMutableArray new];
-   [textStorage enumerateAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
-@@ -185,7 +184,6 @@ - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize
- 
-   NSMutableAttributedString *attributedText =
-     [[NSMutableAttributedString alloc] initWithAttributedString:[self attributedTextWithBaseTextAttributes:nil]];
--
-   [attributedText beginEditing];
- 
-   [attributedText enumerateAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
-diff --git a/node_modules/react-native/Libraries/Text/Text/RCTTextView.m b/node_modules/react-native/Libraries/Text/Text/RCTTextView.m
-index 6726e12..a7f1525 100644
---- a/node_modules/react-native/Libraries/Text/Text/RCTTextView.m
-+++ b/node_modules/react-native/Libraries/Text/Text/RCTTextView.m
-@@ -97,11 +97,11 @@ - (void)setTextStorage:(NSTextStorage *)textStorage
- - (void)drawRect:(CGRect)rect
- {
-   [super drawRect:rect];
-+
-   if (!_textStorage) {
-     return;
-   }
- 
--
-   NSLayoutManager *layoutManager = _textStorage.layoutManagers.firstObject;
-   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
- 
-diff --git a/node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m b/node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m
-index 92371bc..8832b83 100644
---- a/node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m
-+++ b/node_modules/react-native/Libraries/Text/TextInput/Multiline/RCTUITextView.m
-@@ -180,7 +180,6 @@ - (void)setContentOffset:(CGPoint)contentOffset animated:(__unused BOOL)animated
- - (void)selectAll:(id)sender
- {
-   [super selectAll:sender];
--
-   // `selectAll:` does not work for UITextView when it's being called inside UITextView's delegate methods.
-   dispatch_async(dispatch_get_main_queue(), ^{
-     UITextRange *selectionRange = [self textRangeFromPosition:self.beginningOfDocument toPosition:self.endOfDocument];
 diff --git a/node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h b/node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h
 index c2a4362..906676b 100644
 --- a/node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h
@@ -206,39 +82,25 @@ index c2a4362..906676b 100644
  @end
  
 diff --git a/node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.m b/node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.m
-index c6c254c..be00fda 100644
+index c6c254c..5ca1bf6 100644
 --- a/node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.m
 +++ b/node_modules/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegateAdapter.m
-@@ -244,6 +244,17 @@ - (BOOL)textView:(__unused UITextView *)textView shouldChangeTextInRange:(NSRang
+@@ -244,6 +244,15 @@ - (BOOL)textView:(__unused UITextView *)textView shouldChangeTextInRange:(NSRang
    return NO;
  }
  
-+- (BOOL)textView:(UITextView *)textView
-+shouldInteractWithURL:(NSURL *)URL
-+         inRange:(NSRange)characterRange
-+     interaction:(UITextItemInteraction)interaction {
-+    if ([_backedTextInputView.textInputDelegate respondsToSelector:@selector(textView:shouldInteractWithURL:inRange:interaction:)]) {
-+      return [_backedTextInputView.textInputDelegate textView:textView shouldInteractWithURL:URL inRange:characterRange interaction:interaction];
-+    }
-+    return NO;
++- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction
++{
++  NSLog(@"...shouldInteractWithURL...");
++  if ([_backedTextInputView.textInputDelegate respondsToSelector:@selector(textView:shouldInteractWithURL:inRange:interaction:)]) {
++    return [_backedTextInputView.textInputDelegate textView:textView shouldInteractWithURL:URL inRange:characterRange interaction:interaction];
++  }
++  return NO;
 +}
-+
 +
  - (void)textViewDidChange:(__unused UITextView *)textView
  {
    _textDidChangeIsComing = NO;
-diff --git a/node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.m b/node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.m
-index 19d202c..69769be 100644
---- a/node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.m
-+++ b/node_modules/react-native/Libraries/Text/TextInput/RCTBaseTextInputShadowView.m
-@@ -144,6 +144,7 @@ - (void)uiManagerWillPerformMounting
- 
-   RCTTextAttributes *textAttributes = [self.textAttributes copy];
- 
-+
-   NSMutableAttributedString *attributedText =
-     [[NSMutableAttributedString alloc] initWithAttributedString:[self attributedTextWithBaseTextAttributes:nil]];
- 
 diff --git a/node_modules/react-native/Libraries/Text/TextNativeComponent.js b/node_modules/react-native/Libraries/Text/TextNativeComponent.js
 index ef680f3..093ad6f 100644
 --- a/node_modules/react-native/Libraries/Text/TextNativeComponent.js
@@ -252,29 +114,16 @@ index ef680f3..093ad6f 100644
          uiViewClassName: 'RCTVirtualText',
        })): any);
 diff --git a/node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.h b/node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.h
-index eed1726..545430b 100644
+index eed1726..df3ae19 100644
 --- a/node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.h
 +++ b/node_modules/react-native/Libraries/Text/VirtualText/RCTVirtualTextShadowView.h
-@@ -9,4 +9,7 @@
+@@ -9,4 +9,6 @@
  
  @interface RCTVirtualTextShadowView : RCTBaseTextShadowView
  
 +@property (nonatomic, assign, nullable) NSString *url;
 +
  @end
-+
-diff --git a/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/RCTTextLayoutManager.mm b/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/RCTTextLayoutManager.mm
-index 844fcb2..76f6827 100644
---- a/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/RCTTextLayoutManager.mm
-+++ b/node_modules/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/RCTTextLayoutManager.mm
-@@ -151,6 +151,7 @@ - (LinesMeasurements)getLinesForAttributedString:(facebook::react::AttributedStr
-                                             NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange
-                                                                                       actualGlyphRange:nil];
-                                             NSString *renderedString = [textStorage.string substringWithRange:range];
-+
-                                             UIFont *font = [[textStorage attributedSubstringFromRange:range]
-                                                      attribute:NSFontAttributeName
-                                                        atIndex:0
 diff --git a/node_modules/react-native/scripts/.packager.env b/node_modules/react-native/scripts/.packager.env
 new file mode 100644
 index 0000000..361f5fb
@@ -284,10 +133,10 @@ index 0000000..361f5fb
 +export RCT_METRO_PORT=8081
 diff --git a/node_modules/react-native/sdks/hermes/hermes-engine.podspec b/node_modules/react-native/sdks/hermes/hermes-engine.podspec
 new file mode 100644
-index 0000000..f21488b
+index 0000000..8d331e0
 --- /dev/null
 +++ b/node_modules/react-native/sdks/hermes/hermes-engine.podspec
-@@ -0,0 +1,81 @@
+@@ -0,0 +1,84 @@
 +# Copyright (c) Meta Platforms, Inc. and affiliates.
 +#
 +# This source code is licensed under the MIT license found in the
@@ -312,7 +161,10 @@ index 0000000..f21488b
 +source = {}
 +git = "https://github.com/facebook/hermes.git"
 +
-+if version == '1000.0.0'
++if ENV.has_key?('HERMES_ENGINE_TARBALL_PATH')
++  Pod::UI.puts '[Hermes] Using pre-built Hermes binaries from local path.' if Object.const_defined?("Pod::UI")
++  source[:http] = "file://#{ENV['HERMES_ENGINE_TARBALL_PATH']}"
++elsif version == '1000.0.0'
 +  Pod::UI.puts '[Hermes] Hermes needs to be compiled, installing hermes-engine may take a while...'.yellow if Object.const_defined?("Pod::UI")
 +  source[:git] = git
 +  source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
@@ -340,7 +192,7 @@ index 0000000..f21488b
 +  spec.license     = package["license"]
 +  spec.author      = "Facebook"
 +  spec.source      = source
-+  spec.platforms   = { :osx => "10.13", :ios => "11.0" }
++  spec.platforms   = { :osx => "10.13", :ios => "12.4" }
 +
 +  spec.preserve_paths      = ["destroot/bin/*"].concat(HermesHelper::BUILD_TYPE == :debug ? ["**/*.{h,c,cpp}"] : [])
 +  spec.source_files        = "destroot/include/**/*.h"
