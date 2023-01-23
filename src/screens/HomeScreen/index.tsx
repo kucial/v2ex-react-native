@@ -159,7 +159,7 @@ export default function HomeScreen(props: HomeScreenProps) {
   }, [homeTabs])
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused && routes) {
       const unsubscribe = navigation.addListener('tabPress', (e) => {
         if (tabIdleForRefresh.current) {
           clearTimeout(tabIdleResetTimer.current)
