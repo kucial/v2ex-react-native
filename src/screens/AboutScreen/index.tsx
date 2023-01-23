@@ -10,6 +10,7 @@ import FastImage from 'react-native-fast-image'
 import RNRestart from 'react-native-restart'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
+import { ArrowUpOnSquareIcon } from 'react-native-heroicons/outline'
 
 import GithubIcon from '@/components/GithubIcon'
 import { useTheme } from '@/containers/ThemeService'
@@ -52,14 +53,22 @@ export default function AboutScreen() {
             </View>
           )}
 
-          <View className="flex flex-row items-center justify-center mt-2">
+          <View className="flex flex-row items-center justify-center pt-2 gap-2">
             <Pressable
               className="p-2 flex flex-row items-center rounded-lg active:bg-neutral-100 active:opacity-60"
               onPress={() => {
                 Linking.openURL('https://github.com/kucial/v2ex-react-native')
               }}>
               <GithubIcon color={theme.colors.text} />
-              {/* <Text className="ml-1">issues</Text> */}
+            </Pressable>
+            <Pressable
+              className="p-2 flex flex-row items-center rounded-lg active:bg-neutral-100 active:opacity-60"
+              onPress={() => {
+                Linking.openURL(
+                  'https://apps.apple.com/cn/app/r2v/id1645766550',
+                )
+              }}>
+              <ArrowUpOnSquareIcon color={theme.colors.text} />
             </Pressable>
           </View>
         </View>

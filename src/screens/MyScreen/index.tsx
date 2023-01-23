@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react'
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
+import { Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import {
   Cog6ToothIcon,
@@ -9,6 +9,7 @@ import {
   Bars3Icon,
   DocumentPlusIcon,
   ClockIcon,
+  ChatBubbleLeftEllipsisIcon,
 } from 'react-native-heroicons/outline'
 import * as StoreReview from 'react-native-store-review'
 import classNames from 'classnames'
@@ -229,6 +230,13 @@ export default function MyScreen({ navigation }: ScreenProps) {
           }}
           icon={<StarIcon size={22} color={iconColor} />}
           title="五星好评"
+        />
+        <LineItem
+          onPress={() => {
+            navigation.push('feedback')
+          }}
+          icon={<ChatBubbleLeftEllipsisIcon size={22} color={iconColor} />}
+          title="意见反馈"
           isLast
         />
       </LineItemGroup>

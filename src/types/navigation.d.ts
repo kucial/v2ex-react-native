@@ -40,6 +40,8 @@ declare global {
     'home-tab-settings': {},
     'preference-settings': {},
     'signin': {},
+
+    'feedback': {},
   }
 
   type MainTabParamList = {

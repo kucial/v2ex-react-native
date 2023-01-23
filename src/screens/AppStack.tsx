@@ -1,6 +1,5 @@
 import { Platform } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import colors from 'tailwindcss/colors'
 
 import { headerLeft } from '@/components/BackButton'
 import { useTheme } from '@/containers/ThemeService'
@@ -25,6 +24,7 @@ import SettingsImgur from './SettingsImgur'
 import SettingsPreference from './SettingsPreference'
 import SigninScreen from './SigninScreen'
 import TopicScreen from './TopicScreen'
+import FeedbackScreen from './FeedbackScreen'
 
 const Stack = createNativeStackNavigator<AppStackParamList>()
 
@@ -172,6 +172,13 @@ function AppStack() {
         options={{
           headerShown: false,
           presentation: Platform.OS === 'ios' ? 'modal' : undefined,
+        }}
+      />
+      <Stack.Screen
+        name="feedback"
+        component={FeedbackScreen}
+        options={{
+          title: '意见反馈',
         }}
       />
     </Stack.Navigator>
