@@ -69,6 +69,9 @@ const axiosRequestScript = (id: string, config: AxiosRequestConfig) => {
   const script = getRequestScript(
     id,
     `
+  if (!window.axios) {
+    throw new Error('v2ex-client service not ready.');
+  }
   const config = ${JSON.stringify(configToInject)};
   if (config.params && config.params.once === ${JSON.stringify(ONCP)}) {
     config.params.once = await fetchOnce();
