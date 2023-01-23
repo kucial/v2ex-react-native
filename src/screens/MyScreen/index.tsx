@@ -1,15 +1,14 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import {
   Cog6ToothIcon,
-  DocumentIcon,
   InformationCircleIcon,
   StarIcon,
   PhotoIcon,
   Bars3Icon,
   DocumentPlusIcon,
-  EyeIcon,
+  ClockIcon,
 } from 'react-native-heroicons/outline'
 import * as StoreReview from 'react-native-store-review'
 import classNames from 'classnames'
@@ -22,6 +21,7 @@ import { LineItem, LineItemGroup } from '@/components/LineItem'
 import { Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { usePressBreadcrumb } from '@/utils/hooks'
 
 type ScreenProps = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'my'>,
@@ -41,6 +41,39 @@ export default function MyScreen({ navigation }: ScreenProps) {
     composeAuthedNavigation,
     goToSigninSreen,
   } = useAuthService()
+
+  const handleCreatedTopicsPressed = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        navigation.push('created-topics')
+      }, []),
+    ),
+    {
+      message: 'MyScreen `created-topics` button pressed',
+    },
+  )
+
+  const handleCollectedTopicsPressed = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        navigation.push('collected-topics')
+      }, []),
+    ),
+    {
+      message: 'MyScreen `collected-topics` button preseed',
+    },
+  )
+
+  const handleRepliedTopicsPressed = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        navigation.push('replied-topics')
+      }, []),
+    ),
+    {
+      message: 'MyScreen `replied-topics` button pressed',
+    },
+  )
 
   let header
   switch (authStatus) {
@@ -120,9 +153,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
             className="overflow-hidden rounded-lg shadow-xs"
             icon={<DocumentPlusIcon size={22} color={iconColor} />}
             disabled={authStatus === 'loading'}
-            onPress={composeAuthedNavigation(() => {
-              navigation.push('created-topics')
-            })}
+            onPress={handleCreatedTopicsPressed}
           />
         </View>
         <View className="basis-1/2 px-2 my-2">
@@ -132,9 +163,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
             className="overflow-hidden rounded-lg shadow-xs"
             icon={<StarIcon size={22} color={iconColor} />}
             disabled={authStatus === 'loading'}
-            onPress={composeAuthedNavigation(() => {
-              navigation.push('collected-topics')
-            })}
+            onPress={handleCollectedTopicsPressed}
           />
         </View>
         <View className="basis-1/2 px-2 my-2">
@@ -144,9 +173,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
             className="overflow-hidden rounded-lg shadow-xs"
             icon={<ReplyIcon size={22} color={iconColor} />}
             disabled={authStatus === 'loading'}
-            onPress={composeAuthedNavigation(() => {
-              navigation.push('replied-topics')
-            })}
+            onPress={handleRepliedTopicsPressed}
           />
         </View>
         <View className="basis-1/2 px-2 my-2">
@@ -154,15 +181,8 @@ export default function MyScreen({ navigation }: ScreenProps) {
             title="浏览的主题"
             isLast
             className="overflow-hidden rounded-lg shadow-xs"
-            icon={<EyeIcon size={22} color={iconColor} />}
+            icon={<ClockIcon size={22} color={iconColor} />}
             disabled={authStatus === 'loading'}
-            // extra={
-            //   <View className="rounded" style={styles.layer2}>
-            //     <Text className="text-xs" style={styles.text_meta}>
-            //       缓存
-            //     </Text>
-            //   </View>
-            // }
             onPress={() => {
               navigation.push('viewed-topics')
             }}

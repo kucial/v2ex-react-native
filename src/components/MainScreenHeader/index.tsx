@@ -11,6 +11,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { usePressBreadcrumb } from '@/utils/hooks'
+import { useCallback } from 'react'
 
 export default function MainScreenHeader(
   props: BottomTabHeaderProps & NativeStackScreenProps<AppStackParamList>,
@@ -18,6 +20,42 @@ export default function MainScreenHeader(
   const { navigation, options } = props
   const { composeAuthedNavigation, meta } = useAuthService()
   const { theme } = useTheme()
+  const handleNewTopicPress = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        navigation.push('new-topic')
+      }, []),
+    ),
+    {
+      message: '[MainScreenHeader] `New-Topic` button pressed',
+    },
+  )
+  const handleNotificationPress = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        navigation.push('notification')
+      }, []),
+    ),
+    {
+      message: '[MainScreenHeader] `Notification` button pressed',
+    },
+  )
+  const handleSearchButtonPress = usePressBreadcrumb(
+    useCallback(() => {
+      navigation.push('search')
+    }, []),
+    {
+      message: '[MainScreenHeader] `Search` button pressed',
+    },
+  )
+  const handleViewedTopicButtonPress = usePressBreadcrumb(
+    useCallback(() => {
+      navigation.push('viewed-topics')
+    }, []),
+    {
+      message: '[MainScreenHeader] `Viewed-Topic` button pressed',
+    },
+  )
 
   const iconColor = theme.colors.text_desc
 
@@ -45,16 +83,12 @@ export default function MainScreenHeader(
       <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">
         <Pressable
           className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-          onPress={composeAuthedNavigation(() => {
-            navigation.push('new-topic')
-          })}>
+          onPress={handleNewTopicPress}>
           <DocumentPlusIcon size={24} color={iconColor} />
         </Pressable>
         <Pressable
           className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-          onPress={composeAuthedNavigation(() => {
-            navigation.push('notification')
-          })}>
+          onPress={handleNotificationPress}>
           <View className="relative w-[24px] h-[24px]">
             <EnvelopeIcon size={24} color={iconColor} />
             {!!meta?.unread_count && (
@@ -69,17 +103,13 @@ export default function MainScreenHeader(
 
         <Pressable
           className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-          onPress={() => {
-            navigation.push('search')
-          }}>
+          onPress={handleSearchButtonPress}>
           <MagnifyingGlassIcon size={24} color={iconColor} />
         </Pressable>
 
         <Pressable
           className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-          onPress={() => {
-            navigation.push('viewed-topics')
-          }}>
+          onPress={handleViewedTopicButtonPress}>
           <ClockIcon size={24} color={iconColor} />
         </Pressable>
       </View>

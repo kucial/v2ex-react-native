@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   Pressable,
   Text,
@@ -24,6 +24,8 @@ import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { TopicReply } from '@/types/v2ex'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { usePressBreadcrumb } from '@/utils/hooks'
+import { topic } from '@/mock/topics'
 
 type ReplyRowProps = {
   data: TopicReply
@@ -47,6 +49,49 @@ function ReplyRow(props: ReplyRowProps) {
 
   const iconColor = theme.colors.text_meta
   const likedActiveColor = theme.colors.icon_liked_bg
+
+  const handleReply = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        props.onReply(data)
+      }, [data, props.onReply]),
+    ),
+    {
+      message: '[ReplyRow] `reply` button press',
+      data: { target: data?.id },
+    },
+  )
+  const toggleMarkdown = usePressBreadcrumb(
+    useCallback(() => {
+      setMarkdownVisible((prev) => !prev)
+    }, []),
+    {
+      message: '[ReplyRow] `markdown` button press',
+      data: { target: data?.id },
+    },
+  )
+
+  const handleThank = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        props.onThank(data)
+      }, [data, props.onThank]),
+    ),
+    {
+      message: '[ReplyRow] `thank` button press',
+      data: { target: data?.id },
+    },
+  )
+
+  const handleConversation = usePressBreadcrumb(
+    useCallback(() => {
+      props.onShowConversation(data)
+    }, [data, props.onShowConversation]),
+    {
+      message: '[ReplyRow] `conversation` button press',
+      data: { target: data?.id },
+    },
+  )
 
   if (!data) {
     return (
@@ -207,9 +252,7 @@ function ReplyRow(props: ReplyRowProps) {
                   'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                   'relative z-10',
                 )}
-                onPress={composeAuthedNavigation(() => {
-                  props.onReply(data)
-                })}>
+                onPress={handleReply}>
                 <ReplyIcon size={14} color={iconColor} />
                 <View className="ml-1">
                   <Text className="text-xs text-neutral-500">回复</Text>
@@ -227,9 +270,7 @@ function ReplyRow(props: ReplyRowProps) {
                     'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                     'relative z-10',
                   )}
-                  onPress={composeAuthedNavigation(() => {
-                    props.onThank(data)
-                  })}>
+                  onPress={handleThank}>
                   <HeartIcon size={14} color={iconColor} />
                   <View className="ml-1">
                     <Text className="text-xs text-neutral-500">感谢</Text>
@@ -246,9 +287,7 @@ function ReplyRow(props: ReplyRowProps) {
                     'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                     'relative z-10',
                   )}
-                  onPress={() => {
-                    props.onShowConversation(data)
-                  }}>
+                  onPress={handleConversation}>
                   <ChatBubbleLeftRightIcon size={14} color={iconColor} />
                   <View className="ml-1">
                     <Text className="text-xs text-neutral-500">会话</Text>
@@ -266,9 +305,7 @@ function ReplyRow(props: ReplyRowProps) {
                   'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                   'relative z-10',
                 )}
-                onPress={() => {
-                  setMarkdownVisible((prev) => !prev)
-                }}>
+                onPress={toggleMarkdown}>
                 {showMarkdown ? (
                   <MarkdownFilledIcon
                     size={20}

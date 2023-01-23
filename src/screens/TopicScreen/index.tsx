@@ -249,6 +249,171 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     return items
   }, [listSwr])
 
+  const handleBlockMember = composeAuthedNavigation((username: string) => {
+    aIndicator.show('MEMBER_BLOCK')
+    v2exClient
+      .blockMember({
+        username,
+      })
+      .then(() => {
+        alert.alertWithType('success', '操作成功', '已屏蔽用户')
+      })
+      .catch((err) => {
+        alert.alertWithType('error', '错误', err.message)
+      })
+      .finally(() => {
+        aIndicator.hide('MEMBER_BLOCK')
+      })
+  })
+
+  const handleToggleBlock = composeAuthedNavigation(
+    useCallback(() => {
+      aIndicator.show('TOPIC_BLOCK')
+      const request = topic?.blocked
+        ? v2exClient.unblockTopic
+        : v2exClient.blockTopic
+
+      request({
+        id,
+      })
+        .then(({ data }) => {
+          topicSwr.data &&
+            topicSwr.mutate((prev) => ({
+              ...prev,
+              ...data,
+            }))
+          alert.alertWithType(
+            'success',
+            '操作成功',
+            data.blocked ? '已忽略主题' : '已撤销主题忽略',
+          )
+        })
+        .catch((err) => {
+          alert.alertWithType('error', '错误', err.message)
+        })
+        .finally(() => {
+          aIndicator.hide('TOPIC_BLOCK')
+        })
+    }, [id, topic?.blocked]),
+  )
+
+  const handleReportTopic = composeAuthedNavigation(
+    useCallback(() => {
+      aIndicator.show('TOPIC_REPORT')
+      v2exClient
+        .reportTopic({ id })
+        .then(({ data }) => {
+          topicSwr.data &&
+            topicSwr.mutate((prev) => ({
+              ...prev,
+              ...data,
+            }))
+          if (data.reported) {
+            alert.alertWithType('success', '成功', '已举报主题')
+          } else {
+            alert.alertWithType('error', '错误', '未成功举报举报主题')
+          }
+        })
+        .catch((err) => {
+          alert.alertWithType('error', '错误', err.message)
+        })
+        .finally(() => {
+          aIndicator.hide('TOPIC_REPORT')
+        })
+    }, [id]),
+  )
+
+  // TODO: rewrite with swr optimistic update
+  const handleToggleCollect = composeAuthedNavigation(
+    useCallback(() => {
+      if (topic.collected) {
+        topicSwr.mutate(
+          (prev) => ({
+            ...prev,
+            collected: false,
+          }),
+          false,
+        )
+        v2exClient
+          .uncollectTopic({
+            id,
+          })
+          .then(() => {
+            alert.alertWithType('success', '操作成功', '已取消收藏')
+          })
+          .catch((err) => {
+            topicSwr.mutate(
+              (prev) => ({
+                ...prev,
+                collected: true,
+              }),
+              false,
+            )
+            alert.alertWithType('error', '错误', err.message)
+          })
+      } else {
+        topicSwr.mutate(
+          (prev) => ({
+            ...prev,
+            collected: true,
+          }),
+          false,
+        )
+        v2exClient
+          .collectTopic({
+            id,
+          })
+          .then(() => {
+            alert.alertWithType('success', '操作成功', '已加入收藏')
+          })
+          .catch((err) => {
+            topicSwr.mutate(
+              (prev) => ({
+                ...prev,
+                collected: false,
+              }),
+              false,
+            )
+            alert.alertWithType('error', '错误', err.message)
+          })
+      }
+    }, [id, topic?.collected]),
+  )
+
+  const handleThankTopic = composeAuthedNavigation(
+    useCallback(() => {
+      if (topic.thanked) {
+        alert.alertWithType('info', '提示', '已感谢过主题')
+        return
+      }
+      topicSwr.mutate(
+        (prev) => ({
+          ...prev,
+          thanked: true,
+        }),
+        false,
+      )
+
+      v2exClient
+        .thankTopic({
+          id,
+        })
+        .then(() => {
+          alert.alertWithType('success', '操作成功', '已感谢主题')
+        })
+        .catch((err) => {
+          topicSwr.mutate(
+            (prev) => ({
+              ...prev,
+              thanked: false,
+            }),
+            false,
+          )
+          alert.alertWithType('error', '错误', err.message)
+        })
+    }, [id, topic?.thanked]),
+  )
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: (props) => (
@@ -282,79 +447,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                   if (!username) {
                     return
                   }
-                  composeAuthedNavigation(() => {
-                    aIndicator.show('MEMBER_BLOCK')
-                    v2exClient
-                      .blockMember({
-                        username,
-                      })
-                      .then(() => {
-                        alert.alertWithType('success', '操作成功', '已屏蔽用户')
-                      })
-                      .catch((err) => {
-                        alert.alertWithType('error', '错误', err.message)
-                      })
-                      .finally(() => {
-                        aIndicator.hide('MEMBER_BLOCK')
-                      })
-                  })()
+                  handleBlockMember(username)
                 } else if (buttonIndex === 4) {
-                  composeAuthedNavigation(() => {
-                    aIndicator.show('TOPIC_BLOCK')
-                    const request = topic?.blocked
-                      ? v2exClient.unblockTopic
-                      : v2exClient.blockTopic
-
-                    request({
-                      id,
-                    })
-                      .then(({ data }) => {
-                        topicSwr.data &&
-                          topicSwr.mutate((prev) => ({
-                            ...prev,
-                            ...data,
-                          }))
-                        alert.alertWithType(
-                          'success',
-                          '操作成功',
-                          data.blocked ? '已忽略主题' : '已撤销主题忽略',
-                        )
-                      })
-                      .catch((err) => {
-                        alert.alertWithType('error', '错误', err.message)
-                      })
-                      .finally(() => {
-                        aIndicator.hide('TOPIC_BLOCK')
-                      })
-                  })()
+                  handleToggleBlock()
                 } else if (buttonIndex === 5) {
-                  composeAuthedNavigation(() => {
-                    aIndicator.show('TOPIC_REPORT')
-                    v2exClient
-                      .reportTopic({ id })
-                      .then(({ data }) => {
-                        topicSwr.data &&
-                          topicSwr.mutate((prev) => ({
-                            ...prev,
-                            ...data,
-                          }))
-                        if (data.reported) {
-                          alert.alertWithType('success', '成功', '已举报主题')
-                        } else {
-                          alert.alertWithType(
-                            'error',
-                            '错误',
-                            '未成功举报举报主题',
-                          )
-                        }
-                      })
-                      .catch((err) => {
-                        alert.alertWithType('error', '错误', err.message)
-                      })
-                      .finally(() => {
-                        aIndicator.hide('TOPIC_REPORT')
-                      })
-                  })()
+                  handleReportTopic()
                 }
               },
             )
@@ -699,59 +796,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           <View className="flex flex-row px-1">
             <Pressable
               className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-              onPress={composeAuthedNavigation(() => {
-                if (topic.collected) {
-                  topicSwr.mutate(
-                    (prev) => ({
-                      ...prev,
-                      collected: false,
-                    }),
-                    false,
-                  )
-                  v2exClient
-                    .uncollectTopic({
-                      id,
-                    })
-                    .then(() => {
-                      alert.alertWithType('success', '操作成功', '已取消收藏')
-                    })
-                    .catch((err) => {
-                      topicSwr.mutate(
-                        (prev) => ({
-                          ...prev,
-                          collected: true,
-                        }),
-                        false,
-                      )
-                      alert.alertWithType('error', '错误', err.message)
-                    })
-                } else {
-                  topicSwr.mutate(
-                    (prev) => ({
-                      ...prev,
-                      collected: true,
-                    }),
-                    false,
-                  )
-                  v2exClient
-                    .collectTopic({
-                      id,
-                    })
-                    .then(() => {
-                      alert.alertWithType('success', '操作成功', '已加入收藏')
-                    })
-                    .catch((err) => {
-                      topicSwr.mutate(
-                        (prev) => ({
-                          ...prev,
-                          collected: false,
-                        }),
-                        false,
-                      )
-                      alert.alertWithType('error', '错误', err.message)
-                    })
-                }
-              })}>
+              onPress={handleToggleCollect}>
               <View className="my-1">
                 {topic.collected ? (
                   <FilledStarIcon size={24} color={collectActiveColor} />
@@ -765,37 +810,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             </Pressable>
             <Pressable
               className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-              onPress={composeAuthedNavigation(() => {
-                if (topic.thanked) {
-                  alert.alertWithType('info', '', '已感谢过主题')
-                  return
-                }
-                topicSwr.mutate(
-                  (prev) => ({
-                    ...prev,
-                    thanked: true,
-                  }),
-                  false,
-                )
-
-                v2exClient
-                  .thankTopic({
-                    id,
-                  })
-                  .then(() => {
-                    alert.alertWithType('success', '操作成功', '已感谢主题')
-                  })
-                  .catch((err) => {
-                    topicSwr.mutate(
-                      (prev) => ({
-                        ...prev,
-                        thanked: false,
-                      }),
-                      false,
-                    )
-                    alert.alertWithType('error', '错误', err.message)
-                  })
-              })}>
+              onPress={handleThankTopic}>
               <View className="my-1">
                 {topic.thanked ? (
                   <FilledHeartIcon size={24} color={likedActiveColor} />

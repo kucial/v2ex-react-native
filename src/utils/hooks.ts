@@ -1,11 +1,10 @@
 import { SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import { debounce } from 'lodash'
+import * as Sentry from 'sentry-expo'
 
 import { getJSON, setJSON } from './storage'
 
 type CDispatch<A> = (value: A, push?: boolean) => void;
-
-
 
 export const useCachedState = function useCachedState<S extends object | string | number>(cacheKey: string, initialState: S = null, revalidate?: (state: any) => S):
   [S, CDispatch<SetStateAction<S>>] {
@@ -48,4 +47,19 @@ export const useCachedState = function useCachedState<S extends object | string 
   }, [state])
 
   return [state, updateState]
+}
+type PressBreadCrumbConfig = {
+  message: string,
+  data?: object,
+}
+export const usePressBreadcrumb = (func: Function, config: PressBreadCrumbConfig) => {
+  return useCallback((...args: any[]) => {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      category: 'ui.press',
+      message: config.message,
+      data: config.data,
+    })
+    func(...args);
+  }, [func])
 }

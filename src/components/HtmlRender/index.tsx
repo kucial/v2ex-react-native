@@ -42,7 +42,7 @@ const defaultTextProps = { selectable: false }
 const MENU_ITEM_COPY = '复制'
 const MENU_ITEM_BASE64_DECODE = 'Base64 解码'
 
-function RenderHtml({ tagsStyles, baseStyle, ...props }: RenderHTMLProps) {
+function HtmlRender({ tagsStyles, baseStyle, ...props }: RenderHTMLProps) {
   const { theme } = useTheme()
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
@@ -231,15 +231,15 @@ function RenderHtml({ tagsStyles, baseStyle, ...props }: RenderHTMLProps) {
   )
 }
 
-RenderHtml.propTypes = {
+HtmlRender.propTypes = {
   tagsStyles: PropTypes.object,
   baseStyle: PropTypes.object,
 }
 
-RenderHtml.defaultProps = {
+HtmlRender.defaultProps = {
   baseStyle: {
     fontSize: 16,
   },
 }
 
-export default RenderHtml
+export default HtmlRender

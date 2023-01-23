@@ -48,7 +48,7 @@ export const LineItem = styled(
           className={classNames('h-full flex-1 flex flex-row')}
           style={!props.isLast && styles.border_b}>
           <View className="flex-1 flex flex-row items-center">
-            {props.icon && <View className="mr-[6px]">{props.icon}</View>}
+            {props.icon && <View className="mr-2">{props.icon}</View>}
             <Text className="text-base" style={styles.text}>
               {props.title}
             </Text>

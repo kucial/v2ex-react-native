@@ -16,6 +16,7 @@ import NodeTopicList from '@/components/NodeTopicList'
 
 import * as v2exClient from '@/utils/v2ex-client'
 import { NodeDetail } from '@/types/v2ex'
+import { usePressBreadcrumb } from '@/utils/hooks'
 
 type NodeBrief = {
   name: string
@@ -43,32 +44,6 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
       },
     },
   )
-  // const collectMutation = useSWRMutation(
-  //   [`/page/go/:name/node.json`, name],
-  //   async ([_, name]) => v2exClient.collectNode({ name }),
-  //   {
-  //     optimisticData: (current) => ({
-  //       ...current,
-  //       data: {
-  //         ...current.data,
-  //         collected: true,
-  //       },
-  //     })
-  //   }
-  // )
-  // const uncollectMutation = useSWRMutation(
-  //   [`/page/go/:name/node.json`, name],
-  //   async ([_, name]) => v2exClient.uncollectNode({ name }),
-  //   {
-  //     optimisticData: (current) => ({
-  //       ...current,
-  //       data: {
-  //         ...current.data,
-  //         collected: true,
-  //       },
-  //     })
-  //   }
-  // )
 
   const node = nodeSwr.data?.data || (brief as NodeBrief) || ({} as NodeBrief)
   useLayoutEffect(() => {
@@ -85,6 +60,54 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
       },
     }
   }, [node])
+
+  const handleCollectToggle = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        const KEY = `node-collect-toggle:${name}`
+        const request = node.collected
+          ? v2exClient.uncollectNode
+          : v2exClient.collectNode
+        aIndicator.show(KEY)
+        setCollecting(true)
+        request({
+          name,
+        })
+          .then(({ data: patch }) => {
+            nodeSwr.mutate((data) => ({
+              ...data,
+              ...patch,
+            }))
+            mutate('/page/my/nodes.json')
+          })
+          .catch((err) => {
+            alert.alertWithType('error', '错误', err.message)
+          })
+          .finally(() => {
+            aIndicator.hide(KEY)
+            setCollecting(false)
+          })
+      }, [node]),
+    ),
+    {
+      message: '[NodeScreen] `Collect` button pressed',
+    },
+  )
+
+  const handleCreateNewTopic = usePressBreadcrumb(
+    composeAuthedNavigation(
+      useCallback(() => {
+        navigation.push('new-topic', {
+          node: {
+            name: node.name,
+          },
+        })
+      }, [node?.name]),
+    ),
+    {
+      message: '[NodeScreen] `New topic` button pressed',
+    },
+  )
 
   const header = (
     <View className="mb-3 p-2" style={styles.layer1}>
@@ -133,31 +156,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                 )}
                 style={[styles.border, styles.border_light]}
                 disabled={collecting || node.collected === undefined}
-                onPress={composeAuthedNavigation(() => {
-                  const KEY = `node-collect-toggle:${name}`
-                  const request = node.collected
-                    ? v2exClient.uncollectNode
-                    : v2exClient.collectNode
-                  aIndicator.show(KEY)
-                  setCollecting(true)
-                  request({
-                    name,
-                  })
-                    .then(({ data: patch }) => {
-                      nodeSwr.mutate((data) => ({
-                        ...data,
-                        ...patch,
-                      }))
-                      mutate('/page/my/nodes.json')
-                    })
-                    .catch((err) => {
-                      alert.alertWithType('error', '错误', err.message)
-                    })
-                    .finally(() => {
-                      aIndicator.hide(KEY)
-                      setCollecting(false)
-                    })
-                })}>
+                onPress={handleCollectToggle}>
                 <Text style={styles.text}>
                   {node.collected ? '取消收藏' : '加入收藏'}
                 </Text>
@@ -167,13 +166,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                   'ml-2 h-[38px] rounded-lg px-3 items-center justify-center active:opacity-60',
                 )}
                 style={[styles.border, styles.border_light]}
-                onPress={composeAuthedNavigation(() => {
-                  navigation.push('new-topic', {
-                    node: {
-                      name: node.name,
-                    },
-                  })
-                })}>
+                onPress={handleCreateNewTopic}>
                 <Text style={styles.text}>创建新主题</Text>
               </Pressable>
             </View>

@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import { AppState, InteractionManager } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -38,7 +45,9 @@ interface AuthService {
   fetchedAt?: number
   fetchCurrentUser: (refresh?: boolean) => Promise<MemberDetail>
   logout(): Promise<void>
-  composeAuthedNavigation: (func: VoidFunction) => VoidFunction
+  composeAuthedNavigation<T = never>(
+    func: (params?: T) => void,
+  ): (params?: T) => void
   getNextAction(): VoidFunction
   updateMeta: (data: MemberMeta) => void
   goToSigninSreen(): void
@@ -141,22 +150,25 @@ export default function AuthServiceProvider(props) {
         navigation.navigate('signin')
       },
       composeAuthedNavigation: (callback) => {
-        return (...args) => {
-          if (state.status === 'loading') {
-            alert.alertWithType('info', '提示', '正在验证登录状态，请稍候')
-            return
-          }
-          if (!state.user) {
-            navigation.navigate('signin')
-            if (callback) {
-              nextAction.current = () => {
-                callback(...args)
-              }
+        return useCallback(
+          (...args) => {
+            if (state.status === 'loading') {
+              alert.alertWithType('info', '提示', '正在验证登录状态，请稍候')
+              return
             }
-            return
-          }
-          callback?.(...args)
-        }
+            if (!state.user) {
+              navigation.navigate('signin')
+              if (callback) {
+                nextAction.current = () => {
+                  callback(...args)
+                }
+              }
+              return
+            }
+            callback?.(...args)
+          },
+          [callback],
+        )
       },
       getNextAction: () => {
         if (nextAction) {
