@@ -25,7 +25,6 @@ import { useTheme } from '@/containers/ThemeService'
 import { TopicReply } from '@/types/v2ex'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { usePressBreadcrumb } from '@/utils/hooks'
-import { topic } from '@/mock/topics'
 
 type ReplyRowProps = {
   data: TopicReply

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef } from 'react'
 import { NativeScrollEvent } from "react-native"
 
 export const isBouncingTop = (e: NativeScrollEvent) => {
@@ -35,9 +35,13 @@ export const useScrollDirection = (options?: {
       lastOffsetY.current = offsetY
     }
   }, [options?.callback])
+  const resetDirection = useCallback(() => {
+    scrollDirection.current = '';
+  }, []);
 
   return {
     scrollDirection,
     onScroll,
+    resetDirection
   }
 }

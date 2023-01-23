@@ -645,14 +645,14 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     },
     [setScrollControlAction],
   )
-  const { onScroll } = useScrollDirection({
+  const { onScroll, resetDirection } = useScrollDirection({
     callback: directionCallback,
   })
 
   const resetScrollControlAction = useCallback(
     debounce(
       () => {
-        console.log('....reset...')
+        resetDirection()
         setScrollControlAction('')
       },
       1000,
