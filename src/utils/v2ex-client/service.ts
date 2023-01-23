@@ -2,6 +2,7 @@
 import { pick, uniqueId } from 'lodash'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
+import * as Sentry from 'sentry-expo';
 import { ONCP } from './constants'
 import ApiError from './ApiError'
 
@@ -165,6 +166,18 @@ const service: RequestService = {
       return
     }
     const { id, response, error } = msgData
+    if (!service.requests[id]) {
+      Sentry.Native.captureMessage('V2EX_CLIENT_REQUEST_HANDLER_NOT_EXISTS.');
+      return;
+    }
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      category: 'v2ex-client',
+      message: 'handleMessage',
+      data: {
+        id,
+      }
+    });
     if (response) {
       service.requests[id].resolve(response)
     } else {
