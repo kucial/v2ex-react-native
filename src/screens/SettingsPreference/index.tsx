@@ -274,32 +274,6 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
             </View>
           </View>
         </Pressable>
-
-        <View
-          sentry-label="AutoRefrehLineItem"
-          className={classNames('pl-4')}
-          style={styles.layer1}>
-          <View
-            className={classNames('min-h-[52px] flex flex-row items-center')}
-            style={styles.border_b}>
-            <View className="flex-1">
-              <Text className="text-base" style={styles.text}>
-                震动反馈
-              </Text>
-            </View>
-            <View className="mr-2 px-2">
-              <Switch
-                value={state.hapticsHint}
-                onValueChange={(val) =>
-                  setState((prev) => ({
-                    ...prev,
-                    hapticsHint: val,
-                  }))
-                }
-              />
-            </View>
-          </View>
-        </View>
       </View>
     </View>
   )

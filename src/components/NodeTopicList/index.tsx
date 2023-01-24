@@ -66,9 +66,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       return
     }
     if (listSwr.data) {
-      if (settings.hapticsHint) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      }
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
       listSwr.setSize(1).catch(() => {})
       const params = {
         offset: scrollY.current > 0 ? 0 : -60,

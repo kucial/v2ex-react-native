@@ -21,8 +21,6 @@ const DEFAULT_SETTINGS: AppSettings = {
 
   autoRefresh: true,
   autoRefreshDuration: 10,
-  // 刷新震动反馈
-  hapticsHint: true,
 }
 
 const AppSettingsContext = createContext<AppSettingsService>(

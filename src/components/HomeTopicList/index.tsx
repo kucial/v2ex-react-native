@@ -66,9 +66,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       return
     }
     if (listSwr.data) {
-      if (settings.hapticsHint) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      }
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
       listSwr.setSize(1).catch(() => {})
       listViewRef.current.scrollToOffset({
         offset: scrollY.current > 0 ? 0 : -60,

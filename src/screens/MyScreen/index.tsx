@@ -200,18 +200,18 @@ export default function MyScreen({ navigation }: ScreenProps) {
           }}
         />
         <LineItem
-          title="偏好设置"
-          icon={<Cog6ToothIcon size={22} color={iconColor} />}
-          onPress={() => {
-            navigation.push('preference-settings')
-          }}
-        />
-        <LineItem
           title="Imgur 图床"
           onPress={() => {
             navigation.push('imgur-settings')
           }}
           icon={<PhotoIcon size={22} color={iconColor} />}
+        />
+        <LineItem
+          title="偏好设置"
+          icon={<Cog6ToothIcon size={22} color={iconColor} />}
+          onPress={() => {
+            navigation.push('preference-settings')
+          }}
           isLast
         />
       </LineItemGroup>
