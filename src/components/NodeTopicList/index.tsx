@@ -177,7 +177,6 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       refreshing={isRefreshing(listSwr)}
       onRefresh={() => {
         if (!listSwr.isValidating) {
-          listSwr.setSize(1).catch(() => {})
           listSwr.mutate()
         }
       }}

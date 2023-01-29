@@ -172,7 +172,6 @@ function FeedTopicList(props: FeedTopicListProps) {
       refreshing={isRefreshing(listSwr) || false}
       onRefresh={() => {
         if (!listSwr.isValidating) {
-          listSwr.setSize(1).catch(() => {})
           listSwr.mutate()
         }
       }}

@@ -17,8 +17,7 @@ type RequestService = {
       reject: (...args: any[]) => void
     }
   >
-  loadPromise?: Promise<void>
-  reload(): void
+  reload(force?: boolean): void
   handleMessage(e: WebViewMessageEvent): void
   fetch(config: AxiosRequestConfig): Promise<AxiosResponse<any, any>>
 }
@@ -138,9 +137,9 @@ const service: RequestService = {
   error: null,
   webview: null,
   requests: {},
-  reload() {
+  reload(force = false) {
     // only reload once a time....
-    if (!service.error) {
+    if (!service.error && !force) {
       return;
     }
     service.isReady = false;
@@ -195,15 +194,22 @@ const service: RequestService = {
     }
     if (!service.isReady || !service.webview) {
       console.log('v2ex client webview service is not ready....');
+      Sentry.Native.addBreadcrumb({
+        type: 'info',
+        category: 'v2ex-client',
+        message: 'Webview is not ready.',
+      })
       let initTime = Date.now();
       let count = 0;
       while (true) {
+        Sentry.Native.addBreadcrumb({
+          type: 'info',
+          category: 'v2ex-client',
+          message: 'Webview loading...',
+          data: { count }
+        })
         console.log('...loading...', count);
-        if (service.loadPromise) {
-          await service.loadPromise
-        } else {
-          await delay(1000)
-        }
+        await delay(1000)
         if (service.isReady) {
           break
         }

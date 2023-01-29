@@ -6,6 +6,7 @@ import * as Sentry from 'sentry-expo'
 import ApiError from '@/utils/v2ex-client/ApiError'
 import { cacheProvider } from '@/utils/swr'
 import { PropsWithChildren } from 'react'
+import { stableHash } from 'swr/_internal'
 
 function AppSWRConfig(props: PropsWithChildren) {
   return (
@@ -71,6 +72,24 @@ function AppSWRConfig(props: PropsWithChildren) {
             })
             Sentry.Native.captureMessage('@_SWR_ERROR_@')
           }
+        },
+        onLoadingSlow(key, config) {
+          Sentry.Native.addBreadcrumb({
+            type: 'info',
+            data: { slowKey: key },
+          })
+          Sentry.Native.captureMessage('@_LOADING_SLOW_@')
+        },
+        compare(a, b) {
+          if (
+            typeof a === 'object' &&
+            typeof b === 'object' &&
+            a.data &&
+            b.data
+          ) {
+            return stableHash(a.data) === stableHash(b.data)
+          }
+          return stableHash(a) === stableHash(b)
         },
       }}>
       {props.children}

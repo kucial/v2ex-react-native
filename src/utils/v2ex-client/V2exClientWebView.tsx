@@ -22,13 +22,7 @@ export default function V2exClientWebView() {
 
   useEffect(() => {
     service.webview = ref.current
-    if (!service.isReady) {
-      service.loadPromise = new Promise((resolve, reject) => {
-        promiseCallback.current = { resolve, reject }
-      })
-    }
     return () => {
-      service.loadPromise = null
       service.webview = null
       service.isReady = false
       if (readyTimeout.current) {
@@ -49,10 +43,12 @@ export default function V2exClientWebView() {
           nextAppState === 'active' &&
           shouldReload(moveToBackgroundTimestamp)
         ) {
-          service.loadPromise = new Promise((resolve, reject) => {
-            promiseCallback.current = { resolve, reject }
+          Sentry.Native.addBreadcrumb({
+            type: 'info',
+            category: 'v2ex-client',
+            message: 'Reload webview when appState [background] ==> [active]',
           })
-          service.reload()
+          service.reload(true)
         } else if (nextAppState === 'background') {
           moveToBackgroundTimestamp = Date.now()
         }
