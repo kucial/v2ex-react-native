@@ -58,7 +58,7 @@ import Conversation from './Conversation'
 import ReplyRow from './ReplyRow'
 import TopicInfo from './TopicInfo'
 import TopicReplyForm from './TopicReplyForm'
-import ScrollControl, { ScrollControlProps } from './ScrollControl'
+import ScrollControl, { ScrollControlApi } from './ScrollControl'
 import { useScrollDirection } from '@/utils/scroll'
 import { TopicDetail, TopicReply } from '@/types/v2ex'
 import { debounce } from 'lodash'
@@ -189,6 +189,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const conversationModalRef = useRef<BottomSheetModal>()
   const { composeAuthedNavigation } = useAuthService()
   const aIndicator = useActivityIndicator()
+  const scrollControlRef = useRef<ScrollControlApi>(null)
 
   const { theme, styles } = useTheme()
 
@@ -633,18 +634,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     return getRelatedReplies(conversationContext, replyItems)
   }, [conversationContext, replyItems])
 
-  const [scrollControlAction, setScrollControlAction] =
-    useState<ScrollControlProps['action']>('')
-  const directionCallback = useCallback(
-    (direction) => {
-      if (direction === 'down') {
-        setScrollControlAction('to_bottom')
-      } else {
-        setScrollControlAction('to_top')
-      }
-    },
-    [setScrollControlAction],
-  )
+  const directionCallback = useCallback((direction) => {
+    if (direction === 'down') {
+      scrollControlRef.current?.setAction('to_bottom')
+    } else {
+      scrollControlRef.current?.setAction('to_top')
+    }
+  }, [])
   const { onScroll, resetDirection } = useScrollDirection({
     callback: directionCallback,
   })
@@ -653,7 +649,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     debounce(
       () => {
         resetDirection()
-        setScrollControlAction('')
+        scrollControlRef.current?.setAction('')
       },
       1000,
       { trailing: true },
@@ -789,7 +785,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             </Pressable>
           </View>
           <ScrollControl
-            action={scrollControlAction}
+            ref={scrollControlRef}
             max={topic.replies}
             onNavTo={handleNavTo}
           />
