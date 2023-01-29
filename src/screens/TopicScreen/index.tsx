@@ -651,7 +651,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         resetDirection()
         scrollControlRef.current?.setAction('')
       },
-      1000,
+      500,
       { trailing: true },
     ),
     [],
