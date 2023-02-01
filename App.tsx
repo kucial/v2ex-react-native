@@ -4,20 +4,20 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as Sentry from 'sentry-expo'
 
+// import DebugScreen from './src/screens/DebugScreen'
+import V2exClientWebView from '@/utils/v2ex-client/V2exClientWebView'
+
 import ErrorBoundary from './src/components/ErrorBoundary'
 import ActivityIndicator from './src/containers/ActivityIndicator'
-import AppSWRConfig from './src/containers/AppSWRConfig'
 import AlertService from './src/containers/AlertService'
 import AppSettingsService from './src/containers/AppSettingsService'
+import AppSWRConfig from './src/containers/AppSWRConfig'
 import AuthService from './src/containers/AuthService'
 import ImgurService from './src/containers/ImgurService'
 import NavigationContainer from './src/containers/NavigationContainer'
 import { ThemeProvider } from './src/containers/ThemeService'
 import ViewedTopicsService from './src/containers/ViewedTopicsService'
 import AppStack from './src/screens/AppStack'
-// import DebugScreen from './src/screens/DebugScreen'
-
-import V2exClientWebView from '@/utils/v2ex-client/V2exClientWebView'
 
 Sentry.init({
   dsn: SENTRY_DSN,

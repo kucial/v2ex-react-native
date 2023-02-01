@@ -1,27 +1,33 @@
 module.exports = {
   root: true,
-  extends: ['plugin:react/recommended', 'plugin:react/jsx-runtime'],
+  parser: '@typescript-eslint/parser',
+  extends: [
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   plugins: [
+    '@typescript-eslint',
     'react',
     'react-native',
     'jest',
     'prettier',
     'simple-import-sort',
-    'unused-imports'
+    'unused-imports',
   ],
   settings: { react: { version: 'detect' } },
-  parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaFeatures: {
-      jsx: true
+      jsx: true,
     },
     ecmaVersion: 12,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   env: {
     'react-native/react-native': true,
     browser: true,
-    'jest/globals': true
+    'jest/globals': true,
   },
   rules: {
     'prettier/prettier': 'error',
@@ -32,14 +38,13 @@ module.exports = {
         groups: [
           ['^\\u0000'],
           [
-            '^(assert|constants|crypto|events|fs|path|querystring|stream|url)(/.*|$)'
+            '^(assert|constants|crypto|events|fs|path|querystring|stream|url)(/.*|$)',
           ],
           ['^(react|solid|vite)', '^@?\\w'],
           ['^(@)(/.*|$)'],
-          ['^\\.']
-        ]
-      }
+          ['^\\.'],
+        ],
+      },
     ],
-    'no-undef': 'error'
-  }
+  },
 }

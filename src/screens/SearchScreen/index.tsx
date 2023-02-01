@@ -10,13 +10,13 @@ import {
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
 import WebView from 'react-native-webview'
-import Constants from 'expo-constants'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import Constants from 'expo-constants'
 
 import BackButton from '@/components/BackButton'
 import { useTheme } from '@/containers/ThemeService'
-import { getScreenInfo } from '@/utils/url'
 import { useCachedState } from '@/utils/hooks'
+import { getScreenInfo } from '@/utils/url'
 
 const topicLinkCapture = `(function() {
   try {

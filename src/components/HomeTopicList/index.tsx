@@ -17,11 +17,11 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/swr'
+import { getHomeFeeds, getRecentFeeds } from '@/utils/v2ex-client'
+import { HomeTopicFeed } from '@/utils/v2ex-client/types'
 
 import TideTopicRow from './TideTopicRow'
 import TopicRow from './TopicRow'
-import { HomeTopicFeed } from '@/types/v2ex'
-import { getHomeFeeds, getRecentFeeds } from '@/utils/v2ex-client'
 
 type FeedTopicListProps = {
   tab: string
@@ -67,13 +67,17 @@ function FeedTopicList(props: FeedTopicListProps) {
     }
     if (listSwr.data) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      listSwr.setSize(1).catch(() => {})
+      listSwr.setSize(1).catch((err) => {
+        console.log(err)
+      })
       listViewRef.current.scrollToOffset({
         offset: scrollY.current > 0 ? 0 : -60,
         animated: true,
       })
     }
-    listSwr.mutate().catch(() => {})
+    listSwr.mutate().catch((err) => {
+      console.log(err)
+    })
   }, [listSwr])
 
   const { renderItem, keyExtractor } = useMemo(

@@ -8,17 +8,17 @@ import SwipeableItem, {
   useSwipeableItemParams,
 } from 'react-native-swipeable-item'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
-import { ViewedTopic } from '@/types/v2ex'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { ViewedTopic } from '@/utils/v2ex-client/types'
 
-import ViewedTopicRow from './ViewedTopicRow'
 import TideViewedTopicRow from './TideViewedTopicRow'
+import ViewedTopicRow from './ViewedTopicRow'
 
 const Actions = (props) => {
   const params = useSwipeableItemParams()

@@ -3,12 +3,13 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useState,
   useMemo,
+  useState,
 } from 'react'
 import { Appearance, StyleSheet } from 'react-native'
 import { throttle } from 'lodash'
-import { MyTheme, ThemeStyles, ThemeService } from './types'
+
+import { MyTheme, ThemeService, ThemeStyles } from './types'
 
 // 混合 navigation 的 theme
 const themes: Record<string, MyTheme> = {
@@ -153,7 +154,9 @@ const ThemeContext = createContext<ThemeService>({
   theme: {},
   styles: {},
   colorScheme: 'light',
-  setColorScheme: (str) => {},
+  setColorScheme: (str) => {
+    console.log('setColorScheme: ', str)
+  },
 } as ThemeService)
 
 export const ThemeProvider = (props) => {

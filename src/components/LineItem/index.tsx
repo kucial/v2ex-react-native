@@ -1,15 +1,15 @@
+import { ReactElement, ReactNode } from 'react'
 import {
+  GestureResponderEvent,
   Pressable,
   Text,
   View,
   ViewStyle,
-  GestureResponderEvent,
 } from 'react-native'
 import classNames from 'classnames'
-import { ReactElement, ReactNode } from 'react'
+import { styled } from 'nativewind'
 
 import { useTheme } from '@/containers/ThemeService'
-import { styled } from 'nativewind'
 
 export const LineItemGroup = (props: {
   style?: ViewStyle

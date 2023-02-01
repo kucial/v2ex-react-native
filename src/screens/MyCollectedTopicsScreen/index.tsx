@@ -4,9 +4,9 @@ import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { getMyCollectedTopics } from '@/utils/v2ex-client'
 
 import CollectedTopicRow from './CollectedTopicRow'
-import { getMyCollectedTopics } from '@/utils/v2ex-client'
 
 export default function CollectedTopicsScreen() {
   const getKey = useCallback((index: number): [string, number] => {

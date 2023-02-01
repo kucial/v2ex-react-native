@@ -5,16 +5,16 @@ import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { useAlertService } from '@/containers/AlertService'
-import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { getMemberTopics } from '@/utils/v2ex-client'
 
 import UserTopicRow from './MemberTopicRow'
-import { getMemberTopics } from '@/utils/v2ex-client'
 
 export default function MemberTopics(props: { username: string }) {
   const alert = useAlertService()
-  const { hasViewed } = useViewedTopics()
+  const { getViewedStatus } = useViewedTopics()
   const { data: settings } = useAppSettings()
   const getKey = useCallback(
     (index: number): [string, string, number] => {
@@ -56,7 +56,7 @@ export default function MemberTopics(props: { username: string }) {
         return (
           <UserTopicRow
             data={item}
-            viewed={hasViewed(item?.id)}
+            viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
           />

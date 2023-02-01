@@ -1,15 +1,15 @@
 import { useEffect } from 'react'
+import React from 'react'
 import { Text } from 'react-native'
 import {
+  CustomTextualRenderer,
   getNativePropsForTNode,
   useNormalizedUrl,
-  CustomTextualRenderer,
 } from 'react-native-render-html'
 
 import { getImgurResourceImageLink, isImgurResourceLink } from '@/utils/url'
 
 import { useImageViewing } from './ImageViewingService'
-import React from 'react'
 
 const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
   const renderProps = getNativePropsForTNode(props)

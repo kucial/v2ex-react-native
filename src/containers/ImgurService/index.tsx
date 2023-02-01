@@ -17,8 +17,9 @@ export const useImgurService = () => useContext(ImgurServiceContext)
 
 const SERVICE_KEY = '$app$/services/imgur'
 
-import client from './ImgurClient'
 import { useCachedState } from '@/utils/hooks'
+
+import client from './ImgurClient'
 
 export default function ImgurServiceProvider(props) {
   const [credentials, setCredentials] = useCachedState<

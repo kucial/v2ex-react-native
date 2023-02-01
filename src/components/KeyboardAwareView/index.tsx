@@ -4,10 +4,10 @@ import React, { ReactNode } from 'react'
 import {
   Animated,
   Keyboard,
+  KeyboardEvent,
   Platform,
   View,
   ViewStyle,
-  KeyboardEvent,
 } from 'react-native'
 
 type Props = {
@@ -24,7 +24,7 @@ type State = {
 }
 
 class KeyboardAwareView extends React.Component<Props, State> {
-  debug: boolean = false
+  debug = false
   state = {
     height: new Animated.Value(0),
   }
@@ -37,8 +37,6 @@ class KeyboardAwareView extends React.Component<Props, State> {
     Keyboard.addListener('keyboardWillHide', this.onKeyboardWillHide.bind(this))
   }
 
-  componentWillUnmount() {}
-
   debugLog(...args: any[]) {
     if (this.debug) {
       console.log.apply(this, args)
@@ -46,7 +44,7 @@ class KeyboardAwareView extends React.Component<Props, State> {
   }
 
   onKeyboardWillShow(e: KeyboardEvent) {
-    var endY = e.endCoordinates.screenY
+    const endY = e.endCoordinates.screenY
     // var startY = e.startCoordinates.screenY
     this.debugLog(e)
 
@@ -57,9 +55,9 @@ class KeyboardAwareView extends React.Component<Props, State> {
         // target scrollView height should be :
         //   remaining height OR outerView height
         // = screen height - keyboard height OR outerView height
-        var remainScreenMaxHeight = endY - py
-        var outerViewMaxHeight = height
-        var maxHeight = remainScreenMaxHeight
+        const remainScreenMaxHeight = endY - py
+        const outerViewMaxHeight = height
+        let maxHeight = remainScreenMaxHeight
         if (maxHeight > outerViewMaxHeight) {
           maxHeight = outerViewMaxHeight
         }
@@ -79,7 +77,7 @@ class KeyboardAwareView extends React.Component<Props, State> {
     })
   }
   onKeyboardWillHide(e: KeyboardEvent) {
-    var endY = e.endCoordinates.screenY
+    const endY = e.endCoordinates.screenY
     // var startY = e.startCoordinates.screenY
     this.debugLog(e)
 
@@ -90,9 +88,9 @@ class KeyboardAwareView extends React.Component<Props, State> {
         // target scrollView height should be :
         //   remaining height OR outerView height
         // = screen height - keyboard height OR outerView height
-        var remainScreenMaxHeight = endY
-        var outerViewMaxHeight = height
-        var maxHeight = remainScreenMaxHeight
+        const remainScreenMaxHeight = endY
+        const outerViewMaxHeight = height
+        let maxHeight = remainScreenMaxHeight
         if (maxHeight > outerViewMaxHeight) {
           maxHeight = outerViewMaxHeight
         }
@@ -116,7 +114,7 @@ class KeyboardAwareView extends React.Component<Props, State> {
         }}
         style={[{ flex: 1 }, this.props.style]}
         onLayout={(e) => {
-          var { x, y, width, height } = e.nativeEvent.layout
+          const { x, y, width, height } = e.nativeEvent.layout
           Animated.timing(this.state.height, {
             toValue: height,
             duration: 0,
@@ -134,7 +132,7 @@ class KeyboardAwareView extends React.Component<Props, State> {
         <Animated.View
           style={[{ height: this.state.height }, this.props.innerViewStyle]}
           onLayout={(e) => {
-            var { x, y, width, height } = e.nativeEvent.layout
+            const { x, y, width, height } = e.nativeEvent.layout
           }}>
           {this.props.children}
         </Animated.View>

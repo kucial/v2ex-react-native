@@ -1,10 +1,10 @@
 import { Pressable, Text, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
 import FastImage from 'react-native-fast-image'
+import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
-import { useTheme } from '@/containers/ThemeService'
 import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
+import { useTheme } from '@/containers/ThemeService'
 
 const CollectedTopicRow = (props: CollectedTopicRowProps) => {
   const { data } = props
@@ -75,7 +75,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
             <Pressable
               hitSlop={4}
               className="py-[2px] px-[6px] rounded active:opacity-60"
-              style={styles.layer3}
+              style={styles.layer2}
               onPress={() => {
                 navigation.push('node', {
                   name: data.node.name,

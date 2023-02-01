@@ -1,10 +1,10 @@
 import { ReactElement, ReactNode, useMemo, useRef, useState } from 'react'
 import { forwardRef } from 'react'
 import { useImperativeHandle } from 'react'
+import WebView from 'react-native-webview'
 import { captureMessage } from '@sentry/react-native'
 
 import { EditorContext } from './context'
-import WebView from 'react-native-webview'
 import {
   SlateEditorMethods,
   SlateEditorService,

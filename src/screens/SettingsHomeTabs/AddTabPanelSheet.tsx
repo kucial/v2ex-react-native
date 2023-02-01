@@ -1,18 +1,17 @@
 import { forwardRef, useCallback, useMemo, useState } from 'react'
-import useSWR from 'swr'
-import classNames from 'classnames'
 import { Pressable, Text, View } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
-
-import { useTheme } from '@/containers/ThemeService'
-
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet'
-import { HomeTabOption } from '@/types/v2ex'
+import { FlashList } from '@shopify/flash-list'
+import classNames from 'classnames'
+import useSWR from 'swr'
+
+import { useTheme } from '@/containers/ThemeService'
 import { getNodes } from '@/utils/v2ex-client'
+import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import TypeIcon from './TypeIcon'
 
@@ -176,5 +175,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
     </BottomSheetModal>
   )
 })
+
+AddTabPanelSheet.displayName = 'AddTabPanelSheet'
 
 export default AddTabPanelSheet

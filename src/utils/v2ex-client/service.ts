@@ -1,10 +1,10 @@
-
-import { pick, uniqueId } from 'lodash'
-import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
-import * as Sentry from 'sentry-expo';
-import { ONCP } from './constants'
+import { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { pick, uniqueId } from 'lodash'
+import * as Sentry from 'sentry-expo'
+
 import ApiError from './ApiError'
+import { ONCP } from './constants'
 
 type RequestService = {
   isReady: boolean
@@ -21,7 +21,6 @@ type RequestService = {
   handleMessage(e: WebViewMessageEvent): void
   fetch(config: AxiosRequestConfig): Promise<AxiosResponse<any, any>>
 }
-
 
 const delay = (timeout: number) =>
   new Promise((resolve) => {
@@ -64,7 +63,7 @@ const axiosRequestScript = (id: string, config: AxiosRequestConfig) => {
   ])
 
   if (config.headers['Content-Type'] === 'application/json') {
-    configToInject.data = JSON.parse(configToInject.data);
+    configToInject.data = JSON.parse(configToInject.data)
   }
   const script = getRequestScript(
     id,
@@ -113,7 +112,9 @@ const axiosRequestScript = (id: string, config: AxiosRequestConfig) => {
 
 const customScriptGenerators = {
   ['/_custom_/once'](id: string, config: AxiosRequestConfig) {
-    return getRequestScript(id, `
+    return getRequestScript(
+      id,
+      `
       const params = ${JSON.stringify(config.params)};
       if (params.refresh) {
         delete window.V2EX.once
@@ -123,8 +124,9 @@ const customScriptGenerators = {
       return {
         data: once,
       };
-    `)
-  }
+    `,
+    )
+  },
 }
 
 const customRequestScript = (id: string, config: AxiosRequestConfig) => {
@@ -140,10 +142,10 @@ const service: RequestService = {
   reload(force = false) {
     // only reload once a time....
     if (!service.error && !force) {
-      return;
+      return
     }
-    service.isReady = false;
-    service.error = null;
+    service.isReady = false
+    service.error = null
     service.webview?.reload()
     const error = new ApiError({
       code: 'REQUEST_RESET',
@@ -166,8 +168,8 @@ const service: RequestService = {
     }
     const { id, response, error } = msgData
     if (!service.requests[id]) {
-      Sentry.Native.captureMessage('V2EX_CLIENT_REQUEST_HANDLER_NOT_EXISTS.');
-      return;
+      Sentry.Native.captureMessage('V2EX_CLIENT_REQUEST_HANDLER_NOT_EXISTS.')
+      return
     }
     Sentry.Native.addBreadcrumb({
       type: 'info',
@@ -175,8 +177,8 @@ const service: RequestService = {
       message: 'handleMessage',
       data: {
         id,
-      }
-    });
+      },
+    })
     if (response) {
       service.requests[id].resolve(response)
     } else {
@@ -188,27 +190,27 @@ const service: RequestService = {
     if (service.error) {
       // TODO: better reset service.error strategy
       setTimeout(() => {
-        service.reload();
-      }, 300);
-      throw service.error;
+        service.reload()
+      }, 300)
+      throw service.error
     }
     if (!service.isReady || !service.webview) {
-      console.log('v2ex client webview service is not ready....');
+      console.log('v2ex client webview service is not ready....')
       Sentry.Native.addBreadcrumb({
         type: 'info',
         category: 'v2ex-client',
         message: 'Webview is not ready.',
       })
-      let initTime = Date.now();
-      let count = 0;
+      let initTime = Date.now()
+      let count = 0
       while (true) {
         Sentry.Native.addBreadcrumb({
           type: 'info',
           category: 'v2ex-client',
           message: 'Webview loading...',
-          data: { count }
+          data: { count },
         })
-        console.log('...loading...', count);
+        console.log('...loading...', count)
         await delay(1000)
         if (service.isReady) {
           break
@@ -219,23 +221,22 @@ const service: RequestService = {
             message: 'webview service is not ready',
           })
         }
-        count += 1;
+        count += 1
       }
     }
-    const id = uniqueId() + '_' + Date.now();
+    const id = uniqueId() + '_' + Date.now()
     return new Promise((resolve, reject) => {
       service.requests[id] = { resolve, reject }
-      let script: string;
+      let script: string
       if (config.url.startsWith('/_custom_/')) {
         script = customRequestScript(id, config)
       } else {
         script = axiosRequestScript(id, config)
       }
 
-
       service.webview.injectJavaScript(script)
     })
   },
 }
 
-export default service;
+export default service

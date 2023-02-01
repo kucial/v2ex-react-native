@@ -1,11 +1,10 @@
-import { View, AppState } from 'react-native'
 import { useEffect, useRef } from 'react'
+import { AppState, View } from 'react-native'
 import WebView from 'react-native-webview'
 import * as Sentry from 'sentry-expo'
 
 import ApiError from './ApiError'
 import { BASE_URL, USER_AGENT } from './constants'
-
 import service from './service'
 
 const shouldReload = (timestamp: number) => {

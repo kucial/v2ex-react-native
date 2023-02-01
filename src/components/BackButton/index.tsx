@@ -1,4 +1,4 @@
-import { Pressable, View, GestureResponderEvent } from 'react-native'
+import { GestureResponderEvent, Pressable, View } from 'react-native'
 import { ChevronLeftIcon } from 'react-native-heroicons/outline'
 import { HeaderBackButton } from '@react-navigation/elements'
 import { useNavigation } from '@react-navigation/native'

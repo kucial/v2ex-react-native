@@ -1,8 +1,8 @@
 import {
+  GestureResponderEvent,
   Pressable,
   ScrollView,
   View,
-  GestureResponderEvent,
 } from 'react-native'
 import classNames from 'classnames'
 

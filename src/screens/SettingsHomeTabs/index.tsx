@@ -9,10 +9,10 @@ import {
 } from 'react'
 import {
   Alert,
+  GestureResponderEvent,
   Pressable,
   Text,
   View,
-  GestureResponderEvent,
   ViewStyle,
 } from 'react-native'
 import DraggableFlatList, {
@@ -31,14 +31,13 @@ import SwipeableItem, {
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-
 import classNames from 'classnames'
 
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
+import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { useAlertService } from '@/containers/AlertService'
-import { HomeTabOption } from '@/types/v2ex'
+import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import AddTabPanelSheet from './AddTabPanelSheet'
 

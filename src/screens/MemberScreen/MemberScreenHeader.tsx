@@ -5,17 +5,16 @@ import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import Constants from 'expo-constants'
 
-import { MemberDetail } from '@/types/v2ex'
-import { StatusResponse } from '@/utils/v2ex-client/types'
-
 import BackButton from '@/components/BackButton'
 import OutlinedText from '@/components/OutlinedText'
 import { Box } from '@/components/Skeleton/Elements'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
-import * as v2exClient from '@/utils/v2ex-client'
 import { localTime } from '@/utils/time'
+import * as v2exClient from '@/utils/v2ex-client'
+import { MemberDetail } from '@/utils/v2ex-client/types'
+import { StatusResponse } from '@/utils/v2ex-client/types'
 
 const AVATAR_SIZE = 68
 const HEADER_CANVAS_HEIGHT = 80

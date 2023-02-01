@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { RefreshControl, SectionList, Text, View } from 'react-native'
-import useSWR from 'swr'
-import { useFocusEffect } from '@react-navigation/native'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
+import { useFocusEffect } from '@react-navigation/native'
+import useSWR from 'swr'
 
 import SearchInput from '@/components/SearchInput'
 import { useAuthService } from '@/containers/AuthService'

@@ -1,16 +1,15 @@
 import { useCallback } from 'react'
-import { View, Text, TextInput, Pressable } from 'react-native'
+import { Pressable, Text, TextInput, View } from 'react-native'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 import { Formik, FormikHelpers } from 'formik'
 import * as Sentry from 'sentry-expo'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import * as Yup from 'yup'
 
-import { useTheme } from '@/containers/ThemeService'
-import { useAlertService } from '@/containers/AlertService'
-
 import Loader from '@/components/Loader'
+import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
+import { useTheme } from '@/containers/ThemeService'
 
 type FormValues = {
   name: string

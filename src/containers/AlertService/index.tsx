@@ -1,12 +1,12 @@
 /*global Proxy */
 import {
   createContext,
+  forwardRef,
   ReactNode,
   useContext,
-  useRef,
-  useMemo,
-  forwardRef,
   useImperativeHandle,
+  useMemo,
+  useRef,
 } from 'react'
 import DropdownAlert from 'react-native-dropdownalert'
 
@@ -71,6 +71,7 @@ const AlertServiceProvider = forwardRef<
     </AlertService.Provider>
   )
 })
+AlertServiceProvider.displayName = 'AlertServiceProvider'
 
 export default AlertServiceProvider
 

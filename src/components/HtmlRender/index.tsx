@@ -19,12 +19,12 @@ import {
   isImgurResourceLink,
 } from '@/utils/url'
 
-import { RenderContext } from './context'
-import ImageViewingServiceProvider from './ImageViewingService'
-import type { ImageViewingService } from './ImageViewingService'
-import TextRenderer from './TextRenderer'
 import AnchorRenderer from './AnchorRenderer'
+import { RenderContext } from './context'
 import ImageRenderer from './ImageRenderer'
+import type { ImageViewingService } from './ImageViewingService'
+import ImageViewingServiceProvider from './ImageViewingService'
+import TextRenderer from './TextRenderer'
 
 const renderers = {
   img: ImageRenderer,

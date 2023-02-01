@@ -1,28 +1,27 @@
 import {
+  MutableRefObject,
+  ReactElement,
   useCallback,
   useEffect,
   useMemo,
   useRef,
-  MutableRefObject,
-  ReactElement,
 } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import * as Haptics from 'expo-haptics'
-import useSWRInfinite from 'swr/infinite'
 import { SWRResponse } from 'swr'
-
-import { NodeTopicFeed } from '@/types/v2ex'
+import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/swr'
+import { getNodeFeeds } from '@/utils/v2ex-client'
+import { NodeTopicFeed } from '@/utils/v2ex-client/types'
 
 import NodeTopicRow from './NodeTopicRow'
 import TideNodeTopicRow from './TideNodeTopicRow'
-import { getNodeFeeds } from '@/utils/v2ex-client'
 
 type NodeTopicListProps = {
   name: string
@@ -67,14 +66,18 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     }
     if (listSwr.data) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      listSwr.setSize(1).catch(() => {})
+      listSwr.setSize(1).catch((err) => {
+        console.log(err)
+      })
       const params = {
         offset: scrollY.current > 0 ? 0 : -60,
         animated: true,
       }
       listViewRef.current.scrollToOffset(params)
     }
-    listSwr.mutate().catch(() => {})
+    listSwr.mutate().catch((err) => {
+      console.log(err)
+    })
   }, [listSwr])
 
   const { renderItem, keyExtractor } = useMemo(() => {

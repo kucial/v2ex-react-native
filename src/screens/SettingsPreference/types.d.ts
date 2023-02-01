@@ -1,8 +1,8 @@
-import { HomeTopicFeed } from "@/types/v2ex"
+import { HomeTopicFeed } from '@/utils/v2ex-client/types'
 
 export type DemoRowProps = {
-  data: HomeTopicFeed,
-  showAvatar: boolean,
-  showLastReplyMember: boolean,
+  data: HomeTopicFeed
+  showAvatar: boolean
+  showLastReplyMember: boolean
   viewedStatus?: 'viewed' | 'has_update' | undefined | ''
 }

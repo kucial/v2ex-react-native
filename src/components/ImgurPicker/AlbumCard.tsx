@@ -3,10 +3,10 @@ import FastImage from 'react-native-fast-image'
 import { LockClosedIcon } from 'react-native-heroicons/outline'
 
 import { getImageLink, useImgurService } from '@/containers/ImgurService'
+import { ImgurAlbum } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 
 import albumCover from './assets/album-cover.png'
-import { ImgurAlbum } from '@/containers/ImgurService/types'
 
 export default function AlbumCard(props: {
   data: ImgurAlbum

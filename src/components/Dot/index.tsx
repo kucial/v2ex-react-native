@@ -1,5 +1,6 @@
-import { useTheme } from '@/containers/ThemeService'
 import { ColorValue, View, ViewStyle } from 'react-native'
+
+import { useTheme } from '@/containers/ThemeService'
 
 export default function Dot(props: {
   size?: number

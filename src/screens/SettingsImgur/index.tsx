@@ -8,17 +8,17 @@ import {
   View,
 } from 'react-native'
 import { IMGUR_CLIENT_ID } from '@env'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 import * as Clipboard from 'expo-clipboard'
 import * as Linking from 'expo-linking'
 import colors from 'tailwindcss/colors'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import ImgurLogo from '@/components/ImgurLogo'
 import { useAlertService } from '@/containers/AlertService'
 import { useImgurService } from '@/containers/ImgurService'
-import { useTheme } from '@/containers/ThemeService'
 import { ImgurCredentials } from '@/containers/ImgurService/types'
+import { useTheme } from '@/containers/ThemeService'
 
 const CACHE_KEY = `$app$/settings/imgur`
 

@@ -105,4 +105,6 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
   )
 })
 
+SearchInput.displayName = 'SearchInput'
+
 export default SearchInput

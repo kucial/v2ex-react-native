@@ -1,9 +1,10 @@
 import { createContext, useContext, useMemo } from 'react'
 
-import * as v2exClient from '@/utils/v2ex-client'
-import { AppSettings, AppSettingsService } from './types'
-import { HomeTabOption } from '@/types/v2ex'
 import { useCachedState } from '@/utils/hooks'
+import * as v2exClient from '@/utils/v2ex-client'
+import { HomeTabOption } from '@/utils/v2ex-client/types'
+
+import { AppSettings, AppSettingsService } from './types'
 
 const CACHE_KEY = '$app$/settings'
 

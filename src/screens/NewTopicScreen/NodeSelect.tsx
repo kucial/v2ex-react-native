@@ -6,12 +6,13 @@ import {
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
-import useSWR from 'swr'
 import classNames from 'classnames'
+import { styled } from 'nativewind'
+import useSWR from 'swr'
 
 import { useTheme } from '@/containers/ThemeService'
 import { getNodes } from '@/utils/v2ex-client'
-import { NodeDetail } from '@/types/v2ex'
+import { NodeDetail } from '@/utils/v2ex-client/types'
 
 const pickerSnapPoints = ['50%']
 const renderBackdrop = (props) => {
@@ -30,11 +31,11 @@ type NodeSelectProps = {
   filterPlaceholder: string
   placeholder: string
   placeholderStyle: TextStyle
-  style: ViewStyle
+  style: ViewStyle | ViewStyle[]
   renderLabel(item: NodeDetail): ReactElement
   value?: NodeDetail
 }
-export default function NodeSelect(props: NodeSelectProps) {
+function NodeSelect(props: NodeSelectProps) {
   const nodesSwr = useSWR('/api/nodes/all.json', getNodes)
   const { theme, styles } = useTheme()
   const [filter, setFilter] = useState('')
@@ -139,3 +140,5 @@ export default function NodeSelect(props: NodeSelectProps) {
     </>
   )
 }
+
+export default styled(NodeSelect)

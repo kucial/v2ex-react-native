@@ -1,4 +1,4 @@
-import Svg, { Path, G } from 'react-native-svg'
+import Svg, { G, Path } from 'react-native-svg'
 const ToBottomIcon = (props: IconProps) => {
   const { size = 24, color } = props
   return (

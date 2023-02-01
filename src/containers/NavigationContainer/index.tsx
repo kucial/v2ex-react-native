@@ -1,8 +1,8 @@
 import { useRef } from 'react'
 import {
   NavigationContainer,
-  useNavigationContainerRef,
   Route,
+  useNavigationContainerRef,
 } from '@react-navigation/native'
 import * as Sentry from 'sentry-expo'
 

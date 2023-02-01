@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Switch } from 'react-native'
-import classNames from 'classnames'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'

@@ -5,9 +5,9 @@ import useSWRInfinite from 'swr/infinite'
 import CommonListFooter from '@/components/CommonListFooter'
 import { useAuthService } from '@/containers/AuthService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { getMyNotifications } from '@/utils/v2ex-client'
 
 import NotificationRow from './NotificationRow'
-import { getMyNotifications } from '@/utils/v2ex-client'
 
 const fetcher = ([_, page]) => getMyNotifications({ p: page })
 export default function NotificationScreen() {

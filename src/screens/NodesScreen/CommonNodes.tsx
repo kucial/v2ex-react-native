@@ -1,10 +1,10 @@
 import { Pressable, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import classNames from 'classnames'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
-import { NodeBasic } from '@/types/v2ex'
+import { NodeBasic } from '@/utils/v2ex-client/types'
 
 export default function Nodes({ data }: { data: NodeBasic[] }) {
   const navigation =

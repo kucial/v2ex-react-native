@@ -6,8 +6,8 @@ import ImageView from 'react-native-image-viewing'
 import * as FileSystem from 'expo-file-system'
 import colors from 'tailwindcss/colors'
 
-import Loader from '../Loader'
 import CheckIcon from '../CheckIcon'
+import Loader from '../Loader'
 
 type ImageResource = {
   uri: string
@@ -158,7 +158,7 @@ export default ImageViewingServiceProvider
 export const useImageViewing = () => useContext(ServiceContext)
 
 function getImgXtension(uri: string, fallback: string) {
-  var basename = uri.split(/[\\/]/).pop()
+  const basename = uri.split(/[\\/]/).pop()
   if (!basename) {
     return fallback
   }

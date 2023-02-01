@@ -2,13 +2,13 @@ import { useMemo } from 'react'
 import { StatusBar, View } from 'react-native'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-
 import useSWR from 'swr'
+
+import { getMemberDetail } from '@/utils/v2ex-client'
 
 import MemberReplies from './MemberReplies'
 import MemberScreenHeader from './MemberScreenHeader'
 import MemberTopics from './MemberTopics'
-import { getMemberDetail } from '@/utils/v2ex-client'
 
 const Tab = createMaterialTopTabNavigator()
 

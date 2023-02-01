@@ -2,8 +2,9 @@ import { Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
 
-import { useTheme } from '@/containers/ThemeService'
 import TriangleCorner from '@/components/TriangleCorner'
+import { useTheme } from '@/containers/ThemeService'
+
 import { DemoRowProps } from './types'
 
 const TideTopicRowDemo = (props: DemoRowProps) => {

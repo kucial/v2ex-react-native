@@ -1,8 +1,9 @@
-import storage from '@/utils/storage'
 import { Component, ErrorInfo, ReactNode } from 'react'
-import RNRestart from 'react-native-restart'
 import FastImage from 'react-native-fast-image'
+import RNRestart from 'react-native-restart'
 import * as Sentry from 'sentry-expo'
+
+import storage from '@/utils/storage'
 
 interface Props {
   children?: ReactNode

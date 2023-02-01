@@ -1,53 +1,52 @@
+import { NodeDetail } from '@/utils/v2ex-client/types'
+
 import { MemberBasic, NodeBasic, TopicBasic } from './v2ex'
 declare global {
   type AppStackParamList = {
-    'topic': {
-      id: number,
+    topic: {
+      id: number
       brief?: TopicBasic
-    },
-    'main': {},
-    'search': {},
-    'node': {
-      name: string,
-      brief?: NodeBasic,
-    },
-    'browser': {
-      url: string,
-    },
-    'member': {
-      username: string,
-      brief?: MemberBasic,
-      tab?: 'topics' | 'replies',
-    },
-    'about': {},
+    }
+    main: null
+    search: null
+    node: {
+      name: string
+      brief?: NodeBasic
+    }
+    browser: {
+      url: string
+    }
+    member: {
+      username: string
+      brief?: MemberBasic
+      tab?: 'topics' | 'replies'
+    }
+    about: null
     'new-topic': {
-      node?: {
-        name: string,
-      },
-    },
-    'notification': {
-
-    },
-    'profile': {},
-    'created-topics': {},
-    'collected-topics': {},
-    'replied-topics': {},
-    'viewed-topics': {},
-    'settings': {},
+      node?: NodeDetail
+    }
+    notification: null
+    profile: null
+    'created-topics': null
+    'collected-topics': null
+    'replied-topics': null
+    'viewed-topics': null
+    settings: null
     'imgur-settings': {
-      autoBack?: boolean,
-    },
-    'home-tab-settings': {},
-    'preference-settings': {},
-    'signin': {},
+      autoBack?: boolean
+    }
+    'home-tab-settings': null
+    'preference-settings': null
+    signin: null
 
-    'feedback': {},
+    feedback: null
   }
 
   type MainTabParamList = {
-    feed: {},
-    nodes: {},
-    my: {},
+    feed: null
+    nodes: null
+    my: null
   }
 }
-export { }
+
+export {}

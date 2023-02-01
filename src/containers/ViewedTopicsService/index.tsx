@@ -1,8 +1,7 @@
 import { createContext, useContext, useMemo, useState } from 'react'
 
 import { useCachedState } from '@/utils/hooks'
-
-import { TopicDetail, ViewedTopic } from '@/types/v2ex'
+import { TopicDetail, ViewedTopic } from '@/utils/v2ex-client/types'
 import { TopicId } from '@/utils/v2ex-client/types'
 
 import { useAppSettings } from '../AppSettingsService'
@@ -44,10 +43,7 @@ interface ViewedTopicsService {
   removeItem: (item: TopicDetail) => void
 }
 
-export const ViewedTopicsContext = createContext<ViewedTopicsService>({
-  hasViewed: (id) => false,
-  touchViewed: (topic) => {},
-} as ViewedTopicsService)
+export const ViewedTopicsContext = createContext<ViewedTopicsService>(null)
 
 export default function ViewedTopicsService(props) {
   const [state, setState] = useCachedState<ViewedTopicState>(

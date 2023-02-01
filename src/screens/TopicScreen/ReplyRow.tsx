@@ -12,6 +12,7 @@ import {
   HeartIcon,
 } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 import { marked } from 'marked'
 
@@ -22,9 +23,8 @@ import ReplyIcon from '@/components/ReplyIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
-import { TopicReply } from '@/types/v2ex'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { usePressBreadcrumb } from '@/utils/hooks'
+import { TopicReply } from '@/utils/v2ex-client/types'
 
 type ReplyRowProps = {
   data: TopicReply

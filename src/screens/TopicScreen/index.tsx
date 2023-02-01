@@ -22,7 +22,6 @@ import {
   ShareIcon,
   StarIcon,
 } from 'react-native-heroicons/outline'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import {
   HeartIcon as FilledHeartIcon,
   StarIcon as FilledStarIcon,
@@ -34,10 +33,12 @@ import {
   BottomSheetModal,
   BottomSheetScrollView,
 } from '@gorhom/bottom-sheet'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
-import useSWRInfinite from 'swr/infinite'
+import { debounce } from 'lodash'
 import useSWR from 'swr'
+import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
@@ -45,23 +46,21 @@ import { BlockText } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { useAppSettings } from '@/containers/AppSettingsService'
-
+import { useScrollDirection } from '@/utils/scroll'
+import { setJSON } from '@/utils/storage'
 import { isLoading, isRefreshing, shouldLoadMore } from '@/utils/swr'
 import * as v2exClient from '@/utils/v2ex-client'
-import { setJSON } from '@/utils/storage'
+import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
 
 import Conversation from './Conversation'
 import ReplyRow from './ReplyRow'
+import ScrollControl, { ScrollControlApi } from './ScrollControl'
 import TopicInfo from './TopicInfo'
 import TopicReplyForm from './TopicReplyForm'
-import ScrollControl, { ScrollControlApi } from './ScrollControl'
-import { useScrollDirection } from '@/utils/scroll'
-import { TopicDetail, TopicReply } from '@/types/v2ex'
-import { debounce } from 'lodash'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)

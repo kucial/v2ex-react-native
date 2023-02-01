@@ -2,11 +2,11 @@ import { Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { DocumentIcon } from 'react-native-heroicons/outline'
 import { useNavigation } from '@react-navigation/native'
-import classNames from 'classnames'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
-import { NodeExtra } from '@/types/v2ex'
+import { NodeExtra } from '@/utils/v2ex-client/types'
 
 export default function CollectedNodes(props: { data: NodeExtra[] }) {
   const navigation =

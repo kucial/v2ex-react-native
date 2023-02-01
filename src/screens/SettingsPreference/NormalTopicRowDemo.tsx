@@ -4,6 +4,7 @@ import classNames from 'classnames'
 
 import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
+
 import { DemoRowProps } from './types'
 
 const NormalTopicRowDemo = (props: DemoRowProps) => {

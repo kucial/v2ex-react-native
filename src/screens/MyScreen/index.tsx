@@ -2,23 +2,23 @@ import { useCallback, useEffect } from 'react'
 import { Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import {
-  Cog6ToothIcon,
-  InformationCircleIcon,
-  StarIcon,
-  PhotoIcon,
   Bars3Icon,
-  DocumentPlusIcon,
-  ClockIcon,
   ChatBubbleLeftEllipsisIcon,
+  ClockIcon,
+  Cog6ToothIcon,
+  DocumentPlusIcon,
+  InformationCircleIcon,
+  PhotoIcon,
+  StarIcon,
 } from 'react-native-heroicons/outline'
 import * as StoreReview from 'react-native-store-review'
-import classNames from 'classnames'
-import { CompositeScreenProps } from '@react-navigation/native'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
+import { CompositeScreenProps } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 
-import ReplyIcon from '@/components/ReplyIcon'
 import { LineItem, LineItemGroup } from '@/components/LineItem'
+import ReplyIcon from '@/components/ReplyIcon'
 import { Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'

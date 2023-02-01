@@ -37,3 +37,11 @@ SWR revalidate 在 RN 上似乎不是很友好。如果存在多个 SWR （包�
 应用内策略：
 
 1. 禁用首页主题列表组件的 SWR revlidate 相关功能。 通过项目内部的 hook 实现 “首次请求” 以及 “配合设置的定期刷新”
+
+## 关于 cocoapods 无法安装的情况
+
+```
+  Something went wrong running `pod install` in the `ios` directory.
+```
+
+https://github.com/facebook/react-native/issues/35807#issuecomment-1378831502

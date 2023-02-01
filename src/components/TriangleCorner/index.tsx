@@ -1,5 +1,6 @@
+import { ColorValue, StyleSheet, View, ViewStyle } from 'react-native'
+
 import { useTheme } from '@/containers/ThemeService'
-import { View, StyleSheet, ColorValue, ViewStyle } from 'react-native'
 
 const TriangleCorner = (props: {
   color?: ColorValue

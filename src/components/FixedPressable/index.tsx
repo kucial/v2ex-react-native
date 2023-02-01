@@ -1,6 +1,6 @@
-import { styled } from 'nativewind'
 import { useCallback, useRef } from 'react'
-import { Pressable, GestureResponderEvent, PressableProps } from 'react-native'
+import { GestureResponderEvent, Pressable, PressableProps } from 'react-native'
+import { styled } from 'nativewind'
 
 function FixedPressable({ onPress, onPressIn, ...props }: PressableProps) {
   const _touchActivatePositionRef = useRef(null)

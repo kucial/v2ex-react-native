@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useCallback } from 'react'
 import {
-  HostComponent,
+  findNodeHandle,
   InteractionManager,
   Pressable,
   SafeAreaView,
@@ -9,16 +9,14 @@ import {
   Text,
   TextInput,
   View,
-  findNodeHandle,
 } from 'react-native'
 import WebView from 'react-native-webview'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { addBreadcrumb, captureMessage } from '@sentry/react-native'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
 
-import { SlateEditorService } from '@/components/SlateEditor/types'
 import KeyboardAwareView from '@/components/KeyboardAwareView'
 import KeyboardDismiss from '@/components/KeyboardDismiss'
 import Loader from '@/components/Loader'
@@ -28,10 +26,10 @@ import {
   EditorRender,
   EditorToolbar,
 } from '@/components/SlateEditor'
+import { SlateEditorService } from '@/components/SlateEditor/types'
 import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
-import nodes from '@/mock/nodes'
 
 import NodeSelect from './NodeSelect'
 
@@ -123,6 +121,7 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                 (scrollViewInfo.current.height - VISIBLE_BOTTOM_OFFSET),
             })
           },
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
           () => {},
         )
       }
@@ -203,7 +202,6 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                   </View>
                   <View>
                     <NodeSelect
-                      options={nodes}
                       value={values.node}
                       renderLabel={(n) => (
                         <Text style={styles.text}>

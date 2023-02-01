@@ -1,9 +1,9 @@
 import {
+  GestureResponderEvent,
   Pressable,
   SafeAreaView,
   Text,
   View,
-  GestureResponderEvent,
 } from 'react-native'
 import { InformationCircleIcon } from 'react-native-heroicons/outline'
 import classNames from 'classnames'

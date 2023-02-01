@@ -1,7 +1,7 @@
 import { forwardRef, useRef } from 'react'
 import { ViewStyle } from 'react-native'
-import LottieView from 'lottie-react-native'
 import composeRefs from '@seznam/compose-react-refs'
+import LottieView from 'lottie-react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -49,5 +49,7 @@ const Loader = forwardRef<LottieView, LoaderProps>(
     )
   },
 )
+
+Loader.displayName = 'Loader'
 
 export default Loader

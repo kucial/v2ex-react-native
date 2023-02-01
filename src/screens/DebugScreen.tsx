@@ -1,22 +1,21 @@
 import { useCallback, useMemo, useRef } from 'react'
 import {
+  Dimensions,
   Pressable,
   SafeAreaView,
   StyleSheet,
   Text,
   useWindowDimensions,
   View,
-  Dimensions,
 } from 'react-native'
-
 import { SelectableText } from '@alentoma/react-native-selectable-text'
 
 import ErrorNotice from '@/components/ErrorNotice'
-import { useTheme } from '@/containers/ThemeService'
 import HtmlRender from '@/components/HtmlRender'
+import { useTheme } from '@/containers/ThemeService'
 
 const fSize = 30
-var p = {
+const p = {
   lineHeight: fSize * 1.7,
   fontSize: fSize,
   color: 'white',
@@ -24,7 +23,7 @@ var p = {
   textAlign: 'left',
 }
 
-var classes = {
+const classes = {
   paddingLeft: fSize * 0.9,
   paddingRight: fSize * 0.95,
   backgroundColor: 'black',

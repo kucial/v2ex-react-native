@@ -1,30 +1,28 @@
 /// <reference types="nativewind/types" />
 
-import { ColorValue } from 'react-native';
+import { ColorValue } from 'react-native'
 
 declare global {
-  type UrlString = string;
-  type HTMLString = string;
+  type UrlString = string
+  type HTMLString = string
 
   type IconProps = {
-    size?: number;
-    color?: string | ColorValue;
+    size?: number
+    color?: string | ColorValue
   }
 }
 
 declare module 'react-native' {
   interface TextProps {
-    url?: string;
+    url?: string
   }
 }
 
-declare module 'react-native-render-html' {
-
-}
+declare module 'react-native-render-html' {}
 
 declare module '*.png' {
-  const value: import('react-native').ImageSourcePropType;
-  export default value;
+  const value: import('react-native').ImageSourcePropType
+  export default value
 }
 
-export { }
+export {}

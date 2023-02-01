@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, Text, View } from 'react-native'
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
 import { useTheme } from '@/containers/ThemeService'

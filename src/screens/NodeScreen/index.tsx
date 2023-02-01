@@ -1,22 +1,20 @@
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import HtmlRender from '@/components/HtmlRender'
+import NodeTopicList from '@/components/NodeTopicList'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
-
-import NodeTopicList from '@/components/NodeTopicList'
-
-import * as v2exClient from '@/utils/v2ex-client'
-import { NodeDetail } from '@/types/v2ex'
 import { usePressBreadcrumb } from '@/utils/hooks'
+import * as v2exClient from '@/utils/v2ex-client'
+import { NodeDetail } from '@/utils/v2ex-client/types'
 
 type NodeBrief = {
   name: string
@@ -98,9 +96,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
     composeAuthedNavigation(
       useCallback(() => {
         navigation.push('new-topic', {
-          node: {
-            name: node.name,
-          },
+          node: node as NodeDetail,
         })
       }, [node?.name]),
     ),
@@ -169,6 +165,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                 className={classNames(
                   'ml-2 h-[38px] rounded-lg px-3 items-center justify-center active:opacity-60',
                 )}
+                disabled={!nodeSwr.data}
                 style={[styles.border, styles.border_light]}
                 onPress={handleCreateNewTopic}>
                 <Text style={styles.text}>创建新主题</Text>

@@ -11,16 +11,17 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import FastImage from 'react-native-fast-image'
 import WebView from 'react-native-webview'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
-import GoogleIcon from '@/components/GoogleIcon'
 import BackButton from '@/components/BackButton'
+import GoogleIcon from '@/components/GoogleIcon'
 import Loader from '@/components/Loader'
 import { USER_AGENT } from '@/constants'
 import { useTheme } from '@/containers/ThemeService'
+
 import { checkAuthStatus, get2FASubmitCode } from './scripts'
 
 const extractImageCaptcha = `

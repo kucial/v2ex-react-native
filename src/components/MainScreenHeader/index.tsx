@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { Platform, Pressable, Text, View } from 'react-native'
 import {
   ClockIcon,
@@ -5,14 +6,13 @@ import {
   EnvelopeIcon,
   MagnifyingGlassIcon,
 } from 'react-native-heroicons/outline'
-import Constants from 'expo-constants'
 import type { BottomTabHeaderProps } from '@react-navigation/bottom-tabs'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import Constants from 'expo-constants'
 
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
-import { useCallback } from 'react'
 
 export default function MainScreenHeader(
   props: BottomTabHeaderProps & NativeStackScreenProps<AppStackParamList>,

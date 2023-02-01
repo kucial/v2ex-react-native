@@ -15,7 +15,7 @@ import ImgurPicker from '@/components/ImgurPicker'
 import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
-import { TopicReply } from '@/types/v2ex'
+import { TopicReply } from '@/utils/v2ex-client/types'
 
 const pickerSnapPoints = ['90%']
 

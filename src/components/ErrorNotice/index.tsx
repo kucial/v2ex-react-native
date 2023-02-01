@@ -1,5 +1,5 @@
-import { Text, View, ViewStyle } from 'react-native'
 import { ReactElement } from 'react'
+import { Text, View, ViewStyle } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 

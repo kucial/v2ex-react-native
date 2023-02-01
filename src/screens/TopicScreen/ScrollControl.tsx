@@ -2,14 +2,14 @@ import {
   forwardRef,
   memo,
   useCallback,
-  useState,
   useImperativeHandle,
+  useState,
 } from 'react'
-import { Pressable, Text, View, Alert } from 'react-native'
+import { Alert, Pressable, Text, View } from 'react-native'
 
-import { useTheme } from '@/containers/ThemeService'
 import NumberIcon from '@/components/NumberIcon'
 import ToBottomIcon from '@/components/ToBottomIcon'
+import { useTheme } from '@/containers/ThemeService'
 
 export type ScrollControlProps = {
   max: number
@@ -93,5 +93,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
     )
   },
 )
+
+ScrollControl.displayName = 'ScrollControl'
 
 export default memo(ScrollControl)

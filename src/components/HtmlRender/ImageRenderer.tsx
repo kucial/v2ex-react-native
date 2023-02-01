@@ -4,10 +4,10 @@ import {
   CustomBlockRenderer,
   IMGElementContainer,
   IMGElementContentError,
+  IMGElementProps,
   useIMGElementState,
   useIMGElementStateWithCache,
   useInternalRenderer,
-  IMGElementProps,
 } from 'react-native-render-html'
 
 import {

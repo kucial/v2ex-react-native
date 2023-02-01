@@ -26,7 +26,7 @@ export default function UploadButton(props) {
       const localUri = imageInfo.uri
       const filename = localUri.split('/').pop()
       const match = /\.(\w+)$/.exec(filename)
-      let type = match ? `image/${match[1]}` : `image`
+      const type = match ? `image/${match[1]}` : `image`
 
       const imgurRes = await imgur.uploadImage({
         image: {

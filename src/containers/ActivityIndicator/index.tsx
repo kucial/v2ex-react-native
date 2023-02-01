@@ -1,20 +1,30 @@
-import { createContext, useContext, useMemo, useState } from 'react'
+import {
+  createContext,
+  ReactElement,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
 import { useWindowDimensions, View } from 'react-native'
 
 import Loader from '@/components/Loader'
 
 import { useTheme } from '../ThemeService'
 
-const ActivityIndicatorContext = createContext({
-  show(key: string) {},
-  hide(key: string) {},
-})
+type Context = {
+  show(keys: string): void
+  hide(keys: string): void
+}
+const ActivityIndicatorContext = createContext<Context>(null)
 
 const INDICATOR_WIDTH = 64
 const INDICATOR_HEIGHT = 64
 const LOADING_SET = new Set()
-export default function ActivityIndicatorProvider(props) {
-  const [count, setCount] = useState(0)
+
+export default function ActivityIndicatorProvider(props: {
+  children: ReactElement
+}) {
+  const [, setCount] = useState(0)
   const { width, height } = useWindowDimensions()
   const { theme } = useTheme()
 

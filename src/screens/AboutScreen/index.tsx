@@ -7,10 +7,10 @@ import {
   View,
 } from 'react-native'
 import FastImage from 'react-native-fast-image'
+import { ArrowUpOnSquareIcon } from 'react-native-heroicons/outline'
 import RNRestart from 'react-native-restart'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
-import { ArrowUpOnSquareIcon } from 'react-native-heroicons/outline'
 
 import GithubIcon from '@/components/GithubIcon'
 import { useTheme } from '@/containers/ThemeService'

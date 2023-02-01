@@ -1,13 +1,12 @@
 import { Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
-import classNames from 'classnames'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-
-import { useTheme } from '@/containers/ThemeService'
+import classNames from 'classnames'
 
 import FixedPressable from '@/components/FixedPressable'
 import TimeAgo from '@/components/TimeAgo'
+import { useTheme } from '@/containers/ThemeService'
 
 const ViewedTopicRow = (props: ViewedTopicRowProps) => {
   const { data, showAvatar } = props

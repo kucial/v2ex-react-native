@@ -1,13 +1,12 @@
 import { Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
-import classNames from 'classnames'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 
 import FixedPressable from '@/components/FixedPressable'
-import TriangleCorner from '@/components/TriangleCorner'
-
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
+import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
 
 export default function TopicRow(props: HomeFeedRowProps) {

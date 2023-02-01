@@ -2,16 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useWindowDimensions } from 'react-native'
 import { TabBar, TabView } from 'react-native-tab-view'
-import { useIsFocused, CompositeScreenProps } from '@react-navigation/native'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
+import { CompositeScreenProps, useIsFocused } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+
+import HomeTopicList from '@/components/HomeTopicList'
+import NodeTopicList from '@/components/NodeTopicList'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
-
-import NodeTopicList from '@/components/NodeTopicList'
-import HomeTopicList from '@/components/HomeTopicList'
 
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'

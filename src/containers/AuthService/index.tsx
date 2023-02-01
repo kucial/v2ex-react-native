@@ -22,10 +22,10 @@ const INIT_STATE = {
 const CHECK_STATUS_DELAY = 10000
 
 import { getJSON, setJSON } from '@/utils/storage'
+import clientService from '@/utils/v2ex-client/service'
+import { MemberDetail } from '@/utils/v2ex-client/types'
 
 import { useAlertService } from '../AlertService'
-import { MemberDetail } from '@/types/v2ex'
-import clientService from '@/utils/v2ex-client/service'
 
 interface MemberMeta {
   unread_count: number
@@ -70,6 +70,7 @@ const getUTCDateString = () => {
 
 export const AuthServiceContext = createContext<AuthService>({
   composeAuthedNavigation: (callback) => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return callback || function () {}
   },
 } as AuthService)
@@ -149,9 +150,9 @@ export default function AuthServiceProvider(props) {
       goToSigninSreen() {
         navigation.navigate('signin')
       },
-      composeAuthedNavigation: (callback) => {
+      composeAuthedNavigation: function <T>(callback) {
         return useCallback(
-          (...args) => {
+          (params?: T) => {
             if (state.status === 'loading') {
               alert.alertWithType('info', '提示', '正在验证登录状态，请稍候')
               return
@@ -160,12 +161,12 @@ export default function AuthServiceProvider(props) {
               navigation.navigate('signin')
               if (callback) {
                 nextAction.current = () => {
-                  callback(...args)
+                  callback(params)
                 }
               }
               return
             }
-            callback?.(...args)
+            callback?.(params)
           },
           [callback],
         )

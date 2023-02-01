@@ -2,7 +2,6 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { SafeAreaView, View } from 'react-native'
 import { Pressable } from 'react-native'
 import { Linking } from 'react-native'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import {
   ArrowTopRightOnSquareIcon,
   ChevronLeftIcon,
@@ -10,6 +9,7 @@ import {
 } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
 import { WebView } from 'react-native-webview'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import { USER_AGENT } from '@/constants'

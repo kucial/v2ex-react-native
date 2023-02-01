@@ -1,12 +1,12 @@
 import { memo, useMemo } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import HtmlRender from '@/components/HtmlRender'
 import { Box } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
-import { TopicDetail } from '@/types/v2ex'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { TopicDetail } from '@/utils/v2ex-client/types'
 
 function TopicInfo(props: {
   data: TopicDetail

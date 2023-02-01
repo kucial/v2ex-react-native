@@ -1,8 +1,10 @@
 import { Pressable, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 
 import { BlockText, InlineBox } from '@/components/Skeleton/Elements'
+import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
 
 export default function MemberTopicRow(props: MemberFeedRowProps) {
@@ -22,14 +24,18 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
           })
         }
       }}>
-      <View className="flex-1 py-2 pl-3">
+      <View
+        className={classNames(
+          'flex-1 py-2 pl-3',
+          props.viewedStatus === 'viewed' && 'opacity-70',
+        )}>
         <View className="flex flex-row items-center space-x-2 mb-1">
           <View>
             {data?.node ? (
               <Pressable
                 hitSlop={4}
                 className="py-[2px] px-[6px] rounded active:opacity-60"
-                style={styles.layer3}
+                style={styles.layer2}
                 onPress={() => {
                   navigation.push('node', {
                     name: data.node.name,
@@ -99,6 +105,18 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
           <InlineBox className="rounded-full text-xs px-2" width={[26, 36]} />
         )}
       </View>
+      {props.viewedStatus === 'has_update' && (
+        <TriangleCorner
+          corner="top-left"
+          size={10}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            opacity: 0.9,
+          }}
+        />
+      )}
     </Pressable>
   )
 }

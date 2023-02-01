@@ -6,16 +6,15 @@ import { useTheme } from '@/containers/ThemeService'
 
 import AboutScreen from './AboutScreen'
 import BrowserScreen from './BrowserScreen'
+import FeedbackScreen from './FeedbackScreen'
 import MainTab from './MainTab'
 import MemberScreen from './MemberScreen'
-
 import MyCollectedTopicsScreen from './MyCollectedTopicsScreen'
 import MyCreatedTopicsScreen from './MyCreatedTopicsScreen'
 import MyNotificationScreen from './MyNotificationScreen'
 import MyProfileScreen from './MyProfileScreen'
 import MyRepliedTopicsScreen from './MyRepliedTopicsScreen'
 import MyViewedTopicsScreen from './MyViewedTopicsScreen'
-
 import NewTopicScreen from './NewTopicScreen'
 import NodeScreen from './NodeScreen'
 import SearchScreen from './SearchScreen'
@@ -24,7 +23,6 @@ import SettingsImgur from './SettingsImgur'
 import SettingsPreference from './SettingsPreference'
 import SigninScreen from './SigninScreen'
 import TopicScreen from './TopicScreen'
-import FeedbackScreen from './FeedbackScreen'
 
 const Stack = createNativeStackNavigator<AppStackParamList>()
 

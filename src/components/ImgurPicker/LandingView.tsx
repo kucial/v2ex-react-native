@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { SafeAreaView, Text, View } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
+import { ImgurAlbum, ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 
 import BackButton from '../BackButton'
 import Albums from './Albums'
 import Images from './Images'
 import UploadButton from './UploadButton'
-import { ImgurAlbum, ImgurImage } from '@/containers/ImgurService/types'
 
 type LandingProps = {
   selected: ImgurImage[]

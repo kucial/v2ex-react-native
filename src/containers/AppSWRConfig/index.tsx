@@ -1,12 +1,12 @@
+import { PropsWithChildren } from 'react'
 import { AppState, AppStateStatus } from 'react-native'
 import NetInfo from '@react-native-community/netinfo'
-import { SWRConfig } from 'swr'
 import * as Sentry from 'sentry-expo'
-
-import ApiError from '@/utils/v2ex-client/ApiError'
-import { cacheProvider } from '@/utils/swr'
-import { PropsWithChildren } from 'react'
+import { SWRConfig } from 'swr'
 import { stableHash } from 'swr/_internal'
+
+import { cacheProvider } from '@/utils/swr'
+import ApiError from '@/utils/v2ex-client/ApiError'
 
 function AppSWRConfig(props: PropsWithChildren) {
   return (

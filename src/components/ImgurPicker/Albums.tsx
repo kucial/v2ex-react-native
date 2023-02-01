@@ -1,12 +1,12 @@
 import { RefreshControl, ScrollView, View } from 'react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
+import { ImgurAlbum } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing } from '@/utils/swr'
 
 import AlbumAdd from './AlbumAdd'
 import AlbumCard from './AlbumCard'
-import { ImgurAlbum } from '@/containers/ImgurService/types'
 
 type AlbumsProps = {
   onSelectAlbum(album: ImgurAlbum): void

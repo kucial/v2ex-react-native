@@ -2,14 +2,14 @@ import { useMemo, useState } from 'react'
 import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
 import ImageView from 'react-native-image-viewing'
 import classNames from 'classnames'
+import { SWRResponse } from 'swr'
 
 import CheckIcon from '@/components/CheckIcon'
+import { ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing } from '@/utils/swr'
 
 import ImageCard from './ImageCard'
-import { SWRResponse } from 'swr'
-import { ImgurImage } from '@/containers/ImgurService/types'
 
 export type ImagesGridProps = {
   imagesSwr: SWRResponse<ImgurImage[], Error>

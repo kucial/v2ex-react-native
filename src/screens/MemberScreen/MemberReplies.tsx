@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
