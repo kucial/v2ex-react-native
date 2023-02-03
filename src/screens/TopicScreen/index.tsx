@@ -36,6 +36,7 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
+import deepmerge from 'deepmerge'
 import { debounce } from 'lodash'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
@@ -199,12 +200,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const topicSwr = useSWR(
     [`/page/t/:id/topic.json`, id],
     async ([_, id]) => {
-      const { data } = await v2exClient.getTopicDetail({ id })
+      const { data } = await v2exClient.getTopicDetail({ id, api: true })
       return data
     },
     {
       revalidateIfStale: false,
-      revalidateOnMount: false,
+      revalidateOnMount: true,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
     },
@@ -228,7 +229,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       onSuccess: (data) => {
         const topic = data[data.length - 1]?.meta?.topic
         if (topic) {
-          topicSwr.mutate(topic, false)
+          topicSwr.mutate(
+            (prev) =>
+              deepmerge(prev, topic, {
+                arrayMerge: (a, b) => b,
+              }),
+            false,
+          )
           touchViewed(topic)
         }
       },

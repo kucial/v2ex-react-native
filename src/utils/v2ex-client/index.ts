@@ -254,9 +254,22 @@ export async function getRecentFeeds({
 
 export async function getTopicDetail({
   id,
+  api,
 }: {
   id: TopicId
+  api?: boolean
 }): Promise<EntityResponse<TopicDetail>> {
+  if (api) {
+    const { data } = await request({
+      url: '/api/topics/show.json',
+      params: { id },
+      adapter: null,
+    })
+    return {
+      data: data[0],
+    }
+  }
+
   const { data: html } = await request({
     url: `/t/${id}`,
   })
