@@ -1,6 +1,7 @@
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { pick, uniqueId } from 'lodash'
+import { stringify } from 'qs'
 import * as Sentry from 'sentry-expo'
 
 import ApiError from './ApiError'
@@ -152,6 +153,12 @@ const service: RequestService = {
       message: 'Request reset due to refresh.',
     })
     Object.entries(service.requests).forEach(([key, { reject }]) => {
+      Sentry.Native.addBreadcrumb({
+        type: 'info',
+        category: 'v2ex-content',
+        message: 'reset request for reload',
+        data: { id: key },
+      })
       reject(error)
       delete service.requests[key]
     })
@@ -177,6 +184,7 @@ const service: RequestService = {
       message: 'handleMessage',
       data: {
         id,
+        success: !!response,
       },
     })
     if (response) {
@@ -194,28 +202,36 @@ const service: RequestService = {
       }, 300)
       throw service.error
     }
+    const id =
+      uniqueId() +
+      '_' +
+      config.url +
+      (config.params ? `?${stringify(config.params)}` : '')
     if (!service.isReady || !service.webview) {
       console.log('v2ex client webview service is not ready....')
       Sentry.Native.addBreadcrumb({
         type: 'info',
         category: 'v2ex-client',
         message: 'Webview is not ready.',
+        data: {
+          id,
+        },
       })
-      let initTime = Date.now()
+      const initTime = Date.now()
       let count = 0
       while (true) {
         Sentry.Native.addBreadcrumb({
           type: 'info',
           category: 'v2ex-client',
           message: 'Webview loading...',
-          data: { count },
+          data: { id, count },
         })
         console.log('...loading...', count)
         await delay(1000)
         if (service.isReady) {
           break
         }
-        if (Date.now() - initTime > 1000 * 10) {
+        if (Date.now() - initTime > 1000 * 9) {
           throw new ApiError({
             code: 'WEBVIEW_TIMEOUT_OUT',
             message: 'webview service is not ready',
@@ -224,7 +240,7 @@ const service: RequestService = {
         count += 1
       }
     }
-    const id = uniqueId() + '_' + Date.now()
+
     return new Promise((resolve, reject) => {
       service.requests[id] = { resolve, reject }
       let script: string
