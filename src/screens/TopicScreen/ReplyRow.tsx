@@ -97,7 +97,7 @@ function ReplyRow(props: ReplyRowProps) {
       <View className="py-2" style={[styles.layer1, styles.border_b]}>
         <View className="flex flex-row pl-2">
           {showAvatar && <Box className="w-[24px] h-[24px] rounded mr-2" />}
-          <View className="ml-1">
+          <View className="flex-1 ml-1">
             <View className="flex flex-row">
               <View className="flex flex-row items-center flex-1">
                 <View className="">
