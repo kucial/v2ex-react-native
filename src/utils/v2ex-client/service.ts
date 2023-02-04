@@ -7,6 +7,8 @@ import * as Sentry from 'sentry-expo'
 import ApiError from './ApiError'
 import { ONCP } from './constants'
 
+const FALLBACK_TIMEOUT = 20 * 1000
+
 type RequestService = {
   isReady: boolean
   error?: Error
@@ -207,49 +209,64 @@ const service: RequestService = {
       '_' +
       config.url +
       (config.params ? `?${stringify(config.params)}` : '')
-    if (!service.isReady || !service.webview) {
-      console.log('v2ex client webview service is not ready....')
-      Sentry.Native.addBreadcrumb({
-        type: 'info',
-        category: 'v2ex-client',
-        message: 'Webview is not ready.',
-        data: {
-          id,
-        },
-      })
-      const initTime = Date.now()
-      let count = 0
-      while (true) {
+
+    return new Promise(async (resolve, reject) => {
+      service.requests[id] = { resolve, reject }
+      const timeoutReject = () => {
+        if (service.requests[id]) {
+          delete service.requests[id]
+          reject(
+            new ApiError({
+              code: 'CLIENT_TIMEOUT',
+              message: '请求超时',
+            }),
+          )
+        }
+      }
+
+      // fallback promise handler
+      setTimeout(timeoutReject, FALLBACK_TIMEOUT)
+
+      // max webview init time: 10s
+      if (!service.isReady || !service.webview) {
+        console.log('v2ex client webview service is not ready....')
         Sentry.Native.addBreadcrumb({
           type: 'info',
           category: 'v2ex-client',
-          message: 'Webview loading...',
-          data: { id, count },
+          message: 'Webview is not ready.',
+          data: {
+            id,
+          },
         })
-        console.log('...loading...', count)
-        await delay(1000)
-        if (service.isReady) {
-          break
-        }
-        if (Date.now() - initTime > 1000 * 9) {
-          throw new ApiError({
-            code: 'WEBVIEW_TIMEOUT_OUT',
-            message: 'webview service is not ready',
+        const initTime = Date.now()
+        let count = 0
+        while (true) {
+          Sentry.Native.addBreadcrumb({
+            type: 'info',
+            category: 'v2ex-client',
+            message: 'Webview loading...',
+            data: { id, count },
           })
+          console.log('...loading...', count)
+          await delay(1000)
+          if (service.isReady) {
+            break
+          }
+          if (Date.now() - initTime > 1000 * 9) {
+            timeoutReject()
+            return
+          }
+          count += 1
         }
-        count += 1
       }
-    }
 
-    return new Promise((resolve, reject) => {
-      service.requests[id] = { resolve, reject }
       let script: string
       if (config.url.startsWith('/_custom_/')) {
         script = customRequestScript(id, config)
       } else {
         script = axiosRequestScript(id, config)
       }
-
+      // promise will resolve inside `handleMessage` method
       service.webview.injectJavaScript(script)
     })
   },
