@@ -27,10 +27,14 @@ export default function MemberTopics(props: { username: string }) {
     getKey,
     ([_, username, page]) => getMemberTopics({ username, p: page }),
     {
-      shouldRetryOnError: false,
       onError(err) {
         if (!err.code) {
           alert.alertWithType('error', '错误', err.message || '请求资源失败')
+        }
+      },
+      onErrorRetry(err) {
+        if (err.code === 'member_locked') {
+          return
         }
       },
     },
