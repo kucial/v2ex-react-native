@@ -205,7 +205,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     },
     {
       revalidateIfStale: false,
-      revalidateOnMount: true,
+      revalidateOnMount: false,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
     },
@@ -213,6 +213,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const topic = topicSwr.data || (brief as TopicDetail)
   const isFallback = topic === brief
+
+  useEffect(() => {
+    if (!topicSwr.data) {
+      topicSwr.mutate()
+    }
+  }, [])
 
   const listSwr = useSWRInfinite(
     useCallback(
