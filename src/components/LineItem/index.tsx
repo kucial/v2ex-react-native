@@ -11,18 +11,17 @@ import { styled } from 'nativewind'
 
 import { useTheme } from '@/containers/ThemeService'
 
-export const LineItemGroup = (props: {
-  style?: ViewStyle
-  children: ReactNode
-}) => {
-  return (
-    <View
-      className="mx-4 my-3 overflow-hidden rounded-lg shadow-xs"
-      style={props.style}>
-      {props.children}
-    </View>
-  )
-}
+export const LineItemGroup = styled(
+  (props: { style?: ViewStyle; children: ReactNode }) => {
+    return (
+      <View
+        className="overflow-hidden rounded-lg shadow-xs"
+        style={props.style}>
+        {props.children}
+      </View>
+    )
+  },
+)
 
 export const LineItem = styled(
   (props: {

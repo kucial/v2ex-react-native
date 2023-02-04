@@ -143,10 +143,10 @@ export default function MyScreen({ navigation }: ScreenProps) {
   const iconColor = theme.colors.primary
 
   return (
-    <ScrollView className="flex flex-col flex-1 py-2">
-      <LineItemGroup>{header}</LineItemGroup>
+    <ScrollView className="flex flex-col flex-1 py-3">
+      <LineItemGroup className="mx-4 my-2">{header}</LineItemGroup>
 
-      <View className="flex flex-wrap flex-row flex-1 mx-2 my-1">
+      <View className="flex flex-wrap flex-row flex-1 mx-2">
         <View className="basis-1/2 px-2 my-2">
           <LineItem
             title="创建的主题"
@@ -191,7 +191,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
         </View>
       </View>
 
-      <LineItemGroup>
+      <LineItemGroup className="mx-4 my-2">
         <LineItem
           title="主题标签设置"
           icon={<Bars3Icon size={22} color={iconColor} />}
@@ -216,7 +216,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
         />
       </LineItemGroup>
 
-      <LineItemGroup>
+      <LineItemGroup className="mx-4 my-2">
         <LineItem
           onPress={() => {
             navigation.push('about')
@@ -242,7 +242,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
       </LineItemGroup>
 
       {currentUser && (
-        <View className="px-4 py-8 mb-4 flex-1 justify-end">
+        <View className="mx-4 py-7 mb-4 flex-1 justify-end">
           <Pressable
             className={classNames(
               'flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60',
