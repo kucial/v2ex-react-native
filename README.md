@@ -86,6 +86,7 @@ React Native + Tailwindcss + SWR
 
 - [x] 计划使用 Typescript 重新整理代码。
 - [x] 优化网络请求 --- 从每个请求一个 webview --> 一个 webview 代理所有请求
+- [ ] 用户绑定的缓存
 - [ ] 加入 `/api/v2` 的请求设置，优化内容加载速度
 - [ ] 添加测试用例。
 - [ ] 优化图片资源加载
