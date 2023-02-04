@@ -43,7 +43,7 @@ export default function ErrorNoticeView(props: Props) {
                 'h-[50px] rounded-lg items-center justify-center active:opacity-60',
               )}
               style={styles.btn_primary__bg}
-              onPress={props.onReset}>
+              onPress={props.onRestart}>
               <Text className="text-base" style={styles.btn_primary__text}>
                 重新启动APP
               </Text>
