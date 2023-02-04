@@ -4,6 +4,7 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { useFocusEffect } from '@react-navigation/native'
 import useSWR from 'swr'
 
+import Loader from '@/components/Loader'
 import SearchInput from '@/components/SearchInput'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
@@ -133,6 +134,19 @@ export default function NodesScreen({ navigation }: ScreenProps) {
       <SectionList
         ref={listRef}
         sections={sections}
+        ListHeaderComponent={() => {
+          if (
+            !sections.length &&
+            (collectedNodesSwr.isLoading || commonNodesSwr.isLoading)
+          ) {
+            return (
+              <View className="flex flex-row items-center justify-center py-4">
+                <Loader />
+              </View>
+            )
+          }
+          return null
+        }}
         keyExtractor={(item) => {
           return item.name
         }}
