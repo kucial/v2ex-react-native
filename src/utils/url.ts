@@ -1,5 +1,7 @@
 const hrefMap = {
-  'https://(?:\\w+\\.)?v2ex.com/t/(\\d+)(?:\\?p=\\d+)?(#\\w+)?$': (match: RegExpExecArray) => ({
+  'https://(?:\\w+\\.)?v2ex.com/t/(\\d+)(?:\\?p=\\d+)?(#\\w+)?$': (
+    match: RegExpExecArray,
+  ) => ({
     name: 'topic',
     params: {
       id: match[1],
@@ -22,28 +24,31 @@ const hrefMap = {
   }),
 }
 
-
 type TopicScreenInfo = {
-  name: 'topic',
+  name: 'topic'
   params: {
-    id: number,
+    id: number
   }
 }
 type MemberScreenInfo = {
-  name: 'member',
+  name: 'member'
   params: {
-    username: string,
-    tab: string,
+    username: string
+    tab: string
   }
 }
 type NodeScreenInfo = {
-  name: 'node',
+  name: 'node'
   params: {
     name: string
   }
 }
 
-type ScreenInfo = TopicScreenInfo | MemberScreenInfo | NodeScreenInfo | undefined
+type ScreenInfo =
+  | TopicScreenInfo
+  | MemberScreenInfo
+  | NodeScreenInfo
+  | undefined
 
 export const getScreenInfo = (href: string): ScreenInfo => {
   let screen

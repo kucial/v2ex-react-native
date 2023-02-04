@@ -1,14 +1,15 @@
 import { MMKV } from 'react-native-mmkv'
 // import { initializeMMKVFlipper } from 'react-native-mmkv-flipper-plugin'
 
-const isDebuggingRemotelyActive = () => ('importScripts' in global) && typeof global.importScripts === 'function'
+const isDebuggingRemotelyActive = () =>
+  'importScripts' in global && typeof global.importScripts === 'function'
 
 interface Storage {
-  contains: (key: string) => boolean,
-  getString: (key: string) => string,
-  delete: (key: string) => void,
-  set: (key: string, value: string) => void,
-  clearAll: () => void,
+  contains: (key: string) => boolean
+  getString: (key: string) => string
+  delete: (key: string) => void
+  set: (key: string, value: string) => void
+  clearAll: () => void
   getAllKeys: () => string[]
 }
 

@@ -1,4 +1,4 @@
-import type { TextStyle } from 'react-native';
+import type { TextStyle } from 'react-native'
 import type { Theme } from '@react-navigation/native'
 
 interface ThemeTextStyle {
@@ -9,7 +9,7 @@ interface ThemeTextStyle {
 }
 
 interface ThemeBackgroundStyle {
-  backgroundColor?: string,
+  backgroundColor?: string
 }
 
 type ThemeColors = Theme['colors'] & {
@@ -113,9 +113,15 @@ type ThemeService = {
   setColorScheme: (str: ColorSchemeName) => void
 }
 
-
 declare module 'react-native' {
   namespace StyleSheet {
-    type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle | ThemeTextStyle | ThemeBackgroundStyle };
+    type NamedStyles<T> = {
+      [P in keyof T]:
+        | ViewStyle
+        | TextStyle
+        | ImageStyle
+        | ThemeTextStyle
+        | ThemeBackgroundStyle
+    }
   }
 }

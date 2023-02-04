@@ -1,15 +1,15 @@
-import axios, { AxiosInstance } from "axios"
+import axios, { AxiosInstance } from 'axios'
 
 const IMGUR_API_PREFIX = 'https://api.imgur.com'
 
 import {
-  ImgurCredentials,
-  ImgurUploadImagePayload,
-  ImgurCreateAlbumPayload,
-  ImgurResponse,
   ImgurAlbum,
+  ImgurCreateAlbumPayload,
+  ImgurCredentials,
   ImgurImage,
-} from './types';
+  ImgurResponse,
+  ImgurUploadImagePayload,
+} from './types'
 
 export class ImgurClient {
   fetcher: AxiosInstance
@@ -22,7 +22,7 @@ export class ImgurClient {
     })
     this.credentials = credentials
     this.fetcher.interceptors.request.use((config) => {
-      console.log('imgur fetch....', config.url);
+      console.log('imgur fetch....', config.url)
       config.headers = config.headers ? config.headers : {}
       if (this.credentials?.access_token) {
         config.headers.authorization = `Bearer ${this.credentials.access_token}`
@@ -33,7 +33,7 @@ export class ImgurClient {
     this.fetcher.interceptors.response.use(
       function (res) {
         console.log('IMGUR_RESPONSE_HEADERS', res.headers)
-        console.log(res.data);
+        console.log(res.data)
         if (res.status < 400) {
           return res.data
         }
@@ -102,6 +102,5 @@ export class ImgurClient {
 }
 
 const client = new ImgurClient()
-
 
 export default client

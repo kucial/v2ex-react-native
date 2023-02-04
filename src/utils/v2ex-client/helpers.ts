@@ -1,4 +1,4 @@
-import { Cheerio, CheerioAPI, Element, load } from 'cheerio'
+import { Cheerio, CheerioAPI, Element } from 'cheerio'
 
 import {
   MemberBasic,
@@ -143,9 +143,9 @@ export function topicReplyFromCell(
     .first()
     .text()
     .trim()
-  let reply_time
-  let reply_device
-  ;[reply_time, reply_device] = replyInfo.split(' via ')
+  // let reply_time
+  // let reply_device
+  const [reply_time, reply_device] = replyInfo.split(' via ')
   const heartImg = $el
     .find('td:nth-child(3) span.small.fade img[alt="❤️"]')
     .first()
