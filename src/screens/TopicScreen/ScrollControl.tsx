@@ -83,7 +83,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
         </View>
         <Text className="text-[10px]" style={styles.text_meta}>
           {action === 'to_top' && '至顶'}
-          {action === 'to_bottom' && '至末'}
+          {action === 'to_bottom' && '至底'}
           {!action && '定位'}
         </Text>
         {/* <Text className="text-[10px]" style={styles.text_meta}>

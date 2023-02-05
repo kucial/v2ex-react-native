@@ -26,22 +26,16 @@ const hrefMap = {
 
 type TopicScreenInfo = {
   name: 'topic'
-  params: {
-    id: number
-  }
+  params: AppStackParamList['topic']
 }
 type MemberScreenInfo = {
   name: 'member'
-  params: {
-    username: string
-    tab: string
-  }
+  params: AppStackParamList['member']
 }
+
 type NodeScreenInfo = {
   name: 'node'
-  params: {
-    name: string
-  }
+  params: AppStackParamList['node']
 }
 
 type ScreenInfo =

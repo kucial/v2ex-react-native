@@ -42,6 +42,8 @@ declare global {
     feedback: null
   }
 
+  type AppStackRouteName = keyof AppStackParamList
+
   type MainTabParamList = {
     feed: null
     nodes: null

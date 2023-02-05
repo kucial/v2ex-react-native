@@ -2,7 +2,6 @@ import { useMemo, useRef } from 'react'
 import BaseRender, { RenderHTMLProps } from 'react-native-render-html'
 import WebView from 'react-native-webview'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
-import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import * as Clipboard from 'expo-clipboard'
 import * as WebBrowser from 'expo-web-browser'
@@ -102,6 +101,7 @@ function HtmlRender({
       pre: {
         backgroundColor: theme.colors.html_pre_bg,
         paddingHorizontal: (12 / 16) * baseFontSize,
+        paddingTop: 4,
         lineHeight: 1.25 * baseFontSize,
       },
       code: {
