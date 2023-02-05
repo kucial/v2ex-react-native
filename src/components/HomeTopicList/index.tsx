@@ -65,19 +65,15 @@ function FeedTopicList(props: FeedTopicListProps) {
     if (listSwr.isValidating) {
       return
     }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     if (listSwr.data) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      listSwr.setSize(1).catch((err) => {
-        console.log(err)
-      })
       listViewRef.current.scrollToOffset({
-        offset: scrollY.current > 0 ? 0 : -60,
+        offset: 0,
+        // offset: scrollY.current > 0 ? 0 : -60,
         animated: true,
       })
     }
-    listSwr.mutate().catch((err) => {
-      console.log(err)
-    })
+    listSwr.mutate()
   }, [listSwr])
 
   const { renderItem, keyExtractor } = useMemo(

@@ -31,7 +31,11 @@ const AlertServiceProvider = forwardRef<
             return innerRef.current[prop]
           }
           if (typeof prop !== 'symbol') {
-            console.warn('alert service instance not ref...')
+            if (prop === 'alertWithType') {
+              return () => {
+                console.warn('alert service instance not ref...')
+              }
+            }
           }
           return null
         },
@@ -47,7 +51,7 @@ const AlertServiceProvider = forwardRef<
       <DropdownAlert
         ref={innerRef}
         renderImage={() => null}
-        closeInterval={3000}
+        closeInterval={2500}
         defaultContainer={{
           paddingHorizontal: 6,
         }}

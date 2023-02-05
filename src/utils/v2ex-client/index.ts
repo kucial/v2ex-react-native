@@ -714,7 +714,14 @@ export async function getNodeFeeds({
 }: {
   name: string
   p: number
-}): Promise<PaginatedResponse<NodeTopicFeed>> {
+}): Promise<
+  PaginatedResponse<
+    NodeTopicFeed,
+    {
+      node: NodeDetail
+    }
+  >
+> {
   const { data: html } = await request({
     url: `/go/${name}`,
     params: { p },

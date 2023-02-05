@@ -64,20 +64,15 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     if (listSwr.isValidating) {
       return
     }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     if (listSwr.data) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-      listSwr.setSize(1).catch((err) => {
-        console.log(err)
-      })
-      const params = {
-        offset: scrollY.current > 0 ? 0 : -60,
+      listViewRef.current.scrollToOffset({
+        offset: 0,
+        // offset: scrollY.current > 0 ? 0 : -60,
         animated: true,
-      }
-      listViewRef.current.scrollToOffset(params)
+      })
     }
-    listSwr.mutate().catch((err) => {
-      console.log(err)
-    })
+    listSwr.mutate()
   }, [listSwr])
 
   const { renderItem, keyExtractor } = useMemo(() => {

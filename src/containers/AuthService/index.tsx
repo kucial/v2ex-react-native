@@ -1,5 +1,6 @@
 import {
   createContext,
+  ReactElement,
   useCallback,
   useContext,
   useEffect,
@@ -11,7 +12,12 @@ import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import { useCachedState } from '@/utils/hooks'
+import { getJSON, setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
+import clientService from '@/utils/v2ex-client/service'
+
+import { useAlertService } from '../AlertService'
+import { AuthService, AuthState } from './types'
 
 const CACHE_KEY = '$app$/current-user'
 const INIT_STATE = {
@@ -21,39 +27,7 @@ const INIT_STATE = {
 }
 const CHECK_STATUS_DELAY = 10000
 
-import { getJSON, setJSON } from '@/utils/storage'
-import clientService from '@/utils/v2ex-client/service'
-import { MemberDetail } from '@/utils/v2ex-client/types'
-
-import { useAlertService } from '../AlertService'
-
-interface MemberMeta {
-  unread_count: number
-}
-
-interface AuthState {
-  error?: Error
-  user: MemberDetail
-  meta?: MemberMeta
-  status: string
-  fetchedAt?: number
-}
-interface AuthService {
-  user?: MemberDetail
-  meta?: MemberMeta
-  status: string
-  fetchedAt?: number
-  fetchCurrentUser: (refresh?: boolean) => Promise<MemberDetail>
-  logout(): Promise<void>
-  composeAuthedNavigation<T = never>(
-    func: (params?: T) => void,
-  ): (params?: T) => void
-  getNextAction(): VoidFunction
-  updateMeta: (data: MemberMeta) => void
-  goToSigninSreen(): void
-}
-
-const CHECK_DURATION = 1000 * 60 * 60 * 12
+const CHECK_DURATION = 1000 * 60 * 60 * 6 // 6 小时
 const shouldCheck = (timestamp?: number) => {
   if (!timestamp) {
     return true
@@ -74,9 +48,10 @@ export const AuthServiceContext = createContext<AuthService>({
     return callback || function () {}
   },
 } as AuthService)
-export default function AuthServiceProvider(props) {
+export default function AuthServiceProvider(props: { children: ReactElement }) {
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
+
   const [state, setState] = useCachedState<AuthState>(
     CACHE_KEY,
     INIT_STATE,
@@ -110,9 +85,10 @@ export default function AuthServiceProvider(props) {
         }))
         return res.data
       } catch (err) {
+        console.log('.....AUTH_ERROR......')
         setState((prev) => ({
           ...prev,
-          error: err,
+          // error: err,
           status: 'failed',
         }))
       }

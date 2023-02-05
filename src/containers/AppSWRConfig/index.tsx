@@ -15,7 +15,6 @@ function AppSWRConfig(props: PropsWithChildren) {
         provider: cacheProvider,
         errorRetryInterval: 1000 * 20,
         errorRetryCount: 3,
-        shouldRetryOnError: false,
         revalidateIfStale: false,
         // revalidateOnMount: false,
         isOnline() {
@@ -90,6 +89,12 @@ function AppSWRConfig(props: PropsWithChildren) {
             return stableHash(a.data) === stableHash(b.data)
           }
           return stableHash(a) === stableHash(b)
+        },
+        onErrorRetry(err, key, config, revalidate, { retryCount }) {
+          if (err.code !== 'CLIENT_TIMEOUT') {
+            setTimeout(() => revalidate({ retryCount }), 5000)
+          }
+          return
         },
       }}>
       {props.children}
