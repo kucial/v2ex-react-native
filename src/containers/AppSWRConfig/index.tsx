@@ -67,7 +67,8 @@ function AppSWRConfig(props: PropsWithChildren) {
           } else {
             Sentry.Native.addBreadcrumb({
               type: 'info',
-              data: { swrKey: key, err, message: err?.message },
+              message: 'swr info',
+              data: { swrKey: key, err },
             })
             Sentry.Native.captureMessage('@_SWR_ERROR_@')
           }
@@ -75,6 +76,7 @@ function AppSWRConfig(props: PropsWithChildren) {
         onLoadingSlow(key, config) {
           Sentry.Native.addBreadcrumb({
             type: 'info',
+            message: 'swr info',
             data: { slowKey: key },
           })
           Sentry.Native.captureMessage('@_LOADING_SLOW_@')

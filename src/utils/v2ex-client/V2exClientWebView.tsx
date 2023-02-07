@@ -81,8 +81,9 @@ export default function V2exClientWebView() {
           Sentry.Native.addBreadcrumb({
             level: 'info',
             category: 'v2ex-client',
+            message: 'v2ex-client-webview load duration: ',
             data: {
-              webviewLoadDuration: duration,
+              duration,
             },
           })
           console.log('v2ex-client-webview load duration: ', duration)
