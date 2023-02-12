@@ -28,7 +28,7 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (12.0.1):
     - ExpoModulesCore
-  - ExpoImagePicker (14.0.2):
+  - ExpoImagePicker (14.0.3):
     - ExpoModulesCore
   - ExpoKeepAwake (11.0.1):
     - ExpoModulesCore
@@ -310,7 +310,7 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.8.0):
     - React-Core
-  - react-native-mmkv (2.6.1):
+  - react-native-mmkv (2.7.0):
     - MMKV (>= 1.2.13)
     - React-Core
   - react-native-netinfo (9.3.5):
@@ -717,7 +717,7 @@ SPEC CHECKSUMS:
   Expo: b9fa98bf260992312ee3c424400819fb9beadafe
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoHaptics: 5a56d30a87ea213dd00b09566dc4b441a4dff97f
-  ExpoImagePicker: d2a1cea4023008ae2fb0d95f33422b80772cc76e
+  ExpoImagePicker: ce37302446e70145bb413f0f74886441abdae022
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
   ExpoModulesCore: 485dff3a59b036a33b6050c0a5aea3cf1037fdd1
   ExpoSystemUI: c844dec5e49e677bcd6bfe15cc305b02127b1124
@@ -754,7 +754,7 @@ SPEC CHECKSUMS:
   React-logger: fdda34dd285bdb0232e059b19d9606fa0ec3bb9c
   react-native-cookies: f54fcded06bb0cda05c11d86788020b43528a26c
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
-  react-native-mmkv: 28af0c2a3dc9495c2cea80f9d41444e096c2a1ef
+  react-native-mmkv: a2a40a0458bdbc9d43c4e7752ecfc5e3a87b66dd
   react-native-netinfo: 85b2a435c4d3705c08b0c42ff2d6ef6b9622ea0a
   react-native-pager-view: 3051346698a0ba0c4e13e40097cc11b00ee03cca
   react-native-render-html: 984dfe2294163d04bf5fe25d7c9f122e60e05ebe
@@ -788,6 +788,6 @@ SPEC CHECKSUMS:
   Sentry: b15765d11769852fe78c9add942f7df60ed5dbf5
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
 
-PODFILE CHECKSUM: abf99873f81f7bb6907203ee6ce88f31bc98dddc
+PODFILE CHECKSUM: f6ff8b154a26d0b22ceb78298bae225b169e734a
 
 COCOAPODS: 1.11.3
