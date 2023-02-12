@@ -106,6 +106,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
       )
       break
     case 'visitor':
+    case 'failed':
     case 'logout':
       header = (
         <Pressable
