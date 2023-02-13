@@ -1,9 +1,7 @@
 import { CSSProperties, useEffect } from 'react'
-import { LayoutChangeEvent, Pressable } from 'react-native'
+import { LayoutChangeEvent, Platform, Pressable } from 'react-native'
 import WebView from 'react-native-webview'
-import PropTypes from 'prop-types'
 
-import editorHtml from './assets/editor.html'
 import { useEditor } from './context'
 
 type EditorRenderProps = {
@@ -15,6 +13,11 @@ type EditorRenderProps = {
 }
 
 export default function EditorRender(props: EditorRenderProps) {
+  const source =
+    Platform.OS === 'ios'
+      ? 'Static.bundle/editor.html'
+      : 'file:///android_asset/editor.html'
+
   const editor = useEditor()
   useEffect(() => {
     editor.setInitialConfig({
@@ -30,17 +33,23 @@ export default function EditorRender(props: EditorRenderProps) {
 
   return (
     <Pressable
-      style={editor.viewport}
+      style={[editor.viewport]}
       onPress={(e) => {
         e.stopPropagation()
       }}
       onLayout={props.onLayout}>
       <WebView
         originWhitelist={['*']}
-        source={editorHtml}
+        source={{
+          uri: source,
+        }}
         // source={{ uri: 'http://192.168.1.102:3000/editor.html' }}
         ref={editor.webview}
+        onLoad={(e) => {
+          console.log('...onLoad...')
+        }}
         onMessage={editor.handleMessage}
+        allowingReadAccessToURL="file://"
         style={{
           opacity: editor.isReady() ? 1 : 0,
           backgroundColor: props.containerStyle?.backgroundColor,
@@ -50,8 +59,4 @@ export default function EditorRender(props: EditorRenderProps) {
       />
     </Pressable>
   )
-}
-
-EditorRender.propTypes = {
-  minHeight: PropTypes.number,
 }
