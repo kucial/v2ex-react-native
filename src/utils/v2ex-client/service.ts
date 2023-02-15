@@ -152,7 +152,7 @@ const service: RequestService = {
     service.webview?.reload()
     const error = new ApiError({
       code: 'REQUEST_RESET',
-      message: 'Request reset due to refresh.',
+      message: '请求已重置',
     })
     Object.entries(service.requests).forEach(([key, { reject }]) => {
       Sentry.Native.addBreadcrumb({
