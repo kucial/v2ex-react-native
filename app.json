@@ -16,8 +16,9 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.kucial.v2ex",
+      "buildNumber": "103",
       "splash": {
         "image": "./src/assets/splash.png",
         "backgroundColor": "#ffffff",
