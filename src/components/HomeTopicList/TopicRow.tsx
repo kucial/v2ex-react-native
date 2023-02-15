@@ -10,7 +10,7 @@ import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
 
 export default function TopicRow(props: HomeFeedRowProps) {
-  const { data, showAvatar, showLastReplyMember } = props
+  const { data, showAvatar, showLastReplyMember, titleStyle } = props
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
   const { styles } = useTheme()
@@ -119,14 +119,18 @@ export default function TopicRow(props: HomeFeedRowProps) {
                   brief: member,
                 })
               }}>
-              <Text className="font-bold text-xs" style={styles.text_desc}>
+              <Text className="font-[600] text-xs" style={styles.text_desc}>
                 {member.username}
               </Text>
             </FixedPressable>
           </View>
         </View>
         <View>
-          <Text className="text-base" style={styles.text}>
+          <Text
+            className={classNames('text-base', {
+              'font-[500]': titleStyle === 'emphasized',
+            })}
+            style={styles.text}>
             {title}
           </Text>
           <View className="mt-2 flex flex-row items-center">
@@ -152,7 +156,7 @@ export default function TopicRow(props: HomeFeedRowProps) {
                       })
                     }}>
                     <Text
-                      className="text-xs font-bold"
+                      className="text-xs font-[600]"
                       style={styles.text_desc}>
                       {data.last_reply_by}
                     </Text>

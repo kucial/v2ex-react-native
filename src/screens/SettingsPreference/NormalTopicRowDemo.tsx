@@ -45,13 +45,17 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
           </View>
           <Text style={styles.text_meta}>·</Text>
           <View className="relative top-[1px]">
-            <Text className="font-bold text-xs" style={styles.text_desc}>
+            <Text className="font-[600] text-xs" style={styles.text_desc}>
               {member.username}
             </Text>
           </View>
         </View>
         <View>
-          <Text className="text-base" style={styles.text}>
+          <Text
+            className={classNames('text-base', {
+              'font-[500]': props.titleStyle === 'emphasized',
+            })}
+            style={styles.text}>
             {title}
           </Text>
           <View className="mt-2 flex flex-row items-center">
@@ -69,7 +73,7 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
                   </Text>
                   <View className="px-1 active:opacity-60">
                     <Text
-                      className="text-xs font-bold"
+                      className="text-xs font-[600]"
                       style={styles.text_desc}>
                       {last_reply_by}
                     </Text>

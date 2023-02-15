@@ -63,6 +63,7 @@ export default function MemberTopics(props: { username: string }) {
             viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
           />
         )
       },

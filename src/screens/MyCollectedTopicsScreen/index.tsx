@@ -3,12 +3,14 @@ import { FlashList } from '@shopify/flash-list'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 import { getMyCollectedTopics } from '@/utils/v2ex-client'
 
 import CollectedTopicRow from './CollectedTopicRow'
 
 export default function CollectedTopicsScreen() {
+  const { data: settings } = useAppSettings()
   const getKey = useCallback((index: number): [string, number] => {
     return ['/page/my/topics.json', index + 1]
   }, [])
@@ -34,13 +36,15 @@ export default function CollectedTopicsScreen() {
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
       renderItem({ item }) {
-        return <CollectedTopicRow data={item} />
+        return (
+          <CollectedTopicRow data={item} titleStyle={settings.feedTitleStyle} />
+        )
       },
       keyExtractor(item, index) {
         return item?.id || `index-${index}`
       },
     }
-  }, [])
+  }, [settings.feedTitleStyle])
 
   return (
     <FlashList

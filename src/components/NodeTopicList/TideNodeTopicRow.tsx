@@ -86,11 +86,15 @@ function NodeTopicRow(props: NodeFeedRowProps) {
           'flex-1 pt-1 pb-2',
           props.viewedStatus === 'viewed' && 'opacity-70',
         )}>
-        <Text className="text-base leading-[22px]" style={styles.text}>
+        <Text
+          className={classNames('text-base leading-[22px]', {
+            'font-[600]': props.titleStyle === 'emphasized',
+          })}
+          style={styles.text}>
           {data.title}
         </Text>
         <View className="mt-1 flex flex-row">
-          <Text className="text-xs font-semibold" style={styles.text_desc}>
+          <Text className="text-xs font-[600]" style={styles.text_desc}>
             {member.username}
           </Text>
           {!!data.characters && (

@@ -14,6 +14,7 @@ type AppSettings = {
   feedShowAvatar: boolean
   feedShowLastReplyMember: boolean
   feedShowViewedHint: boolean
+  feedTitleStyle: 'normal' | 'emphasized'
   autoRefresh: boolean
   autoRefreshDuration: number // minutes
 }

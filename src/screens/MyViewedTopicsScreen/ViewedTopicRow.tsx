@@ -74,14 +74,18 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
                   brief: member,
                 })
               }}>
-              <Text className="font-bold text-xs" style={styles.text_desc}>
+              <Text className="font-[600] text-xs" style={styles.text_desc}>
                 {member.username}
               </Text>
             </FixedPressable>
           </View>
         </View>
         <View>
-          <Text className="text-base" style={styles.text}>
+          <Text
+            className={classNames('text-base', {
+              'font-[500]': props.titleStyle === 'emphasized',
+            })}
+            style={styles.text}>
             {title}
           </Text>
           <View className="mt-2 flex flex-row items-center">

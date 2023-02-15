@@ -55,7 +55,11 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
         </View>
         <View className="">
           {data?.title ? (
-            <Text className="text-base" style={styles.text}>
+            <Text
+              className={classNames('text-base', {
+                'font-[500]': props.titleStyle === 'emphasized',
+              })}
+              style={styles.text}>
               {data.title}
             </Text>
           ) : (
@@ -84,7 +88,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
                       })
                     }}>
                     <Text
-                      className="text-xs font-bold"
+                      className="text-xs font-[600]"
                       style={styles.text_meta}>
                       {data.last_reply_by}
                     </Text>

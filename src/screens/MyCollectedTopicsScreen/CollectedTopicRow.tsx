@@ -2,6 +2,7 @@ import { Pressable, Text, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 
 import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
@@ -68,7 +69,11 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
       </View>
       <View className="flex-1 pl-2">
         <View className="">
-          <Text className="text-base" style={styles.text}>
+          <Text
+            className={classNames('text-base', {
+              'font-[500]': props.titleStyle === 'emphasized',
+            })}
+            style={styles.text}>
             {data.title}
           </Text>
           <View className="mt-2 flex flex-row flex-wrap items-center">
@@ -97,7 +102,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                   username: data.member.username,
                 })
               }}>
-              <Text className="text-xs font-bold" style={styles.text_desc}>
+              <Text className="text-xs font-[600]" style={styles.text_desc}>
                 {data.member.username}
               </Text>
             </Pressable>
@@ -127,7 +132,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                       })
                     }}>
                     <Text
-                      className="text-xs font-bold"
+                      className="text-xs font-[600]"
                       style={styles.text_desc}>
                       {data.last_reply_by}
                     </Text>

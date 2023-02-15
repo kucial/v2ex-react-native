@@ -82,7 +82,11 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
           'flex-1 pt-1 pb-2',
           props.viewedStatus === 'viewed' && 'opacity-70',
         )}>
-        <Text className="text-[16px] leading-[22px]" style={styles.text}>
+        <Text
+          className={classNames('text-[16px] leading-[22px]', {
+            'font-[500]': props.titleStyle === 'emphasized',
+          })}
+          style={styles.text}>
           {title}
         </Text>
         <View className="mt-1 flex flex-row flex-wrap items-center">
@@ -128,7 +132,7 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
                       tab: 'replies',
                     })
                   }}>
-                  <Text className="text-xs font-bold" style={styles.text_desc}>
+                  <Text className="text-xs font-[600]" style={styles.text_desc}>
                     {data.last_reply_by}
                   </Text>
                 </FixedPressable>

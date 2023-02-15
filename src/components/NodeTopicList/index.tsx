@@ -83,6 +83,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
             viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
           />
         ) : (
           <NodeTopicRow
@@ -90,6 +91,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
             viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
           />
         )
       },

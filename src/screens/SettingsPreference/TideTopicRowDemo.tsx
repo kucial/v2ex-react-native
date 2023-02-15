@@ -35,7 +35,11 @@ const TideTopicRowDemo = (props: DemoRowProps) => {
           viewedStatus === 'viewed' && 'opacity-70',
         )}>
         <View>
-          <Text className="text-base leading-[22px]" style={styles.text}>
+          <Text
+            className={classNames('text-base leading-[22px]', {
+              'font-[500]': props.titleStyle === 'emphasized',
+            })}
+            style={styles.text}>
             {title}
           </Text>
           <View className="mt-1 flex flex-row items-center">
@@ -60,7 +64,7 @@ const TideTopicRowDemo = (props: DemoRowProps) => {
                   </Text>
                   <View className="px-1 active:opacity-60">
                     <Text
-                      className="text-xs font-bold"
+                      className="text-xs font-[600]"
                       style={styles.text_desc}>
                       {last_reply_by}
                     </Text>

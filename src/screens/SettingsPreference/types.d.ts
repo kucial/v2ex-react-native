@@ -5,4 +5,5 @@ export type DemoRowProps = {
   showAvatar: boolean
   showLastReplyMember: boolean
   viewedStatus?: 'viewed' | 'has_update' | undefined | ''
+  titleStyle: 'normal' | 'emphasized'
 }

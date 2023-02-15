@@ -17,6 +17,11 @@ const styleLabels = {
   tide: '紧凑',
 }
 
+const titleStylesLabel = {
+  normal: '默认',
+  emphasized: '强调',
+}
+
 const refreshDurationOptions = [
   { value: 5, label: '5 分钟' },
   { value: 10, label: '10 分钟' },
@@ -66,6 +71,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               data={topic}
               showAvatar={state.feedShowAvatar}
               showLastReplyMember={state.feedShowLastReplyMember}
+              titleStyle={state.feedTitleStyle}
               viewedStatus={viewedStatus}
             />
           )}
@@ -74,6 +80,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               data={topic}
               showAvatar={state.feedShowAvatar}
               showLastReplyMember={state.feedShowLastReplyMember}
+              titleStyle={state.feedTitleStyle}
               viewedStatus={viewedStatus}
             />
           )}
@@ -100,6 +107,32 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
             <View className="mr-4 px-2">
               <Text style={styles.text_desc}>
                 {styleLabels[state.feedLayout]}
+              </Text>
+            </View>
+          </View>
+        </Pressable>
+        <Pressable
+          className={classNames('pl-4', 'active:opacity-50')}
+          style={styles.layer1}
+          onPress={() => {
+            const next =
+              state.feedTitleStyle === 'normal' ? 'emphasized' : 'normal'
+            setState((prev) => ({
+              ...prev,
+              feedTitleStyle: next,
+            }))
+          }}>
+          <View
+            className={classNames('min-h-[52px] flex flex-row items-center')}
+            style={[styles.border_b]}>
+            <View className="flex-1">
+              <Text className="text-base" style={styles.text}>
+                标题样式
+              </Text>
+            </View>
+            <View className="mr-4 px-2">
+              <Text style={styles.text_desc}>
+                {titleStylesLabel[state.feedTitleStyle]}
               </Text>
             </View>
           </View>

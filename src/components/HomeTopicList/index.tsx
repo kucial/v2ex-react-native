@@ -84,6 +84,7 @@ function FeedTopicList(props: FeedTopicListProps) {
             viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
           />
         ) : (
           <TopicRow
@@ -91,6 +92,7 @@ function FeedTopicList(props: FeedTopicListProps) {
             viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
           />
         ),
       keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>

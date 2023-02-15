@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo } from 'react'
+import { createContext, ReactElement, useContext, useMemo } from 'react'
 
 import { useCachedState } from '@/utils/hooks'
 import * as v2exClient from '@/utils/v2ex-client'
@@ -19,6 +19,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   feedShowAvatar: true,
   feedShowLastReplyMember: true,
   feedShowViewedHint: true,
+  feedTitleStyle: 'normal', // normal | emphasized
 
   autoRefresh: true,
   autoRefreshDuration: 10,
@@ -30,7 +31,9 @@ const AppSettingsContext = createContext<AppSettingsService>(
 
 export const useAppSettings = () => useContext(AppSettingsContext)
 
-export default function AppSettingsServiceProvider(props) {
+export default function AppSettingsServiceProvider(props: {
+  children: ReactElement
+}) {
   const [settings, setSettings] = useCachedState<AppSettings>(
     CACHE_KEY,
     undefined,

@@ -58,9 +58,14 @@ export default function ViewedTopicsScreen({ navigation }: ScreenProps) {
             <TideViewedTopicRow
               data={item}
               showAvatar={settings.feedShowAvatar}
+              titleStyle={settings.feedTitleStyle}
             />
           ) : (
-            <ViewedTopicRow data={item} showAvatar={settings.feedShowAvatar} />
+            <ViewedTopicRow
+              data={item}
+              showAvatar={settings.feedShowAvatar}
+              titleStyle={settings.feedTitleStyle}
+            />
           )
 
         return (

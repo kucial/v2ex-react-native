@@ -46,7 +46,11 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
         <View className="pl-3"></View>
       )}
       <View className={classNames('flex-1 pt-1 pb-2')}>
-        <Text className="text-base leading-[22px]" style={styles.text}>
+        <Text
+          className={classNames('text-base leading-[22px]', {
+            'font-[500]': props.titleStyle === 'emphasized',
+          })}
+          style={styles.text}>
           {title}
         </Text>
         <View className="mt-1 flex flex-row flex-wrap items-center">
