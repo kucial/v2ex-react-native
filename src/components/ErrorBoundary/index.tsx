@@ -3,7 +3,10 @@ import FastImage from 'react-native-fast-image'
 import RNRestart from 'react-native-restart'
 import * as Sentry from 'sentry-expo'
 
+import { clearImageCache } from '@/utils/image'
 import storage from '@/utils/storage'
+
+import ErrorNoticeView from './ErrorNoticeView'
 
 interface Props {
   children?: ReactNode
@@ -12,8 +15,6 @@ interface Props {
 interface State {
   hasError: boolean
 }
-
-import ErrorNoticeView from './ErrorNoticeView'
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
@@ -40,6 +41,7 @@ class ErrorBoundary extends Component<Props, State> {
   handleReset = () => {
     storage.clearAll()
     FastImage.clearDiskCache()
+    clearImageCache()
     RNRestart.Restart()
   }
 

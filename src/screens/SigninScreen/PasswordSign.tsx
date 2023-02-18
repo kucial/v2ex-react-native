@@ -11,13 +11,13 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import WebView from 'react-native-webview'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import BackButton from '@/components/BackButton'
 import GoogleIcon from '@/components/GoogleIcon'
+import { AnimatedImage } from '@/components/Image'
 import Loader from '@/components/Loader'
 import { USER_AGENT } from '@/constants'
 import { useTheme } from '@/containers/ThemeService'
@@ -269,7 +269,7 @@ function PasswordSignin(props: PasswordSigninProps) {
                 <Pressable
                   onPress={refreshCaptcha}
                   className="active:opacity-60">
-                  <FastImage
+                  <AnimatedImage
                     source={{ uri: captchaImage.uri }}
                     className="rounded-md mb-2 mt-1"
                     style={{

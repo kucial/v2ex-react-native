@@ -1,7 +1,8 @@
-import { Pressable, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
+import { Text, View } from 'react-native'
 import classNames from 'classnames'
 
+import { AnimatedImage } from '@/components/Image'
+import { Box } from '@/components/Skeleton/Elements'
 import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
 
@@ -18,7 +19,7 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
       style={[styles.layer1, styles.border_b, styles.border_light]}>
       {showAvatar ? (
         <View className="px-2 py-2 self-start">
-          <FastImage
+          <AnimatedImage
             source={{
               uri: member.avatar_normal,
             }}

@@ -1,10 +1,10 @@
 import { Pressable, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { DocumentIcon } from 'react-native-heroicons/outline'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
+import { AnimatedImage } from '@/components/Image'
 import { useTheme } from '@/containers/ThemeService'
 import { NodeExtra } from '@/utils/v2ex-client/types'
 
@@ -30,9 +30,10 @@ export default function CollectedNodes(props: { data: NodeExtra[] }) {
                 name: node.name,
               })
             }}>
-            <FastImage
+            <AnimatedImage
               className="w-[44px] h-[44px]"
-              source={{ uri: node.avatar_large }}></FastImage>
+              source={{ uri: node.avatar_large }}
+            />
             <View className="ml-3 pt-1">
               <Text style={styles.text}>{node.title}</Text>
               <View className="mt-1 flex flex-row items-center">

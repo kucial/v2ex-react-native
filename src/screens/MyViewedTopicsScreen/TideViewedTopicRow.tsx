@@ -1,10 +1,10 @@
 import { Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import FixedPressable from '@/components/FixedPressable'
+import { AnimatedImage } from '@/components/Image'
 import TimeAgo from '@/components/TimeAgo'
 import { useTheme } from '@/containers/ThemeService'
 
@@ -34,7 +34,7 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
                 brief: member,
               })
             }}>
-            <FastImage
+            <AnimatedImage
               source={{
                 uri: member.avatar_normal,
               }}

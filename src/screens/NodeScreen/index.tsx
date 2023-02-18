@@ -1,13 +1,14 @@
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
 
 import HtmlRender from '@/components/HtmlRender'
+import { AnimatedImage } from '@/components/Image'
 import NodeTopicList from '@/components/NodeTopicList'
+import { Box } from '@/components/Skeleton/Elements'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
@@ -110,15 +111,14 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
       <View className="rounded-lg">
         <View className="flex flex-row">
           {node.avatar_large ? (
-            <FastImage
+            <AnimatedImage
               className="w-[60px] h-[60px] mr-3"
               source={{
                 uri: node.avatar_large,
-              }}></FastImage>
+              }}
+            />
           ) : (
-            <View
-              className="w-[60px] h-[60px] mr-3"
-              style={styles.layer3}></View>
+            <Box className="w-[60px] h-[60px] mr-3"></Box>
           )}
 
           <View className="flex-1">

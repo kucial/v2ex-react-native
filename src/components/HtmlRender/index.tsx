@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { memo, useMemo, useRef } from 'react'
 import BaseRender, { RenderHTMLProps } from 'react-native-render-html'
 import WebView from 'react-native-webview'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
@@ -128,26 +128,14 @@ function HtmlRender({
         borderLeftWidth: 2,
         borderLeftColor: theme.colors.text,
       },
+      iframe: {
+        backgroundColor: theme.colors.skeleton,
+      },
       ...(tagsStyles || {}),
     }
   }, [tagsStyles, baseStyle, theme])
   const renderersProps = useMemo(() => {
     return {
-      // a: {
-      //   onPress: (e, href) => {
-      //     if (isAppLink(href)) {
-      //       const screen = getScreenInfo(href)
-      //       if (screen) {
-      //         navigation.push(screen.name, screen.params)
-      //         return
-      //       }
-      //     }
-      //     WebBrowser.openBrowserAsync(href).catch((err) => {
-      //       captureException(err)
-      //       console.log(err)
-      //     })
-      //   }
-      // },
       iframe: {
         scalesPageToFit: true,
       },
@@ -247,4 +235,4 @@ HtmlRender.defaultProps = {
   },
 }
 
-export default HtmlRender
+export default memo(HtmlRender)
