@@ -498,7 +498,7 @@ export async function getTopicReplies({
   if ($('#Wrapper .content a[class^=tab]').length) {
     throw new ApiError({
       code: 'RESOURCE_ERROR',
-      message: '资源错误（无权限访问或已被管理员删除）',
+      message: '资源错误（无访问权限或已被管理员删除）',
     })
   }
 

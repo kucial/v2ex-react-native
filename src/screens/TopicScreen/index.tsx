@@ -245,6 +245,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           touchViewed(topic)
         }
       },
+      onErrorRetry(err) {
+        if (err.code === 'RESOURCE_ERROR') {
+          return
+        }
+      },
     },
   )
 
