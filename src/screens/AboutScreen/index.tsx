@@ -14,7 +14,6 @@ import Constants from 'expo-constants'
 
 import GithubIcon from '@/components/GithubIcon'
 import { useTheme } from '@/containers/ThemeService'
-import { clearImageCache } from '@/utils/image'
 import storage from '@/utils/storage'
 
 export default function AboutScreen() {
@@ -91,7 +90,6 @@ export default function AboutScreen() {
                   storage.delete(key)
                 })
                 FastImage.clearDiskCache()
-                clearImageCache()
                 RNRestart.Restart()
               }}>
               <Text style={styles.text}>清除缓存</Text>
@@ -107,7 +105,6 @@ export default function AboutScreen() {
               onPress={() => {
                 storage.clearAll()
                 FastImage.clearDiskCache()
-                clearImageCache()
                 RNRestart.Restart()
               }}>
               <Text style={styles.text_danger}>重置</Text>

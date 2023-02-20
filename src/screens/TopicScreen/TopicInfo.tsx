@@ -1,9 +1,9 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import HtmlRender from '@/components/HtmlRender'
-import { AnimatedImage } from '@/components/Image'
 import { Box } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 import { TopicDetail } from '@/utils/v2ex-client/types'
@@ -29,9 +29,10 @@ function TopicInfo(props: {
               })
             }}>
             {member.avatar_normal ? (
-              <AnimatedImage
+              <FastImage
                 source={{
                   uri: member.avatar_normal,
+                  priority: 'low',
                 }}
                 className="w-[32px] h-[32px] rounded"
               />

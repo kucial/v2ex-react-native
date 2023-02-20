@@ -6,6 +6,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import {
   ChatBubbleLeftRightIcon,
   HeartIcon,
@@ -16,7 +17,6 @@ import classNames from 'classnames'
 import { marked } from 'marked'
 
 import HtmlRender from '@/components/HtmlRender'
-import { AnimatedImage } from '@/components/Image'
 import MarkdownFilledIcon from '@/components/MarkdownFilledIcon'
 import MarkdownIcon from '@/components/MarkdownIcon'
 import ReplyIcon from '@/components/ReplyIcon'
@@ -132,9 +132,10 @@ function ReplyRow(props: ReplyRowProps) {
                   username: member.username,
                 })
               }}>
-              <AnimatedImage
+              <FastImage
                 source={{
                   uri: member.avatar_normal,
+                  priority: FastImage.priority.low,
                 }}
                 className="w-[24px] h-[24px] rounded"
               />

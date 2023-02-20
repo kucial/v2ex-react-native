@@ -1,65 +1,105 @@
-import { useEffect } from 'react'
-import { PhotoIcon } from 'react-native-heroicons/solid'
+import React, { useCallback, useEffect } from 'react'
+import FastImage, { OnLoadEvent } from 'react-native-fast-image'
 import {
   CustomBlockRenderer,
+  IMGElementContainer,
+  IMGElementContentError,
+  IMGElementProps,
+  useIMGElementState,
+  useIMGElementStateWithCache,
   useInternalRenderer,
 } from 'react-native-render-html'
 
-import { useTheme } from '@/containers/ThemeService'
-
-import { useImageCache } from '../Image'
-import { Box } from '../Skeleton/Elements'
+import {
+  useCachedImageDimensions,
+  useImageDimensionCache,
+} from './ImageDimensionCache'
 import { useImageViewing } from './ImageViewingService'
 
-const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
-  const { Renderer, rendererProps } = useInternalRenderer<'img'>('img', props)
-  const cache = useImageCache(rendererProps.source)
+const IMGElementContentSuccess = ({ source, imageStyle, dimensions }) => {
+  const cache = useImageDimensionCache()
+  const onLoad = useCallback((e: OnLoadEvent) => {
+    cache.update(source.uri, {
+      width: e.nativeEvent.width,
+      height: e.nativeEvent.height,
+    })
+  }, [])
+
+  return (
+    <FastImage
+      source={source}
+      style={[dimensions, imageStyle]}
+      testID="image-success"
+      onLoad={onLoad}
+    />
+  )
+}
+
+function ImageRender(props) {
+  const { state } = props
+  let content
+  if (state.type === 'error') {
+    content = React.createElement(IMGElementContentError, state)
+  } else {
+    content = React.createElement(IMGElementContentSuccess, state)
+  }
+
+  return (
+    <IMGElementContainer
+      testID={props.testID}
+      {...props.containerProps}
+      onPress={props.onPress}
+      style={state.containerStyle}>
+      {content}
+    </IMGElementContainer>
+  )
+}
+
+const CachedImage = (props) => {
+  const state = useIMGElementStateWithCache(props)
+  return <ImageRender {...props} state={state} />
+}
+
+const DefaultImage = (props) => {
+  const state = useIMGElementState(props)
+  return <ImageRender {...props} state={state} />
+}
+
+function ImageElement(props) {
+  const cachedDimensions = useCachedImageDimensions(props.source.uri)
   const service = useImageViewing()
-  const { theme } = useTheme()
   useEffect(() => {
-    if (cache.uri) {
-      service.add(cache.uri)
-      return () => {
-        service.remove(cache.uri)
-      }
-    } else {
-      service.add(rendererProps.source.uri)
-      return () => {
-        service.remove(rendererProps.source.uri)
-      }
+    const imageUri = props.source.uri
+    service.add(imageUri)
+    return () => {
+      service.remove(imageUri)
     }
-  }, [cache.uri])
-
-  const contentWidth = rendererProps.contentWidth || 320
-
-  if (cache.uri) {
+  }, [props.source.uri])
+  if (cachedDimensions) {
     return (
-      <Renderer
-        {...rendererProps}
-        style={[rendererProps.style, { marginTop: 4, borderRadius: 4 }]}
-        source={{
-          uri: cache.uri,
-        }}
+      <CachedImage
+        cachedNaturalDimensions={cachedDimensions}
+        {...props}
         onPress={() => {
-          service.open(cache.uri)
+          service.open(props.source.uri)
         }}
       />
     )
   }
-
   return (
-    <Box
-      style={{
-        width: contentWidth,
-        height: contentWidth * 0.66667,
-        marginTop: 4,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 4,
-      }}>
-      <PhotoIcon size={36} color={theme.colors.text_meta} />
-    </Box>
+    <DefaultImage
+      {...props}
+      onPress={() => {
+        service.open(props.source.uri)
+      }}
+    />
   )
+}
+
+const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
+  const { rendererProps } = useInternalRenderer<'img'>('img', props)
+  // console.log(rendererProps)
+  return <ImageElement {...rendererProps} />
 }
 
 export default ImageRenderer

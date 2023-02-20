@@ -1,10 +1,10 @@
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import HtmlRender from '@/components/HtmlRender'
-import { AnimatedImage } from '@/components/Image'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 import { Notification } from '@/utils/v2ex-client/types'
@@ -193,7 +193,7 @@ const NotificationRow = (props: { data: Notification }) => {
               brief: data.member,
             })
           }}>
-          <AnimatedImage
+          <FastImage
             source={{
               uri: data.member.avatar_normal,
             }}

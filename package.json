@@ -1,6 +1,6 @@
 {
   "name": "v2ex-react-native",
-  "version": "1.5.0",
+  "version": "1.4.2",
   "scripts": {
     "start": "expo start --dev-client -c",
     "android": "expo run:android",
@@ -86,7 +86,6 @@
     "react-native-svg": "13.4.0",
     "react-native-swipeable-item": "^2.0.9",
     "react-native-tab-view": "^3.3.0",
-    "react-native-url-polyfill": "^1.3.0",
     "react-native-web": "~0.18.7",
     "react-native-webview": "11.23.1",
     "react-time-ago": "^7.2.1",

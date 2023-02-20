@@ -1,11 +1,11 @@
 import { memo } from 'react'
 import { Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import FixedPressable from '@/components/FixedPressable'
-import { AnimatedImage } from '@/components/Image'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
@@ -68,10 +68,11 @@ function NodeTopicRow(props: NodeFeedRowProps) {
                 brief: member,
               })
             }}>
-            <AnimatedImage
+            <FastImage
               className="w-[24px] h-[24px] rounded"
               source={{
                 uri: member.avatar_normal,
+                priority: FastImage.priority.low,
               }}
             />
           </FixedPressable>

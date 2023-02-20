@@ -1,11 +1,11 @@
 import { useCallback } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { ImageBackground, Pressable, Text, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import Constants from 'expo-constants'
 
 import BackButton from '@/components/BackButton'
-import { AnimatedImage, ImageBackground } from '@/components/Image'
 import OutlinedText from '@/components/OutlinedText'
 import { Box } from '@/components/Skeleton/Elements'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
@@ -126,12 +126,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
             styles.layer1,
           ]}>
           <ImageBackground
-            style={{
-              width: '100%',
-              height: '100%',
-              position: 'absolute',
-              backgroundColor: theme.colors.background,
-            }}
+            style={{ width: '100%', height: '100%', position: 'absolute' }}
             source={{ uri: data.avatar_large }}
             resizeMode="cover"
             blurRadius={10}
@@ -157,26 +152,23 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
             bottom: -AVATAR_SIZE / 2,
           }}>
           {data.avatar_large ? (
-            <AnimatedImage
+            <FastImage
               className="w-full h-full rounded-full"
               style={{
                 width: AVATAR_SIZE,
                 height: AVATAR_SIZE,
                 borderWidth: 3,
                 borderColor: theme.colors.bg_layer1,
-                backgroundColor: theme.colors.bg_layer1,
+                backgroundColor: theme.colors.text_placeholder,
               }}
               source={{ uri: data.avatar_large }}
             />
           ) : (
             <Box
-              className="rounded-full"
+              className="rounded-full bg-white"
               style={{
                 width: AVATAR_SIZE,
                 height: AVATAR_SIZE,
-                borderWidth: 3,
-                borderColor: theme.colors.bg_layer1,
-                backgroundColor: theme.colors.bg_layer1,
               }}
             />
           )}
