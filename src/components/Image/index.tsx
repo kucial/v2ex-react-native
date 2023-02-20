@@ -26,18 +26,25 @@ type ImageCacheInfo = {
   error?: Error
   uri?: string
 }
+
+const cachedMap: Record<string, string> = {}
 export const useImageCache = (source: ImageURISource) => {
-  const [info, setInfo] = useState<ImageCacheInfo>({
-    cached: false,
-  })
+  const [info, setInfo] = useState<ImageCacheInfo>(() => ({
+    cached: !!cachedMap[source.uri],
+    uri: cachedMap[source.uri],
+  }))
 
   useEffect(() => {
+    if (info.cached) {
+      return
+    }
     downloadImage(source.uri)
       .then((fileUri) => {
         setInfo({
           cached: true,
           uri: fileUri,
         })
+        cachedMap[source.uri] = fileUri
       })
       .catch((err) => {
         setInfo({
