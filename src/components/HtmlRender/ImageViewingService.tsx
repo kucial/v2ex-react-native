@@ -3,8 +3,9 @@ import { createContext, useContext, useMemo, useRef, useState } from 'react'
 import { Pressable, Share, Text, View } from 'react-native'
 import { ShareIcon } from 'react-native-heroicons/solid'
 import ImageView from 'react-native-image-viewing'
-import * as FileSystem from 'expo-file-system'
 import colors from 'tailwindcss/colors'
+
+import { getImageContentUri } from '@/utils/image'
 
 import CheckIcon from '../CheckIcon'
 import Loader from '../Loader'
@@ -69,21 +70,16 @@ const ImageViewingFooter = (props: {
             try {
               const image = images[imageIndex]
               setSaveStatus('loading')
-              const downloaded = await downloadImage(image?.uri)
-              if (downloaded) {
-                const result = await Share.share({
-                  url: downloaded.uri,
-                })
-                await FileSystem.deleteAsync(downloaded.uri)
-                console.log(result)
-                if (result.action === 'dismissedAction') {
-                  setSaveStatus('')
-                } else {
-                  // NOTE: dropdown-alert does not work. for z-index info
-                  setSaveStatus('success')
-                }
-              } else {
+              const contentUri = await getImageContentUri(image.uri)
+              console.log(image.uri, contentUri)
+              const result = await Share.share({
+                url: contentUri,
+              })
+              if (result.action === 'dismissedAction') {
                 setSaveStatus('')
+              } else {
+                // NOTE: dropdown-alert does not work. for z-index info
+                setSaveStatus('success')
               }
             } catch (err) {
               console.log(err)
@@ -156,24 +152,3 @@ ImageViewingServiceProvider.displayName = 'ImageViewingServiceProvider'
 export default ImageViewingServiceProvider
 
 export const useImageViewing = () => useContext(ServiceContext)
-
-function getImgXtension(uri: string, fallback: string) {
-  const basename = uri.split(/[\\/]/).pop()
-  if (!basename) {
-    return fallback
-  }
-  return /[.]/.exec(basename) ? /[^.]+$/.exec(basename) : fallback
-}
-
-// NO
-async function downloadImage(url: string) {
-  const downloadImage = FileSystem.createDownloadResumable(
-    url,
-    FileSystem.cacheDirectory +
-      'TMP_' +
-      Date.now() +
-      '.' +
-      getImgXtension(url, 'png'),
-  )
-  return await downloadImage.downloadAsync()
-}

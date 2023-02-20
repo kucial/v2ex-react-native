@@ -18,6 +18,7 @@ const SelectableTextRender: CustomTextualRenderer =
     if (hasSelectableTextAncestor) {
       return <Text {...renderProps} />
     }
+
     return (
       <SelectableTextAncestor.Provider value={true}>
         <SelectableText
