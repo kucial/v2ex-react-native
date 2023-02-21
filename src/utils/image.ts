@@ -1,3 +1,5 @@
+import 'react-native-url-polyfill/auto'
+
 import * as FileSystem from 'expo-file-system'
 
 const imageDir = FileSystem.cacheDirectory + '.image_cache/'

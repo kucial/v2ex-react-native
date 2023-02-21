@@ -3,7 +3,6 @@
  * 1. 如果存在缓存则使用缓存
  * 2. 过渡渐进效果
  */
-import 'react-native-url-polyfill/auto'
 
 import { useEffect, useMemo, useState } from 'react'
 import {

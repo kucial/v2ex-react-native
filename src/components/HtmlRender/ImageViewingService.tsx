@@ -16,6 +16,7 @@ type ImageResource = {
 
 export type ImageViewingService = {
   add(url: string): void
+  replace(url: string, prev: string): void
   remove(url: string): void
   open(url: string): void
 }
@@ -30,6 +31,18 @@ class ImageList {
   }
   remove(url: string) {
     this.images = this.images.filter((item) => item.uri !== url)
+  }
+  replace(url: string, prev: string) {
+    const index = this.findIndex(prev)
+    if (index > -1) {
+      this.images = [
+        ...this.images.slice(0, index),
+        { uri: url },
+        ...this.images.slice(index + 1),
+      ]
+    } else {
+      this.images.push({ uri: url })
+    }
   }
   findIndex(url: string) {
     const index = this.images.findIndex((item) => item.uri === url)
@@ -121,6 +134,9 @@ const ImageViewingServiceProvider = forwardRef<
       open: (url: string) => {
         const index = imageList.current.findIndex(url)
         setViewIndex(index)
+      },
+      replace: (url: string, prev: string) => {
+        imageList.current.replace(url, prev)
       },
     } as ImageViewingService
   }, [])
