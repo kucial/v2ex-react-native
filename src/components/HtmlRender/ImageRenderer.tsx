@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { Pressable, View } from 'react-native'
+import { useEffect, useMemo } from 'react'
+import { Image, Pressable } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
   CustomBlockRenderer,
@@ -13,16 +13,36 @@ import { downloadImage } from '@/utils/image'
 import { Box } from '../Skeleton/Elements'
 import { useImageViewing } from './ImageViewingService'
 
+async function loadImage(
+  uri: string,
+): Promise<{ uri: string; width: number; height: number }> {
+  const fileUri = await downloadImage(uri)
+  return new Promise((resolve, reject) => {
+    Image.getSize(
+      fileUri,
+      (width, height) => {
+        resolve({
+          uri: fileUri,
+          width,
+          height,
+        })
+      },
+      reject,
+    )
+  })
+}
+
 const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
-  const { Renderer, rendererProps } = useInternalRenderer<'img'>('img', props)
-  const imageSwr = useSWR(rendererProps.source.uri, downloadImage)
+  const { rendererProps } = useInternalRenderer<'img'>('img', props)
+  const imageSwr = useSWR(rendererProps.source.uri, loadImage)
+
   const service = useImageViewing()
   const { theme } = useTheme()
   useEffect(() => {
     if (imageSwr.data) {
-      service.replace(imageSwr.data, rendererProps.source.uri)
+      service.replace(imageSwr.data.uri, rendererProps.source.uri)
       return () => {
-        service.remove(imageSwr.data)
+        service.remove(imageSwr.data.uri)
       }
     } else {
       service.add(rendererProps.source.uri)
@@ -33,19 +53,48 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   }, [imageSwr.data, rendererProps.source.uri])
 
   const contentWidth = rendererProps.contentWidth || 320
+  const imageStyle = useMemo(() => {
+    if (imageSwr.data?.width < contentWidth) {
+      return {
+        width: imageSwr.data.width,
+        height: imageSwr.data.height,
+      }
+    } else if (imageSwr.data?.height && imageSwr.data?.width) {
+      return {
+        width: contentWidth,
+        height: (imageSwr.data.height / imageSwr.data.width) * contentWidth,
+      }
+    } else {
+      return {
+        width: contentWidth,
+        height: contentWidth * 0.66667,
+      }
+    }
+  }, [imageSwr.data, contentWidth])
 
   if (imageSwr.data) {
     return (
-      <Renderer
-        {...rendererProps}
-        style={rendererProps.style}
-        source={{
-          uri: imageSwr.data,
+      <Pressable
+        style={{
+          height: imageStyle.height + 8,
+          width: imageStyle.width,
+          paddingTop: 4,
         }}
         onPress={() => {
-          service.open(imageSwr.data)
-        }}
-      />
+          service.open(imageSwr.data.uri)
+        }}>
+        <Image
+          style={[
+            imageStyle,
+            {
+              borderRadius: 4,
+            },
+          ]}
+          source={{
+            uri: imageSwr.data.uri,
+          }}
+        />
+      </Pressable>
     )
   }
 
@@ -56,12 +105,14 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
         service.open(rendererProps.source.uri)
       }}>
       <Box
-        style={{
-          width: contentWidth,
-          height: contentWidth * 0.66667,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+        style={[
+          imageStyle,
+          {
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 4,
+          },
+        ]}>
         {imageSwr.error ? (
           <PhotoIcon size={36} color={theme.colors.danger} />
         ) : (
