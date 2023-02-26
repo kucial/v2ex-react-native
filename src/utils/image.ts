@@ -1,32 +1,47 @@
 import 'react-native-url-polyfill/auto'
 
+import * as Crypto from 'expo-crypto'
 import * as FileSystem from 'expo-file-system'
 
 const imageDir = FileSystem.cacheDirectory + '.image_cache/'
 
-function getImgXtension(uri: string, fallback: string) {
-  const basename = uri.split(/[\\/]/).pop()
-  if (!basename) {
-    return fallback
+export function getImgXtension(uri: string, fallback: string) {
+  const basename = getBasename(uri)
+  if (/[.]/.exec(basename)) {
+    return /[^.]+$/.exec(basename)[0]
+  } else {
+    const url = new URL(uri)
+    return url.searchParams.get('format') || fallback
   }
-  return /[.]/.exec(basename) ? /[^.]+$/.exec(basename) : fallback
+}
+export function getBasename(uri: string) {
+  return uri.split(/[\\/]/).pop()
 }
 
-const getImagePath = (link: string) => {
-  const url = new URL(link)
+export function getFilename(uri: string) {
+  const basename = getBasename(uri)
+  return basename.split('?')[0]
+}
+
+export const getImagePath = async (link: string) => {
   const ext = getImgXtension(link, 'png')
 
-  const path = [
-    url.hostname.replace(/\./g, '_'),
-    [
-      url.pathname
-        .replace(/\//g, '_')
-        .replace(/%20/g, '_')
-        .replace(new RegExp(`${ext}$`), ''),
-      url.search.replace('?', '--'),
-      ext,
-    ].join(''),
-  ].join('_')
+  let path: string
+  try {
+    const hash = await Crypto.digestStringAsync(
+      Crypto.CryptoDigestAlgorithm.SHA1,
+      link,
+    )
+    const filename = getFilename(link)
+    path = `${filename.replace(`.${ext}`, '')}_${hash.slice(0, 8)}.${ext}`
+  } catch (err) {
+    const url = new URL(link)
+    url.searchParams.delete('format')
+    path = `${url.hostname.replace(/\./g, '_')}_${url.pathname
+      .replace(/\//g, '_')
+      .replace(/%20/g, '_')
+      .replace(`.${ext}`, '')}${url.search.replace(/^\?(.*)/, '[$1]')}.${ext}`
+  }
 
   return imageDir + path
 }
@@ -41,7 +56,7 @@ async function ensureDirExists() {
 
 export async function downloadImage(url: string) {
   await ensureDirExists()
-  const fileUri = getImagePath(url)
+  const fileUri = await getImagePath(url)
   const fileInfo = await FileSystem.getInfoAsync(fileUri)
 
   if (!fileInfo.exists) {

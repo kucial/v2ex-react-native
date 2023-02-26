@@ -1,5 +1,5 @@
 import { forwardRef, ReactNode, useImperativeHandle } from 'react'
-import { createContext, useContext, useMemo, useRef, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
 import { Pressable, Share, Text, View } from 'react-native'
 import { ShareIcon } from 'react-native-heroicons/solid'
 import ImageView from 'react-native-image-viewing'
@@ -16,44 +16,9 @@ type ImageResource = {
 
 export type ImageViewingService = {
   add(url: string): void
-  replace(url: string, prev: string): void
+  replace(url: string, prevUrl: string): void
   remove(url: string): void
   open(url: string): void
-}
-
-class ImageList {
-  images: ImageResource[] = []
-  add(url: string) {
-    const index = this.findIndex(url)
-    if (index === -1) {
-      this.images.push({ uri: url })
-    }
-  }
-  remove(url: string) {
-    this.images = this.images.filter((item) => item.uri !== url)
-  }
-  replace(url: string, prev: string) {
-    const index = this.findIndex(prev)
-    if (index > -1) {
-      this.images = [
-        ...this.images.slice(0, index),
-        { uri: url },
-        ...this.images.slice(index + 1),
-      ]
-    } else {
-      this.images.push({ uri: url })
-    }
-  }
-  findIndex(url: string) {
-    const index = this.images.findIndex((item) => item.uri === url)
-    return index
-  }
-  get(index: number) {
-    return this.images[index]
-  }
-  count() {
-    return this.images.length
-  }
 }
 
 const ServiceContext = createContext<ImageViewingService>(
@@ -84,12 +49,12 @@ const ImageViewingFooter = (props: {
               const image = images[imageIndex]
               setSaveStatus('loading')
               const contentUri = await getImageContentUri(image.uri)
-              console.log(image.uri, contentUri)
+              setSaveStatus('')
               const result = await Share.share({
                 url: contentUri,
               })
               if (result.action === 'dismissedAction') {
-                setSaveStatus('')
+                // no nothing
               } else {
                 // NOTE: dropdown-alert does not work. for z-index info
                 setSaveStatus('success')
@@ -121,25 +86,42 @@ const ImageViewingServiceProvider = forwardRef<
   }
 >((props, ref) => {
   const [viewIndex, setViewIndex] = useState(-1)
-  const imageList = useRef<ImageList>(new ImageList())
+  const [images, setImages] = useState<ImageResource[]>([])
 
-  const service = useMemo(() => {
+  const service: ImageViewingService = useMemo(() => {
     return {
       add: (url: string) => {
-        imageList.current.add(url)
+        setImages((prev) => {
+          const index = prev.findIndex((item) => item.uri === url)
+          if (index === -1) {
+            return [...prev, { uri: url }]
+          }
+          return prev
+        })
       },
       remove: (url: string) => {
-        imageList.current.remove(url)
+        setImages((prev) => prev.filter((item) => item.uri !== url))
       },
       open: (url: string) => {
-        const index = imageList.current.findIndex(url)
+        const index = images.findIndex((item) => item.uri === url)
         setViewIndex(index)
       },
-      replace: (url: string, prev: string) => {
-        imageList.current.replace(url, prev)
+      replace: (url: string, prevUrl: string) => {
+        setImages((prev) => {
+          const index = prev.findIndex((item) => item.uri === prevUrl)
+          if (index > -1) {
+            return [
+              ...prev.slice(0, index),
+              { uri: url },
+              ...prev.slice(index + 1),
+            ]
+          } else {
+            return [...prev, { uri: url }]
+          }
+        })
       },
-    } as ImageViewingService
-  }, [])
+    }
+  }, [images])
 
   useImperativeHandle(ref, () => service, [service])
 
@@ -147,14 +129,14 @@ const ImageViewingServiceProvider = forwardRef<
     <ServiceContext.Provider value={service}>
       {props.children}
       <ImageView
-        images={imageList.current.images}
+        images={images}
         imageIndex={viewIndex}
         visible={viewIndex > -1}
         onRequestClose={() => setViewIndex(-1)}
         FooterComponent={({ imageIndex }) => (
           <ImageViewingFooter
             key={`index-${imageIndex}`}
-            images={imageList.current.images}
+            images={images}
             imageIndex={imageIndex}
           />
         )}

@@ -26,6 +26,8 @@ PODS:
     - ExpoModulesCore
   - ExpoClipboard (4.0.1):
     - ExpoModulesCore
+  - ExpoCrypto (12.0.0):
+    - ExpoModulesCore
   - ExpoHaptics (12.0.1):
     - ExpoModulesCore
   - ExpoImagePicker (14.0.3):
@@ -468,6 +470,7 @@ DEPENDENCIES:
   - EXManifests (from `../node_modules/expo-manifests/ios`)
   - Expo (from `../node_modules/expo`)
   - ExpoClipboard (from `../node_modules/expo-clipboard/ios`)
+  - ExpoCrypto (from `../node_modules/expo-crypto/ios`)
   - ExpoHaptics (from `../node_modules/expo-haptics/ios`)
   - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
@@ -575,6 +578,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo"
   ExpoClipboard:
     :path: "../node_modules/expo-clipboard/ios"
+  ExpoCrypto:
+    :path: "../node_modules/expo-crypto/ios"
   ExpoHaptics:
     :path: "../node_modules/expo-haptics/ios"
   ExpoImagePicker:
@@ -716,6 +721,7 @@ SPEC CHECKSUMS:
   EXManifests: 347f49430b63444579aa013f0ad057d16b8d1cc8
   Expo: b9fa98bf260992312ee3c424400819fb9beadafe
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
+  ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
   ExpoHaptics: 5a56d30a87ea213dd00b09566dc4b441a4dff97f
   ExpoImagePicker: ce37302446e70145bb413f0f74886441abdae022
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
