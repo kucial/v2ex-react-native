@@ -1,8 +1,10 @@
-import { useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
+import { Alert, Linking } from 'react-native'
 import BaseRender, { RenderHTMLProps } from 'react-native-render-html'
 import WebView from 'react-native-webview'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { BarCodeScannerResult } from 'expo-barcode-scanner'
 import * as Clipboard from 'expo-clipboard'
 import * as WebBrowser from 'expo-web-browser'
 import { decode } from 'js-base64'
@@ -11,11 +13,14 @@ import * as Sentry from 'sentry-expo'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
+import { getMaxLength } from '@/utils/content'
 import {
   getImgurResourceImageLink,
   getScreenInfo,
   isAppLink,
+  isDeepLink,
   isImgurResourceLink,
+  isURL,
 } from '@/utils/url'
 
 import AnchorRenderer from './AnchorRenderer'
@@ -218,8 +223,32 @@ function HtmlRender({
     [navigation],
   )
 
+  const handleQrCode = useCallback((result: BarCodeScannerResult) => {
+    const { data } = result
+    if (isAppLink(data)) {
+      const screen = getScreenInfo(data)
+      if (screen) {
+        navigation.push(screen.name, screen.params)
+        return
+      }
+    } else if (isURL(data) || isDeepLink(data)) {
+      Linking.openURL(data)
+    } else {
+      Alert.alert('信息', getMaxLength(data, 120), [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '复制',
+          onPress: async () => {
+            await Clipboard.setStringAsync(data)
+            alert?.alertWithType('success', '操作成功', '已复制到粘贴板')
+          },
+        },
+      ])
+    }
+  }, [])
+
   return (
-    <ImageViewingServiceProvider ref={viewingRef}>
+    <ImageViewingServiceProvider ref={viewingRef} handleQrCode={handleQrCode}>
       <RenderContext.Provider value={renderContext}>
         <BaseRender
           WebView={WebView}

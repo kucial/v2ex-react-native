@@ -1,8 +1,9 @@
-import { forwardRef, ReactNode, useImperativeHandle } from 'react'
+import { forwardRef, ReactNode, useEffect, useImperativeHandle } from 'react'
 import { createContext, useContext, useMemo, useState } from 'react'
 import { Pressable, Share, Text, View } from 'react-native'
-import { ShareIcon } from 'react-native-heroicons/solid'
+import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
 import ImageView from 'react-native-image-viewing'
+import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import colors from 'tailwindcss/colors'
 
 import { getImageContentUri } from '@/utils/image'
@@ -28,9 +29,21 @@ const ServiceContext = createContext<ImageViewingService>(
 const ImageViewingFooter = (props: {
   images: ImageResource[]
   imageIndex: number
+  handleQrCode(result: BarCodeScannerResult): void
 }) => {
-  const { images, imageIndex } = props
+  const { images, imageIndex, handleQrCode } = props
   const [saveStatus, setSaveStatus] = useState('')
+  const [qrCodes, setQrCodes] = useState(null)
+
+  useEffect(() => {
+    const uri = images[imageIndex]?.uri
+    if (uri) {
+      BarCodeScanner.scanFromURLAsync(uri).then(setQrCodes)
+      return () => {
+        setQrCodes(null)
+      }
+    }
+  }, [images[imageIndex]?.uri])
 
   return (
     <View className="flex flex-row justify-between items-center pb-8 px-8">
@@ -39,7 +52,17 @@ const ImageViewingFooter = (props: {
           {imageIndex + 1} / {images.length}
         </Text>
       </View>
-      <View>
+      <View className="flex flex-row gap-x-2">
+        {!!qrCodes?.length && (
+          <Pressable
+            className="w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50"
+            hitSlop={6}
+            onPress={() => {
+              handleQrCode(qrCodes[0])
+            }}>
+            <QrCodeIcon size={16} color={colors.neutral[300]} />
+          </Pressable>
+        )}
         <Pressable
           className="w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50"
           hitSlop={6}
@@ -83,6 +106,7 @@ const ImageViewingServiceProvider = forwardRef<
   ImageViewingService,
   {
     children: ReactNode
+    handleQrCode(data: BarCodeScannerResult): void
   }
 >((props, ref) => {
   const [viewIndex, setViewIndex] = useState(-1)
@@ -138,6 +162,7 @@ const ImageViewingServiceProvider = forwardRef<
             key={`index-${imageIndex}`}
             images={images}
             imageIndex={imageIndex}
+            handleQrCode={props.handleQrCode}
           />
         )}
       />

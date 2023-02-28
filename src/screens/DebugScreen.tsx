@@ -45,19 +45,16 @@ export default function DebugScreen(props) {
   // return null
 
   return (
-    <View style={[{ flex: 1 }, styles.layer1]}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Text>TODO....</Text>
-        <Text>
-          <Text url="https://www.baidu.com">测试一下</Text>
-        </Text>
+    <SafeAreaView style={[{ flex: 1 }, styles.layer1]}>
+      <View>
         <HtmlRender
-          navigation={props.navigation}
+          contentWidth={Dimensions.get('window').width}
           source={{
-            html: '<p><a href="https://www.feat.com">kongkx</a></p>',
+            html: '<div><p>这是一段测试文本</p><img src="https://www.kongkx.com/sites/default/files/inline-images/Fantom.png" /></div>',
           }}
+          navigation={props.navigation}
         />
-      </SafeAreaView>
-    </View>
+      </View>
+    </SafeAreaView>
   )
 }

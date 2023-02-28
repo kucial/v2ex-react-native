@@ -18,6 +18,7 @@ import NavigationContainer from './src/containers/NavigationContainer'
 import { ThemeProvider } from './src/containers/ThemeService'
 import ViewedTopicsService from './src/containers/ViewedTopicsService'
 import AppStack from './src/screens/AppStack'
+// import DebugScreen from './src/screens/DebugScreen'
 
 Sentry.init({
   dsn: SENTRY_DSN,
