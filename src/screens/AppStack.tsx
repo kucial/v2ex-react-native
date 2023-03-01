@@ -136,6 +136,7 @@ function AppStack() {
           component={MyViewedTopicsScreen}
           options={{
             title: '浏览的主题（缓存）',
+            headerShadowVisible: false,
           }}
         />
       </Stack.Group>

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import {
   EllipsisHorizontalIcon,
@@ -12,6 +12,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 
+import SearchInput from '@/components/SearchInput'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -44,14 +45,16 @@ const Actions = (props) => {
 }
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'viewed-topics'>
-export default function ViewedTopicsScreen({ navigation }: ScreenProps) {
+export default function ViewedTopicsScreen(props: ScreenProps) {
+  const { navigation } = props
   const { getItems, clear, removeItem } = useViewedTopics()
   const { showActionSheetWithOptions } = useActionSheet()
   const { data: settings } = useAppSettings()
   const { styles } = useTheme()
-  const { renderItem, keyExtractor, data } = useMemo(
+  const [filter, setFilter] = useState('')
+
+  const { renderItem, keyExtractor } = useMemo(
     () => ({
-      data: getItems(),
       renderItem: ({ item }: { item: ViewedTopic }) => {
         const inner =
           settings.feedLayout === 'tide' ? (
@@ -82,14 +85,19 @@ export default function ViewedTopicsScreen({ navigation }: ScreenProps) {
       },
       keyExtractor: (item) => item.id,
     }),
-    [
-      settings.feedLayout,
-      settings.feedShowAvatar,
-      navigation,
-      getItems,
-      removeItem,
-    ],
+    [settings.feedLayout, settings.feedShowAvatar, getItems, removeItem],
   )
+
+  const data = useMemo(() => {
+    const all = getItems()
+    if (!filter) {
+      return all
+    }
+    const regex = new RegExp(filter, 'i')
+    return all.filter(
+      (item) => regex.test(item.title) || regex.test(item.content_rendered),
+    )
+  }, [filter, getItems])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -118,27 +126,43 @@ export default function ViewedTopicsScreen({ navigation }: ScreenProps) {
   }, [])
 
   return (
-    <FlashList
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      estimatedItemSize={110}
-      ListEmptyComponent={() => (
-        <View className="items-center py-9">
-          <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
-        </View>
-      )}
-      ListFooterComponent={() =>
-        !!data.length && (
-          <View
-            sentry-label="ListFooter"
-            className="min-h-[60px] py-4 flex flex-row items-center justify-center">
-            <View className="w-full flex flex-row justify-center py-4">
-              <Text style={styles.text_meta}>到达底部啦</Text>
-            </View>
+    <>
+      <View
+        className="h-[52px]"
+        style={[styles.layer1, styles.border_b, styles.border_light]}>
+        <SearchInput
+          placeholder="筛选"
+          initialValue={filter}
+          onSubmit={(text) => {
+            setFilter(text.trim())
+          }}
+          onReset={() => {
+            setFilter('')
+          }}
+        />
+      </View>
+      <FlashList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        estimatedItemSize={110}
+        ListEmptyComponent={() => (
+          <View className="items-center py-9">
+            <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
           </View>
-        )
-      }
-    />
+        )}
+        ListFooterComponent={() =>
+          !!data.length && (
+            <View
+              sentry-label="ListFooter"
+              className="min-h-[60px] py-4 flex flex-row items-center justify-center">
+              <View className="w-full flex flex-row justify-center py-4">
+                <Text style={styles.text_meta}>到达底部啦</Text>
+              </View>
+            </View>
+          )
+        }
+      />
+    </>
   )
 }

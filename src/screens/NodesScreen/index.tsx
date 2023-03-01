@@ -118,9 +118,9 @@ export default function NodesScreen({ navigation }: ScreenProps) {
 
   return (
     <View className="flex-1">
-      <View className="mb-1" style={styles.layer1}>
+      <View className="mb-1 h-[52px]" style={styles.layer1}>
         <SearchInput
-          placeholder="查询"
+          placeholder="筛选"
           initialValue={filter}
           ref={filterInput}
           onSubmit={(text) => {
