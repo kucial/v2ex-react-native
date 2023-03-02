@@ -1,8 +1,8 @@
 import { Pressable, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 
 import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
@@ -58,7 +58,8 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                 brief: data.member,
               })
             }}>
-            <FastImage
+            <Image
+              recyclingKey={`user:${data.member.username}`}
               className="w-[24px] h-[24px] rounded"
               source={{ uri: data.member.avatar_normal }}
             />

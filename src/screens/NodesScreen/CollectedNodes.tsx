@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
+import { Image } from 'expo-image'
 import { DocumentIcon } from 'react-native-heroicons/outline'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -30,9 +30,9 @@ export default function CollectedNodes(props: { data: NodeExtra[] }) {
                 name: node.name,
               })
             }}>
-            <FastImage
+            <Image
               className="w-[44px] h-[44px]"
-              source={{ uri: node.avatar_large }}></FastImage>
+              source={{ uri: node.avatar_large }}></Image>
             <View className="ml-3 pt-1">
               <Text style={styles.text}>{node.title}</Text>
               <View className="mt-1 flex flex-row items-center">

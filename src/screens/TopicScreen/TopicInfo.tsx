@@ -1,12 +1,19 @@
-import { memo, useMemo } from 'react'
+import { memo } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { Image } from 'expo-image'
 
 import HtmlRender from '@/components/HtmlRender'
 import { Box } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 import { TopicDetail } from '@/utils/v2ex-client/types'
+
+const getLargeAvatar = (avatar: string) => {
+  if (/gravatar/.test(avatar)) {
+    return avatar.replace(/s=(?:36|24)/, 's=48')
+  }
+  return avatar.replace('_normal', '_large')
+}
 
 function TopicInfo(props: {
   data: TopicDetail
@@ -29,11 +36,12 @@ function TopicInfo(props: {
               })
             }}>
             {member.avatar_normal ? (
-              <FastImage
+              <Image
                 source={{
-                  uri: member.avatar_normal,
-                  priority: 'low',
+                  uri: getLargeAvatar(member.avatar_normal),
                 }}
+                priority="low"
+                recyclingKey={`user-avatar:${member.username}`}
                 className="w-[32px] h-[32px] rounded"
               />
             ) : (

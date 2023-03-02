@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from 'react'
 import { Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import {
   Bars3Icon,
   ChatBubbleLeftEllipsisIcon,
@@ -16,6 +15,7 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { CompositeScreenProps } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 
 import { LineItem, LineItemGroup } from '@/components/LineItem'
 import ReplyIcon from '@/components/ReplyIcon'
@@ -86,7 +86,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
           onPress={() => {
             navigation.push('profile')
           }}>
-          <FastImage
+          <Image
             source={{ uri: currentUser.avatar_normal }}
             className="w-[40px] h-[40px] bg-neutral-100 mr-3"
           />

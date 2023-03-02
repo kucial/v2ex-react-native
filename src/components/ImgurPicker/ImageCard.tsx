@@ -1,6 +1,6 @@
 import { Pressable, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 
 import CheckIcon from '@/components/CheckIcon'
 import { getImageLink } from '@/containers/ImgurService'
@@ -19,7 +19,7 @@ export default function ImageCard(props) {
           style={{
             backgroundColor: theme.colors.text_placeholder,
           }}>
-          <FastImage
+          <Image
             source={
               data?.link
                 ? {
@@ -27,7 +27,7 @@ export default function ImageCard(props) {
                   }
                 : imagePlaceholder
             }
-            resizeMode="cover"
+            contentFit="cover"
             style={{
               justifyContent: 'center',
               flex: 1,

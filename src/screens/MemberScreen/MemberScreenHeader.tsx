@@ -1,9 +1,9 @@
 import { useCallback } from 'react'
 import { ImageBackground, Pressable, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import Constants from 'expo-constants'
+import { Image } from 'expo-image'
 
 import BackButton from '@/components/BackButton'
 import OutlinedText from '@/components/OutlinedText'
@@ -152,7 +152,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
             bottom: -AVATAR_SIZE / 2,
           }}>
           {data.avatar_large ? (
-            <FastImage
+            <Image
               className="w-full h-full rounded-full"
               style={{
                 width: AVATAR_SIZE,

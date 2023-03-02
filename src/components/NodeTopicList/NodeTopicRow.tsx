@@ -1,9 +1,9 @@
 import { memo } from 'react'
 import { Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 
 import FixedPressable from '@/components/FixedPressable'
 import {
@@ -70,12 +70,13 @@ function NodeTopicRow(props: NodeFeedRowProps) {
                 brief: member,
               })
             }}>
-            <FastImage
+            <Image
+              recyclingKey={`user-avatar:${member.username}`}
               className="w-[24px] h-[24px] rounded"
               source={{
                 uri: member.avatar_normal,
-                priority: FastImage.priority.low,
               }}
+              priority="low"
             />
           </FixedPressable>
         </View>

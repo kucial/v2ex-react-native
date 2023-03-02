@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 
 import FixedPressable from '@/components/FixedPressable'
 import TimeAgo from '@/components/TimeAgo'
@@ -34,7 +34,8 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
                 brief: member,
               })
             }}>
-            <FastImage
+            <Image
+              recyclingKey={`user-avatar:${member.username}`}
               source={{
                 uri: member.avatar_normal,
               }}

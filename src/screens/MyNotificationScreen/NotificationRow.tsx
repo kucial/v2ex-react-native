@@ -1,8 +1,8 @@
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
@@ -193,7 +193,8 @@ const NotificationRow = (props: { data: Notification }) => {
               brief: data.member,
             })
           }}>
-          <FastImage
+          <Image
+            recyclingKey={`user:${data.member.username}`}
             source={{
               uri: data.member.avatar_normal,
             }}

@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
+import { Image } from 'expo-image'
 import { LockClosedIcon } from 'react-native-heroicons/outline'
 
 import { getImageLink, useImgurService } from '@/containers/ImgurService'
@@ -25,7 +25,7 @@ export default function AlbumCard(props: {
           style={{
             backgroundColor: theme.colors.text_placeholder,
           }}>
-          <FastImage
+          <Image
             source={
               coverSwr.data
                 ? {
@@ -37,7 +37,7 @@ export default function AlbumCard(props: {
             style={{
               justifyContent: 'center',
               flex: 1,
-            }}></FastImage>
+            }}></Image>
         </View>
       </View>
       <Text

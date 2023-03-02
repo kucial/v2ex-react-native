@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 
 import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
@@ -66,7 +66,8 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
                 brief: member,
               })
             }}>
-            <FastImage
+            <Image
+              recyclingKey={`user-avatar:${member.username}`}
               source={{
                 uri: member.avatar_normal,
               }}

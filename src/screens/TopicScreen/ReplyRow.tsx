@@ -6,7 +6,6 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import {
   ChatBubbleLeftRightIcon,
   HeartIcon,
@@ -14,6 +13,7 @@ import {
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 import { marked } from 'marked'
 
 import HtmlRender from '@/components/HtmlRender'
@@ -132,11 +132,12 @@ function ReplyRow(props: ReplyRowProps) {
                   username: member.username,
                 })
               }}>
-              <FastImage
+              <Image
                 source={{
                   uri: member.avatar_normal,
-                  priority: FastImage.priority.low,
                 }}
+                priority="low"
+                recyclingKey={`user-avatar:${member.username}`}
                 className="w-[24px] h-[24px] rounded"
               />
             </Pressable>

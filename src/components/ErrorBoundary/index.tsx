@@ -1,6 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
-import FastImage from 'react-native-fast-image'
 import RNRestart from 'react-native-restart'
+import { Image } from 'expo-image'
 import * as Sentry from 'sentry-expo'
 
 import storage from '@/utils/storage'
@@ -39,7 +39,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   handleReset = () => {
     storage.clearAll()
-    FastImage.clearDiskCache()
+    Image.clearDiskCache()
     RNRestart.Restart()
   }
 

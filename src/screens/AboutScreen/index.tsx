@@ -6,11 +6,11 @@ import {
   Text,
   View,
 } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import { ArrowUpOnSquareIcon } from 'react-native-heroicons/outline'
 import RNRestart from 'react-native-restart'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
+import { Image } from 'expo-image'
 
 import GithubIcon from '@/components/GithubIcon'
 import { useTheme } from '@/containers/ThemeService'
@@ -89,7 +89,7 @@ export default function AboutScreen() {
                   }
                   storage.delete(key)
                 })
-                FastImage.clearDiskCache()
+                Image.clearDiskCache()
                 RNRestart.Restart()
               }}>
               <Text style={styles.text}>清除缓存</Text>
@@ -104,7 +104,7 @@ export default function AboutScreen() {
               style={[styles.layer1]}
               onPress={() => {
                 storage.clearAll()
-                FastImage.clearDiskCache()
+                Image.clearDiskCache()
                 RNRestart.Restart()
               }}>
               <Text style={styles.text_danger}>重置</Text>
