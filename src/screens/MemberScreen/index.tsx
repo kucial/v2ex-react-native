@@ -12,9 +12,9 @@ import MemberTopics from './MemberTopics'
 
 const Tab = createMaterialTopTabNavigator()
 
-type HomeScreenProps = NativeStackScreenProps<AppStackParamList, 'member'>
+type MemberScreenProps = NativeStackScreenProps<AppStackParamList, 'member'>
 
-export default function MemberScreen({ route, navigation }: HomeScreenProps) {
+export default function MemberScreen({ route, navigation }: MemberScreenProps) {
   const { username, tab } = route.params
   const memberSwr = useSWR(
     [`/page/member/:username/info.json`, username],

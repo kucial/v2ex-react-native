@@ -21,6 +21,9 @@ declare global {
       brief?: MemberBasic
       tab?: 'topics' | 'replies'
     }
+    'member-info': {
+      username: string
+    }
     about: null
     'new-topic': {
       node?: NodeDetail

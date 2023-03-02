@@ -2,11 +2,13 @@ import { useCallback } from 'react'
 import { ImageBackground, Pressable, Text, View } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 import Constants from 'expo-constants'
 import { Image } from 'expo-image'
+import { SWRResponse } from 'swr'
 
 import BackButton from '@/components/BackButton'
-import OutlinedText from '@/components/OutlinedText'
 import { Box } from '@/components/Skeleton/Elements'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
@@ -16,10 +18,16 @@ import * as v2exClient from '@/utils/v2ex-client'
 import { MemberDetail } from '@/utils/v2ex-client/types'
 import { StatusResponse } from '@/utils/v2ex-client/types'
 
-const AVATAR_SIZE = 68
-const HEADER_CANVAS_HEIGHT = 80
+const AVATAR_SIZE = 72
+const HEADER_CANVAS_HEIGHT = 64
 
-export default function MemberScreenHeader({ route, navigation, swr }) {
+export default function MemberScreenHeader({
+  route,
+  navigation,
+  swr,
+}: NativeStackScreenProps<AppStackParamList, 'member'> & {
+  swr: SWRResponse
+}) {
   const { brief, username } = route.params
   const data = swr.data || brief || { username }
   const { showActionSheetWithOptions } = useActionSheet()
@@ -131,7 +139,7 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
             resizeMode="cover"
             blurRadius={10}
           />
-          <View
+          {/* <View
             style={{
               marginLeft: AVATAR_SIZE + 16 + 12,
             }}>
@@ -143,13 +151,13 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
               color="#111111"
               outlineColor="#ffffff50"
             />
-          </View>
+          </View> */}
         </View>
         <View
           className="absolute"
           style={{
             left: 16,
-            bottom: -AVATAR_SIZE / 2,
+            bottom: -AVATAR_SIZE * 0.7,
           }}>
           {data.avatar_large ? (
             <Image
@@ -175,24 +183,35 @@ export default function MemberScreenHeader({ route, navigation, swr }) {
         </View>
       </View>
       <View
+        className="flex flex-row"
         style={{
           marginLeft: AVATAR_SIZE + 16 + 12,
-          minHeight: AVATAR_SIZE / 2,
-          paddingVertical: 4,
+          minHeight: AVATAR_SIZE * 0.7,
         }}>
-        <Text className="text-neutral-500 text-sm">
-          <Text className="pl-2 mb-1">
-            {[
-              data.created ? `${localTime(data.created * 1000)} 加入` : '',
-              data.tagline,
-              data.location,
-              data.bio,
-              data.website,
-            ]
-              .filter(Boolean)
-              .join('; ')}
+        <View className="flex-1">
+          <Text className="text-lg font-bold" style={styles.text_primary}>
+            {data.username}
           </Text>
-        </Text>
+          <Text className="text-sm" style={styles.text_meta}>
+            <Text className="pl-2 mb-1">
+              {data.created ? `${localTime(data.created * 1000)} 加入` : ''}
+            </Text>
+          </Text>
+        </View>
+        <View className="flex flex-col justify-center pr-1">
+          <Pressable
+            onPress={() => {
+              navigation.navigate('member-info', {
+                username: data.username,
+              })
+            }}
+            className={classNames(
+              'h-[44px] px-4 flex flex-row items-center rounded-full',
+              'active:opacity-60 active:bg-neutral-100 dark:active:bg-neutral-600',
+            )}>
+            <Text style={styles.text}>更多</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   )

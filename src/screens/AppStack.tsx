@@ -8,6 +8,7 @@ import AboutScreen from './AboutScreen'
 import BrowserScreen from './BrowserScreen'
 import FeedbackScreen from './FeedbackScreen'
 import MainTab from './MainTab'
+import MemberInfoScreen from './MemberInfoScreen'
 import MemberScreen from './MemberScreen'
 import MyCollectedTopicsScreen from './MyCollectedTopicsScreen'
 import MyCreatedTopicsScreen from './MyCreatedTopicsScreen'
@@ -78,7 +79,13 @@ function AppStack() {
             headerShown: false,
           }}
         />
-
+        <Stack.Screen
+          name="member-info"
+          component={MemberInfoScreen}
+          options={{
+            title: '用户信息',
+          }}
+        />
         <Stack.Screen
           name="about"
           component={AboutScreen}
