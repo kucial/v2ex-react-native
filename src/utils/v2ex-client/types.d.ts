@@ -34,7 +34,9 @@ export type NodeDetail = NodeBasic & {
 
 export type MemberBasic = {
   username: string
+  avatar_mini: UrlString
   avatar_normal: UrlString
+  avatar_large: UrlString
 }
 
 export type MemberDetail = MemberBasic & {

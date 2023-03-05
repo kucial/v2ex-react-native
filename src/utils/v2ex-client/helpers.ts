@@ -35,10 +35,27 @@ export function nodeFromLink($el: Cheerio<Element>): NodeBasic {
   }
 }
 
+type AvatarSize = 'mini' | 'normal' | 'large'
+const gravatarSizes = {
+  mini: 24,
+  normal: 48,
+  large: 73,
+}
+function mapAvatarSize(url: string, size: AvatarSize) {
+  if (/gravatar/.test(url)) {
+    return url.replace(/s=(?:24|48|73)/, `s=${gravatarSizes[size]}`)
+  }
+  return url.replace(/_(?:mini|normal|large)\./, `_${size}.`)
+}
+
 export function memberFromImage($el: Cheerio<Element>): MemberBasic {
+  const avatarUrl = resolveUrl($el.attr('src')) as string
+
   return {
     username: $el.attr('alt') as string,
-    avatar_normal: resolveUrl($el.attr('src')) as string,
+    avatar_normal: mapAvatarSize(avatarUrl, 'normal'),
+    avatar_large: mapAvatarSize(avatarUrl, 'large'),
+    avatar_mini: mapAvatarSize(avatarUrl, 'mini'),
   }
 }
 

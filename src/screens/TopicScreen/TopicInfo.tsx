@@ -8,13 +8,6 @@ import { Box } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 import { TopicDetail } from '@/utils/v2ex-client/types'
 
-const getLargeAvatar = (avatar: string) => {
-  if (/gravatar/.test(avatar)) {
-    return avatar.replace(/s=(?:36|24)/, 's=48')
-  }
-  return avatar.replace('_normal', '_large')
-}
-
 function TopicInfo(props: {
   data: TopicDetail
   navigation: NativeStackNavigationProp<AppStackParamList>
@@ -35,13 +28,12 @@ function TopicInfo(props: {
                 username: member.username,
               })
             }}>
-            {member.avatar_normal ? (
+            {member.avatar_large ? (
               <Image
                 source={{
-                  uri: getLargeAvatar(member.avatar_normal),
+                  uri: member.avatar_large,
                 }}
                 priority="low"
-                recyclingKey={`user-avatar:${member.username}`}
                 className="w-[32px] h-[32px] rounded"
               />
             ) : (

@@ -787,7 +787,7 @@ export async function getMemberDetail({
   }
 }
 
-async function getUserId(username: string) {
+async function getMemberId(username: string) {
   const { data: user } = await request({
     url: '/api/members/show.json',
     params: { username },
@@ -806,7 +806,7 @@ export async function watchMember({
 }): Promise<StatusResponse<Pick<MemberDetail, 'meta'>>> {
   let userId = id
   if (!userId) {
-    userId = await getUserId(username)
+    userId = await getMemberId(username)
   }
   const { data: html } = await request({
     url: `/follow/${userId}`,
@@ -835,7 +835,7 @@ export async function unwatchMember({
 }): Promise<StatusResponse<Pick<MemberDetail, 'meta'>>> {
   let userId = id
   if (!userId) {
-    userId = await getUserId(username)
+    userId = await getMemberId(username)
   }
   const { data: html } = await request({
     url: `/unfollow/${userId}`,
@@ -864,7 +864,7 @@ export async function blockMember({
 }): Promise<StatusResponse<Pick<MemberDetail, 'meta'>>> {
   let userId = id
   if (!userId) {
-    userId = await getUserId(username)
+    userId = await getMemberId(username)
   }
   const { data: html } = await request({
     url: `/block/${userId}`,
@@ -893,7 +893,7 @@ export async function unblockMember({
 }): Promise<StatusResponse<Pick<MemberDetail, 'meta'>>> {
   let userId = id
   if (!userId) {
-    userId = await getUserId(username)
+    userId = await getMemberId(username)
   }
   const { data: html } = await request({
     url: `/unblock/${userId}`,
