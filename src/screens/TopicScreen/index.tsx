@@ -227,7 +227,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       },
       [id],
     ),
-    ([_, id, page]) => v2exClient.getTopicReplies({ id, p: page }),
+    ([_, id, page]) => {
+      console.log('fetch ....', page)
+      return v2exClient.getTopicReplies({ id, p: page })
+    },
     {
       initialSize: Math.max(1, Math.ceil((topic?.replies || 0) / 100)),
       revalidateOnMount: true,
@@ -516,17 +519,34 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           } else {
             alert.alertWithType('error', '操作失败', message)
           }
-          listSwr.mutate((currentData) => {
-            const targetIndex = currentData[p - 1].data.findIndex(
-              (item: TopicReply) => item.id === reply.id,
-            )
-            const currentReply = currentData[p - 1].data[targetIndex]
-            currentData[p - 1].data[targetIndex] = {
-              ...currentReply,
-              ...data,
-            }
-            return currentData
-          }, false)
+          listSwr.mutate(
+            (currentData) => {
+              const currentPageIndex = p - 1
+              const currentPageData = currentData[currentPageIndex]
+              const targetIndex = currentData[p - 1].data.findIndex(
+                (item: TopicReply) => item.id === reply.id,
+              )
+              const currentReply = currentData[p - 1].data[targetIndex]
+
+              const newCurrentPageData = {
+                ...currentPageData,
+                data: [
+                  ...currentPageData.data.slice(0, targetIndex),
+                  { ...currentReply, ...data },
+                  ...currentPageData.data.slice(targetIndex + 1),
+                ],
+              }
+
+              return [
+                ...currentData.slice(0, currentPageIndex),
+                newCurrentPageData,
+                ...currentData.slice(currentPageIndex + 1),
+              ]
+            },
+            {
+              revalidate: false,
+            },
+          )
         })
         .catch((err) => {
           alert.alertWithType?.('error', '错误', err.message)
