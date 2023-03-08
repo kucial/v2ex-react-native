@@ -354,7 +354,7 @@ function PasswordSignin(props: PasswordSigninProps) {
                 </View>
               )}
 
-              <View className="mt-8">
+              {/* <View className="mt-8">
                 <Pressable
                   className="h-[44px] flex-row rounded-md items-center justify-center active:opacity-70"
                   onPress={props.onSelectGoogleSignin}>
@@ -365,7 +365,7 @@ function PasswordSignin(props: PasswordSigninProps) {
                     <Text style={styles.text_desc}>谷歌登录</Text>
                   </View>
                 </Pressable>
-              </View>
+              </View> */}
 
               {/* <View className="h-[1px] w-full bg-neutral-100 mt-8 mb-4"></View>
               <Pressable
