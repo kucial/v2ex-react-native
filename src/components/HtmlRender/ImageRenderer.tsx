@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Image, Pressable } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
@@ -34,7 +34,11 @@ async function loadImage(
 
 const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   const { rendererProps } = useInternalRenderer<'img'>('img', props)
-  const imageSwr = useSWR(rendererProps.source.uri, loadImage)
+  const imageSwr = useSWR(rendererProps.source.uri, loadImage, {
+    revalidateOnMount: true,
+  })
+  const [containerWidth, setContainerWidth] = useState(Infinity)
+  const containerWidthRef = useRef(0)
 
   const service = useImageViewing()
   const { theme } = useTheme()
@@ -54,35 +58,39 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   const contentWidth = rendererProps.contentWidth || 320
   const imageStyle = useMemo(() => {
-    if (imageSwr.data?.width < contentWidth) {
+    if (imageSwr.data) {
+      const width = Math.min(imageSwr.data.width, containerWidth, contentWidth)
+      const height = (imageSwr.data.height / imageSwr.data.width) * width
       return {
-        width: imageSwr.data.width,
-        height: imageSwr.data.height,
-      }
-    } else if (imageSwr.data?.height && imageSwr.data?.width) {
-      return {
-        width: contentWidth,
-        height: (imageSwr.data.height / imageSwr.data.width) * contentWidth,
+        width,
+        height,
       }
     } else {
+      const width = Math.min(containerWidth, contentWidth)
       return {
-        width: contentWidth,
-        height: contentWidth * 0.66667,
+        width: width,
+        height: width * 0.66667,
       }
     }
-  }, [imageSwr.data, contentWidth])
+  }, [imageSwr.data, contentWidth, containerWidth])
+
+  const handleContainerLayout = useCallback((event) => {
+    const { width } = event.nativeEvent.layout
+    if (width === containerWidthRef.current) {
+      return
+    }
+    containerWidthRef.current = width
+    setContainerWidth(width)
+  }, [])
 
   if (imageSwr.data) {
     return (
       <Pressable
-        style={{
-          height: imageStyle.height + 8,
-          width: imageStyle.width,
-          paddingTop: 4,
-        }}
+        className="py-1 active:opacity-50 w-full"
         onPress={() => {
           service.open(imageSwr.data.uri)
-        }}>
+        }}
+        onLayout={handleContainerLayout}>
         <Image
           style={[
             imageStyle,
@@ -100,10 +108,11 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   return (
     <Pressable
-      className="py-1 active:opacity-50"
+      className="py-1 active:opacity-50 w-full"
       onPress={() => {
         service.open(rendererProps.source.uri)
-      }}>
+      }}
+      onLayout={handleContainerLayout}>
       <Box
         style={[
           imageStyle,
