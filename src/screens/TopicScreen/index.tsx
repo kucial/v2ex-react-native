@@ -650,19 +650,22 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     }
   }, [listSwr, topicSwr])
 
-  const handleNavTo = useCallback((target: number) => {
-    if (target === 0) {
-      listRef.current.scrollToOffset({
-        offset: 0,
+  const handleNavTo = useCallback(
+    (target: number) => {
+      if (target === 0) {
+        listRef.current.scrollToOffset({
+          offset: 0,
+          animated: true,
+        })
+        return
+      }
+      listRef.current.scrollToIndex({
+        index: Math.min(target - 1, replyItems.length - 1),
         animated: true,
       })
-      return
-    }
-    listRef.current.scrollToIndex({
-      index: target - 1,
-      animated: true,
-    })
-  }, [])
+    },
+    [replyItems?.length],
+  )
 
   const conversation = useMemo(() => {
     if (!conversationContext) {

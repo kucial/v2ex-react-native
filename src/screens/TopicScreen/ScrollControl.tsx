@@ -22,6 +22,7 @@ import { useTheme } from '@/containers/ThemeService'
 export type ScrollControlProps = {
   max: number
   onNavTo(index: number): void
+  disabled?: boolean
 }
 
 type Action = 'to_top' | 'to_bottom' | ''
@@ -80,7 +81,8 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
     return (
       <>
         <Pressable
-          className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600 disabled:opacity-50"
+          disabled={props.disabled}
           onPress={handlePress}>
           <View className="my-1">
             {action ? (
@@ -113,7 +115,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
             handleIndicatorStyle={{
               backgroundColor: theme.colors.bts_handle_bg,
             }}>
-            <View className="pl-3 pr-1 flex flex-col flex-1">
+            <View className="pl-3 pr-3 flex flex-col flex-1">
               <View className="flex flex-row">
                 <View
                   className="rounded-lg flex flex-row items-center flex-1"
@@ -141,29 +143,6 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     />
                   </View>
                   <Pressable
-                    className={classNames(
-                      'h-[34px] w-[64px] items-center justify-center rounded-md mr-[3px]',
-                      'active:opacity-60',
-                    )}
-                    style={styles.btn_primary__bg}
-                    onPress={(e) => {
-                      const targetNum = parseInt(target, 10)
-                      if (targetNum && targetNum <= props.max) {
-                        props.onNavTo(Math.min(targetNum, props.max))
-                      }
-                      Keyboard.dismiss()
-                      inputModalRef.current?.dismiss()
-                    }}>
-                    <Text style={styles.btn_primary__text}>定位</Text>
-                  </Pressable>
-                </View>
-                <View className="ml-2 mr-1 justify-center">
-                  <View
-                    className="h-[22px] w-[1px]"
-                    style={styles.layer3}></View>
-                </View>
-                <View className="flex flex-row grid-x-2 items-center">
-                  <Pressable
                     className="w-[40px] h-[40px] rounded-full items-center justify-center active:opacity-60 dark:active:bg-neutral-600 -mr-1"
                     onPress={() => {
                       Keyboard.dismiss()
@@ -185,6 +164,22 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                       props.onNavTo(props.max)
                     }}>
                     <ToBottomIcon size={24} color={styles.text_meta.color} />
+                  </Pressable>
+                  <Pressable
+                    className={classNames(
+                      'h-[34px] w-[64px] items-center justify-center rounded-md mx-[3px]',
+                      'active:opacity-60',
+                    )}
+                    style={styles.btn_primary__bg}
+                    onPress={(e) => {
+                      const targetNum = parseInt(target, 10)
+                      if (targetNum && targetNum <= props.max) {
+                        props.onNavTo(Math.min(targetNum, props.max))
+                      }
+                      Keyboard.dismiss()
+                      inputModalRef.current?.dismiss()
+                    }}>
+                    <Text style={styles.btn_primary__text}>定位</Text>
                   </Pressable>
                 </View>
               </View>
