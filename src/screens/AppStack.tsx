@@ -1,4 +1,4 @@
-import { Platform } from 'react-native'
+import { Platform, View } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { headerLeft } from '@/components/BackButton'
@@ -27,6 +27,16 @@ import TopicScreen from './TopicScreen'
 
 const Stack = createNativeStackNavigator<AppStackParamList>()
 
+const transparentHeaderBackground = () => (
+  <View
+    style={{
+      height: '100%',
+      backgroundColor: 'transparent',
+    }}
+    pointerEvents="none"
+  />
+)
+
 function AppStack() {
   const { theme, styles } = useTheme()
   const tintColor = theme.colors.primary
@@ -39,17 +49,29 @@ function AppStack() {
         headerLeft,
         headerTintColor: tintColor,
         headerTitleStyle: styles.text,
+        fullScreenGestureEnabled: true,
+        headerBackground() {
+          return <View style={[styles.layer1, { height: '100%' }]}></View>
+        },
       }}>
       <Stack.Group>
         <Stack.Screen
           name="main"
           component={MainTab}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+            headerTransparent: true,
+            headerBackground: transparentHeaderBackground,
+          }}
         />
         <Stack.Screen
           name="search"
           component={SearchScreen}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+            headerTransparent: true,
+            headerBackground: transparentHeaderBackground,
+          }}
         />
         <Stack.Screen
           name="topic"
@@ -77,6 +99,8 @@ function AppStack() {
           component={MemberScreen}
           options={{
             headerShown: false,
+            headerTransparent: true,
+            headerBackground: transparentHeaderBackground,
           }}
         />
         <Stack.Screen
@@ -177,6 +201,8 @@ function AppStack() {
         component={SigninScreen}
         options={{
           headerShown: false,
+          headerTransparent: true,
+          headerBackground: transparentHeaderBackground,
           presentation: Platform.OS === 'ios' ? 'modal' : undefined,
         }}
       />

@@ -1,0 +1,12 @@
+diff --git a/node_modules/@react-navigation/native-stack/src/views/HeaderConfig.tsx b/node_modules/@react-navigation/native-stack/src/views/HeaderConfig.tsx
+index 9df30fe..b4036bb 100644
+--- a/node_modules/@react-navigation/native-stack/src/views/HeaderConfig.tsx
++++ b/node_modules/@react-navigation/native-stack/src/views/HeaderConfig.tsx
+@@ -156,6 +156,7 @@ export default function HeaderConfig({
+             headerTransparent ? styles.translucent : null,
+             { height: headerHeight },
+           ]}
++          pointerEvents='box-none'
+         >
+           {headerBackground()}
+         </View>
