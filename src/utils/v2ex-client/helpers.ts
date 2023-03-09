@@ -42,6 +42,9 @@ const gravatarSizes = {
   large: 73,
 }
 function mapAvatarSize(url: string, size: AvatarSize) {
+  if (!url) {
+    return url
+  }
   if (/gravatar/.test(url)) {
     return url.replace(/s=(?:24|48|73)/, `s=${gravatarSizes[size]}`)
   }
