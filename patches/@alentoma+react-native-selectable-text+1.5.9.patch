@@ -327,7 +327,7 @@ index 5770684..65db09b 100644
  @end
  
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
-index eb5e69e..4b71e7d 100644
+index eb5e69e..d28e2ab 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 +++ b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 @@ -1,23 +1,23 @@
@@ -380,7 +380,13 @@ index eb5e69e..4b71e7d 100644
  
  UITextPosition *selectionStart;
  UITextPosition* beginning;
-@@ -38,45 +38,54 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+@@ -34,49 +34,59 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+ {
+     if (self = [super initWithBridge:bridge]) {
+         // `blurOnSubmit` defaults to `false` for <TextInput multiline={true}> by design.
+-        self.blurOnSubmit = NO;
++        // NOTE: react-native 0.71 -- blurOnSubmit is replaced by submitBehavior
++        // self.blurOnSubmit = NO;
  
          _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
          _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -449,7 +455,7 @@ index eb5e69e..4b71e7d 100644
          [_backedTextInputView addGestureRecognizer:singleTapGesture];
  
          [self setUserInteractionEnabled:YES];
-@@ -85,7 +94,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+@@ -85,7 +95,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
      return self;
  }
  
@@ -458,7 +464,7 @@ index eb5e69e..4b71e7d 100644
  {
      if (!_backedTextInputView.isFirstResponder) {
          [_backedTextInputView becomeFirstResponder];
-@@ -98,7 +107,7 @@ -(void) _handleGesture
+@@ -98,7 +108,7 @@ -(void) _handleGesture
      NSMutableArray *menuControllerItems = [NSMutableArray arrayWithCapacity:self.menuItems.count];
  
      for(NSString *menuItemName in self.menuItems) {
@@ -467,7 +473,7 @@ index eb5e69e..4b71e7d 100644
          UIMenuItem *item = [[UIMenuItem alloc] initWithTitle: menuItemName
                                                        action: NSSelectorFromString(sel)];
  
-@@ -112,24 +121,56 @@ -(void) _handleGesture
+@@ -112,24 +122,56 @@ -(void) _handleGesture
  
  -(void) handleSingleTap: (UITapGestureRecognizer *) gesture
  {
@@ -542,7 +548,7 @@ index eb5e69e..4b71e7d 100644
  }
  
  -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
-@@ -150,7 +191,7 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
+@@ -150,7 +192,7 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
              break;
          case UIGestureRecognizerStateEnded:
              selectionStart = nil;
@@ -551,7 +557,7 @@ index eb5e69e..4b71e7d 100644
              return;
  
          default:
-@@ -162,25 +203,32 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
+@@ -162,25 +204,32 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
      const NSInteger location = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionStart];
      const NSInteger endLocation = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionEnd];
  
@@ -589,7 +595,7 @@ index eb5e69e..4b71e7d 100644
          [super setAttributedText:str];
      } else {
          [super setAttributedText:attributedText];
-@@ -220,7 +268,7 @@ - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
+@@ -220,7 +269,7 @@ - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
  - (void)forwardInvocation:(NSInvocation *)invocation
  {
      NSString *sel = NSStringFromSelector([invocation selector]);
@@ -598,7 +604,7 @@ index eb5e69e..4b71e7d 100644
      if (match.location == 0) {
          [self tappedMenuItem:[sel substringFromIndex:17]];
      } else {
-@@ -237,7 +285,7 @@ - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+@@ -237,7 +286,7 @@ - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
  {
      if(selectionStart != nil) {return NO;}
      NSString *sel = NSStringFromSelector(action);
@@ -607,7 +613,7 @@ index eb5e69e..4b71e7d 100644
  
      if (match.location == 0) {
          return YES;
-@@ -272,4 +320,30 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+@@ -272,4 +321,30 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
      return [super hitTest:point withEvent:event];
  }
  
