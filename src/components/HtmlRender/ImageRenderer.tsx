@@ -5,6 +5,7 @@ import {
   CustomBlockRenderer,
   useInternalRenderer,
 } from 'react-native-render-html'
+import classNames from 'classnames'
 import useSWR from 'swr'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -43,18 +44,21 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   const service = useImageViewing()
   const { theme } = useTheme()
   useEffect(() => {
-    if (imageSwr.data) {
-      service.replace(imageSwr.data.uri, rendererProps.source.uri)
-      return () => {
-        service.remove(imageSwr.data.uri)
-      }
-    } else {
-      service.add(rendererProps.source.uri)
-      return () => {
-        service.remove(rendererProps.source.uri)
-      }
+    service.add({
+      origin: rendererProps.source.uri,
+      local: imageSwr.data?.uri,
+    })
+    return () => {
+      service.remove(rendererProps.source.uri)
     }
-  }, [imageSwr.data, rendererProps.source.uri])
+  }, [rendererProps.source.uri])
+
+  useEffect(() => {
+    service.update({
+      origin: rendererProps.source.uri,
+      local: imageSwr.data?.uri,
+    })
+  }, [imageSwr.data?.uri, rendererProps.source.uri])
 
   const contentWidth = rendererProps.contentWidth || 320
   const imageStyle = useMemo(() => {
@@ -86,9 +90,12 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   if (imageSwr.data) {
     return (
       <Pressable
-        className="py-1 active:opacity-50 w-full"
+        className={classNames(
+          'py-1 active:opacity-50 w-full overflow-hidden',
+          containerWidth === Infinity ? 'opacity-0' : 'opacity-100',
+        )}
         onPress={() => {
-          service.open(imageSwr.data.uri)
+          service.open(rendererProps.source.uri)
         }}
         onLayout={handleContainerLayout}>
         <Image
@@ -108,7 +115,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   return (
     <Pressable
-      className="py-1 active:opacity-50 w-full"
+      className="py-1 active:opacity-50 w-full overflow-hidden"
       onPress={() => {
         service.open(rendererProps.source.uri)
       }}

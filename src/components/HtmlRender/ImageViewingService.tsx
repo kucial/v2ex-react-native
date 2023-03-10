@@ -12,12 +12,13 @@ import CheckIcon from '../CheckIcon'
 import Loader from '../Loader'
 
 type ImageResource = {
-  uri: string
+  origin: string
+  local?: string
 }
 
 export type ImageViewingService = {
-  add(url: string): void
-  replace(url: string, prevUrl: string): void
+  add(info: { origin: string; local: string }): void
+  update(info: { origin: string; local: string }): void
   remove(url: string): void
   open(url: string): void
 }
@@ -34,16 +35,16 @@ const ImageViewingFooter = (props: {
   const { images, imageIndex, handleQrCode } = props
   const [saveStatus, setSaveStatus] = useState('')
   const [qrCodes, setQrCodes] = useState(null)
+  const displayUri = images[imageIndex]?.local || images[imageIndex]?.origin
 
   useEffect(() => {
-    const uri = images[imageIndex]?.uri
-    if (uri) {
-      BarCodeScanner.scanFromURLAsync(uri).then(setQrCodes)
+    if (displayUri) {
+      BarCodeScanner.scanFromURLAsync(displayUri).then(setQrCodes)
       return () => {
         setQrCodes(null)
       }
     }
-  }, [images[imageIndex]?.uri])
+  }, [displayUri])
 
   return (
     <View className="flex flex-row justify-between items-center pb-8 px-8">
@@ -69,9 +70,8 @@ const ImageViewingFooter = (props: {
           disabled={saveStatus === 'loading'}
           onPress={async () => {
             try {
-              const image = images[imageIndex]
               setSaveStatus('loading')
-              const contentUri = await getImageContentUri(image.uri)
+              const contentUri = await getImageContentUri(displayUri)
               setSaveStatus('')
               const result = await Share.share({
                 url: contentUri,
@@ -114,37 +114,35 @@ const ImageViewingServiceProvider = forwardRef<
 
   const service: ImageViewingService = useMemo(() => {
     return {
-      add: (url: string) => {
+      add: (info) => {
         setImages((prev) => {
-          const index = prev.findIndex((item) => item.uri === url)
+          const index = prev.findIndex((item) => item.origin === info.origin)
           if (index === -1) {
-            return [...prev, { uri: url }]
+            return [...prev, info]
           }
           return prev
         })
       },
-      remove: (url: string) => {
-        setImages((prev) => prev.filter((item) => item.uri !== url))
-      },
-      open: (url: string) => {
-        const index = images.findIndex((item) => item.uri === url)
-        setViewIndex(index)
-      },
-      replace: (url: string, prevUrl: string) => {
+      update: (info) => {
         setImages((prev) => {
-          const index = prev.findIndex((item) => item.uri === prevUrl)
-          if (index > -1) {
-            return [
-              ...prev.slice(0, index),
-              { uri: url },
-              ...prev.slice(index + 1),
-            ]
-          } else {
-            return [...prev, { uri: url }]
-          }
+          const index = prev.findIndex((item) => item.origin === info.origin)
+          return [...prev.slice(0, index), info, ...prev.slice(index + 1)]
         })
       },
+      remove: (url: string) => {
+        setImages((prev) => prev.filter((item) => item.origin !== url))
+      },
+      open: (url: string) => {
+        const index = images.findIndex((item) => item.origin === url)
+        setViewIndex(index)
+      },
     }
+  }, [images])
+
+  const renderImages = useMemo(() => {
+    return images.map((item) => ({
+      uri: item.local || item.origin,
+    }))
   }, [images])
 
   useImperativeHandle(ref, () => service, [service])
@@ -153,7 +151,7 @@ const ImageViewingServiceProvider = forwardRef<
     <ServiceContext.Provider value={service}>
       {props.children}
       <ImageView
-        images={images}
+        images={renderImages}
         imageIndex={viewIndex}
         visible={viewIndex > -1}
         onRequestClose={() => setViewIndex(-1)}
