@@ -89,11 +89,11 @@ const instance = axios.create({
 
 instance.interceptors.response.use(
   function (res) {
-    // TODO: inject side-effect
-    console.log('-------------V2EX CLIENT RES--------------')
-    console.log(res.config)
+    // console.log('-------------V2EX CLIENT RES--------------')
+    // console.log(res.config)
     // console.log(res.data);
-    console.log('-------------V2EX CLIENT END--------------')
+    // console.log('-------------V2EX CLIENT END--------------')
+    // side-effect
     if (res.config?.url && /^\/(\?tab=\w+)?$/.test(res.config.url)) {
       const $ = load(res.data)
       const text = $('input.special.super.button').attr('value')

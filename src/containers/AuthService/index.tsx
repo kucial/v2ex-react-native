@@ -15,6 +15,7 @@ import { useCachedState } from '@/utils/hooks'
 import { getJSON, setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import clientService from '@/utils/v2ex-client/service'
+import { MemberDetail } from '@/utils/v2ex-client/types'
 
 import { useAlertService } from '../AlertService'
 import { AuthService, AuthState } from './types'
@@ -52,6 +53,10 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
 
+  const nextAction = useRef<VoidFunction>()
+  const dailySigning = useRef(false)
+  const alert = useAlertService()
+
   const [state, setState] = useCachedState<AuthState>(
     CACHE_KEY,
     INIT_STATE,
@@ -63,9 +68,6 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     },
   )
 
-  const nextAction = useRef<VoidFunction>()
-  const dailySigning = useRef(false)
-  const alert = useAlertService()
   const service: AuthService = useMemo(() => {
     const fetchCurrentUser = async (refresh = false) => {
       if (refresh) {
@@ -167,6 +169,41 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     }
   }, [state])
 
+  const dailySignIn = useCallback(async (user: MemberDetail) => {
+    if (user && !dailySigning.current) {
+      const key = `$app$/daily_sign_in/${user.username}/${getUTCDateString()}`
+      if (!getJSON(key)) {
+        try {
+          dailySigning.current = true
+          await v2exClient.dailySignin()
+          setJSON(key, 1)
+          alert.alertWithType('success', '成功', '签到成功')
+        } catch (err) {
+          if (err.code === 'DAILY_SIGNED') {
+            setJSON(key, 1)
+            alert.alertWithType('info', '提示', err.message)
+          } else {
+            alert.alertWithType('error', '错误', err.message)
+          }
+        } finally {
+          dailySigning.current = false
+        }
+      }
+    }
+  }, [])
+
+  // 已登陆用户的初始化行为
+  useEffect(() => {
+    if (service.user) {
+      if (shouldCheck(service.fetchedAt)) {
+        service.fetchCurrentUser().then(dailySignIn)
+      } else {
+        dailySignIn(service.user)
+      }
+    }
+  }, [])
+
+  // 已登陆用户，“自动签到” 检测行为
   useEffect(() => {
     if (!service.user) {
       return
@@ -174,36 +211,11 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     let appState = AppState.currentState
     let timer: NodeJS.Timeout
     const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appState.match(/background/) &&
-        nextAppState === 'active' &&
-        shouldCheck(service.fetchedAt)
-      ) {
+      if (appState.match(/background/) && nextAppState === 'active') {
         timer = setTimeout(() => {
           InteractionManager.runAfterInteractions(async () => {
             try {
-              const user = await service.fetchCurrentUser()
-              if (user && !dailySigning.current) {
-                const key = `$app$/daily_sign_in/${getUTCDateString()}`
-                if (!getJSON(key)) {
-                  try {
-                    dailySigning.current = true
-                    await v2exClient.dailySignin()
-                    setJSON(key, 1)
-                    alert.alertWithType('success', '成功', '签到成功')
-                  } catch (err) {
-                    console.log(err)
-                    if (err.code === 'DAILY_SIGNED') {
-                      setJSON(key, 1)
-                      alert.alertWithType('info', '提示', err.message)
-                    } else {
-                      alert.alertWithType('error', '错误', err.message)
-                    }
-                  } finally {
-                    dailySigning.current = false
-                  }
-                }
-              }
+              await dailySignIn(service.user)
             } catch (err) {}
           })
         }, CHECK_STATUS_DELAY)
@@ -217,30 +229,27 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     return () => {
       subscription.remove()
     }
-  }, [service.fetchCurrentUser, service.user, service.fetchedAt])
+  }, [service.user, dailySignIn])
 
-  useEffect(() => {
-    if (!service.user || shouldCheck(service.fetchedAt)) {
-      console.log('....fetchCurrentUser when init...')
-      service.fetchCurrentUser()
-    }
-  }, [])
-
-  // subscribe unread_count
+  // 处理未读消息更新
   useEffect(() => {
     const unsubscribe = v2exClient.subscribe('unread_count', (val) => {
-      if (val !== state.meta?.unread_count) {
-        setState((prev) => ({
+      setState((prev) => {
+        const current_unread_count = prev.meta?.unread_count
+        if (current_unread_count === val) {
+          return prev
+        }
+        return {
           ...prev,
           meta: {
             ...prev.meta,
             unread_count: val,
           },
-        }))
-      }
+        }
+      })
     })
     return unsubscribe
-  }, [state.meta?.unread_count])
+  }, [])
 
   return (
     <AuthServiceContext.Provider value={service}>

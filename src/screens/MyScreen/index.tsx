@@ -79,6 +79,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
   let header
   switch (authStatus) {
     case 'authed':
+    case 'failed':
       header = (
         <Pressable
           className="flex flex-row py-3 px-4 active:opacity-60"
@@ -106,7 +107,6 @@ export default function MyScreen({ navigation }: ScreenProps) {
       )
       break
     case 'visitor':
-    case 'failed':
     case 'logout':
       header = (
         <Pressable
