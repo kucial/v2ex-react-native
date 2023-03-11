@@ -233,6 +233,7 @@ function ReplyRow(props: ReplyRowProps) {
               marginBottom: showMarkdown ? -14 : 0,
             }}>
             <HtmlRender
+              key={data.id}
               navigation={navigation}
               contentWidth={width - 24 - 8 - 8 - 16}
               source={{
@@ -299,6 +300,7 @@ function ReplyRow(props: ReplyRowProps) {
 
             <View className="mr-1 flex flex-row">
               <Pressable
+                key={data.id}
                 hitSlop={2}
                 className={classNames(
                   'h-[36px] w-[36px]',
