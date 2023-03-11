@@ -130,6 +130,7 @@ export default function SearchScreen({ navigation }: ScreenProps) {
                 'site:v2ex.com/t ' + keyword,
               )}`,
             }}
+            decelerationRate="normal"
             onLoadStart={() => setLoading(true)}
             onLoadEnd={() => setLoading(false)}
             onMessage={(event) => {

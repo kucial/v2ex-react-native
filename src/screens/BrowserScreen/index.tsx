@@ -50,6 +50,7 @@ export default function BrowserScreen({
         source={{ uri: route.params.url }}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
+        decelerationRate="normal"
         onNavigationStateChange={(navState) => {
           setHistoryState({
             canGoBack: navState.canGoBack,
