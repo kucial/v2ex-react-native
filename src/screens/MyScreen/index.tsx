@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react'
-import { Alert, Linking, Pressable, ScrollView, Text, View } from 'react-native'
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import {
   Bars3Icon,
   ChatBubbleLeftEllipsisIcon,
@@ -77,68 +77,66 @@ export default function MyScreen({ navigation }: ScreenProps) {
   )
 
   let header
-  switch (authStatus) {
-    case 'authed':
-    case 'failed':
-      header = (
-        <Pressable
-          className="flex flex-row py-3 px-4 active:opacity-60"
-          style={styles.layer1}
-          onPress={() => {
-            navigation.push('profile')
-          }}>
-          <Image
-            source={{ uri: currentUser.avatar_normal }}
-            className="w-[40px] h-[40px] bg-neutral-100 mr-3"
-          />
-          <View className="flex-1">
-            <Text
-              className="text-base font-semibold mt-[-1px] mb-[1px]"
-              style={styles.text}>
-              {currentUser.username}
+  if (authStatus === 'authed' || (authStatus === 'failed' && currentUser)) {
+    header = (
+      <Pressable
+        className="flex flex-row py-3 px-4 active:opacity-60"
+        style={styles.layer1}
+        onPress={() => {
+          navigation.push('profile')
+        }}>
+        <Image
+          source={{ uri: currentUser.avatar_normal }}
+          className="w-[40px] h-[40px] bg-neutral-100 mr-3"
+        />
+        <View className="flex-1">
+          <Text
+            className="text-base font-semibold mt-[-1px] mb-[1px]"
+            style={styles.text}>
+            {currentUser.username}
+          </Text>
+          <View>
+            <Text className="text-xs" style={styles.text_meta}>
+              V2EX 第 {currentUser.id} 号会员
             </Text>
-            <View>
-              <Text className="text-xs" style={styles.text_meta}>
-                V2EX 第 {currentUser.id} 号会员
-              </Text>
-            </View>
-          </View>
-        </Pressable>
-      )
-      break
-    case 'visitor':
-    case 'logout':
-      header = (
-        <Pressable
-          className="flex flex-row py-3 px-4 items-center active:opacity-60"
-          style={styles.layer1}
-          onPress={() => {
-            goToSigninSreen()
-          }}>
-          <Box key={authStatus} className="w-[40px] h-[40px] mr-3" />
-          <View className="flex-1">
-            <Text className="text-base font-semibold mb-1" style={styles.text}>
-              未登录
-            </Text>
-          </View>
-        </Pressable>
-      )
-      break
-    case 'loading':
-    default:
-      header = (
-        <View className="flex flex-row py-3 px-4" style={styles.layer1}>
-          <Box className="w-[40px] h-[40px] mr-3" />
-          <View className="flex-1">
-            <InlineText
-              className="text-base font-semibold mb-1"
-              width={[120, 180]}></InlineText>
-            <View>
-              <InlineText className="text-xs" width={[100, 140]}></InlineText>
-            </View>
           </View>
         </View>
-      )
+      </Pressable>
+    )
+  } else if (
+    authStatus === 'visitor' ||
+    authStatus === 'logout' ||
+    authStatus === 'failed'
+  ) {
+    header = (
+      <Pressable
+        className="flex flex-row py-3 px-4 items-center active:opacity-60"
+        style={styles.layer1}
+        onPress={() => {
+          goToSigninSreen()
+        }}>
+        <Box key={authStatus} className="w-[40px] h-[40px] mr-3" />
+        <View className="flex-1">
+          <Text className="text-base font-semibold mb-1" style={styles.text}>
+            未登录
+          </Text>
+        </View>
+      </Pressable>
+    )
+  } else {
+    header = (
+      <View className="flex flex-row py-3 px-4" style={styles.layer1}>
+        <Box className="w-[40px] h-[40px] mr-3" />
+        <View className="flex-1">
+          <InlineText
+            className="text-base font-semibold mb-1"
+            width={[120, 180]}></InlineText>
+          <View>
+            <InlineText className="text-xs" width={[100, 140]}></InlineText>
+          </View>
+        </View>
+      </View>
+    )
   }
 
   const iconColor = theme.colors.primary
