@@ -1007,6 +1007,8 @@ export async function getMemberReplies({
         member: {
           username: topic_member,
           avatar_normal: undefined,
+          avatar_mini: undefined,
+          avatar_large: undefined,
         },
         reply_time,
         reply_content_rendered: content_rendered,

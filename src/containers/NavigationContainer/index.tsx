@@ -1,4 +1,10 @@
-import { useRef } from 'react'
+import {
+  createContext,
+  ReactElement,
+  useContext,
+  useRef,
+  useState,
+} from 'react'
 import {
   NavigationContainer,
   Route,
@@ -8,9 +14,14 @@ import * as Sentry from 'sentry-expo'
 
 import { useTheme } from '../ThemeService'
 
-export default function WrappedNavigationContainer(props) {
+const CurrentRoute = createContext(null)
+
+export default function WrappedNavigationContainer(props: {
+  children: ReactElement
+}) {
   const { theme } = useTheme()
   const navigationRef = useNavigationContainerRef()
+  const [currentRoute, setCurrentRoute] = useState(null)
   const routeRef = useRef<Route<string>>()
   return (
     <NavigationContainer
@@ -18,6 +29,7 @@ export default function WrappedNavigationContainer(props) {
       theme={theme}
       onReady={() => {
         routeRef.current = navigationRef.getCurrentRoute()
+        setCurrentRoute(routeRef.current)
       }}
       onStateChange={() => {
         const previousRoute = routeRef.current
@@ -35,8 +47,13 @@ export default function WrappedNavigationContainer(props) {
           })
         }
         routeRef.current = currentRoute
+        setCurrentRoute(routeRef.current)
       }}>
-      {props.children}
+      <CurrentRoute.Provider value={currentRoute}>
+        {props.children}
+      </CurrentRoute.Provider>
     </NavigationContainer>
   )
 }
+
+export const useCurrentRoute = () => useContext(CurrentRoute)

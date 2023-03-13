@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Dimensions, Pressable, Text, View } from 'react-native'
 import {
   EllipsisHorizontalIcon,
   TrashIcon,
@@ -12,7 +12,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 
-import SearchInput from '@/components/SearchInput'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -72,15 +72,17 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
           )
 
         return (
-          <SwipeableItem
-            item={item}
-            key={item.id}
-            swipeEnabled
-            snapPointsLeft={[60]}
-            overSwipe={60}
-            renderUnderlayLeft={() => <Actions onDelete={removeItem} />}>
-            <View style={styles.layer1}>{inner}</View>
-          </SwipeableItem>
+          <MaxWidthWrapper style={styles.layer1}>
+            <SwipeableItem
+              item={item}
+              key={item.id}
+              swipeEnabled
+              snapPointsLeft={[60]}
+              overSwipe={60}
+              renderUnderlayLeft={() => <Actions onDelete={removeItem} />}>
+              <View style={styles.layer1}>{inner}</View>
+            </SwipeableItem>
+          </MaxWidthWrapper>
         )
       },
       keyExtractor: (item) => item.id,
@@ -100,10 +102,14 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   }, [filter, getItems])
 
   useLayoutEffect(() => {
+    console.log()
     navigation.setOptions({
       headerRight: (props) => (
         <Pressable
-          className="h-[44px] w-[44px] items-center justify-center -mr-4 active:opacity-60"
+          className="h-[44px] w-[44px] items-center justify-center active:opacity-60"
+          style={
+            Dimensions.get('window').width < 750 ? { marginRight: -16 } : null
+          }
           onPress={() => {
             // actionsheet
             showActionSheetWithOptions(
@@ -122,47 +128,39 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
           <EllipsisHorizontalIcon size={24} color={props.tintColor} />
         </Pressable>
       ),
+      headerSearchBarOptions: {
+        placeholder: '筛选',
+        onSearchButtonPress(e) {
+          setFilter(e.nativeEvent.text)
+        },
+      },
+      headerBackground: null,
     })
   }, [])
 
   return (
-    <>
-      <View
-        className="h-[52px]"
-        style={[styles.layer1, styles.border_b, styles.border_light]}>
-        <SearchInput
-          placeholder="筛选"
-          initialValue={filter}
-          onSubmit={(text) => {
-            setFilter(text.trim())
-          }}
-          onReset={() => {
-            setFilter('')
-          }}
-        />
-      </View>
-      <FlashList
-        data={data}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        estimatedItemSize={110}
-        ListEmptyComponent={() => (
-          <View className="items-center py-9">
-            <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
-          </View>
-        )}
-        ListFooterComponent={() =>
-          !!data.length && (
-            <View
-              sentry-label="ListFooter"
-              className="min-h-[60px] py-4 flex flex-row items-center justify-center">
-              <View className="w-full flex flex-row justify-center py-4">
-                <Text style={styles.text_meta}>到达底部啦</Text>
-              </View>
+    <FlashList
+      contentInsetAdjustmentBehavior="automatic"
+      data={data}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      estimatedItemSize={110}
+      ListEmptyComponent={() => (
+        <View className="items-center py-9">
+          <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
+        </View>
+      )}
+      ListFooterComponent={() =>
+        !!data.length && (
+          <View
+            sentry-label="ListFooter"
+            className="min-h-[60px] py-4 flex flex-row items-center justify-center">
+            <View className="w-full flex flex-row justify-center py-4">
+              <Text style={styles.text_meta}>到达底部啦</Text>
             </View>
-          )
-        }
-      />
-    </>
+          </View>
+        )
+      }
+    />
   )
 }

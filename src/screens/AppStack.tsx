@@ -3,10 +3,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { headerLeft } from '@/components/BackButton'
 import { useTheme } from '@/containers/ThemeService'
+import { isPad } from '@/utils/device'
 
 import AboutScreen from './AboutScreen'
 import BrowserScreen from './BrowserScreen'
 import FeedbackScreen from './FeedbackScreen'
+import HomeScreen from './HomeScreen'
 import MainTab from './MainTab'
 import MemberInfoScreen from './MemberInfoScreen'
 import MemberScreen from './MemberScreen'
@@ -15,9 +17,11 @@ import MyCreatedTopicsScreen from './MyCreatedTopicsScreen'
 import MyNotificationScreen from './MyNotificationScreen'
 import MyProfileScreen from './MyProfileScreen'
 import MyRepliedTopicsScreen from './MyRepliedTopicsScreen'
+import MyScreen from './MyScreen'
 import MyViewedTopicsScreen from './MyViewedTopicsScreen'
 import NewTopicScreen from './NewTopicScreen'
 import NodeScreen from './NodeScreen'
+import NodesScreen from './NodesScreen'
 import SearchScreen from './SearchScreen'
 import SettingsHomeTabs from './SettingsHomeTabs'
 import SettingsImgur from './SettingsImgur'
@@ -44,17 +48,42 @@ function AppStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: styles.layer1,
         headerBackTitleVisible: false,
         headerLeft,
         headerTintColor: tintColor,
         headerTitleStyle: styles.text,
         fullScreenGestureEnabled: true,
         headerBackground() {
-          return <View style={[styles.layer1, { height: '100%' }]}></View>
+          return (
+            <View
+              style={[
+                styles.layer1,
+                styles.border_b,
+                styles.border_light,
+                { height: '100%' },
+              ]}></View>
+          )
         },
       }}>
-      <Stack.Group>
+      <Stack.Screen
+        name="main"
+        component={MainTab}
+        options={{
+          headerShown: false,
+          headerTransparent: true,
+          headerBackground: transparentHeaderBackground,
+        }}
+      />
+      {/* {isPad ? (
+        <Stack.Group
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <Stack.Screen name="home" component={HomeScreen} />
+          <Stack.Screen name="nodes" component={NodesScreen} />
+          <Stack.Screen name="my" component={MyScreen} />
+        </Stack.Group>
+      ) : (
         <Stack.Screen
           name="main"
           component={MainTab}
@@ -64,6 +93,8 @@ function AppStack() {
             headerBackground: transparentHeaderBackground,
           }}
         />
+      )} */}
+      <Stack.Group>
         <Stack.Screen
           name="search"
           component={SearchScreen}
@@ -71,6 +102,7 @@ function AppStack() {
             headerShown: false,
             headerTransparent: true,
             headerBackground: transparentHeaderBackground,
+            animation: 'none',
           }}
         />
         <Stack.Screen
@@ -167,11 +199,9 @@ function AppStack() {
           component={MyViewedTopicsScreen}
           options={{
             title: '浏览的主题（缓存）',
-            headerShadowVisible: false,
           }}
         />
       </Stack.Group>
-
       <Stack.Group>
         <Stack.Screen
           name="imgur-settings"
@@ -195,7 +225,6 @@ function AppStack() {
           }}
         />
       </Stack.Group>
-
       <Stack.Screen
         name="signin"
         component={SigninScreen}

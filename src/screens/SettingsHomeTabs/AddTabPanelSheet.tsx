@@ -2,10 +2,10 @@ import { forwardRef, useCallback, useMemo, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import {
   BottomSheetBackdrop,
+  BottomSheetFlatList,
   BottomSheetModal,
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet'
-import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import useSWR from 'swr'
 
@@ -15,7 +15,7 @@ import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import TypeIcon from './TypeIcon'
 
-const pickerSnapPoints = ['50%', '85%']
+const pickerSnapPoints = ['35%', '85%']
 const renderBackdrop = (props) => {
   return (
     <BottomSheetBackdrop
@@ -81,7 +81,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
     )
   }, [])
 
-  const header = !filter && !!props.extraItems.length && (
+  const header = !filter && !!props.extraItems?.length && (
     <>
       <View>
         <View className="px-3 py-1">
@@ -163,10 +163,10 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
             }}
           />
         </View>
-        <FlashList
+        <BottomSheetFlatList
           className="w-full flex-1 bg-blue-300"
           data={filtered}
-          estimatedItemSize={50}
+          // estimatedItemSize={50}
           renderItem={renderItem}
           keyExtractor={(n) => n.id}
           ListHeaderComponent={header}

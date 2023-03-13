@@ -15,11 +15,14 @@ import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 export default function MainScreenHeader(
-  props: BottomTabHeaderProps & NativeStackScreenProps<AppStackParamList>,
+  props: BottomTabHeaderProps &
+    NativeStackScreenProps<AppStackParamList> & {
+      hasBorder?: boolean
+    },
 ) {
   const { navigation, options } = props
   const { composeAuthedNavigation, meta } = useAuthService()
-  const { theme } = useTheme()
+  const { theme, styles } = useTheme()
   const handleNewTopicPress = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
@@ -63,11 +66,16 @@ export default function MainScreenHeader(
   return (
     <View
       className="w-full flex-row items-center pl-4"
-      style={{
-        height: Platform.OS === 'android' ? 48 : 48 + Constants.statusBarHeight,
-        paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
-        backgroundColor: theme.colors.bg_layer1,
-      }}>
+      style={[
+        {
+          height:
+            Platform.OS === 'android' ? 48 : 48 + Constants.statusBarHeight,
+          paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
+          backgroundColor: theme.colors.bg_layer1,
+        },
+        props.hasBorder && styles.border_b,
+        props.hasBorder && styles.border_light,
+      ]}>
       <View className="flex-1">
         <View className="">
           <Text

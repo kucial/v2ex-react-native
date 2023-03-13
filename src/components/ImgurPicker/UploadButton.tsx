@@ -61,7 +61,7 @@ export default function UploadButton(props) {
           // allowsEditing: true
           // base64: true
         })
-        if (result.cancelled) {
+        if (result.canceled) {
           return
         }
         try {

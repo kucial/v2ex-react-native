@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { Image } from 'expo-image'
 
 import HtmlRender from '@/components/HtmlRender'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 import { Notification } from '@/utils/v2ex-client/types'
@@ -21,29 +22,31 @@ const NotificationRow = (props: { data: Notification }) => {
   const { styles } = useTheme()
   if (!data) {
     return (
-      <View
-        className={classNames(
-          'flex flex-row items-start p-2',
-          'active:opacity-60',
-        )}
-        style={[styles.layer1, styles.border_b, styles.border_light]}>
-        <View className="mr-2">
-          <Box className="w-[24px] h-[24px] rounded" />
-        </View>
-        <View className="flex-1">
-          <View className="flex flex-row">
-            <BlockText lines={2} className="leading-5" />
+      <MaxWidthWrapper style={styles.layer1}>
+        <View
+          className={classNames(
+            'flex flex-row items-start p-2',
+            'active:opacity-60',
+          )}
+          style={[styles.layer1, styles.border_b, styles.border_light]}>
+          <View className="mr-2">
+            <Box className="w-[24px] h-[24px] rounded" />
           </View>
-          <View className="mt-1 p-1 rounded" style={styles.layer2}>
-            <BlockText
-              lines={[1, 3]}
-              style={{
-                lineHeight: 20,
-              }}
-            />
+          <View className="flex-1">
+            <View className="flex flex-row">
+              <BlockText lines={2} className="leading-5" />
+            </View>
+            <View className="mt-1 p-1 rounded" style={styles.layer2}>
+              <BlockText
+                lines={[1, 3]}
+                style={{
+                  lineHeight: 20,
+                }}
+              />
+            </View>
           </View>
         </View>
-      </View>
+      </MaxWidthWrapper>
     )
   }
 
@@ -176,50 +179,52 @@ const NotificationRow = (props: { data: Notification }) => {
   }
 
   return (
-    <View
-      sentry-label="NotificationRow"
-      className={classNames(
-        'flex flex-row items-start p-2',
-        'active:opacity-60',
-      )}
-      style={[styles.layer1, styles.border_b, styles.border_light]}>
-      <View className="mr-2">
-        <Pressable
-          hitSlop={4}
-          className="active:opacity-60"
-          onPress={() => {
-            navigation.push('member', {
-              username: data.member.username,
-              brief: data.member,
-            })
-          }}>
-          <Image
-            recyclingKey={`user:${data.member.username}`}
-            source={{
-              uri: data.member.avatar_normal,
-            }}
-            className="w-[24px] h-[24px] rounded"
-          />
-        </Pressable>
-      </View>
-      <View className="flex-1">
-        {header}
-        {data.content_rendered && (
-          <View className="mt-1 p-1 rounded" style={styles.layer2}>
-            <HtmlRender
-              key={data.content_rendered}
-              navigation={navigation}
-              contentWidth={width - 24 - 8 - 8 - 8}
-              source={{
-                html: data.content_rendered,
-                baseUrl: 'https://v2ex.com',
-              }}
-              baseStyle={htmlBaseStyle}
-            />
-          </View>
+    <MaxWidthWrapper style={styles.layer1}>
+      <View
+        sentry-label="NotificationRow"
+        className={classNames(
+          'flex flex-row items-start p-2',
+          'active:opacity-60',
         )}
+        style={[styles.border_b, styles.border_light]}>
+        <View className="mr-2">
+          <Pressable
+            hitSlop={4}
+            className="active:opacity-60"
+            onPress={() => {
+              navigation.push('member', {
+                username: data.member.username,
+                brief: data.member,
+              })
+            }}>
+            <Image
+              recyclingKey={`user:${data.member.username}`}
+              source={{
+                uri: data.member.avatar_normal,
+              }}
+              className="w-[24px] h-[24px] rounded"
+            />
+          </Pressable>
+        </View>
+        <View className="flex-1">
+          {header}
+          {data.content_rendered && (
+            <View className="mt-1 p-1 rounded" style={styles.layer2}>
+              <HtmlRender
+                key={data.content_rendered}
+                navigation={navigation}
+                contentWidth={width - 24 - 8 - 8 - 8}
+                source={{
+                  html: data.content_rendered,
+                  baseUrl: 'https://v2ex.com',
+                }}
+                baseStyle={htmlBaseStyle}
+              />
+            </View>
+          )}
+        </View>
       </View>
-    </View>
+    </MaxWidthWrapper>
   )
 }
 

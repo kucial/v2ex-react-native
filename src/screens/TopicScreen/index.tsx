@@ -43,6 +43,7 @@ import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
@@ -627,7 +628,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       renderReply({ item }) {
         return (
           <ReplyRow
-            style={styles.layer1}
             showAvatar={settings.feedShowAvatar}
             navigation={navigation}
             data={item}
@@ -712,66 +712,72 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const baseContent = (
     <>
-      <View className="py-3 px-4 mb-2 shadow-sm" style={styles.layer1}>
-        <TopicInfo data={topic} navigation={navigation} />
-        {!topicSwr.data && topicSwr.error && !isLoading(topicSwr) && (
-          <ErrorNotice
-            error={topicSwr.error}
-            extra={
-              <View className="mt-2 flex flex-row justify-center">
-                <Pressable
-                  className={classNames(
-                    'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
-                    'active:opacity-60',
-                  )}
-                  style={[styles.btn_primary__bg]}
-                  onPress={() => {
-                    topicSwr.mutate()
-                  }}>
-                  <Text style={styles.btn_primary__text}>重试</Text>
-                </Pressable>
-              </View>
-            }
-          />
-        )}
-        {isFallback && isLoading(topicSwr) && (
-          <View className="mt-1">
-            <BlockText lines={[5, 10]} />
-          </View>
-        )}
-        {topic.canAppend && (
-          <View className="flex flex-row justify-end relative bottom-[-6px]">
-            <Pressable
-              className="px-3 h-[36px] rounded items-center justify-center active:opacity-60"
-              style={styles.layer2}
-              onPress={() => {
-                setReplyContext({
-                  type: 'append',
-                })
-                replyModalRef.current?.present()
-              }}>
-              <Text style={styles.text}>附言</Text>
-            </Pressable>
-          </View>
-        )}
+      <View className="pt-3 px-4" style={styles.layer1}>
+        <MaxWidthWrapper>
+          <TopicInfo data={topic} navigation={navigation} />
+          {!topicSwr.data && topicSwr.error && !isLoading(topicSwr) && (
+            <ErrorNotice
+              error={topicSwr.error}
+              extra={
+                <View className="mt-2 flex flex-row justify-center">
+                  <Pressable
+                    className={classNames(
+                      'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
+                      'active:opacity-60',
+                    )}
+                    style={[styles.btn_primary__bg]}
+                    onPress={() => {
+                      topicSwr.mutate()
+                    }}>
+                    <Text style={styles.btn_primary__text}>重试</Text>
+                  </Pressable>
+                </View>
+              }
+            />
+          )}
+          {isFallback && isLoading(topicSwr) && (
+            <View className="mt-1">
+              <BlockText lines={[5, 10]} />
+            </View>
+          )}
+          {topic.canAppend && (
+            <View className="flex flex-row justify-end relative bottom-[-6px]">
+              <Pressable
+                className="px-3 h-[36px] rounded items-center justify-center active:opacity-60"
+                style={styles.layer2}
+                onPress={() => {
+                  setReplyContext({
+                    type: 'append',
+                  })
+                  replyModalRef.current?.present()
+                }}>
+                <Text style={styles.text}>附言</Text>
+              </Pressable>
+            </View>
+          )}
+        </MaxWidthWrapper>
       </View>
 
       {(!!topic.replies || !!topic.clicks) && (
-        <View
-          className={classNames(
-            'px-3 py-2 flex flex-row justify-between items-center',
-          )}
-          style={[styles.layer1, styles.border_b]}>
-          <View className="flex flex-row">
-            <Text className="text-xs pr-2" style={styles.text_desc}>
-              {topic.replies} 条回复
-            </Text>
-            {topic.clicks && (
-              <Text className="text-xs" style={styles.text_meta}>
-                {topic.clicks} 次点击
-              </Text>
-            )}
-          </View>
+        <View style={[styles.layer1]} className="pt-3">
+          <MaxWidthWrapper>
+            <View
+              className={classNames(
+                'px-2 py-3 mb-1 flex flex-row justify-between items-center',
+              )}
+              style={[styles.border_b, styles.border_t]}>
+              <View className="flex flex-row">
+                <Text className="text-xs pr-2" style={styles.text_desc}>
+                  {topic.replies} 条回复
+                </Text>
+                {topic.clicks && (
+                  <Text className="text-xs" style={styles.text_meta}>
+                    {topic.clicks} 次点击
+                  </Text>
+                )}
+              </View>
+            </View>
+          </MaxWidthWrapper>
         </View>
       )}
 

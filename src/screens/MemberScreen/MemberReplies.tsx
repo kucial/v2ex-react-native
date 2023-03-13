@@ -8,6 +8,7 @@ import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
@@ -19,11 +20,26 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
   const { data } = props
   const { styles } = useTheme()
-  if (data) {
+  if (!data) {
     return (
-      <View
-        className="w-full"
-        style={[styles.layer1, styles.border_b, styles.border_light]}>
+      <MaxWidthWrapper style={styles.layer1}>
+        <View style={[styles.border_b, styles.border_light]}>
+          <View className="p-1">
+            <View className="px-1 pb-1 pt-1 rounded-sm" style={styles.layer2}>
+              <InlineText className="text-xs" width="80%"></InlineText>
+              <BlockText lines={[1, 2]} />
+            </View>
+          </View>
+          <View className="py-1 px-2">
+            <BlockText lines={[1, 4]} />
+          </View>
+        </View>
+      </MaxWidthWrapper>
+    )
+  }
+  return (
+    <MaxWidthWrapper style={styles.layer1}>
+      <View style={[styles.border_b, styles.border_light]}>
         <View className="p-1">
           <View className="px-2 pb-1 pt-2" style={styles.layer2}>
             <View className="flex flex-row">
@@ -63,22 +79,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
           />
         </View>
       </View>
-    )
-  }
-  return (
-    <View
-      className="w-full"
-      style={[styles.layer1, styles.border_b, styles.border_light]}>
-      <View className="p-1">
-        <View className="px-1 pb-1 pt-1 rounded-sm" style={styles.layer2}>
-          <InlineText className="text-xs" width="80%"></InlineText>
-          <BlockText lines={[1, 2]} />
-        </View>
-      </View>
-      <View className="py-1 px-2">
-        <BlockText lines={[1, 4]} />
-      </View>
-    </View>
+    </MaxWidthWrapper>
   )
 }
 

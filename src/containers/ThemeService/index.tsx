@@ -96,7 +96,7 @@ const themes: Record<string, MyTheme> = {
       text_badge_inverse: '#171717',
       text_tag_inverse: '#cccccc', // neutral[300]
 
-      border_light: '#404040', // neutral[700]
+      border_light: '#383838', // neutral[700]
 
       bg_overlay: '#262626',
       bg_layer1: '#171717', // neutral[900]
@@ -252,6 +252,10 @@ export const ThemeProvider = (props) => {
       border_t: {
         borderTopWidth: StyleSheet.hairlineWidth,
         borderTopColor: theme.colors.border,
+      },
+      border_r: {
+        borderRightWidth: StyleSheet.hairlineWidth,
+        borderRightColor: theme.colors.border,
       },
       border_light: {
         borderColor: theme.colors.border_light,

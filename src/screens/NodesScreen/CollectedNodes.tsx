@@ -1,9 +1,9 @@
 import { Pressable, Text, View } from 'react-native'
-import { Image } from 'expo-image'
 import { DocumentIcon } from 'react-native-heroicons/outline'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
+import { Image } from 'expo-image'
 
 import { useTheme } from '@/containers/ThemeService'
 import { NodeExtra } from '@/utils/v2ex-client/types'

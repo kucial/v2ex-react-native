@@ -96,6 +96,7 @@ type ThemeStyles = {
   border: ViewStyle
   border_b: ViewStyle
   border_t: ViewStyle
+  border_r: ViewStyle
   border_light: ViewStyle
   tag__bg: ViewStyle
   tag__text: TextStyle

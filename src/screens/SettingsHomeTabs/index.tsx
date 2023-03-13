@@ -11,29 +11,32 @@ import {
   Alert,
   GestureResponderEvent,
   Pressable,
+  SafeAreaView,
   Text,
   View,
   ViewStyle,
 } from 'react-native'
-import DraggableFlatList, {
+import {
+  NestableDraggableFlatList,
+  NestableScrollContainer,
   ScaleDecorator,
 } from 'react-native-draggable-flatlist'
 import {
   EllipsisHorizontalIcon,
   HomeModernIcon,
+  MinusCircleIcon,
+  PlusCircleIcon,
   PlusIcon,
   RectangleStackIcon,
-  TrashIcon,
 } from 'react-native-heroicons/outline'
-import SwipeableItem, {
-  useSwipeableItemParams,
-} from 'react-native-swipeable-item'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
-import { useActivityIndicator } from '@/containers/ActivityIndicator'
+import GroupWapper from '@/components/GroupWrapper'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import SectionHeader from '@/components/SectionHeader'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
@@ -41,53 +44,20 @@ import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import AddTabPanelSheet from './AddTabPanelSheet'
 
-const UnderlayLeft = (props: { onDelete: () => void }) => {
-  const { close } = useSwipeableItemParams()
-  const { styles } = useTheme()
-  return (
-    <View
-      className="h-full flex-row flex-row justify-end"
-      style={styles.btn_danger__bg}>
-      <Pressable
-        className={classNames(
-          'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',
-          'active:opacity-70',
-        )}
-        onPress={() => {
-          close().then(() => {
-            props.onDelete()
-          })
-        }}>
-        <TrashIcon color={styles.btn_danger__text.color} />
-      </Pressable>
-    </View>
-  )
-}
-
 const LineItem = (props: {
-  disabled: boolean
+  disabled?: boolean
   isLast: boolean
-  onLongPress: (e: GestureResponderEvent) => void
+  onLongPress?: (e: GestureResponderEvent) => void
   icon: ReactElement
   title: string
   extra?: ReactElement
-  style: ViewStyle
+  style?: ViewStyle
 }) => {
-  const { close, openDirection } = useSwipeableItemParams()
   const { styles } = useTheme()
   return (
     <Pressable
-      className={classNames(
-        'min-h-[50px] flex flex-row items-center pl-4',
-        openDirection !== 'none' &&
-          'active:bg-neutral-100 dark:active:bg-neutral-800',
-      )}
-      style={[styles.layer1, props.style, props.isLast && styles.border_b]}
-      onPress={() => {
-        if (openDirection !== 'none') {
-          close()
-        }
-      }}
+      className={classNames('min-h-[50px] flex flex-row items-center pl-4')}
+      style={[styles.layer1, props.style]}
       disabled={props.disabled}
       onLongPress={props.onLongPress}>
       <View
@@ -201,43 +171,72 @@ export default function HomeTabs(props: ScreenProps) {
       }
       return (
         <ScaleDecorator>
-          <SwipeableItem
-            key={item.value}
-            item={`${item.type}-${item.value}`}
-            swipeEnabled={!isActive}
-            snapPointsLeft={[60]}
-            overSwipe={60}
-            renderUnderlayLeft={() => (
-              <UnderlayLeft
-                onDelete={() => {
+          <LineItem
+            onLongPress={drag}
+            disabled={isActive}
+            title={item.label}
+            icon={icon}
+            isLast={index === enabledTabs.length - 1}
+            style={{
+              opacity: isActive ? 0.8 : 1,
+            }}
+            extra={
+              <Pressable
+                className="px-2 py-2 rounded-md active:opacity-50 active:bg-red-100 dark:active:bg-rose-100"
+                onPress={() => {
                   setTabs((prev) => {
-                    const tabIndex = prev.findIndex(
-                      (t) => t.type === item.type && t.value === item.value,
-                    )
                     return [
-                      ...prev.slice(0, tabIndex),
+                      ...prev.filter(
+                        (t) => t.type !== item.type || t.value !== item.value,
+                      ),
                       { ...item, disabled: true },
-                      ...prev.slice(tabIndex + 1),
                     ]
                   })
-                }}
-              />
-            )}>
-            <LineItem
-              onLongPress={drag}
-              disabled={isActive}
-              title={item.label}
-              icon={icon}
-              isLast={index === enabledTabs.length - 1}
-              style={{
-                opacity: isActive ? 0.8 : 1,
-              }}
-            />
-          </SwipeableItem>
+                }}>
+                <MinusCircleIcon color={theme.colors.danger} />
+              </Pressable>
+            }
+          />
         </ScaleDecorator>
       )
     },
-    [enabledTabs],
+    [enabledTabs, setTabs],
+  )
+
+  const renderDisabledItem = useCallback(
+    ({ item, index }) => {
+      let icon
+      const tintColor = theme.colors.text
+      if (item.type === 'node') {
+        icon = <RectangleStackIcon size={18} color={tintColor} />
+      } else {
+        icon = <HomeModernIcon size={18} color={tintColor} />
+      }
+      return (
+        <LineItem
+          title={item.label}
+          icon={icon}
+          isLast={index === disabledTabs.length - 1}
+          extra={
+            <Pressable
+              className="px-2 py-2 rounded-md active:opacity-50 active:bg-green-100 dark:active:bg-emerald-100"
+              onPress={() => {
+                setTabs((prev) => {
+                  return [
+                    ...prev.filter(
+                      (t) => t.type !== item.type || t.value !== item.value,
+                    ),
+                    { ...item, disabled: false },
+                  ]
+                })
+              }}>
+              <PlusCircleIcon color={theme.colors.success} />
+            </Pressable>
+          }
+        />
+      )
+    },
+    [disabledTabs],
   )
 
   useEffect(() => {
@@ -259,28 +258,43 @@ export default function HomeTabs(props: ScreenProps) {
 
   return (
     <>
-      <DraggableFlatList
-        style={{ height: '100%' }}
-        data={enabledTabs}
-        onDragEnd={({ data }) => setTabs(data)}
-        keyExtractor={(item) => `${item.type}-${item.value}`}
-        renderItem={renderItem}
-        activationDistance={5}
-      />
-      <View className="absolute bottom-[56px] right-[24px]">
+      <NestableScrollContainer>
+        <MaxWidthWrapper className="px-4">
+          <SectionHeader title="已启用" desc="长按拖放可调整顺序" />
+          <GroupWapper>
+            <NestableDraggableFlatList
+              data={enabledTabs}
+              onDragEnd={({ data }) => setTabs([...data, ...disabledTabs])}
+              keyExtractor={(item) => `${item.type}-${item.value}`}
+              renderItem={renderItem}
+              activationDistance={5}
+            />
+          </GroupWapper>
+          <SectionHeader title="已禁用" />
+          <GroupWapper>
+            <NestableDraggableFlatList
+              data={disabledTabs}
+              keyExtractor={(item) => `${item.type}-${item.value}`}
+              renderItem={renderDisabledItem}
+            />
+          </GroupWapper>
+        </MaxWidthWrapper>
+      </NestableScrollContainer>
+      <SafeAreaView className="absolute w-full bottom-0 flex flex-row justify-center">
         <Pressable
           className={classNames(
+            'mb-3',
             'w-[62px] h-[62px] items-center justify-center rounded-full shadow-sm active:opacity-60',
           )}
           style={styles.btn_primary__bg}
           onPress={() => {
+            sheetRef.current?.snapToIndex(1)
             sheetRef.current?.present()
           }}>
           <PlusIcon color={styles.btn_primary__text.color} size={24} />
         </Pressable>
-      </View>
+      </SafeAreaView>
       <AddTabPanelSheet
-        extraItems={disabledTabs}
         ref={sheetRef}
         onSelect={(item) => {
           setTabs((prev) => {
@@ -296,7 +310,6 @@ export default function HomeTabs(props: ScreenProps) {
             }
             return [item, ...prev]
           })
-          sheetRef.current?.close()
         }}
       />
     </>

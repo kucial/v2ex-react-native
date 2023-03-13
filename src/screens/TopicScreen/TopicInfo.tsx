@@ -85,6 +85,7 @@ function TopicInfo(props: {
       </View>
       {!!topic.content_rendered && (
         <HtmlRender
+          key={topic.content_rendered}
           navigation={navigation}
           contentWidth={width - 32}
           baseStyle={{

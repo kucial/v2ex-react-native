@@ -8,6 +8,7 @@ import * as Sentry from 'sentry-expo'
 import V2exClientWebView from '@/utils/v2ex-client/V2exClientWebView'
 
 import ErrorBoundary from './src/components/ErrorBoundary'
+import Layout from './src/components/Layout'
 import ActivityIndicator from './src/containers/ActivityIndicator'
 import AlertService from './src/containers/AlertService'
 import AppSettingsService from './src/containers/AppSettingsService'
@@ -43,8 +44,9 @@ function App() {
                         <BottomSheetModalProvider>
                           <AuthService>
                             <ViewedTopicsService>
-                              {/* <DebugScreen /> */}
-                              <AppStack />
+                              <Layout>
+                                <AppStack />
+                              </Layout>
                             </ViewedTopicsService>
                           </AuthService>
                         </BottomSheetModalProvider>

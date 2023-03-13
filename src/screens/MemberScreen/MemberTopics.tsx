@@ -74,32 +74,34 @@ export default function MemberTopics(props: { username: string }) {
   }, [])
 
   return (
-    <FlashList
-      className="flex-1"
-      data={listItems}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      onEndReachedThreshold={0.4}
-      estimatedItemSize={110}
-      onEndReached={() => {
-        if (listSwr.error?.code === 'member_locked') {
-          return
-        }
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize(listSwr.size + 1)
-        }
-      }}
-      onRefresh={() => {
-        if (listSwr.isValidating) {
-          return
-        }
-        listSwr.mutate()
-      }}
-      refreshing={isRefreshing(listSwr)}
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
-      }}
-    />
+    <>
+      <FlashList
+        className="flex-1"
+        data={listItems}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        onEndReachedThreshold={0.4}
+        estimatedItemSize={110}
+        onEndReached={() => {
+          if (listSwr.error?.code === 'member_locked') {
+            return
+          }
+          if (shouldLoadMore(listSwr)) {
+            listSwr.setSize(listSwr.size + 1)
+          }
+        }}
+        onRefresh={() => {
+          if (listSwr.isValidating) {
+            return
+          }
+          listSwr.mutate()
+        }}
+        refreshing={isRefreshing(listSwr)}
+        ListFooterComponent={() => {
+          return <CommonListFooter data={listSwr} />
+        }}
+      />
+    </>
   )
 }
 MemberTopics.propTypes = {

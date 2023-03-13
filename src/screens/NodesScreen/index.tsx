@@ -5,6 +5,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import useSWR from 'swr'
 
 import Loader from '@/components/Loader'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import SearchInput from '@/components/SearchInput'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
@@ -71,30 +72,34 @@ export default function NodesScreen({ navigation }: ScreenProps) {
         .flat()
         .filter((section) => !!section && !!section.data[0].nodes.length),
       renderItem: ({ item }) => {
+        let content
         switch (item.type) {
           case 'public':
-            return (
+            content = (
               <View
                 className="mx-1 rounded-b-sm shadow mb-4"
                 style={styles.layer1}>
                 <CommonNodes data={item.nodes} />
               </View>
             )
+            break
           case 'self':
-            return (
+            content = (
               <View
                 className="mx-1 rounded-b-sm shadow mb-4"
                 style={styles.layer1}>
                 <CollectedNodes data={item.nodes} />
               </View>
             )
+            break
           default:
-            return (
+            content = (
               <View>
                 <Text>UNKNOWN</Text>
               </View>
             )
         }
+        return <MaxWidthWrapper>{content}</MaxWidthWrapper>
       },
     }
   }, [commonNodesSwr.data, collectedNodesSwr.data, filter])
@@ -153,17 +158,19 @@ export default function NodesScreen({ navigation }: ScreenProps) {
         renderItem={renderItem}
         renderSectionHeader={({ section }) => {
           return (
-            <View className="mx-1">
-              <View
-                className="flex flex-row justify-between items-center px-3 rounded-t-sm"
-                style={[styles.layer1, styles.border_b]}>
-                <View className="py-2">
-                  <Text className="font-medium" style={styles.text}>
-                    {section.title}
-                  </Text>
+            <MaxWidthWrapper>
+              <View className="mx-1">
+                <View
+                  className="flex flex-row justify-between items-center px-3 rounded-t-sm"
+                  style={[styles.layer1, styles.border_b]}>
+                  <View className="py-2">
+                    <Text className="font-medium" style={styles.text}>
+                      {section.title}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
+            </MaxWidthWrapper>
           )
         }}
         refreshControl={

@@ -18,6 +18,7 @@ import classNames from 'classnames'
 import { Image } from 'expo-image'
 
 import { LineItem, LineItemGroup } from '@/components/LineItem'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
 import { Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAuthService } from '@/containers/AuthService'
@@ -144,126 +145,128 @@ export default function MyScreen({ navigation }: ScreenProps) {
 
   return (
     <ScrollView className="flex flex-col flex-1 py-3">
-      <LineItemGroup className="mx-4 my-2">{header}</LineItemGroup>
+      <MaxWidthWrapper>
+        <LineItemGroup className="mx-4 my-2">{header}</LineItemGroup>
 
-      <View className="flex flex-wrap flex-row flex-1 mx-2">
-        <View className="basis-1/2 px-2 my-2">
-          <LineItem
-            title="创建的主题"
-            isLast
-            className="overflow-hidden rounded-lg shadow-xs"
-            icon={<DocumentPlusIcon size={22} color={iconColor} />}
-            disabled={authStatus === 'loading'}
-            onPress={handleCreatedTopicsPressed}
-          />
+        <View className="flex flex-wrap flex-row flex-1 mx-2">
+          <View className="basis-1/2 px-2 my-2">
+            <LineItem
+              title="创建的主题"
+              isLast
+              className="overflow-hidden rounded-lg shadow-xs"
+              icon={<DocumentPlusIcon size={22} color={iconColor} />}
+              disabled={authStatus === 'loading'}
+              onPress={handleCreatedTopicsPressed}
+            />
+          </View>
+          <View className="basis-1/2 px-2 my-2">
+            <LineItem
+              title="收藏的主题"
+              isLast
+              className="overflow-hidden rounded-lg shadow-xs"
+              icon={<StarIcon size={22} color={iconColor} />}
+              disabled={authStatus === 'loading'}
+              onPress={handleCollectedTopicsPressed}
+            />
+          </View>
+          <View className="basis-1/2 px-2 my-2">
+            <LineItem
+              title="回复的主题"
+              isLast
+              className="overflow-hidden rounded-lg shadow-xs"
+              icon={<ReplyIcon size={22} color={iconColor} />}
+              disabled={authStatus === 'loading'}
+              onPress={handleRepliedTopicsPressed}
+            />
+          </View>
+          <View className="basis-1/2 px-2 my-2">
+            <LineItem
+              title="浏览的主题"
+              isLast
+              className="overflow-hidden rounded-lg shadow-xs"
+              icon={<ClockIcon size={22} color={iconColor} />}
+              disabled={authStatus === 'loading'}
+              onPress={() => {
+                navigation.push('viewed-topics')
+              }}
+            />
+          </View>
         </View>
-        <View className="basis-1/2 px-2 my-2">
+
+        <LineItemGroup className="mx-4 my-2">
           <LineItem
-            title="收藏的主题"
-            isLast
-            className="overflow-hidden rounded-lg shadow-xs"
-            icon={<StarIcon size={22} color={iconColor} />}
-            disabled={authStatus === 'loading'}
-            onPress={handleCollectedTopicsPressed}
-          />
-        </View>
-        <View className="basis-1/2 px-2 my-2">
-          <LineItem
-            title="回复的主题"
-            isLast
-            className="overflow-hidden rounded-lg shadow-xs"
-            icon={<ReplyIcon size={22} color={iconColor} />}
-            disabled={authStatus === 'loading'}
-            onPress={handleRepliedTopicsPressed}
-          />
-        </View>
-        <View className="basis-1/2 px-2 my-2">
-          <LineItem
-            title="浏览的主题"
-            isLast
-            className="overflow-hidden rounded-lg shadow-xs"
-            icon={<ClockIcon size={22} color={iconColor} />}
-            disabled={authStatus === 'loading'}
+            title="主题标签设置"
+            icon={<Bars3Icon size={22} color={iconColor} />}
             onPress={() => {
-              navigation.push('viewed-topics')
+              navigation.push('home-tab-settings')
             }}
           />
-        </View>
-      </View>
-
-      <LineItemGroup className="mx-4 my-2">
-        <LineItem
-          title="主题标签设置"
-          icon={<Bars3Icon size={22} color={iconColor} />}
-          onPress={() => {
-            navigation.push('home-tab-settings')
-          }}
-        />
-        <LineItem
-          title="Imgur 图床"
-          onPress={() => {
-            navigation.push('imgur-settings')
-          }}
-          icon={<PhotoIcon size={22} color={iconColor} />}
-        />
-        <LineItem
-          title="偏好设置"
-          icon={<Cog6ToothIcon size={22} color={iconColor} />}
-          onPress={() => {
-            navigation.push('preference-settings')
-          }}
-          isLast
-        />
-      </LineItemGroup>
-
-      <LineItemGroup className="mx-4 my-2">
-        <LineItem
-          onPress={() => {
-            navigation.push('about')
-          }}
-          icon={<InformationCircleIcon size={22} color={iconColor} />}
-          title="关于"
-        />
-        <LineItem
-          onPress={() => {
-            StoreReview.requestReview()
-          }}
-          icon={<StarIcon size={22} color={iconColor} />}
-          title="五星好评"
-        />
-        <LineItem
-          onPress={() => {
-            navigation.push('feedback')
-          }}
-          icon={<ChatBubbleLeftEllipsisIcon size={22} color={iconColor} />}
-          title="意见反馈"
-          isLast
-        />
-      </LineItemGroup>
-
-      {currentUser && (
-        <View className="mx-4 py-7 mb-4 flex-1 justify-end">
-          <Pressable
-            className={classNames(
-              'flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60',
-            )}
-            style={{ backgroundColor: theme.colors.bg_danger_mask }}
+          <LineItem
+            title="Imgur 图床"
             onPress={() => {
-              Alert.alert('确认要退出登录吗?', '', [
-                {
-                  text: '确认',
-                  onPress: () => logout(),
-                },
-                {
-                  text: '取消',
-                  style: 'cancel',
-                },
-              ])
-            }}>
-            <Text style={styles.text_danger}>退出登录</Text>
-          </Pressable>
-        </View>
-      )}
+              navigation.push('imgur-settings')
+            }}
+            icon={<PhotoIcon size={22} color={iconColor} />}
+          />
+          <LineItem
+            title="偏好设置"
+            icon={<Cog6ToothIcon size={22} color={iconColor} />}
+            onPress={() => {
+              navigation.push('preference-settings')
+            }}
+            isLast
+          />
+        </LineItemGroup>
+
+        <LineItemGroup className="mx-4 my-2">
+          <LineItem
+            onPress={() => {
+              navigation.push('about')
+            }}
+            icon={<InformationCircleIcon size={22} color={iconColor} />}
+            title="关于"
+          />
+          <LineItem
+            onPress={() => {
+              StoreReview.requestReview()
+            }}
+            icon={<StarIcon size={22} color={iconColor} />}
+            title="五星好评"
+          />
+          <LineItem
+            onPress={() => {
+              navigation.push('feedback')
+            }}
+            icon={<ChatBubbleLeftEllipsisIcon size={22} color={iconColor} />}
+            title="意见反馈"
+            isLast
+          />
+        </LineItemGroup>
+
+        {currentUser && (
+          <View className="mx-4 py-7 mb-4 flex-1 justify-end">
+            <Pressable
+              className={classNames(
+                'flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60',
+              )}
+              style={{ backgroundColor: theme.colors.bg_danger_mask }}
+              onPress={() => {
+                Alert.alert('确认要退出登录吗?', '', [
+                  {
+                    text: '确认',
+                    onPress: () => logout(),
+                  },
+                  {
+                    text: '取消',
+                    style: 'cancel',
+                  },
+                ])
+              }}>
+              <Text style={styles.text_danger}>退出登录</Text>
+            </Pressable>
+          </View>
+        )}
+      </MaxWidthWrapper>
     </ScrollView>
   )
 }
