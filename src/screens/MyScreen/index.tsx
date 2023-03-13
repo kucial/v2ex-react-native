@@ -106,7 +106,8 @@ export default function MyScreen({ navigation }: ScreenProps) {
   } else if (
     authStatus === 'visitor' ||
     authStatus === 'logout' ||
-    authStatus === 'failed'
+    authStatus === 'failed' ||
+    authStatus === 'none'
   ) {
     header = (
       <Pressable
