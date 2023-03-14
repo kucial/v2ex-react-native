@@ -207,6 +207,7 @@ const NotificationRow = (props: { data: Notification }) => {
         {data.content_rendered && (
           <View className="mt-1 p-1 rounded" style={styles.layer2}>
             <HtmlRender
+              key={data.content_rendered}
               navigation={navigation}
               contentWidth={width - 24 - 8 - 8 - 8}
               source={{

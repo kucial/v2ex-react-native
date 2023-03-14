@@ -107,6 +107,7 @@ function TopicInfo(props: {
                 <Text className="text-xs text-neutral-500">{subtle.meta}</Text>
               </View>
               <HtmlRender
+                key={subtle.content_rendered}
                 navigation={navigation}
                 contentWidth={width - 32}
                 baseStyle={{

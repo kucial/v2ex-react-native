@@ -140,6 +140,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
             <View>
               {!!node.header && (
                 <HtmlRender
+                  key={node.header}
                   navigation={navigation}
                   contentWidth={width - 100}
                   {...htmlProps}
