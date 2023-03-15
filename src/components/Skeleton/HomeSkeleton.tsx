@@ -28,7 +28,12 @@ export default function HomeSkeleton() {
           <InlineText className="text-base" width={[48, 64]} />
         </View>
       </View>
-      <View style={[styles.border_top, styles.border_light]}>
+      <View style={[styles.border_t_light]}>
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
+        <TopicRowSkeleton />
         <TopicRowSkeleton />
         <TopicRowSkeleton />
         <TopicRowSkeleton />

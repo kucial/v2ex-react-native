@@ -17,7 +17,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
     <MaxWidthWrapper style={styles.layer1}>
       <Pressable
         className="flex flex-row items-center active:opacity-60"
-        style={[styles.border_b, styles.border_light]}
+        style={[styles.border_b_light]}
         onPress={() => {
           if (data) {
             navigation.push('topic', {

@@ -24,7 +24,7 @@ function NodeTopicRow(props: NodeFeedRowProps) {
       <MaxWidthWrapper style={styles.layer1}>
         <View
           className={classNames('flex flex-row items-center')}
-          style={[styles.border_b, styles.border_light]}>
+          style={[styles.border_b_light]}>
           {showAvatar ? (
             <View className="px-2 py-2 self-start">
               <Box className="w-[24px] h-[24px] rounded" />
@@ -57,7 +57,7 @@ function NodeTopicRow(props: NodeFeedRowProps) {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         className="flex flex-row items-center active:opacity-60"
-        style={[styles.border_b, styles.border_light]}
+        style={[styles.border_b_light]}
         onPress={() => {
           navigation.push('topic', {
             id: props.data.id,

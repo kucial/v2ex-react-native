@@ -67,11 +67,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
         }}>
         <View
           className={classNames('h-[50px] flex flex-row items-center pr-3')}
-          style={[
-            styles.border_b,
-            styles.border_light,
-            index === 0 && styles.border_t,
-          ]}>
+          style={[styles.border_b_light, index === 0 && styles.border_t]}>
           <TypeIcon size={18} color={tintColor} type="node" />
           <View className="ml-3">
             <Text style={styles.text}>{item.title}</Text>
@@ -105,9 +101,8 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
                 'h-[50px] flex flex-row items-center  pr-3',
               )}
               style={[
-                styles.border_b,
-                styles.border_light,
-                index === 0 && styles.border_t,
+                styles.border_b_light,
+                index === 0 && styles.border_t_light,
               ]}>
               <TypeIcon type={item.type} size={18} color={tintColor} />
               <View className="ml-3">

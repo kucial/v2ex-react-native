@@ -15,7 +15,7 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
   return (
     <View
       className={classNames('flex flex-row items-center')}
-      style={[styles.layer1, styles.border_b, styles.border_light]}>
+      style={[styles.layer1, styles.border_b_light]}>
       {showAvatar ? (
         <View className="px-2 py-2 self-start">
           <Image

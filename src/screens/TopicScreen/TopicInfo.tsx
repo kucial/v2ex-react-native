@@ -102,7 +102,7 @@ function TopicInfo(props: {
           {topic.subtles.map((subtle, index) => (
             <View
               className="-mx-2 pl-4 pr-2 py-2"
-              style={[styles.border_t, styles.border_light, styles.highlight]}
+              style={[styles.border_t_light, styles.highlight]}
               key={index}>
               <View className="mb-1">
                 <Text className="text-xs text-neutral-500">{subtle.meta}</Text>

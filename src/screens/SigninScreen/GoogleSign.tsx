@@ -73,7 +73,7 @@ function GoogleSign(props: GoogleSigninProps) {
     <View className="flex-1" style={styles.overlay}>
       <View
         className="min-h-[44px] flex-row justify-between p-1"
-        style={[styles.border_b, styles.border_light]}>
+        style={[styles.border_b_light]}>
         <BackButton
           tintColor={theme.colors.text}
           onPress={() => {

@@ -50,9 +50,7 @@ function Field({ label, value }: { label: string; value: string }) {
   const { styles } = useTheme()
   const alert = useAlertService()
   return (
-    <View
-      className="flex flex-row"
-      style={[styles.border_b, styles.border_light]}>
+    <View className="flex flex-row" style={[styles.border_b_light]}>
       <View className="py-4 px-4 w-[120px] flex flex-row items-center">
         <Text style={styles.text}>{label}</Text>
       </View>

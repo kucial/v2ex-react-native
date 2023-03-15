@@ -19,7 +19,7 @@ export default function AppSidebar() {
   return (
     <SafeAreaView
       className="flex-1 flex flex-column"
-      style={[styles.border_light, styles.border_r]}>
+      style={[styles.border_r_light]}>
       <View className="h-[200]">
         <Text>Dynamic center</Text>
       </View>

@@ -22,7 +22,7 @@ export default function TopicRow(props: HomeFeedRowProps) {
       <MaxWidthWrapper style={styles.layer1}>
         <View
           className={classNames('flex flex-row items-center')}
-          style={[styles.border_b, styles.border_light]}>
+          style={[styles.border_b_light]}>
           <View className="flex-1 py-2 pl-1">
             <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
               {showAvatar && <Box className="w-[24px] h-[24px] rounded" />}
@@ -66,7 +66,7 @@ export default function TopicRow(props: HomeFeedRowProps) {
           'flex flex-row items-center',
           'active:opacity-50',
         )}
-        style={[styles.layer1, styles.border_b, styles.border_light]}
+        style={[styles.layer1, styles.border_b_light]}
         onPress={() => {
           navigation.push('topic', {
             id: props.data.id,

@@ -13,7 +13,7 @@ export default function NodeTopicRowSkeleton() {
         'flex flex-row items-center p-2',
         'active:opacity-60',
       )}
-      style={[styles.layer1, styles.border_b, styles.border_light]}>
+      style={[styles.layer1, styles.border_b_light]}>
       <View className="mr-2 self-start">
         <InlineBox className="w-[24px] h-[24px] rounded" />
       </View>

@@ -1,4 +1,4 @@
-import type { TextStyle } from 'react-native'
+import type { TextStyle, ViewStyle } from 'react-native'
 import type { Theme } from '@react-navigation/native'
 
 interface ThemeTextStyle {
@@ -94,10 +94,15 @@ type ThemeStyles = {
   overlay: ViewStyle
   highlight: ViewStyle
   border: ViewStyle
+  border_light: ViewStyle
   border_b: ViewStyle
   border_t: ViewStyle
   border_r: ViewStyle
-  border_light: ViewStyle
+  border_l: ViewStyle
+  border_b_light: ViewStyle
+  border_t_light: ViewStyle
+  border_r_light: ViewStyle
+  border_l_light: ViewStyle
   tag__bg: ViewStyle
   tag__text: TextStyle
 }

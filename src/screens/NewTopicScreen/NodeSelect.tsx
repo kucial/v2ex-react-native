@@ -67,7 +67,7 @@ function NodeSelect(props: NodeSelectProps) {
           }}>
           <View
             className={classNames('h-[50px] flex flex-row items-center pr-3')}
-            style={[styles.border_b, styles.border_light]}>
+            style={[styles.border_b_light]}>
             {props.renderLabel(item)}
           </View>
         </Pressable>

@@ -122,10 +122,10 @@ function ReplyRow(props: ReplyRowProps) {
 
   const { member } = data
   return (
-    <MaxWidthWrapper style={styles.layer1}>
+    <MaxWidthWrapper style={[props.style]}>
       <View
         className={classNames('pt-2', isPivot && 'bg-yellow-700/5')}
-        style={[styles.border_b, styles.border_light, props.style]}>
+        style={[styles.border_b_light]}>
         <View className="flex flex-row pl-2">
           {showAvatar ? (
             <View className="mr-2">

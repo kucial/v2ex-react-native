@@ -23,7 +23,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
-        <View style={[styles.border_b, styles.border_light]}>
+        <View style={[styles.border_b_light]}>
           <View className="p-1">
             <View className="px-1 pb-1 pt-1 rounded-sm" style={styles.layer2}>
               <InlineText className="text-xs" width="80%"></InlineText>
@@ -39,7 +39,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
   }
   return (
     <MaxWidthWrapper style={styles.layer1}>
-      <View style={[styles.border_b, styles.border_light]}>
+      <View style={[styles.border_b_light]}>
         <View className="p-1">
           <View className="px-2 pb-1 pt-2" style={styles.layer2}>
             <View className="flex flex-row">

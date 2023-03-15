@@ -108,7 +108,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
 
   const header = (
     <MaxWidthWrapper style={styles.layer1}>
-      <View className="p-2" style={[styles.border_b, styles.border_light]}>
+      <View className="p-2" style={[styles.border_b_light]}>
         <View className="rounded-lg">
           <View className="flex flex-row">
             {node.avatar_large ? (
@@ -159,7 +159,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                       'opacity-60': collecting,
                     },
                   )}
-                  style={[styles.border, styles.border_light]}
+                  style={[styles.border_light]}
                   disabled={collecting || node.collected === undefined}
                   onPress={handleCollectToggle}>
                   <Text style={styles.text}>
@@ -171,7 +171,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                     'ml-2 h-[38px] rounded-lg px-3 items-center justify-center active:opacity-60',
                   )}
                   disabled={!nodeSwr.data}
-                  style={[styles.border, styles.border_light]}
+                  style={[styles.border_light]}
                   onPress={handleCreateNewTopic}>
                   <Text style={styles.text}>创建新主题</Text>
                 </Pressable>

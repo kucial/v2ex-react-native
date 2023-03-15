@@ -28,7 +28,7 @@ const NotificationRow = (props: { data: Notification }) => {
             'flex flex-row items-start p-2',
             'active:opacity-60',
           )}
-          style={[styles.layer1, styles.border_b, styles.border_light]}>
+          style={[styles.layer1, styles.border_b_light]}>
           <View className="mr-2">
             <Box className="w-[24px] h-[24px] rounded" />
           </View>
@@ -186,7 +186,7 @@ const NotificationRow = (props: { data: Notification }) => {
           'flex flex-row items-start p-2',
           'active:opacity-60',
         )}
-        style={[styles.border_b, styles.border_light]}>
+        style={[styles.border_b_light]}>
         <View className="mr-2">
           <Pressable
             hitSlop={4}

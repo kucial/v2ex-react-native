@@ -628,6 +628,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       renderReply({ item }) {
         return (
           <ReplyRow
+            style={styles.layer1}
             showAvatar={settings.feedShowAvatar}
             navigation={navigation}
             data={item}
@@ -815,7 +816,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       />
       <SafeAreaView
         className="u-absolute bottom-0 left-0 w-full"
-        style={[styles.overlay, styles.border_t, styles.border_light]}>
+        style={[styles.overlay, styles.border_t_light]}>
         <View className="h-[48px] flex flex-row items-center pl-3 pr-1">
           <View className="flex-1 mr-2">
             <Pressable

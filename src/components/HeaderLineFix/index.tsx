@@ -4,10 +4,7 @@ import { useTheme } from '@/containers/ThemeService'
 
 export default function HeaderLineFix() {
   const { styles } = useTheme()
-  return (
-    <View
-      style={[styles.border_b, styles.border_light, innerStyle.item]}></View>
-  )
+  return <View style={[styles.border_b_light, innerStyle.item]}></View>
 }
 
 const innerStyle = StyleSheet.create({

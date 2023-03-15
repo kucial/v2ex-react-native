@@ -73,8 +73,7 @@ export default function MainScreenHeader(
           paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
           backgroundColor: theme.colors.bg_layer1,
         },
-        props.hasBorder && styles.border_b,
-        props.hasBorder && styles.border_light,
+        props.hasBorder && styles.border_b_light,
       ]}>
       <View className="flex-1">
         <View className="">

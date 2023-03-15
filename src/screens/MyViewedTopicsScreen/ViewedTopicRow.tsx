@@ -17,7 +17,7 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
   return (
     <FixedPressable
       className="flex flex-row items-center active:opacity-50"
-      style={[styles.layer1, styles.border_b, styles.border_light]}
+      style={[styles.layer1, styles.border_b_light]}
       onPress={() => {
         navigation.push('topic', {
           id: data.id,

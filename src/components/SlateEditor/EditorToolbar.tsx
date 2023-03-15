@@ -94,8 +94,7 @@ export default function EditorToolbar(props) {
       className="flex flex-row"
       style={[
         props.style,
-        styles.border_t,
-        styles.border_light,
+        styles.border_t_light,
         {
           backgroundColor: theme.colors.bg_overlay,
         },

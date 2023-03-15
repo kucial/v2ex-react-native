@@ -9,7 +9,7 @@ export default function TopicRowSkeleton() {
   return (
     <View
       className="flex flex-row items-center"
-      style={[styles.layer1, styles.border_b, styles.border_light]}>
+      style={[styles.layer1, styles.border_b_light]}>
       <View className="flex-1 py-2 pl-1">
         <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
           <Box className="w-[24px] h-[24px] rounded" />

@@ -26,9 +26,7 @@ export default function TopicSkeleton() {
             width={[48, 72]}></InlineBox>
         </View>
       </View>
-      <View
-        className="pb-2 mb-2"
-        style={[styles.border_b, styles.border_light]}>
+      <View className="pb-2 mb-2" style={[styles.border_b_light]}>
         <BlockText className="text-lg font-semibold" lines={[1, 3]} />
       </View>
       <View className="mt-1">

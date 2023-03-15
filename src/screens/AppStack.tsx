@@ -58,8 +58,7 @@ function AppStack() {
             <View
               style={[
                 styles.layer1,
-                styles.border_b,
-                styles.border_light,
+                styles.border_b_light,
                 { height: '100%' },
               ]}></View>
           )

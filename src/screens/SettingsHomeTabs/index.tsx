@@ -268,19 +268,29 @@ export default function HomeTabs(props: ScreenProps) {
               keyExtractor={(item) => `${item.type}-${item.value}`}
               renderItem={renderItem}
               activationDistance={5}
+              scrollEnabled
             />
           </GroupWapper>
-          <SectionHeader title="已禁用" />
+          <SectionHeader title="已停用" />
           <GroupWapper>
-            <NestableDraggableFlatList
-              data={disabledTabs}
-              keyExtractor={(item) => `${item.type}-${item.value}`}
-              renderItem={renderDisabledItem}
-            />
+            {disabledTabs.length ? (
+              <NestableDraggableFlatList
+                data={disabledTabs}
+                keyExtractor={(item) => `${item.type}-${item.value}`}
+                renderItem={renderDisabledItem}
+              />
+            ) : (
+              <View className="py-4 px-3" style={styles.layer1}>
+                <Text style={styles.text}>（空）</Text>
+              </View>
+            )}
           </GroupWapper>
         </MaxWidthWrapper>
+        <View style={{ height: 200 }}></View>
       </NestableScrollContainer>
-      <SafeAreaView className="absolute w-full bottom-0 flex flex-row justify-center">
+      <SafeAreaView
+        className="absolute w-full bottom-0 flex flex-row justify-center"
+        pointerEvents="box-none">
         <Pressable
           className={classNames(
             'mb-3',

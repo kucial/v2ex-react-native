@@ -257,8 +257,29 @@ export const ThemeProvider = (props) => {
         borderRightWidth: StyleSheet.hairlineWidth,
         borderRightColor: theme.colors.border,
       },
+      border_l: {
+        borderLeftWidth: StyleSheet.hairlineWidth,
+        borderLeftColor: theme.colors.border,
+      },
       border_light: {
+        borderWidth: StyleSheet.hairlineWidth,
         borderColor: theme.colors.border_light,
+      },
+      border_b_light: {
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: theme.colors.border_light,
+      },
+      border_t_light: {
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: theme.colors.border_light,
+      },
+      border_l_light: {
+        borderLeftWidth: StyleSheet.hairlineWidth,
+        borderLeftColor: theme.colors.border_light,
+      },
+      border_r_light: {
+        borderRightWidth: StyleSheet.hairlineWidth,
+        borderRightColor: theme.colors.border_light,
       },
       tag__bg: {
         backgroundColor: theme.colors.tag_bg,
