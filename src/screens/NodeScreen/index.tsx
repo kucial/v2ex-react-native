@@ -11,6 +11,7 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NodeTopicList from '@/components/NodeTopicList'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
@@ -29,6 +30,10 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
   const { mutate } = useSWRConfig()
 
   const { width } = useWindowDimensions()
+  const {
+    data: { maxContainerWidth },
+  } = useAppSettings()
+  const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
   const aIndicator = useActivityIndicator()
   const alert = useAlertService()
   const { composeAuthedNavigation } = useAuthService()
@@ -146,7 +151,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                   <HtmlRender
                     key={node.header}
                     navigation={navigation}
-                    contentWidth={width - 100}
+                    contentWidth={CONTAINER_WIDTH - 100}
                     {...htmlProps}
                   />
                 )}

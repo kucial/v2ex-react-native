@@ -9,7 +9,7 @@ import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
 
 export default function MemberTopicRow(props: MemberFeedRowProps) {
-  const { data } = props
+  const { data, isLast } = props
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
   const { styles } = useTheme()
@@ -17,7 +17,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
     <MaxWidthWrapper style={styles.layer1}>
       <Pressable
         className="flex flex-row items-center active:opacity-60"
-        style={[styles.border_b_light]}
+        style={!isLast && styles.border_b_light}
         onPress={() => {
           if (data) {
             navigation.push('topic', {

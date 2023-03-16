@@ -48,7 +48,7 @@ export default function FeedbackScreen(props: ScreenProps) {
   return (
     <SafeAreaView className="flex-1">
       <MaxWidthWrapper>
-        <View className="p-4">
+        <View className="px-2 py-4">
           <GroupWapper style={styles.layer1}>
             <Formik<FormValues>
               initialValues={{

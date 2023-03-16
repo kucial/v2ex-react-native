@@ -625,9 +625,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
-      renderReply({ item }) {
+      renderReply({ item, index }) {
         return (
           <ReplyRow
+            isLast={index === replyItems.length - 1}
             style={styles.layer1}
             showAvatar={settings.feedShowAvatar}
             navigation={navigation}
@@ -713,7 +714,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const baseContent = (
     <>
-      <View className="pt-3 px-4" style={styles.layer1}>
+      <View className="pt-3 px-4" style={[styles.layer1]}>
         <MaxWidthWrapper>
           <TopicInfo data={topic} navigation={navigation} />
           {!topicSwr.data && topicSwr.error && !isLoading(topicSwr) && (
@@ -756,35 +757,23 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               </Pressable>
             </View>
           )}
+
+          {(!!topic.replies || !!topic.clicks) && (
+            <View
+              className="flex flex-row py-3 pl-1 mt-3"
+              style={[styles.border_t, replyItems?.length && styles.border_b]}>
+              <Text className="text-xs pr-4" style={styles.text_desc}>
+                {topic.replies} 条回复
+              </Text>
+              {topic.clicks && (
+                <Text className="text-xs" style={styles.text_meta}>
+                  {topic.clicks} 次点击
+                </Text>
+              )}
+            </View>
+          )}
         </MaxWidthWrapper>
       </View>
-
-      {(!!topic.replies || !!topic.clicks) && (
-        <View style={[styles.layer1]} className="pt-3">
-          <MaxWidthWrapper>
-            <View
-              className={classNames(
-                'px-2 py-3 mb-1 flex flex-row justify-between items-center',
-              )}
-              style={[styles.border_b, styles.border_t]}>
-              <View className="flex flex-row">
-                <Text className="text-xs pr-2" style={styles.text_desc}>
-                  {topic.replies} 条回复
-                </Text>
-                {topic.clicks && (
-                  <Text className="text-xs" style={styles.text_meta}>
-                    {topic.clicks} 次点击
-                  </Text>
-                )}
-              </View>
-            </View>
-          </MaxWidthWrapper>
-        </View>
-      )}
-
-      {/* <View className="bg-white p-4 mb-2">
-        <TagIcon size={18} color={'#444'} />
-      </View> */}
     </>
   )
 

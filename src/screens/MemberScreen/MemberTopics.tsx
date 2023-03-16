@@ -56,10 +56,11 @@ export default function MemberTopics(props: { username: string }) {
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
-      renderItem({ item }) {
+      renderItem({ item, index }) {
         return (
           <UserTopicRow
             data={item}
+            isLast={index === listItems.length - 1}
             viewedStatus={getViewedStatus(item)}
             showAvatar={settings.feedShowAvatar}
             showLastReplyMember={settings.feedShowLastReplyMember}
@@ -71,7 +72,7 @@ export default function MemberTopics(props: { username: string }) {
         return item?.id || `index-${index}`
       },
     }
-  }, [])
+  }, [listItems?.length])
 
   return (
     <>

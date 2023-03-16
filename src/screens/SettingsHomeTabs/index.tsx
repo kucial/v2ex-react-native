@@ -259,7 +259,7 @@ export default function HomeTabs(props: ScreenProps) {
   return (
     <>
       <NestableScrollContainer>
-        <MaxWidthWrapper className="px-4">
+        <MaxWidthWrapper className="px-2">
           <SectionHeader title="已启用" desc="长按拖放可调整顺序" />
           <GroupWapper>
             <NestableDraggableFlatList

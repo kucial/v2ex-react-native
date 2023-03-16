@@ -5,6 +5,7 @@ import { Image } from 'expo-image'
 
 import HtmlRender from '@/components/HtmlRender'
 import { Box } from '@/components/Skeleton/Elements'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { TopicDetail } from '@/utils/v2ex-client/types'
 
@@ -15,7 +16,12 @@ function TopicInfo(props: {
   const { data: topic, navigation } = props
   const { member, node } = topic
   const { width } = useWindowDimensions()
+  const {
+    data: { maxContainerWidth },
+  } = useAppSettings()
   const { styles } = useTheme()
+
+  const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
 
   return (
     <>
@@ -87,7 +93,7 @@ function TopicInfo(props: {
         <HtmlRender
           key={topic.content_rendered}
           navigation={navigation}
-          contentWidth={width - 32}
+          contentWidth={CONTAINER_WIDTH - 32}
           baseStyle={{
             fontSize: 16,
           }}
@@ -110,7 +116,7 @@ function TopicInfo(props: {
               <HtmlRender
                 key={subtle.content_rendered}
                 navigation={navigation}
-                contentWidth={width - 32}
+                contentWidth={CONTAINER_WIDTH - 32}
                 baseStyle={{
                   fontSize: 16,
                 }}

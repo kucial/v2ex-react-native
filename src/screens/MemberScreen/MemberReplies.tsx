@@ -10,20 +10,26 @@ import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 import { getMemberReplies } from '@/utils/v2ex-client'
 
 const MemberReplyRow = (props: RepliedFeedRowProps) => {
   const { width } = useWindowDimensions()
+  const {
+    data: { maxContainerWidth },
+  } = useAppSettings()
+  const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
+
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
-  const { data } = props
+  const { data, isLast } = props
   const { styles } = useTheme()
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
-        <View style={[styles.border_b_light]}>
+        <View style={!isLast && styles.border_b_light}>
           <View className="p-1">
             <View className="px-1 pb-1 pt-1 rounded-sm" style={styles.layer2}>
               <InlineText className="text-xs" width="80%"></InlineText>
@@ -39,7 +45,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
   }
   return (
     <MaxWidthWrapper style={styles.layer1}>
-      <View style={[styles.border_b_light]}>
+      <View style={!isLast && styles.border_b_light}>
         <View className="p-1">
           <View className="px-2 pb-1 pt-2" style={styles.layer2}>
             <View className="flex flex-row">
@@ -71,7 +77,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
           <HtmlRender
             key={data.reply_content_rendered}
             navigation={navigation}
-            contentWidth={width - 24}
+            contentWidth={CONTAINER_WIDTH - 24}
             source={{
               html: data.reply_content_rendered,
               baseUrl: 'https://v2ex.com',
@@ -116,13 +122,15 @@ export default function MemberReplies(props) {
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
       renderItem({ item, index }) {
-        return <MemberReplyRow data={item} />
+        return (
+          <MemberReplyRow data={item} isLast={index === listItems.length - 1} />
+        )
       },
       keyExtractor(item, index) {
         return item?.reply_content_rendered || index
       },
     }
-  }, [])
+  }, [listItems?.length])
 
   return (
     <FlashList

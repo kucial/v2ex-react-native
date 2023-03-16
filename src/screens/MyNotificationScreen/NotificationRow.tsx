@@ -7,6 +7,7 @@ import { Image } from 'expo-image'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { Notification } from '@/utils/v2ex-client/types'
 
@@ -19,6 +20,10 @@ const NotificationRow = (props: { data: Notification }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
   const { width } = useWindowDimensions()
+  const {
+    data: { maxContainerWidth },
+  } = useAppSettings()
+  const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
   const { styles } = useTheme()
   if (!data) {
     return (
@@ -213,7 +218,7 @@ const NotificationRow = (props: { data: Notification }) => {
               <HtmlRender
                 key={data.content_rendered}
                 navigation={navigation}
-                contentWidth={width - 24 - 8 - 8 - 8}
+                contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 8}
                 source={{
                   html: data.content_rendered,
                   baseUrl: 'https://v2ex.com',

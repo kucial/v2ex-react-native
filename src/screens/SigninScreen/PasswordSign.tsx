@@ -20,6 +20,7 @@ import BackButton from '@/components/BackButton'
 import GoogleIcon from '@/components/GoogleIcon'
 import Loader from '@/components/Loader'
 import { USER_AGENT } from '@/constants'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 
 import { checkAuthStatus, get2FASubmitCode } from './scripts'
@@ -112,6 +113,9 @@ type PasswordSigninProps = NativeStackScreenProps<
 function PasswordSignin(props: PasswordSigninProps) {
   const { navigation } = props
   const { theme, styles } = useTheme()
+  const {
+    data: { googleSigninEnabled },
+  } = useAppSettings()
   const [captchaImage, setCaptchaImage] = useState<CaptchaImage>()
   const webviewRef = useRef<WebView>(null)
   const nameInput = useRef<TextInput>(null)
@@ -354,18 +358,20 @@ function PasswordSignin(props: PasswordSigninProps) {
                 </View>
               )}
 
-              {/* <View className="mt-8">
-                <Pressable
-                  className="h-[44px] flex-row rounded-md items-center justify-center active:opacity-70"
-                  onPress={props.onSelectGoogleSignin}>
-                  <View className="mr-2">
-                    <GoogleIcon />
-                  </View>
-                  <View>
-                    <Text style={styles.text_desc}>谷歌登录</Text>
-                  </View>
-                </Pressable>
-              </View> */}
+              {googleSigninEnabled && (
+                <View className="mt-8">
+                  <Pressable
+                    className="h-[44px] flex-row rounded-md items-center justify-center active:opacity-70"
+                    onPress={props.onSelectGoogleSignin}>
+                    <View className="mr-2">
+                      <GoogleIcon />
+                    </View>
+                    <View>
+                      <Text style={styles.text_desc}>谷歌登录</Text>
+                    </View>
+                  </Pressable>
+                </View>
+              )}
 
               {/* <View className="h-[1px] w-full bg-neutral-100 mt-8 mb-4"></View>
               <Pressable

@@ -17,6 +17,8 @@ type AppSettings = {
   feedTitleStyle: 'normal' | 'emphasized'
   autoRefresh: boolean
   autoRefreshDuration: number // minutes
+
+  maxContainerWidth: number
 }
 
 type AppSettingsService = {

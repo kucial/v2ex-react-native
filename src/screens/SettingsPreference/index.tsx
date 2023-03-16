@@ -61,7 +61,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
 
   return (
     <SafeAreaView className="flex-1">
-      <ScrollView className="flex-1 px-4">
+      <ScrollView className="flex-1 px-2">
         <MaxWidthWrapper>
           <SectionHeader title="显示" />
           <GroupWapper>

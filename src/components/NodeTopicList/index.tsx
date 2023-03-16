@@ -74,33 +74,6 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     listSwr.mutate()
   }, [listSwr])
 
-  const { renderItem, keyExtractor } = useMemo(() => {
-    return {
-      renderItem({ item }) {
-        return settings.feedLayout === 'tide' ? (
-          <TideNodeTopicRow
-            data={item}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
-          />
-        ) : (
-          <NodeTopicRow
-            data={item}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
-          />
-        )
-      },
-      keyExtractor(item, index) {
-        return item?.id || `index-${index}`
-      },
-    }
-  }, [getViewedStatus, settings])
-
   useEffect(() => {
     if (
       isFocused &&
@@ -157,6 +130,35 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     }, [])
     return items || []
   }, [listSwr])
+
+  const { renderItem, keyExtractor } = useMemo(() => {
+    return {
+      renderItem({ item, index }) {
+        return settings.feedLayout === 'tide' ? (
+          <TideNodeTopicRow
+            data={item}
+            isLast={index === listItems.length - 1}
+            viewedStatus={getViewedStatus(item)}
+            showAvatar={settings.feedShowAvatar}
+            showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
+          />
+        ) : (
+          <NodeTopicRow
+            data={item}
+            isLast={index === listItems.length - 1}
+            viewedStatus={getViewedStatus(item)}
+            showAvatar={settings.feedShowAvatar}
+            showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
+          />
+        )
+      },
+      keyExtractor(item, index) {
+        return item?.id || `index-${index}`
+      },
+    }
+  }, [getViewedStatus, settings, listItems])
 
   return (
     <FlashList

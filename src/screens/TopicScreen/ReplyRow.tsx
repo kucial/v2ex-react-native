@@ -22,6 +22,7 @@ import MarkdownIcon from '@/components/MarkdownIcon'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
@@ -31,6 +32,7 @@ type ReplyRowProps = {
   data: TopicReply
   style?: ViewStyle
   isPivot?: boolean
+  isLast?: boolean
   navigation: NativeStackNavigationProp<AppStackParamList>
   hasConversation?: boolean
   onReply(data: TopicReply): void
@@ -41,8 +43,11 @@ type ReplyRowProps = {
 
 function ReplyRow(props: ReplyRowProps) {
   const { width } = useWindowDimensions()
-  const { navigation, showAvatar = true } = props
-  const { data, isPivot } = props
+  const {
+    data: { maxContainerWidth },
+  } = useAppSettings()
+  const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
+  const { data, isPivot, isLast, navigation, showAvatar = true } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
   const { theme, styles } = useTheme()
@@ -122,10 +127,10 @@ function ReplyRow(props: ReplyRowProps) {
 
   const { member } = data
   return (
-    <MaxWidthWrapper style={[props.style]}>
+    <MaxWidthWrapper style={props.style}>
       <View
         className={classNames('pt-2', isPivot && 'bg-yellow-700/5')}
-        style={[styles.border_b_light]}>
+        style={!isLast && styles.border_b_light}>
         <View className="flex flex-row pl-2">
           {showAvatar ? (
             <View className="mr-2">
@@ -239,7 +244,7 @@ function ReplyRow(props: ReplyRowProps) {
               <HtmlRender
                 key={data.id}
                 navigation={navigation}
-                contentWidth={width - 24 - 8 - 8 - 16}
+                contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 16}
                 source={{
                   html: showMarkdown
                     ? marked(data.content)

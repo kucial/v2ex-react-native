@@ -35,16 +35,20 @@ export default function CollectedTopicsScreen() {
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
-      renderItem({ item }) {
+      renderItem({ item, index }) {
         return (
-          <CollectedTopicRow data={item} titleStyle={settings.feedTitleStyle} />
+          <CollectedTopicRow
+            data={item}
+            titleStyle={settings.feedTitleStyle}
+            isLast={index === listItems.length - 1}
+          />
         )
       },
       keyExtractor(item, index) {
         return item?.id || `index-${index}`
       },
     }
-  }, [settings.feedTitleStyle])
+  }, [settings.feedTitleStyle, listItems.length])
 
   return (
     <FlashList

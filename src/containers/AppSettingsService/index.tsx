@@ -23,6 +23,8 @@ const DEFAULT_SETTINGS: AppSettings = {
 
   autoRefresh: true,
   autoRefreshDuration: 10,
+
+  maxContainerWidth: 600,
 }
 
 const AppSettingsContext = createContext<AppSettingsService>(

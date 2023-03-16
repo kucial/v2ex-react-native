@@ -5,7 +5,7 @@ import { useTheme } from '@/containers/ThemeService'
 export default function SectionHeader(props: { title: string; desc?: string }) {
   const { styles } = useTheme()
   return (
-    <View className="pt-4 pb-1 pl-4 flex flex-row items-end">
+    <View className="pt-4 pb-1 pl-3 flex flex-row items-end">
       <Text className="text-base font-medium" style={styles.text}>
         {props.title}
       </Text>

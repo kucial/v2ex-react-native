@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   Linking,
   Platform,
@@ -14,16 +15,35 @@ import { Image } from 'expo-image'
 
 import GithubIcon from '@/components/GithubIcon'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import { useAlertService } from '@/containers/AlertService'
+import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import storage from '@/utils/storage'
 
 export default function AboutScreen() {
   const { theme, styles } = useTheme()
+  const [count, setCount] = useState(0)
+  const settings = useAppSettings()
+  const alert = useAlertService()
+  useEffect(() => {
+    if (count === 3) {
+      settings.update((prev) => ({
+        ...prev,
+        googleSigninEnabled: true,
+      }))
+      alert.alertWithType('success', '哈哈', 'Google 登陆已启用')
+    }
+  }, [count])
   return (
     <SafeAreaView className="flex-1">
       <MaxWidthWrapper>
-        <View className="flex-1 px-4 pb-8 items-center justify-center">
-          <View className="w-full py-3 rounded-lg" style={styles.layer1}>
+        <View className="flex-1 px-2 pb-8 items-center justify-center">
+          <Pressable
+            className="w-full py-3 rounded-lg active:opacity-80"
+            style={styles.layer1}
+            onPress={() => {
+              setCount((prev) => prev + 1)
+            }}>
             <View className="my-2">
               <Text
                 className="text-2xl font-bold text-center"
@@ -73,7 +93,7 @@ export default function AboutScreen() {
                 <ArrowUpOnSquareIcon color={theme.colors.text} />
               </Pressable>
             </View>
-          </View>
+          </Pressable>
           <View className="py-2 w-full flex flex-row">
             <View className="basis-1/2 pr-2">
               <Pressable

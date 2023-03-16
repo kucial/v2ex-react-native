@@ -75,32 +75,6 @@ function FeedTopicList(props: FeedTopicListProps) {
     listSwr.mutate()
   }, [listSwr])
 
-  const { renderItem, keyExtractor } = useMemo(
-    () => ({
-      renderItem: ({ item }: { item: HomeTopicFeed }) =>
-        settings.feedLayout === 'tide' ? (
-          <TideTopicRow
-            data={item}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
-          />
-        ) : (
-          <TopicRow
-            data={item}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
-          />
-        ),
-      keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>
-        item ? `${item.id}` : `index-${index}`,
-    }),
-    [getViewedStatus, settings],
-  )
-
   useEffect(() => {
     if (
       isFocused &&
@@ -155,6 +129,34 @@ function FeedTopicList(props: FeedTopicListProps) {
     }, [])
     return items || []
   }, [listSwr])
+
+  const { renderItem, keyExtractor } = useMemo(
+    () => ({
+      renderItem: ({ item, index }) =>
+        settings.feedLayout === 'tide' ? (
+          <TideTopicRow
+            data={item}
+            isLast={index === listItems.length - 1}
+            viewedStatus={getViewedStatus(item)}
+            showAvatar={settings.feedShowAvatar}
+            showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
+          />
+        ) : (
+          <TopicRow
+            data={item}
+            isLast={index === listItems.length - 1}
+            viewedStatus={getViewedStatus(item)}
+            showAvatar={settings.feedShowAvatar}
+            showLastReplyMember={settings.feedShowLastReplyMember}
+            titleStyle={settings.feedTitleStyle}
+          />
+        ),
+      keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>
+        item ? `${item.id}` : `index-${index}`,
+    }),
+    [getViewedStatus, settings, listItems],
+  )
 
   return (
     <FlashList

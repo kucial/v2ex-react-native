@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useState } from 'react'
-import { Dimensions, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import {
   EllipsisHorizontalIcon,
   TrashIcon,
@@ -16,7 +16,6 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { ViewedTopic } from '@/utils/v2ex-client/types'
 
 import TideViewedTopicRow from './TideViewedTopicRow'
 import ViewedTopicRow from './ViewedTopicRow'
@@ -52,20 +51,34 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   const { data: settings } = useAppSettings()
   const { styles } = useTheme()
   const [filter, setFilter] = useState('')
+  const { width } = useWindowDimensions()
+
+  const data = useMemo(() => {
+    const all = getItems()
+    if (!filter) {
+      return all
+    }
+    const regex = new RegExp(filter, 'i')
+    return all.filter(
+      (item) => regex.test(item.title) || regex.test(item.content_rendered),
+    )
+  }, [filter, getItems])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item }: { item: ViewedTopic }) => {
+      renderItem: ({ item, index }) => {
         const inner =
           settings.feedLayout === 'tide' ? (
             <TideViewedTopicRow
               data={item}
+              isLast={index === data.length - 1}
               showAvatar={settings.feedShowAvatar}
               titleStyle={settings.feedTitleStyle}
             />
           ) : (
             <ViewedTopicRow
               data={item}
+              isLast={index === data.length - 1}
               showAvatar={settings.feedShowAvatar}
               titleStyle={settings.feedTitleStyle}
             />
@@ -87,29 +100,15 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
       },
       keyExtractor: (item) => item.id,
     }),
-    [settings.feedLayout, settings.feedShowAvatar, getItems, removeItem],
+    [settings.feedLayout, settings.feedShowAvatar, data, removeItem],
   )
 
-  const data = useMemo(() => {
-    const all = getItems()
-    if (!filter) {
-      return all
-    }
-    const regex = new RegExp(filter, 'i')
-    return all.filter(
-      (item) => regex.test(item.title) || regex.test(item.content_rendered),
-    )
-  }, [filter, getItems])
-
   useLayoutEffect(() => {
-    console.log()
     navigation.setOptions({
       headerRight: (props) => (
         <Pressable
           className="h-[44px] w-[44px] items-center justify-center active:opacity-60"
-          style={
-            Dimensions.get('window').width < 750 ? { marginRight: -16 } : null
-          }
+          style={width < 750 ? { marginRight: -16 } : null}
           onPress={() => {
             // actionsheet
             showActionSheetWithOptions(

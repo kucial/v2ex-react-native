@@ -9,7 +9,7 @@ import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 
 const CollectedTopicRow = (props: CollectedTopicRowProps) => {
-  const { data } = props
+  const { data, isLast } = props
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
 
@@ -20,7 +20,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
       <MaxWidthWrapper style={styles.layer1}>
         <View
           className="flex flex-row items-center p-2"
-          style={[styles.border_b_light]}>
+          style={!isLast && styles.border_b_light}>
           <View className="self-start">
             <Box className="w-[24px] h-[24px] rounded" />
           </View>
@@ -44,7 +44,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
     <MaxWidthWrapper style={styles.layer1}>
       <Pressable
         className="flex flex-row items-center p-2 active:opacity-60"
-        style={[styles.border_b_light]}
+        style={!isLast && styles.border_b_light}
         onPress={() => {
           if (data) {
             navigation.push('topic', {

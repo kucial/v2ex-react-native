@@ -61,7 +61,7 @@ export default function ImgurSettings(props: ScreenProps) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}>
       <MaxWidthWrapper>
-        <View className="p-4">
+        <View className="px-2 py-4">
           <GroupWapper style={styles.layer1} className="p-4">
             <View className="flex flex-row justify-center mt-2 mb-3">
               <ImgurLogo
