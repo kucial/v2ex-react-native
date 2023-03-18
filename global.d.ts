@@ -9,6 +9,7 @@ declare global {
   type IconProps = {
     size?: number
     color?: string | ColorValue
+    style?: ViewProps
   }
 }
 

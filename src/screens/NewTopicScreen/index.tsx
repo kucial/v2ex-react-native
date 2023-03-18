@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native'
 import WebView from 'react-native-webview'
-import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet'
+import type { BottomSheetModal } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { addBreadcrumb, captureMessage } from '@sentry/react-native'
 import classNames from 'classnames'
@@ -21,6 +21,7 @@ import KeyboardAwareView from '@/components/KeyboardAwareView'
 import KeyboardDismiss from '@/components/KeyboardDismiss'
 import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import {
   EditorImagePicker,
   EditorProvider,
@@ -38,17 +39,6 @@ import NodeSelect from './NodeSelect'
 const VISIBLE_BOTTOM_OFFSET = 85
 
 const pickerSnapPoints = ['90%']
-
-const renderBackdrop = (props) => {
-  return (
-    <BottomSheetBackdrop
-      {...props}
-      appearsOnIndex={0}
-      disappearsOnIndex={-1}
-      pressBehavior="close"
-    />
-  )
-}
 
 type NewTopicScreenProps = NativeStackScreenProps<
   AppStackParamList,
@@ -288,15 +278,10 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                 />
               </View>
             </MaxWidthWrapper>
-            <BottomSheetModal
+            <MyBottomSheetModal
               ref={pickerModalRef}
               index={0}
               snapPoints={pickerSnapPoints}
-              backdropComponent={renderBackdrop}
-              backgroundStyle={styles.overlay}
-              handleIndicatorStyle={{
-                backgroundColor: theme.colors.bts_handle_bg,
-              }}
               onDismiss={() => {
                 showImagePicker(false)
                 editorRef.current?.focus()
@@ -315,7 +300,7 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                   }}
                 />
               )}
-            </BottomSheetModal>
+            </MyBottomSheetModal>
           </EditorProvider>
         </SafeAreaView>
       </KeyboardAwareView>

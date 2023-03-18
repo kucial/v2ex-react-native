@@ -1,7 +1,6 @@
 import { forwardRef, useCallback, useMemo, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import {
-  BottomSheetBackdrop,
   BottomSheetFlatList,
   BottomSheetModal,
   BottomSheetTextInput,
@@ -9,6 +8,7 @@ import {
 import classNames from 'classnames'
 import useSWR from 'swr'
 
+import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import { useTheme } from '@/containers/ThemeService'
 import { getNodes } from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
@@ -16,16 +16,6 @@ import { HomeTabOption } from '@/utils/v2ex-client/types'
 import TypeIcon from './TypeIcon'
 
 const pickerSnapPoints = ['35%', '85%']
-const renderBackdrop = (props) => {
-  return (
-    <BottomSheetBackdrop
-      {...props}
-      appearsOnIndex={0}
-      disappearsOnIndex={-1}
-      pressBehavior="close"
-    />
-  )
-}
 
 type Props = {
   extraItems?: HomeTabOption[]
@@ -123,15 +113,10 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
   )
 
   return (
-    <BottomSheetModal
+    <MyBottomSheetModal
       ref={ref}
       index={index}
       snapPoints={pickerSnapPoints}
-      backdropComponent={renderBackdrop}
-      backgroundStyle={styles.overlay}
-      handleIndicatorStyle={{
-        backgroundColor: theme.colors.bts_handle_bg,
-      }}
       onDismiss={() => {
         setIndex(1)
       }}>
@@ -167,7 +152,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
           ListHeaderComponent={header}
         />
       </View>
-    </BottomSheetModal>
+    </MyBottomSheetModal>
   )
 })
 

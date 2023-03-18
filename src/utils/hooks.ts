@@ -1,6 +1,9 @@
 import { SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import { useWindowDimensions } from 'react-native'
 import { debounce } from 'lodash'
 import * as Sentry from 'sentry-expo'
+
+import { APP_SIDEBAR_WIDTH, CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
 
 import { getJSON, setJSON } from './storage'
 
@@ -76,4 +79,9 @@ export const usePressBreadcrumb = (
     },
     [func],
   )
+}
+
+export const usePadLayout = () => {
+  const { width } = useWindowDimensions()
+  return width > CONTENT_CONTAINER_MAX_WIDTH + APP_SIDEBAR_WIDTH
 }

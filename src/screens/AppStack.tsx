@@ -1,9 +1,10 @@
-import { Platform, View } from 'react-native'
+import { Platform, SafeAreaView, View } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { headerLeft } from '@/components/BackButton'
 import { useTheme } from '@/containers/ThemeService'
 import { isPad } from '@/utils/device'
+import { usePadLayout } from '@/utils/hooks'
 
 import AboutScreen from './AboutScreen'
 import BrowserScreen from './BrowserScreen'
@@ -45,6 +46,8 @@ function AppStack() {
   const { theme, styles } = useTheme()
   const tintColor = theme.colors.primary
 
+  const padLayout = usePadLayout()
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -64,7 +67,7 @@ function AppStack() {
           )
         },
       }}>
-      <Stack.Screen
+      {/* <Stack.Screen
         name="main"
         component={MainTab}
         options={{
@@ -72,15 +75,35 @@ function AppStack() {
           headerTransparent: true,
           headerBackground: transparentHeaderBackground,
         }}
-      />
-      {/* {isPad ? (
-        <Stack.Group
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name="home" component={HomeScreen} />
-          <Stack.Screen name="nodes" component={NodesScreen} />
-          <Stack.Screen name="my" component={MyScreen} />
+      /> */}
+      {padLayout ? (
+        <Stack.Group>
+          <Stack.Screen
+            name="feed"
+            component={HomeScreen}
+            options={{
+              headerBackground: null,
+              header() {
+                return (
+                  <SafeAreaView style={styles.layer1} className="min-h-[30]" />
+                )
+              },
+            }}
+          />
+          <Stack.Screen
+            name="nodes"
+            component={NodesScreen}
+            options={{
+              title: '节点',
+            }}
+          />
+          <Stack.Screen
+            name="my"
+            component={MyScreen}
+            options={{
+              title: '我的',
+            }}
+          />
         </Stack.Group>
       ) : (
         <Stack.Screen
@@ -92,7 +115,7 @@ function AppStack() {
             headerBackground: transparentHeaderBackground,
           }}
         />
-      )} */}
+      )}
       <Stack.Group>
         <Stack.Screen
           name="search"

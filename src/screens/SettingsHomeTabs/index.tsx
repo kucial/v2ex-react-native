@@ -261,7 +261,7 @@ export default function HomeTabs(props: ScreenProps) {
       <NestableScrollContainer>
         <MaxWidthWrapper className="px-2">
           <SectionHeader title="已启用" desc="长按拖放可调整顺序" />
-          <GroupWapper>
+          <GroupWapper style={{ marginRight: 36 }}>
             <NestableDraggableFlatList
               data={enabledTabs}
               onDragEnd={({ data }) => setTabs([...data, ...disabledTabs])}
@@ -272,7 +272,7 @@ export default function HomeTabs(props: ScreenProps) {
             />
           </GroupWapper>
           <SectionHeader title="已停用" />
-          <GroupWapper>
+          <GroupWapper style={{ marginRight: 36 }}>
             {disabledTabs.length ? (
               <NestableDraggableFlatList
                 data={disabledTabs}

@@ -18,8 +18,10 @@ type Props = {
 export default function ErrorNoticeView(props: Props) {
   const { theme, styles } = useTheme()
   return (
-    <SafeAreaView className="flex-1" style={styles.layer1}>
-      <View className="px-4">
+    <SafeAreaView
+      className="flex-1 items-center justify-center"
+      style={styles.layer1}>
+      <View className="px-4 pb-8">
         <View className="pt-[48px]">
           <View className="flex flex-row mb-8">
             <InformationCircleIcon

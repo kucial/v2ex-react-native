@@ -2,33 +2,19 @@ import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Keyboard, Pressable, Text, View } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/outline'
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetTextInput,
-} from '@gorhom/bottom-sheet'
+import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import classNames from 'classnames'
 import { encode } from 'js-base64'
 import colors from 'tailwindcss/colors'
 
 import ImgurPicker from '@/components/ImgurPicker'
+import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
 const pickerSnapPoints = ['90%']
-
-const renderBackdrop = (props) => {
-  return (
-    <BottomSheetBackdrop
-      {...props}
-      appearsOnIndex={0}
-      disappearsOnIndex={-1}
-      pressBehavior="close"
-    />
-  )
-}
 
 type TextSelection = {
   start: number
@@ -62,6 +48,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
       if (cache) {
         return cache
       }
+      console.log(context.target)
       return {
         content: context.target ? `@${context.target.member.username} ` : '',
       }
@@ -183,15 +170,10 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
             </Text>
           </Pressable>
         </View>
-        <BottomSheetModal
+        <MyBottomSheetModal
           ref={pickerRef}
           index={0}
           snapPoints={pickerSnapPoints}
-          backdropComponent={renderBackdrop}
-          backgroundStyle={styles.overlay}
-          handleIndicatorStyle={{
-            backgroundColor: theme.colors.bts_handle_bg,
-          }}
           onDismiss={() => {
             showImagePicker(false)
           }}>
@@ -213,7 +195,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
               }}
             />
           )}
-        </BottomSheetModal>
+        </MyBottomSheetModal>
       </View>
     </View>
   )

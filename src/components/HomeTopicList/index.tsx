@@ -56,6 +56,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       revalidateOnFocus: false,
       shouldRetryOnError: false,
       onError(err: Error) {
+        console.log(err.message)
         alert.alertWithType('error', '错误', err.message || '请求资源失败')
       },
     },

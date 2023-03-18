@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from 'react'
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import {
-  Bars3Icon,
   ChatBubbleLeftEllipsisIcon,
   ClockIcon,
   Cog6ToothIcon,
   DocumentPlusIcon,
+  HomeIcon,
   InformationCircleIcon,
   PhotoIcon,
   StarIcon,
@@ -196,7 +196,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
         <LineItemGroup className="mx-2 my-2">
           <LineItem
             title="主题标签设置"
-            icon={<Bars3Icon size={22} color={iconColor} />}
+            icon={<HomeIcon size={22} color={iconColor} />}
             onPress={() => {
               navigation.push('home-tab-settings')
             }}

@@ -12,7 +12,7 @@ import Constants from 'expo-constants'
 
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
-import { usePressBreadcrumb } from '@/utils/hooks'
+import { usePadLayout, usePressBreadcrumb } from '@/utils/hooks'
 
 export default function MainScreenHeader(
   props: BottomTabHeaderProps &
@@ -23,6 +23,7 @@ export default function MainScreenHeader(
   const { navigation, options } = props
   const { composeAuthedNavigation, meta } = useAuthService()
   const { theme, styles } = useTheme()
+  const padLayout = usePadLayout()
   const handleNewTopicPress = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
@@ -87,39 +88,41 @@ export default function MainScreenHeader(
         </View>
       </View>
 
-      <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">
-        <Pressable
-          className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-          onPress={handleNewTopicPress}>
-          <DocumentPlusIcon size={24} color={iconColor} />
-        </Pressable>
-        <Pressable
-          className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-          onPress={handleNotificationPress}>
-          <View className="relative w-[24px] h-[24px]">
-            <EnvelopeIcon size={24} color={iconColor} />
-            {!!meta?.unread_count && (
-              <View className="absolute bg-neutral-700 top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-white border-solid">
-                <Text className="text-white text-[10px]">
-                  {meta.unread_count}
-                </Text>
-              </View>
-            )}
-          </View>
-        </Pressable>
+      {!padLayout && (
+        <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">
+          <Pressable
+            className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+            onPress={handleNewTopicPress}>
+            <DocumentPlusIcon size={24} color={iconColor} />
+          </Pressable>
+          <Pressable
+            className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+            onPress={handleNotificationPress}>
+            <View className="relative w-[24px] h-[24px]">
+              <EnvelopeIcon size={24} color={iconColor} />
+              {!!meta?.unread_count && (
+                <View className="absolute bg-neutral-700 top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-white border-solid">
+                  <Text className="text-white text-[10px]">
+                    {meta.unread_count}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </Pressable>
 
-        <Pressable
-          className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-          onPress={handleSearchButtonPress}>
-          <MagnifyingGlassIcon size={24} color={iconColor} />
-        </Pressable>
+          <Pressable
+            className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+            onPress={handleSearchButtonPress}>
+            <MagnifyingGlassIcon size={24} color={iconColor} />
+          </Pressable>
 
-        <Pressable
-          className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-          onPress={handleViewedTopicButtonPress}>
-          <ClockIcon size={24} color={iconColor} />
-        </Pressable>
-      </View>
+          <Pressable
+            className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+            onPress={handleViewedTopicButtonPress}>
+            <ClockIcon size={24} color={iconColor} />
+          </Pressable>
+        </View>
+      )}
     </View>
   )
 }

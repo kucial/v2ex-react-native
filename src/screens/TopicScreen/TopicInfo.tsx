@@ -4,9 +4,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Image } from 'expo-image'
 
 import HtmlRender from '@/components/HtmlRender'
-import { Box } from '@/components/Skeleton/Elements'
+import { BlockText, Box } from '@/components/Skeleton/Elements'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { usePadLayout } from '@/utils/hooks'
 import { TopicDetail } from '@/utils/v2ex-client/types'
 
 function TopicInfo(props: {
@@ -20,6 +21,8 @@ function TopicInfo(props: {
     data: { maxContainerWidth },
   } = useAppSettings()
   const { styles } = useTheme()
+
+  const padLayout = usePadLayout()
 
   const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
 
@@ -93,7 +96,7 @@ function TopicInfo(props: {
         <HtmlRender
           key={topic.content_rendered}
           navigation={navigation}
-          contentWidth={CONTAINER_WIDTH - 32}
+          contentWidth={padLayout ? CONTAINER_WIDTH : CONTAINER_WIDTH - 32}
           baseStyle={{
             fontSize: 16,
           }}
@@ -103,6 +106,7 @@ function TopicInfo(props: {
           }}
         />
       )}
+      {topic.content_rendered === undefined && <BlockText lines={5} />}
       {!!topic.subtles?.length && (
         <View className="mt-2">
           {topic.subtles.map((subtle, index) => (

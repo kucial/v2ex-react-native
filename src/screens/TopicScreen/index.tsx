@@ -7,32 +7,11 @@ import {
   useRef,
   useState,
 } from 'react'
-import {
-  Linking,
-  Pressable,
-  SafeAreaView,
-  Share,
-  Text,
-  View,
-} from 'react-native'
-import { Keyboard } from 'react-native'
-import {
-  EllipsisHorizontalIcon,
-  HeartIcon,
-  ShareIcon,
-  StarIcon,
-} from 'react-native-heroicons/outline'
-import {
-  HeartIcon as FilledHeartIcon,
-  StarIcon as FilledStarIcon,
-} from 'react-native-heroicons/solid'
+import { Linking, Pressable, Share, Text, View } from 'react-native'
+import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetScrollView,
-} from '@gorhom/bottom-sheet'
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
@@ -44,6 +23,7 @@ import useSWRInfinite from 'swr/infinite'
 import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import { BlockText } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
@@ -52,15 +32,18 @@ import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { usePadLayout } from '@/utils/hooks'
 import { useScrollDirection } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
 import { isLoading, isRefreshing, shouldLoadMore } from '@/utils/swr'
 import * as v2exClient from '@/utils/v2ex-client'
 import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
 
+import BottomBar from './BottomBar'
 import Conversation from './Conversation'
+import PadSidebar from './PadSidebar'
 import ReplyRow from './ReplyRow'
-import ScrollControl, { ScrollControlApi } from './ScrollControl'
+import { ScrollControlApi } from './ScrollControl'
 import TopicInfo from './TopicInfo'
 import TopicReplyForm from './TopicReplyForm'
 
@@ -70,20 +53,6 @@ const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
 
 const replyModalSnapPoints = ['25%']
 const conversationSnapPoints = ['60%', '90%']
-
-const renderBackdrop = (props) => {
-  return (
-    <BottomSheetBackdrop
-      {...props}
-      appearsOnIndex={0}
-      disappearsOnIndex={-1}
-      pressBehavior="close"
-      onPress={() => {
-        Keyboard.dismiss()
-      }}
-    />
-  )
-}
 
 const hasRelatedMessages = (reply, replyList) => {
   if (!reply) {
@@ -178,26 +147,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     params: { brief, id },
   } = route
 
-  const { showActionSheetWithOptions } = useActionSheet()
-  const alert = useAlertService()
-  const { touchViewed } = useViewedTopics()
-
-  const [conversationContext, setConversationContext] = useState(null)
-  const { data: settings } = useAppSettings()
-
-  const listRef = useRef<FlashList<TopicReply>>()
-  const replyModalRef = useRef<BottomSheetModal>()
-  const conversationModalRef = useRef<BottomSheetModal>()
-  const { composeAuthedNavigation } = useAuthService()
-  const aIndicator = useActivityIndicator()
-  const scrollControlRef = useRef<ScrollControlApi>(null)
-
-  const { theme, styles } = useTheme()
-
-  const iconColor = theme.colors.text_meta
-  const collectActiveColor = theme.colors.icon_collected_bg
-  const likedActiveColor = theme.colors.icon_liked_bg
-
   const topicSwr = useSWR(
     [`/page/t/:id/topic.json`, id],
     async ([_, id]) => {
@@ -215,11 +164,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const topic = topicSwr.data || (brief as TopicDetail)
   const isFallback = topic === brief
 
-  useEffect(() => {
-    if (!topicSwr.data) {
-      topicSwr.mutate()
-    }
-  }, [])
+  const { touchViewed } = useViewedTopics()
 
   const listSwr = useSWRInfinite(
     useCallback(
@@ -256,6 +201,23 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       },
     },
   )
+
+  const { showActionSheetWithOptions } = useActionSheet()
+  const alert = useAlertService()
+
+  const [conversationContext, setConversationContext] = useState(null)
+  const { data: settings } = useAppSettings()
+  const padLayout = usePadLayout()
+
+  const listRef = useRef<FlashList<TopicReply>>()
+  const replyModalRef = useRef<BottomSheetModal>()
+  const conversationModalRef = useRef<BottomSheetModal>()
+  const scrollControlRef = useRef<ScrollControlApi>(null)
+
+  const { composeAuthedNavigation } = useAuthService()
+  const aIndicator = useActivityIndicator()
+
+  const { theme, styles } = useTheme()
 
   const replyItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
@@ -435,6 +397,26 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         })
     }, [id, topic?.thanked]),
   )
+
+  const handleShare = useCallback(async () => {
+    try {
+      const result = await Share.share({
+        message: topic.title || `https://v2ex.com/t/${topic.id}`,
+        url: `https://v2ex.com/t/${topic.id}`,
+      })
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      console.log(error.message)
+    }
+  }, [topic])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -714,68 +696,75 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const baseContent = (
     <>
-      <View className="pt-3 px-4" style={[styles.layer1]}>
+      <View className="pt-3" style={[styles.layer1]}>
         <MaxWidthWrapper>
-          <TopicInfo data={topic} navigation={navigation} />
-          {!topicSwr.data && topicSwr.error && !isLoading(topicSwr) && (
-            <ErrorNotice
-              error={topicSwr.error}
-              extra={
-                <View className="mt-2 flex flex-row justify-center">
-                  <Pressable
-                    className={classNames(
-                      'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
-                      'active:opacity-60',
-                    )}
-                    style={[styles.btn_primary__bg]}
-                    onPress={() => {
-                      topicSwr.mutate()
-                    }}>
-                    <Text style={styles.btn_primary__text}>重试</Text>
-                  </Pressable>
-                </View>
-              }
-            />
-          )}
-          {isFallback && isLoading(topicSwr) && (
-            <View className="mt-1">
-              <BlockText lines={[5, 10]} />
-            </View>
-          )}
-          {topic.canAppend && (
-            <View className="flex flex-row justify-end relative bottom-[-6px]">
-              <Pressable
-                className="px-3 h-[36px] rounded items-center justify-center active:opacity-60"
-                style={styles.layer2}
-                onPress={() => {
-                  setReplyContext({
-                    type: 'append',
-                  })
-                  replyModalRef.current?.present()
-                }}>
-                <Text style={styles.text}>附言</Text>
-              </Pressable>
-            </View>
-          )}
+          <View
+            className={classNames({
+              'px-4': !padLayout,
+              'mb-2': !!replyItems?.length,
+            })}
+            style={replyItems?.length && styles.border_b}>
+            <TopicInfo data={topic} navigation={navigation} />
+            {!topicSwr.data && topicSwr.error && !isLoading(topicSwr) && (
+              <ErrorNotice
+                error={topicSwr.error}
+                extra={
+                  <View className="mt-2 flex flex-row justify-center">
+                    <Pressable
+                      className={classNames(
+                        'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
+                        'active:opacity-60',
+                      )}
+                      style={[styles.btn_primary__bg]}
+                      onPress={() => {
+                        topicSwr.mutate()
+                      }}>
+                      <Text style={styles.btn_primary__text}>重试</Text>
+                    </Pressable>
+                  </View>
+                }
+              />
+            )}
+            {isFallback && isLoading(topicSwr) && (
+              <View className="mt-1">
+                <BlockText lines={[5, 10]} />
+              </View>
+            )}
+            {topic.canAppend && (
+              <View className="flex flex-row justify-end relative bottom-[-6px]">
+                <Pressable
+                  className="px-3 h-[36px] rounded items-center justify-center active:opacity-60"
+                  style={styles.layer2}
+                  onPress={() => {
+                    setReplyContext({
+                      type: 'append',
+                    })
+                    replyModalRef.current?.present()
+                  }}>
+                  <Text style={styles.text}>附言</Text>
+                </Pressable>
+              </View>
+            )}
 
-          {(!!topic.replies || !!topic.clicks) && (
-            <View
-              className="flex flex-row py-3 pl-1 mt-3"
-              style={[styles.border_t, replyItems?.length && styles.border_b]}>
-              <Text className="text-xs pr-4" style={styles.text_desc}>
-                {topic.replies} 条回复
-              </Text>
-              {topic.clicks && (
-                <Text className="text-xs" style={styles.text_meta}>
-                  {topic.clicks} 次点击
+            {(!!topic.replies || !!topic.clicks) && (
+              <View className="flex flex-row py-3 pl-1 mt-3">
+                <Text className="text-xs pr-4" style={styles.text_desc}>
+                  {topic.replies} 条回复
                 </Text>
-              )}
-            </View>
-          )}
+                {topic.clicks && (
+                  <Text className="text-xs" style={styles.text_meta}>
+                    {topic.clicks} 次点击
+                  </Text>
+                )}
+              </View>
+            )}
+          </View>
         </MaxWidthWrapper>
       </View>
     </>
   )
+
+  const BarComponent = padLayout ? PadSidebar : BottomBar
 
   return (
     <>
@@ -803,98 +792,22 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         onScroll={handleScroll}
         scrollEventThrottle={16}
       />
-      <SafeAreaView
-        className="u-absolute bottom-0 left-0 w-full"
-        style={[styles.overlay, styles.border_t_light]}>
-        <View className="h-[48px] flex flex-row items-center pl-3 pr-1">
-          <View className="flex-1 mr-2">
-            <Pressable
-              hitSlop={5}
-              className="h-[32px] w-full justify-center px-3 rounded-full active:opacity-60"
-              style={styles.overlay_input__bg}
-              onPress={() => {
-                initReply()
-              }}>
-              <Text className="text-sm" style={styles.text_placeholder}>
-                发表评论
-              </Text>
-            </Pressable>
-          </View>
-          <ScrollControl
-            ref={scrollControlRef}
-            max={topic.replies}
-            onNavTo={handleNavTo}
-          />
-          <View className="flex flex-row px-1">
-            <Pressable
-              className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-              onPress={handleToggleCollect}>
-              <View className="my-1">
-                {topic.collected ? (
-                  <FilledStarIcon size={24} color={collectActiveColor} />
-                ) : (
-                  <StarIcon size={24} color={iconColor} />
-                )}
-              </View>
-              <Text className="text-[10px]" style={styles.text_meta}>
-                收藏
-              </Text>
-            </Pressable>
-            <Pressable
-              className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-              onPress={handleThankTopic}>
-              <View className="my-1">
-                {topic.thanked ? (
-                  <FilledHeartIcon size={24} color={likedActiveColor} />
-                ) : (
-                  <HeartIcon size={24} color={iconColor} />
-                )}
-              </View>
-              <Text className="text-[10px]" style={styles.text_meta}>
-                感谢
-              </Text>
-            </Pressable>
-            <Pressable
-              className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-              disabled={!topicSwr.data}
-              onPress={async () => {
-                try {
-                  const result = await Share.share({
-                    message: topic.title,
-                    url: `https://v2ex.com/t/${topic.id}`,
-                  })
-                  if (result.action === Share.sharedAction) {
-                    if (result.activityType) {
-                      // shared with activity type of result.activityType
-                    } else {
-                      // shared
-                    }
-                  } else if (result.action === Share.dismissedAction) {
-                    // dismissed
-                  }
-                } catch (error) {
-                  console.log(error.message)
-                }
-              }}>
-              <View className="my-1">
-                <ShareIcon size={24} color={iconColor} />
-              </View>
-              <Text className="text-[10px]" style={styles.text_meta}>
-                分享
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-      </SafeAreaView>
-      <BottomSheetModal
+      <BarComponent
+        onInitReply={initReply}
+        scrollControlRef={scrollControlRef}
+        repliesCount={topic.replies}
+        onNavTo={handleNavTo}
+        collected={topic.collected}
+        onToggleCollect={handleToggleCollect}
+        thanked={topic.thanked}
+        onThankTopic={handleThankTopic}
+        onShare={handleShare}
+      />
+
+      <MyBottomSheetModal
         ref={conversationModalRef}
         index={0}
-        snapPoints={conversationSnapPoints}
-        backdropComponent={renderBackdrop}
-        backgroundStyle={styles.overlay}
-        handleIndicatorStyle={{
-          backgroundColor: theme.colors.bts_handle_bg,
-        }}>
+        snapPoints={conversationSnapPoints}>
         {conversationContext && (
           <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
             <Conversation
@@ -907,16 +820,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             />
           </BottomSheetScrollView>
         )}
-      </BottomSheetModal>
-      <BottomSheetModal
+      </MyBottomSheetModal>
+      <MyBottomSheetModal
         ref={replyModalRef}
         index={0}
-        snapPoints={replyModalSnapPoints}
-        backdropComponent={renderBackdrop}
-        backgroundStyle={styles.overlay}
-        handleIndicatorStyle={{
-          backgroundColor: theme.colors.bts_handle_bg,
-        }}>
+        snapPoints={replyModalSnapPoints}>
         {replyContext && (
           <TopicReplyForm
             cacheKey={getReplyFormCacheKey(replyContext)}
@@ -930,7 +838,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             }}
           />
         )}
-      </BottomSheetModal>
+      </MyBottomSheetModal>
     </>
   )
 }

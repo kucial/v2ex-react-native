@@ -1,81 +1,108 @@
-import { Pressable, SafeAreaView, Text, View } from 'react-native'
+import { ReactNode } from 'react'
+import { SafeAreaView, View } from 'react-native'
 import {
+  ClockIcon,
+  DocumentPlusIcon,
   HomeIcon,
+  MagnifyingGlassIcon,
   RectangleStackIcon,
   UserIcon,
 } from 'react-native-heroicons/outline'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
-import classNames from 'classnames'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import { useCurrentRoute } from '@/containers/NavigationContainer'
 import { useTheme } from '@/containers/ThemeService'
 
-export default function AppSidebar() {
+import AppSidebarButton from './AppSidebarButton'
+
+export default function AppSidebar(props: { dynamic: ReactNode }) {
   const { theme, styles } = useTheme()
   const currentRoute = useCurrentRoute()
-  const navigation = useNavigation()
-  console.log(currentRoute, navigation)
+  const navigation = useNavigation<
+    NativeStackNavigationProp<AppStackParamList> &
+      BottomTabNavigationProp<MainTabParamList>
+  >()
+
+  const currentRouteName = currentRoute?.name
 
   return (
     <SafeAreaView
       className="flex-1 flex flex-column"
       style={[styles.border_r_light]}>
-      <View className="h-[200]">
-        <Text>Dynamic center</Text>
+      <View className="items-center pt-3">
+        <AppSidebarButton
+          isActive={currentRouteName == 'feed'}
+          label="主题"
+          activeColor={theme.colors.primary}
+          staticColor={theme.colors.text_desc}
+          Icon={HomeIcon}
+          onPress={() => {
+            navigation.navigate('feed')
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'feed',
+                },
+              ],
+            })
+          }}
+        />
+        <AppSidebarButton
+          isActive={currentRouteName == 'nodes'}
+          label="节点"
+          activeColor={theme.colors.primary}
+          staticColor={theme.colors.text_desc}
+          Icon={RectangleStackIcon}
+          onPress={() => {
+            navigation.navigate('nodes')
+          }}
+        />
+        <AppSidebarButton
+          isActive={currentRouteName == 'my'}
+          label="我的"
+          activeColor={theme.colors.primary}
+          staticColor={theme.colors.text_desc}
+          Icon={UserIcon}
+          onPress={() => {
+            navigation.navigate('my')
+          }}
+        />
+        <AppSidebarButton
+          isActive={currentRouteName == 'search'}
+          label="搜索"
+          activeColor={theme.colors.primary}
+          staticColor={theme.colors.text_desc}
+          Icon={MagnifyingGlassIcon}
+          onPress={() => {
+            navigation.navigate('search')
+          }}
+        />
+        <AppSidebarButton
+          isActive={currentRouteName == 'viewed-topics'}
+          label="历史"
+          activeColor={theme.colors.primary}
+          staticColor={theme.colors.text_desc}
+          Icon={ClockIcon}
+          onPress={() => {
+            navigation.navigate('viewed-topics')
+          }}
+        />
+        <AppSidebarButton
+          isActive={currentRouteName == 'new-topic'}
+          label="新主题"
+          activeColor={theme.colors.primary}
+          staticColor={theme.colors.text_desc}
+          Icon={DocumentPlusIcon}
+          onPress={() => {
+            navigation.navigate('new-topic')
+          }}
+        />
       </View>
 
-      <View className="w-full absolute bottom-0  items-center pb-12">
-        <Pressable
-          style={styles.layer1}
-          className={classNames(
-            'w-[52px] h-[52px] rounded-lg items-center justify-center mb-3',
-            'active:opacity-50 active:bg-neutral-100 dark:active:bg-neutral-600',
-          )}
-          onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'nodes' }],
-            })
-            // navigation...
-          }}>
-          <RectangleStackIcon color={theme.colors.primary} />
-          <Text
-            className={classNames(
-              'text-[10px] mt-1',
-              currentRoute?.name === 'nodes' && 'font-bold',
-            )}>
-            节点
-          </Text>
-        </Pressable>
-        <Pressable
-          className="w-[52px] h-[52px] rounded-lg items-center justify-center mb-3"
-          onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'home' }],
-            })
-          }}>
-          <HomeIcon color={theme.colors.primary} />
-          <Text
-            className={classNames(
-              'text-[10px] mt-1',
-              currentRoute?.name === 'home' && 'font-bold',
-            )}>
-            主页
-          </Text>
-        </Pressable>
-        <Pressable
-          className="w-[52px] h-[52px] rounded-lg items-center justify-center"
-          onPress={() => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'my' }],
-            })
-          }}>
-          <UserIcon color={theme.colors.primary} />
-          <Text className="text-[10px] mt-1">我的</Text>
-        </Pressable>
-      </View>
+      {props.dynamic}
     </SafeAreaView>
   )
 }

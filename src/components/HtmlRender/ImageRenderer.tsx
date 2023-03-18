@@ -91,7 +91,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
     return (
       <Pressable
         className={classNames(
-          'py-1 active:opacity-50 w-full overflow-hidden',
+          'py-1 active:opacity-50 w-full items-center overflow-hidden',
           containerWidth === Infinity ? 'opacity-0' : 'opacity-100',
         )}
         onPress={() => {

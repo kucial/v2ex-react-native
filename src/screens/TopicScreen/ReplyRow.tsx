@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import {
   Pressable,
   Text,
@@ -336,4 +336,4 @@ function ReplyRow(props: ReplyRowProps) {
   )
 }
 
-export default ReplyRow
+export default memo(ReplyRow)

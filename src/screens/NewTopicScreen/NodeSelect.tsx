@@ -1,30 +1,17 @@
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, TextStyle, View, ViewStyle } from 'react-native'
-import {
-  BottomSheetBackdrop,
-  BottomSheetModal,
-  BottomSheetTextInput,
-} from '@gorhom/bottom-sheet'
+import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import { styled } from 'nativewind'
 import useSWR from 'swr'
 
+import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import { useTheme } from '@/containers/ThemeService'
 import { getNodes } from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
 
 const pickerSnapPoints = ['50%']
-const renderBackdrop = (props) => {
-  return (
-    <BottomSheetBackdrop
-      {...props}
-      appearsOnIndex={0}
-      disappearsOnIndex={-1}
-      pressBehavior="close"
-    />
-  )
-}
 
 type NodeSelectProps = {
   onChange(item: NodeDetail): void
@@ -93,15 +80,10 @@ function NodeSelect(props: NodeSelectProps) {
           </Text>
         )}
       </Pressable>
-      <BottomSheetModal
+      <MyBottomSheetModal
         ref={selectRef}
         index={0}
         snapPoints={pickerSnapPoints}
-        backdropComponent={renderBackdrop}
-        backgroundStyle={styles.overlay}
-        handleIndicatorStyle={{
-          backgroundColor: theme.colors.bts_handle_bg,
-        }}
         onDismiss={() => {
           setOpen(false)
         }}>
@@ -136,7 +118,7 @@ function NodeSelect(props: NodeSelectProps) {
             />
           </View>
         )}
-      </BottomSheetModal>
+      </MyBottomSheetModal>
     </>
   )
 }
