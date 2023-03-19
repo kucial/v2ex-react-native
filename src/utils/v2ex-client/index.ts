@@ -1,4 +1,6 @@
-import axios, { AxiosRequestConfig } from 'axios'
+import { clearCookies } from 'react-native/Libraries/Network/RCTNetworking'
+import CookieManager from '@react-native-cookies/cookies'
+import axios, { AxiosRequestHeaders } from 'axios'
 import { load } from 'cheerio'
 import { stringify } from 'qs'
 import * as Sentry from 'sentry-expo'
@@ -15,6 +17,7 @@ import {
   NodeTopicFeed,
   Notification,
   RepliedTopicFeed,
+  TFA_Error,
   TopicDetail,
   TopicReply,
 } from '@/utils/v2ex-client/types'
@@ -22,6 +25,7 @@ import {
 import ApiError from './ApiError'
 import { BASE_URL, ONCP, REQUEST_TIMEOUT, USER_AGENT } from './constants'
 import {
+  base64File,
   memberFromImage,
   nodeDetailFromPage,
   nodeFromLink,
@@ -41,13 +45,15 @@ import {
   TopicId,
 } from './types'
 
-type EVENT = 'unread_count' | 'current_user'
+type EVENT = 'unread_count' | 'current_user' | '2fa_enabled'
 type UnreadCountValue = number
-type EventValue = UnreadCountValue
+
+type EventValue = UnreadCountValue | TFA_Error
 type Callback = (data?: EventValue) => void
 const listeners: Record<EVENT, Set<Callback>> = {
   unread_count: new Set(),
   current_user: new Set(),
+  '2fa_enabled': new Set(),
 }
 export const subscribe = (event: EVENT, callback: Callback) => {
   listeners[event].add(callback)
@@ -66,11 +72,7 @@ const instance = axios.create({
   timeout: REQUEST_TIMEOUT,
   headers: {
     'user-agent': USER_AGENT,
-    'Cache-Control': 'no-cache',
-    Pragma: 'no-cache',
-    Expires: '0',
   },
-  adapter: service.fetch,
 })
 
 // const OFFICIAL_ENDPOINTS = {
@@ -87,12 +89,54 @@ const instance = axios.create({
 //   '/api/members/show.json': {},
 // }
 
+instance.interceptors.request.use(async (config) => {
+  // handle oncp
+  if (config.params?.once === ONCP || config.data?.once === ONCP) {
+    const tokenRes = await fetchOnce({
+      Referer: `${BASE_URL}${config.url}`,
+      origin: BASE_URL,
+    })
+    if (config.params?.once === ONCP) {
+      config.params.once = tokenRes.data
+    }
+    if (config.data?.once === ONCP) {
+      config.params.once = tokenRes.data
+    }
+  }
+
+  // 处理 x-www-form-urlencoded  serialize
+  if (
+    config.headers['content-type'] === 'application/x-www-form-urlencoded' &&
+    typeof config.data === 'object'
+  ) {
+    config.data = stringify(config.data)
+  }
+
+  // if (config.params?.once || config.data?.once) {
+  //   config.adapter = service.fetch
+  // }
+  return config
+})
+
 instance.interceptors.response.use(
   function (res) {
-    // console.log('-------------V2EX CLIENT RES--------------')
-    // console.log(res.config)
-    // console.log(res.data);
-    // console.log('-------------V2EX CLIENT END--------------')
+    if (
+      res.request?.responseURL === BASE_URL + '/2fa' &&
+      res.config.url !== '/2fa'
+    ) {
+      const $ = load(res.data)
+      const once = $('form[action="/2fa"] input[name=once]').attr('value')
+      const error = new ApiError({
+        code: '2FA_ENABLED',
+        message: '你的 V2EX 账号已经开启了两步验证，请输入验证码继续',
+        data: {
+          once,
+        },
+      })
+      dispatch('2fa_enabled', error as TFA_Error)
+      throw error
+    }
+
     // side-effect
     if (res.config?.url && /^\/(\?tab=\w+)?$/.test(res.config.url)) {
       const $ = load(res.data)
@@ -125,11 +169,14 @@ export const request = instance.request
 export const manager = service
 
 export async function fetchOnce(
-  refresh?: boolean,
+  headers: AxiosRequestHeaders = {
+    Referer: BASE_URL,
+    origin: BASE_URL,
+  },
 ): Promise<StatusResponse<string>> {
   const { data } = await request({
-    url: '/_custom_/once',
-    params: { refresh },
+    url: '/poll_once',
+    headers,
   })
   return {
     success: true,
@@ -138,12 +185,12 @@ export async function fetchOnce(
   }
 }
 
-// TODO: inject side effects
 export async function getHomeTabs(): Promise<
   CollectionResponse<HomeTabOption>
 > {
   const { data: html } = await request({
     url: '/',
+    adapter: service.fetch,
   })
   const $ = load(html)
   const tabs = $('#Wrapper .content a[class^=tab]')
@@ -1165,7 +1212,7 @@ export async function getCurrentUser(): Promise<
   EntityResponse<MemberDetail, { unread_count: number }>
 > {
   const { data: html } = await request({
-    url: '/',
+    url: '/about',
   })
   const $ = load(html)
   const username = $('#menu-entry img.avatar').attr('alt')
@@ -1246,33 +1293,165 @@ export async function dailySignin(
   }
 }
 
-// TODO: MIX FETCHER-WEBVIEW AND V2EX-CLIENT-WEBVIEW
-export function login(): Promise<StatusResponse> {}
-
-export async function logout({
-  once = ONCP,
-}: {
-  once?: string
-}): Promise<StatusResponse> {
-  const { data: html } = await request({
-    url: `/signout`,
-    params: {
-      once,
-    },
+export async function fetchLoginCaptcha() {
+  return base64File(`${BASE_URL}/_captcha?now=${Date.now()}`, {
+    'user-agent': USER_AGENT,
   })
-  const $ = load(html)
-  const success = !$('a[href^="/signout"]').length
+}
 
-  // 重置 webview
-  service.reload()
+export async function fetchLoginForm() {
+  const res = await request({
+    url: '/signin',
+  })
+  const $ = load(res.data)
+  if (
+    res.request?.responseURL &&
+    /\/signin\/cooldown/.test(res.request.responseURL)
+  ) {
+    const message = $('#Wrapper .topic_content').text().trim()
+    const info = $('#Wrapper .dock_area').text().trim()
+    throw new ApiError({
+      code: 'cooldown',
+      message,
+      data: { info },
+    })
+  }
 
+  const captcha = await fetchLoginCaptcha()
+
+  const inputs = $('form[action="/signin"] input.sl')
+    .map(function (_, el) {
+      return $(el).attr('name')
+    })
+    .toArray()
+
+  const data = {
+    captcha,
+    once: $('form[action="/signin"] input[name=once]').attr('value'),
+    hashMap: {
+      username: inputs[0],
+      password: inputs[1],
+      captcha: inputs[2],
+    },
+  }
   return {
-    success,
-    message: '你已经完全登出',
+    data,
   }
 }
 
-export async function fetch<T = any>(config: AxiosRequestConfig) {
-  const { data } = await request<never, { data: T }>(config)
-  return data
+export async function loginWithPassword(
+  values: {
+    username: string
+    password: string
+    captcha: string
+    once: string
+  },
+  fieldHashMap: {
+    username: string
+    password: string
+    captcha: string
+  },
+): Promise<StatusResponse> {
+  const formData = {
+    [fieldHashMap.username]: values.username,
+    [fieldHashMap.password]: values.password,
+    [fieldHashMap.captcha]: values.captcha,
+    once: values.once,
+  }
+
+  const res = await request({
+    url: '/signin',
+    data: stringify(formData),
+    method: 'POST',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      Referer: `${BASE_URL}/signin`,
+      origin: BASE_URL,
+    },
+  })
+
+  const $ = load(res.data)
+
+  const responseURL = res.request?.responseURL || ''
+
+  if (/\/2fa/.test(responseURL)) {
+    const once = $('form[action="/2fa"] input[name=once]').attr('value')
+    throw new ApiError({
+      code: '2FA_ENABLED',
+      message: '你的 V2EX 账号已经开启了两步验证，请输入验证码继续',
+      data: {
+        once,
+      },
+    })
+  } else if (/\/signin/.test(responseURL)) {
+    const problems = $('.problem ul li')
+      .map(function (_, el) {
+        return $(el).text().trim()
+      })
+      .toArray()
+    throw new ApiError({
+      code: 'LOGIN_ERROR',
+      message: '登陆失败',
+      data: problems,
+    })
+  }
+
+  return {
+    success: true,
+    message: '登陆成功',
+    // data: user,
+  }
+}
+
+export async function verify2faCode(data: { once: string; code: string }) {
+  const res = await request({
+    url: '/2fa',
+    data: stringify(data),
+    method: 'POST',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      Referer: `${BASE_URL}/2fa`,
+      origin: BASE_URL,
+    },
+  })
+
+  const responseURL = res.request?.responseURL || ''
+
+  const $ = load(res.data)
+  if (/\/2fa/.test(responseURL)) {
+    console.log(res.data)
+    const problems = $('.problem ul li')
+      .map(function (_, el) {
+        return $(el).text().trim()
+      })
+      .toArray()
+    throw new ApiError({
+      code: '2FA_VERIFY_FAILED',
+      message: '两步验证登录的过程中遇到一些问题：',
+      data: {
+        problems,
+        once: $('input[name=once]').attr('value'),
+      },
+    })
+  }
+
+  return {
+    success: true,
+    message: '验证成功',
+  }
+}
+
+export async function logout(): Promise<StatusResponse> {
+  await Promise.all([
+    new Promise((resolve) => clearCookies(resolve)),
+    CookieManager.clearAll(true),
+  ])
+
+  // 重置 webview
+  service.reload(true)
+
+  return {
+    success: true,
+    message: '你已经完全登出',
+  }
 }

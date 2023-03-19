@@ -1,3 +1,4 @@
+import CookieManager from '@react-native-cookies/cookies'
 import { Cheerio, CheerioAPI, Element } from 'cheerio'
 
 import {
@@ -217,4 +218,28 @@ export function getMarkdown(html: string) {
     .replace(/<br>/g, '\n\n')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
+}
+
+export async function getCookieHeader() {
+  const cookies = await CookieManager.get(BASE_URL)
+  const cookieHeaderString = Object.keys(cookies)
+    .map((key) => `${key}=${cookies[key].value}`)
+    .join('; ')
+  return cookieHeaderString
+}
+
+export async function base64File(
+  url: string,
+  headers?: HeadersInit,
+): Promise<string> {
+  const data = await fetch(url, { headers })
+  const blob = await data.blob()
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(blob)
+    reader.onloadend = () => {
+      const base64data = reader.result
+      resolve(base64data as string)
+    }
+  })
 }

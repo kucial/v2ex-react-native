@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { AppState, AppStateStatus } from 'react-native'
 import NetInfo from '@react-native-community/netinfo'
 import * as Sentry from 'sentry-expo'
@@ -93,6 +93,9 @@ function AppSWRConfig(props: PropsWithChildren) {
           return stableHash(a) === stableHash(b)
         },
         onErrorRetry(err, key, config, revalidate, { retryCount }) {
+          if (err.code === '2FA_ENABLED') {
+            return
+          }
           if (err.code !== 'CLIENT_TIMEOUT') {
             setTimeout(() => revalidate({ retryCount }), 5000)
           }

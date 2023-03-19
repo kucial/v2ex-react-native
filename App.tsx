@@ -4,7 +4,6 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import * as Sentry from 'sentry-expo'
 
-// import DebugScreen from './src/screens/DebugScreen'
 import V2exClientWebView from '@/utils/v2ex-client/V2exClientWebView'
 
 import ErrorBoundary from './src/components/ErrorBoundary'
@@ -46,6 +45,7 @@ function App() {
                             <ViewedTopicsService>
                               <Layout>
                                 <AppStack />
+                                {/* <DebugScreen /> */}
                               </Layout>
                             </ViewedTopicsService>
                           </AuthService>

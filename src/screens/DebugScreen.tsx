@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import {
   Dimensions,
   Pressable,
@@ -9,10 +9,13 @@ import {
   View,
 } from 'react-native'
 import { SelectableText } from '@alentoma/react-native-selectable-text'
+import CookieManager from '@react-native-cookies/cookies'
 
 import ErrorNotice from '@/components/ErrorNotice'
 import HtmlRender from '@/components/HtmlRender'
+import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { getCurrentUser, getMyCollectedTopics } from '@/utils/v2ex-client'
 
 const fSize = 30
 const p = {
@@ -41,11 +44,26 @@ export default function DebugScreen(props) {
   // ref
   const { theme, styles } = useTheme()
 
+  const { user } = useAuthService()
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }, [])
+
   // renders
   // return null
 
   return (
     <SafeAreaView style={[{ flex: 1 }, styles.layer1]}>
+      <View>
+        <Text>Current User: {user?.username}</Text>
+      </View>
       <View>
         <HtmlRender
           contentWidth={Dimensions.get('window').width}

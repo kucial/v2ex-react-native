@@ -1,4 +1,5 @@
 import WebView, { WebViewMessageEvent } from 'react-native-webview'
+import CookieManager from '@react-native-cookies/cookies'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { pick, uniqueId } from 'lodash'
 import { stringify } from 'qs'

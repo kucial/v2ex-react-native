@@ -78,7 +78,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
   )
 
   let header
-  if (authStatus === 'authed' || (authStatus === 'failed' && currentUser)) {
+  if (currentUser) {
     header = (
       <Pressable
         className="flex flex-row py-3 px-4 active:opacity-60"

@@ -19,6 +19,7 @@ type AppSettings = {
   autoRefreshDuration: number // minutes
 
   maxContainerWidth: number
+  googleSigninEnabled?: boolean
 }
 
 type AppSettingsService = {

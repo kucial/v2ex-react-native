@@ -7,7 +7,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { AppState, InteractionManager } from 'react-native'
+import { Alert, AppState, InteractionManager } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -15,9 +15,10 @@ import { useCachedState } from '@/utils/hooks'
 import { getJSON, setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import clientService from '@/utils/v2ex-client/service'
-import { MemberDetail } from '@/utils/v2ex-client/types'
+import { MemberDetail, TFA_Error } from '@/utils/v2ex-client/types'
 
 import { useAlertService } from '../AlertService'
+import prompt2faInput from './prompt2FaInput'
 import { AuthService, AuthState } from './types'
 
 const CACHE_KEY = '$app$/current-user'
@@ -71,7 +72,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
   const service: AuthService = useMemo(() => {
     const fetchCurrentUser = async (refresh = false) => {
       if (refresh) {
-        clientService.reload()
+        clientService.reload(true)
       }
       setState((prev) => ({
         ...prev,
@@ -87,7 +88,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
         }))
         return res.data
       } catch (err) {
-        console.log('.....AUTH_ERROR......')
+        console.log('.....AUTH_ERROR......', err)
         setState((prev) => ({
           ...prev,
           // error: err,
@@ -105,7 +106,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
             status: 'logingout',
           }
         })
-        const res = await v2exClient.logout({})
+        const res = await v2exClient.logout()
         if (res.success) {
           setState(() => ({
             ...INIT_STATE,
@@ -233,7 +234,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
 
   // 处理未读消息更新
   useEffect(() => {
-    const unsubscribe = v2exClient.subscribe('unread_count', (val) => {
+    const unsubscribe = v2exClient.subscribe('unread_count', (val: number) => {
       setState((prev) => {
         const current_unread_count = prev.meta?.unread_count
         if (current_unread_count === val) {
@@ -248,6 +249,20 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
         }
       })
     })
+    return unsubscribe
+  }, [])
+
+  useEffect(() => {
+    const unsubscribe = v2exClient.subscribe(
+      '2fa_enabled',
+      async (error: TFA_Error) => {
+        const result = await prompt2faInput(error)
+        if (result.action === '2fa_verified') {
+          alert.alertWithType('success', '成功', '2FA 验证成功')
+        }
+      },
+    )
+
     return unsubscribe
   }, [])
 

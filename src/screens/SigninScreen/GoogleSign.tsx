@@ -24,9 +24,9 @@ function GoogleSign(props: GoogleSigninProps) {
   const webviewRef = useRef<WebView>()
   const [loading, setLoading] = useState(false)
   const onceSwr = useSWR(
-    '/once-token.json',
+    '$tmp$/once-token.json',
     async () => {
-      return fetchOnce(true)
+      return fetchOnce()
     },
     {
       revalidateOnMount: true,
@@ -92,6 +92,7 @@ function GoogleSign(props: GoogleSigninProps) {
             ref={webviewRef}
             userAgent={USER_AGENT}
             originWhitelist={['*']}
+            sharedCookiesEnabled={true}
             source={{
               uri: `https://www.v2ex.com/auth/google?once=${onceSwr.data.data}`,
             }}

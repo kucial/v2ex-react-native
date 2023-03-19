@@ -150,7 +150,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const topicSwr = useSWR(
     [`/page/t/:id/topic.json`, id],
     async ([_, id]) => {
-      const { data } = await v2exClient.getTopicDetail({ id, api: true })
+      const { data } = await v2exClient.getTopicDetail({ id })
       return data
     },
     {

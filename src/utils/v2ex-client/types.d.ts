@@ -1,3 +1,5 @@
+import ApiError from './ApiError'
+
 type HTMLString = string
 type UrlString = string
 
@@ -171,3 +173,11 @@ type StatusResponse<T = null, M = null> = {
 
 type TopicId = string | number
 type ReplyId = string | number
+
+interface TFA_Error extends ApiError {
+  code: '2FA_ENABLED'
+  data: {
+    problems?: string[]
+    once: string
+  }
+}

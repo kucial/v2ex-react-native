@@ -55,6 +55,9 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       revalidateOnFocus: false,
       shouldRetryOnError: false,
       onError(err) {
+        if (err.code === '2FA_ENABLED') {
+          return
+        }
         alert.alertWithType('error', '错误', err.message || '请求资源失败')
       },
     },

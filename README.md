@@ -52,6 +52,7 @@ React Native + Tailwindcss + SWR
   - [x] 用户登录
     - [x] 账号密码登录
     - [x] 2FA 支持
+    - [x] Google 登录（隐藏）
   - [x] 创建主题
     - [x] 富文本编辑
     - [x] 插入图片

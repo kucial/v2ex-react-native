@@ -112,6 +112,12 @@ export const cacheProvider = (cache: Cache) => {
       if (value.isValidating || value.isLoading) {
         return
       }
+      // 不缓存临时状态
+      if (/\$tmp\$/.test(key)) {
+        storage.delete(key)
+        return
+      }
+
       if (typeof key !== 'string') {
         console.log(key)
       }

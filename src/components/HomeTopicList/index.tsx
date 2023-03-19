@@ -55,7 +55,10 @@ function FeedTopicList(props: FeedTopicListProps) {
       revalidateOnReconnect: false,
       revalidateOnFocus: false,
       shouldRetryOnError: false,
-      onError(err: Error) {
+      onError(err) {
+        if (err.code === '2FA_ENABLED') {
+          return
+        }
         console.log(err.message)
         alert.alertWithType('error', '错误', err.message || '请求资源失败')
       },

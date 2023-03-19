@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import { ArrowUpOnSquareIcon } from 'react-native-heroicons/outline'
 import RNRestart from 'react-native-restart'
+import CookieManager from '@react-native-cookies/cookies'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
 import { Image } from 'expo-image'
@@ -102,7 +103,7 @@ export default function AboutScreen() {
                   'active:opacity-60',
                 )}
                 style={[styles.layer1]}
-                onPress={() => {
+                onPress={async () => {
                   // clear swr cache
                   const keys = storage.getAllKeys()
                   keys.forEach((key) => {
@@ -112,6 +113,7 @@ export default function AboutScreen() {
                     storage.delete(key)
                   })
                   Image.clearDiskCache()
+                  await CookieManager.clearAll()
                   RNRestart.Restart()
                 }}>
                 <Text style={styles.text}>清除缓存</Text>
@@ -124,9 +126,10 @@ export default function AboutScreen() {
                   'active:opacity-60',
                 )}
                 style={[styles.layer1]}
-                onPress={() => {
+                onPress={async () => {
                   storage.clearAll()
                   Image.clearDiskCache()
+                  await CookieManager.clearAll()
                   RNRestart.Restart()
                 }}>
                 <Text style={styles.text_danger}>重置</Text>

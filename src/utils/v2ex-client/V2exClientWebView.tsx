@@ -11,8 +11,6 @@ const shouldReload = (timestamp: number) => {
   return timestamp && Date.now() - timestamp > 1000 * 60 * 60 // 1 小时
 }
 
-// TODO ... Make Client Webview an Event Dispatcher...
-
 export default function V2exClientWebView() {
   const ref = useRef<WebView>(null)
   const timerRef = useRef<number>(null)
@@ -63,9 +61,12 @@ export default function V2exClientWebView() {
     <View style={{ height: 0 }}>
       <WebView
         ref={ref}
-        source={{ uri: BASE_URL }}
+        source={{
+          uri: BASE_URL + '/about',
+        }}
         userAgent={USER_AGENT}
         originWhitelist={['*']}
+        sharedCookiesEnabled={true}
         onLoadStart={() => {
           timerRef.current = Date.now()
           readyTimeout.current = setTimeout(() => {
