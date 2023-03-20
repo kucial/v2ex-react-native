@@ -17,7 +17,7 @@ type ImageResource = {
 }
 
 export type ImageViewingService = {
-  add(info: { origin: string; local: string }): void
+  add(info: { origin: string; local?: string }): void
   update(info: { origin: string; local: string }): void
   remove(url: string): void
   open(url: string): void

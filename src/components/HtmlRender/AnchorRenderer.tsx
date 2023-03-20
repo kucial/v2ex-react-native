@@ -18,7 +18,9 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
   useEffect(() => {
     if (isImgurResourceLink(url)) {
       const imageUri = getImgurResourceImageLink(url)
-      service.add(imageUri)
+      service.add({
+        origin: imageUri,
+      })
       return () => {
         service.remove(imageUri)
       }

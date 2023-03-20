@@ -1,5 +1,5 @@
 import CookieManager from '@react-native-cookies/cookies'
-import { Cheerio, CheerioAPI, Element } from 'cheerio'
+import { Cheerio, CheerioAPI, Element, load } from 'cheerio'
 
 import {
   MemberBasic,
@@ -18,6 +18,50 @@ const resolveUrl = (url?: string) => {
     return `${BASE_URL}${url}`
   }
   return url
+}
+
+function decodeEmail(encodedEmail: string, delta: number) {
+  const getDec = (text: string, index: number) => {
+    const hexStr = text.substr(index, 2)
+    return parseInt(hexStr, 16)
+  }
+  let output = ''
+  for (
+    let a = getDec(encodedEmail, delta), i = delta + 2;
+    i < encodedEmail.length;
+    i += 2
+  ) {
+    const l = getDec(encodedEmail, i) ^ a
+    output += String.fromCharCode(l)
+  }
+  output = decodeURIComponent(escape(output))
+  return output
+}
+
+export function cheerioDoc(html: string) {
+  const $ = load(html)
+
+  // decode href hash
+  const emailProtectionCode = '/cdn-cgi/l/email-protection#'
+  $(`a[href^=${emailProtectionCode}]`).each(function (i, el) {
+    const email = decodeEmail(
+      $(el).attr('href').replace(emailProtectionCode, ''),
+      0,
+    )
+    $(el).replaceWith(function () {
+      return `<a href="mailto:${email}">${email}</a>`
+    })
+  })
+
+  $('.__cf_email__').each(function (i, el) {
+    const email = decodeEmail($(el).attr('data-cfemail'), 0)
+    console.log('.__cf_email__', i, email)
+    $(el).replaceWith(function () {
+      return `<a href="mailto:${email}">${email}</a>`
+    })
+  })
+
+  return $
 }
 
 export function topicFromLink($el: Cheerio<Element>): TopicBasic {

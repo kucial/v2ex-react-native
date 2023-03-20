@@ -1,7 +1,6 @@
 import { clearCookies } from 'react-native/Libraries/Network/RCTNetworking'
 import CookieManager from '@react-native-cookies/cookies'
 import axios, { AxiosRequestHeaders } from 'axios'
-import { load } from 'cheerio'
 import { stringify } from 'qs'
 import * as Sentry from 'sentry-expo'
 
@@ -26,6 +25,7 @@ import ApiError from './ApiError'
 import { BASE_URL, ONCP, REQUEST_TIMEOUT, USER_AGENT } from './constants'
 import {
   base64File,
+  cheerioDoc,
   memberFromImage,
   nodeDetailFromPage,
   nodeFromLink,
@@ -124,7 +124,7 @@ instance.interceptors.response.use(
       res.request?.responseURL === BASE_URL + '/2fa' &&
       res.config.url !== '/2fa'
     ) {
-      const $ = load(res.data)
+      const $ = cheerioDoc(res.data)
       const once = $('form[action="/2fa"] input[name=once]').attr('value')
       const error = new ApiError({
         code: '2FA_ENABLED',
@@ -139,7 +139,7 @@ instance.interceptors.response.use(
 
     // side-effect
     if (res.config?.url && /^\/(\?tab=\w+)?$/.test(res.config.url)) {
-      const $ = load(res.data)
+      const $ = cheerioDoc(res.data)
       const text = $('input.special.super.button').attr('value')
       let unread_count = 0
       if (text) {
@@ -192,7 +192,7 @@ export async function getHomeTabs(): Promise<
     url: '/',
     adapter: service.fetch,
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const tabs = $('#Wrapper .content a[class^=tab]')
     .map(function (i, el) {
       return {
@@ -220,7 +220,7 @@ export async function getHomeFeeds({
       tab,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const data = $('#Wrapper .content .cell.item')
     .map(function (i, el) {
       const member = memberFromImage($(el).find('td:nth-child(1) img').first())
@@ -265,7 +265,7 @@ export async function getRecentFeeds({
       d: Date.now(),
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const data = $('#Wrapper .content .cell.item')
     .map(function (i, el) {
       const member = memberFromImage($(el).find('td:nth-child(1) img').first())
@@ -320,7 +320,7 @@ export async function getTopicDetail({
   const { data: html } = await request({
     url: `/t/${id}`,
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   // if isHomePage
   if ($('#Wrapper .content a[class^=tab]').length) {
     throw new ApiError({
@@ -351,7 +351,7 @@ export async function collectTopic({
   })
 
   const { data: html } = await request({ url: `/t/${id}` })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   const topic = topicDetailFromPage($, id)
   return {
@@ -378,7 +378,7 @@ export async function uncollectTopic({
     url: `/t/${id}`,
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   const topic = topicDetailFromPage($, id)
   return {
@@ -407,7 +407,7 @@ export async function thankTopic({
     url: `/t/${id}`,
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   return {
     success: json.success,
@@ -429,7 +429,7 @@ export async function blockTopic({
       once,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const message = $('#Wrapper .box .message').first()?.text()
   const success = message === `已完成对 ${id} 号主题的忽略`
   return {
@@ -453,7 +453,7 @@ export async function unblockTopic({
       once,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const message = $('#Wrapper .box .message').first()?.text()
   const success = message === `已撤销对 ${id} 号主题的忽略`
   return {
@@ -476,7 +476,7 @@ export async function reportTopic({
     url: `/report/topic/${id}`,
     params: { once },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const reported = $('span.fade')
     .get()
     .some(function (el) {
@@ -514,7 +514,7 @@ export async function appendTopic({
     },
     data: stringify({ content, once: postOnce }),
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   return {
     success: true,
     message: '附言成功',
@@ -539,7 +539,7 @@ export async function getTopicReplies({
       p,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   // if isHomePage
   if ($('#Wrapper .content a[class^=tab]').length) {
@@ -599,7 +599,7 @@ export async function postReply({
     },
     data: stringify({ content, once: postOnce }),
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   const problem = $('.problem ul li').text()
   if (problem) {
@@ -650,7 +650,7 @@ export async function getNodeGroups(): Promise<CollectionResponse<NodeGroup>> {
   const { data: html } = await request({
     url: `/planes`,
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const groups = $('#Wrapper .content > .box')
     .map(function (i, el) {
       const name = $(el).find('.header .fr').text()?.replace(' • ', '')
@@ -697,7 +697,7 @@ export async function getNodeDetail({
     url: `/go/${name}`,
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   return {
     data: nodeDetailFromPage($, name),
@@ -720,7 +720,7 @@ export async function collectNode({
     url: `/favorite/node/${detail.id}`,
     params: { once },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const collected = !!$('a[href^="/unfavorite/node"]').length
   return {
     success: collected,
@@ -745,7 +745,7 @@ export async function uncollectNode({
     url: `/unfavorite/node/${detail.id}`,
     params: { once },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const collected = !!$('a[href^="/unfavorite/node"]').length
   return {
     success: !collected,
@@ -774,7 +774,7 @@ export async function getNodeFeeds({
     params: { p },
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   const data = $('#Wrapper .content > .box:nth-child(2) .cell')
     .map(function (i, el) {
@@ -827,7 +827,7 @@ export async function getMemberDetail({
   const { data: html } = await request({
     url: `/member/${username}`,
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   user.meta = userMetaForCurrentUser($)
   return {
     data: user,
@@ -861,7 +861,7 @@ export async function watchMember({
       once,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const meta = userMetaForCurrentUser($)
   return {
     success: meta.watched,
@@ -890,7 +890,7 @@ export async function unwatchMember({
       once,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const meta = userMetaForCurrentUser($)
   return {
     success: !meta.watched,
@@ -919,7 +919,7 @@ export async function blockMember({
       once,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const meta = userMetaForCurrentUser($)
   return {
     success: meta.blocked,
@@ -948,7 +948,7 @@ export async function unblockMember({
       once,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const meta = userMetaForCurrentUser($)
   return {
     success: !meta.blocked,
@@ -971,7 +971,7 @@ export async function getMemberTopics({
     params: { p },
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   if (
     $('#Wrapper .content .box .cell').length == 1 &&
     $('#Wrapper .content .box .cell img').attr('src')?.indexOf('lock') > -1
@@ -1040,7 +1040,7 @@ export async function getMemberReplies({
     params: { p },
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   const data = $('#Wrapper .content .box .dock_area')
     .map(function (i, el) {
@@ -1087,7 +1087,7 @@ export async function getMyNotifications({
     },
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const notifications = $('#notifications .cell')
     .map(function (i, el) {
       const $memberImage = $(el).find('img.avatar').first()
@@ -1140,7 +1140,7 @@ export async function getMyCollectedTopics({
     params: { p },
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const data = $('#Wrapper .box .cell.item')
     .map(function (i, el) {
       const member = memberFromImage($(el).find('td:nth-child(1) img'))
@@ -1189,7 +1189,7 @@ export async function getMyCollectedNodes(): Promise<
     url: '/my/nodes',
   })
 
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const data = $('#my-nodes .fav-node')
     .map(function (i, el) {
       const name = $(el).find('img').attr('alt')
@@ -1214,7 +1214,7 @@ export async function getCurrentUser(): Promise<
   const { data: html } = await request({
     url: '/about',
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const username = $('#menu-entry img.avatar').attr('alt')
   if (!username) {
     return {
@@ -1247,7 +1247,7 @@ export async function getNotificationCount(): Promise<StatusResponse<number>> {
   const { data: html } = await request({
     url: '/',
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
   const text = $('input.special.super.button').first().val()
   console.log('getNotificationCount=====', text)
   const match = text && /\d+/.exec(text as string)
@@ -1267,7 +1267,7 @@ export async function dailySignin(
       once: data.once,
     },
   })
-  const $ = load(html)
+  const $ = cheerioDoc(html)
 
   const btnText = $('input.super.normal.button').attr('value')
   const error = !!$('.message').length
@@ -1303,7 +1303,7 @@ export async function fetchLoginForm() {
   const res = await request({
     url: '/signin',
   })
-  const $ = load(res.data)
+  const $ = cheerioDoc(res.data)
   if (
     res.request?.responseURL &&
     /\/signin\/cooldown/.test(res.request.responseURL)
@@ -1370,7 +1370,7 @@ export async function loginWithPassword(
     },
   })
 
-  const $ = load(res.data)
+  const $ = cheerioDoc(res.data)
 
   const responseURL = res.request?.responseURL || ''
 
@@ -1417,7 +1417,7 @@ export async function verify2faCode(data: { once: string; code: string }) {
 
   const responseURL = res.request?.responseURL || ''
 
-  const $ = load(res.data)
+  const $ = cheerioDoc(res.data)
   if (/\/2fa/.test(responseURL)) {
     console.log(res.data)
     const problems = $('.problem ul li')

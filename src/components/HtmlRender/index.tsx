@@ -183,6 +183,10 @@ function HtmlRender({
           return
           // OPEN URL
         }
+        if (url.startsWith('mailto:')) {
+          Linking.openURL(url)
+          return
+        }
         WebBrowser.openBrowserAsync(url).catch((err) => {
           Sentry.Native.captureException(err)
           console.log(err)
