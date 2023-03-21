@@ -135,7 +135,7 @@ export default function MemberScreenHeader({
           ]}>
           <ImageBackground
             style={{ width: '100%', height: '100%', position: 'absolute' }}
-            source={{ uri: data.avatar_mini }}
+            source={{ uri: data.avatar_large }}
             resizeMode="cover"
             blurRadius={10}
           />
