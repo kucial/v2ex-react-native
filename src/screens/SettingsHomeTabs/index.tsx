@@ -86,7 +86,7 @@ type ScreenProps = NativeStackScreenProps<
 
 export default function HomeTabs(props: ScreenProps) {
   const { navigation } = props
-  const { theme, styles } = useTheme()
+  const { theme, styles, colorScheme } = useTheme()
   const {
     data: { homeTabs },
     update,
@@ -109,6 +109,8 @@ export default function HomeTabs(props: ScreenProps) {
                 options: ['取消', '重置'],
                 cancelButtonIndex: 0,
                 destructiveButtonIndex: 1,
+                tintColor: theme.colors.primary,
+                userInterfaceStyle: colorScheme,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {

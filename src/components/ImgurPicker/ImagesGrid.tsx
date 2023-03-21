@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 import ImageView from 'react-native-image-viewing'
 import classNames from 'classnames'
 import { SWRResponse } from 'swr'
@@ -9,6 +9,7 @@ import { ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing } from '@/utils/swr'
 
+import MyRefreshControl from '../MyRefreshControl'
 import ImageCard from './ImageCard'
 
 export type ImagesGridProps = {
@@ -87,8 +88,7 @@ export default function ImagesGrid(props: ImagesGridProps) {
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl
-          tintColor={theme.colors.primary}
+        <MyRefreshControl
           refreshing={isRefreshing(imagesSwr)}
           onRefresh={() => {
             imagesSwr.mutate()

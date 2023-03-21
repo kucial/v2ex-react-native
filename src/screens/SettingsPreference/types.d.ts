@@ -6,4 +6,5 @@ export type DemoRowProps = {
   showLastReplyMember: boolean
   viewedStatus?: 'viewed' | 'has_update' | undefined | ''
   titleStyle: 'normal' | 'emphasized'
+  isLast?: boolean
 }

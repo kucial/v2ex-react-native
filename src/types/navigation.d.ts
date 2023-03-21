@@ -41,6 +41,7 @@ declare global {
     }
     'home-tab-settings': null
     'preference-settings': null
+    'theme-settings': null
     signin: null
 
     feedback: null

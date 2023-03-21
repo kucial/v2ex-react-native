@@ -106,8 +106,9 @@ function HtmlRender({
       pre: {
         backgroundColor: theme.colors.html_pre_bg,
         paddingHorizontal: (12 / 16) * baseFontSize,
-        paddingTop: 4,
+        paddingTop: baseFontSize * 0.8,
         lineHeight: 1.25 * baseFontSize,
+        borderRadius: 4,
       },
       code: {
         fontSize: 14,
@@ -130,7 +131,7 @@ function HtmlRender({
         marginLeft: 0,
         paddingLeft: baseFontSize * 1.5,
         paddingVertical: baseFontSize * 0.25,
-        borderLeftWidth: 2,
+        borderLeftWidth: 3,
         borderLeftColor: theme.colors.text,
       },
       ...(tagsStyles || {}),
@@ -187,7 +188,10 @@ function HtmlRender({
           Linking.openURL(url)
           return
         }
-        WebBrowser.openBrowserAsync(url).catch((err) => {
+        WebBrowser.openBrowserAsync(url, {
+          controlsColor: theme.colors.primary,
+          dismissButtonStyle: 'close',
+        }).catch((err) => {
           Sentry.Native.captureException(err)
           console.log(err)
         })

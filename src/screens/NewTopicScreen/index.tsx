@@ -237,6 +237,7 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                           containerStyle={{
                             overflow: 'hidden',
                             minHeight: 200,
+                            backgroundColor: theme.colors.bg_layer2,
                           }}
                         />
                       </View>

@@ -26,6 +26,7 @@ import SearchScreen from './SearchScreen'
 import SettingsHomeTabs from './SettingsHomeTabs'
 import SettingsImgur from './SettingsImgur'
 import SettingsPreference from './SettingsPreference'
+import SettingsTheme from './SettingsTheme'
 import SigninScreen from './SigninScreen'
 import TopicScreen from './TopicScreen'
 
@@ -43,7 +44,7 @@ const transparentHeaderBackground = () => (
 
 function AppStack() {
   const { theme, styles } = useTheme()
-  const tintColor = theme.colors.primary
+  const tintColor = theme.colors.text_title
 
   const padLayout = usePadLayout()
 
@@ -65,7 +66,9 @@ function AppStack() {
               ]}></View>
           )
         },
-      }}>
+      }}
+      // initialRouteName={'theme-settings'}
+    >
       {/* <Stack.Screen
         name="main"
         component={MainTab}
@@ -242,7 +245,14 @@ function AppStack() {
           name="preference-settings"
           component={SettingsPreference}
           options={{
-            title: '偏好设置',
+            title: '功能设置',
+          }}
+        />
+        <Stack.Screen
+          name="theme-settings"
+          component={SettingsTheme}
+          options={{
+            title: '主题样式',
           }}
         />
       </Stack.Group>

@@ -3,6 +3,7 @@ import { FlashList } from '@shopify/flash-list'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { isRefreshing, shouldLoadMore } from '@/utils/swr'
 import { getMyCollectedTopics } from '@/utils/v2ex-client'
@@ -63,13 +64,17 @@ export default function CollectedTopicsScreen() {
           listSwr.setSize(listSwr.size + 1)
         }
       }}
-      onRefresh={() => {
-        if (listSwr.isValidating) {
-          return
-        }
-        listSwr.mutate()
-      }}
-      refreshing={isRefreshing(listSwr)}
+      refreshControl={
+        <MyRefreshControl
+          onRefresh={() => {
+            if (listSwr.isValidating) {
+              return
+            }
+            listSwr.mutate()
+          }}
+          refreshing={isRefreshing(listSwr)}
+        />
+      }
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}

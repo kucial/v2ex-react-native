@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Text, View } from 'react-native'
+import { Text, View, ViewStyle } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -66,7 +66,7 @@ export function InlineText(props) {
   )
 }
 
-export function BlockText(props) {
+export function BlockText(props: { lines: number; style?: ViewStyle }) {
   const lines = useMemo(() => {
     if (Array.isArray(props.lines)) {
       return Math.round(valueInRange(props.lines))

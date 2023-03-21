@@ -31,8 +31,7 @@ export default function MemberScreenHeader({
   const { brief, username } = route.params
   const data = swr.data || brief || { username }
   const { showActionSheetWithOptions } = useActionSheet()
-  const { theme, styles } = useTheme()
-  const tintColor = theme.colors.primary
+  const { theme, styles, colorScheme } = useTheme()
   const alert = useAlertService()
   const aIndicator = useActivityIndicator()
   const openActionSheet = useCallback(() => {
@@ -47,6 +46,8 @@ export default function MemberScreenHeader({
         options,
         cancelButtonIndex: 0,
         destructiveButtonIndex: 2,
+        tintColor: theme.colors.primary,
+        userInterfaceStyle: colorScheme,
       },
       (buttonIndex) => {
         const KEY = `member-action-button-${buttonIndex}`
@@ -105,7 +106,7 @@ export default function MemberScreenHeader({
           zIndex: 10,
         }}>
         <BackButton
-          tintColor={tintColor}
+          tintColor={theme.colors.text}
           onPress={() => {
             navigation.goBack()
           }}
@@ -121,7 +122,7 @@ export default function MemberScreenHeader({
         <Pressable
           className="w-[44px] h-[44px] rounded-full items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
           onPress={openActionSheet}>
-          <EllipsisHorizontalIcon size={24} color={tintColor} />
+          <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
         </Pressable>
       </View>
       <View className="relative">

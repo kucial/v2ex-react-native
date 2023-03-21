@@ -4,25 +4,36 @@ import {
   Platform,
   Pressable,
   SafeAreaView,
+  ScrollView,
+  Share,
   Text,
   View,
 } from 'react-native'
-import { ArrowUpOnSquareIcon } from 'react-native-heroicons/outline'
+import {
+  ArrowUpOnSquareIcon,
+  ChatBubbleLeftEllipsisIcon,
+  StarIcon,
+} from 'react-native-heroicons/outline'
 import RNRestart from 'react-native-restart'
+import * as StoreReview from 'react-native-store-review'
 import CookieManager from '@react-native-cookies/cookies'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
 import { Image } from 'expo-image'
 
+import brand from '@/assets/brand.png'
+import brandInverse from '@/assets/brand-inverse.png'
 import GithubIcon from '@/components/GithubIcon'
+import GroupWapper from '@/components/GroupWrapper'
+import { LineItem } from '@/components/LineItem'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import storage from '@/utils/storage'
 
-export default function AboutScreen() {
-  const { theme, styles } = useTheme()
+export default function AboutScreen(props) {
+  const { theme, styles, colorScheme } = useTheme()
   const [count, setCount] = useState(0)
   const settings = useAppSettings()
   const alert = useAlertService()
@@ -32,112 +43,165 @@ export default function AboutScreen() {
         ...prev,
         googleSigninEnabled: true,
       }))
-      alert.alertWithType('success', '哈哈', 'Google 登陆已启用')
+      alert.alertWithType('success', '😁', 'Google 登陆已启用')
     }
   }, [count])
   return (
     <SafeAreaView className="flex-1">
-      <MaxWidthWrapper>
-        <View className="flex-1 px-2 pb-8 items-center justify-center">
-          <Pressable
-            className="w-full py-3 rounded-lg active:opacity-80"
-            style={styles.layer1}
-            onPress={() => {
-              setCount((prev) => prev + 1)
-            }}>
-            <View className="my-2">
-              <Text
-                className="text-2xl font-bold text-center"
-                style={styles.text}>
-                R2V
-              </Text>
-            </View>
-            <View className="my-2">
-              <Text className="text-base text-center" style={styles.text}>
-                V2EX 第三方客户端
-              </Text>
-            </View>
-            <View>
-              <Text className="text-center" style={styles.text}>
-                {Constants.manifest.version}
-                <Text className="ml-2">
-                  {Platform.OS === 'ios' && Constants.manifest.ios.buildNumber}
-                  {Platform.OS === 'android' &&
-                    Constants.manifest.android.versionCode}
-                </Text>
-              </Text>
-            </View>
-
-            {Constants.manifest.extra.buildTime && (
-              <View className="mt-2">
-                <Text className="text-sm text-center" style={styles.text_meta}>
-                  构建时间: {Constants.manifest.extra.buildTime}
+      <ScrollView className="flex-1 pt-5">
+        <MaxWidthWrapper className="px-2">
+          <GroupWapper>
+            <Pressable
+              className="pt-3 active:opacity-80"
+              style={styles.layer1}
+              onPress={() => {
+                setCount((prev) => prev + 1)
+              }}>
+              <View className="my-5">
+                <View className="flex-1 flex flex-row justify-center">
+                  <Image
+                    source={colorScheme === 'light' ? brand : brandInverse}
+                    style={{ width: 120, height: (120 * 819) / 1085 }}
+                  />
+                </View>
+                {/* <Text
+                  className="text-2xl font-bold text-center"
+                  style={styles.text}>
+                  R2V
+                </Text> */}
+              </View>
+              <View className="my-2">
+                <Text className="text-base text-center" style={styles.text}>
+                  V2EX 第三方客户端
                 </Text>
               </View>
-            )}
+              <View>
+                <Text className="text-center" style={styles.text}>
+                  {Constants.manifest.version}
+                  <Text className="ml-2">
+                    {Platform.OS === 'ios' &&
+                      Constants.manifest.ios.buildNumber}
+                    {Platform.OS === 'android' &&
+                      Constants.manifest.android.versionCode}
+                  </Text>
+                </Text>
+              </View>
 
-            <View className="flex flex-row items-center justify-center pt-2 gap-2">
-              <Pressable
-                className="p-2 flex flex-row items-center rounded-lg active:bg-neutral-100 active:opacity-60"
-                onPress={() => {
-                  Linking.openURL('https://github.com/kucial/v2ex-react-native')
-                }}>
-                <GithubIcon color={theme.colors.text} />
-              </Pressable>
-              <Pressable
-                className="p-2 flex flex-row items-center rounded-lg active:bg-neutral-100 active:opacity-60"
-                onPress={() => {
-                  Linking.openURL(
-                    'https://apps.apple.com/cn/app/r2v/id1645766550',
-                  )
-                }}>
-                <ArrowUpOnSquareIcon color={theme.colors.text} />
-              </Pressable>
-            </View>
-          </Pressable>
+              {Constants.manifest.extra.buildTime && (
+                <View className="mt-2">
+                  <Text
+                    className="text-sm text-center"
+                    style={styles.text_meta}>
+                    构建时间: {Constants.manifest.extra.buildTime}
+                  </Text>
+                </View>
+              )}
+              <View className="ml-4 h-[20]" style={styles.border_b} />
+            </Pressable>
+
+            <LineItem
+              onPress={async () => {
+                Linking.openURL('https://github.com/kucial/v2ex-react-native')
+              }}
+              icon={<GithubIcon color={theme.colors.primary} />}
+              title="Github"
+            />
+            <LineItem
+              onPress={async () => {
+                try {
+                  const result = await Share.share({
+                    message: 'R2V -- 第三方V2EX客户端',
+                    url: 'https://apps.apple.com/cn/app/r2v/id1645766550',
+                  })
+                  if (result.action === Share.sharedAction) {
+                    if (result.activityType) {
+                      // shared with activity type of result.activityType
+                    } else {
+                      // shared
+                    }
+                  } else if (result.action === Share.dismissedAction) {
+                    // dismissed
+                  }
+                } catch (error) {
+                  console.log(error.message)
+                }
+              }}
+              icon={<ArrowUpOnSquareIcon color={theme.colors.primary} />}
+              title="分享"
+            />
+            <LineItem
+              onPress={() => {
+                StoreReview.requestReview()
+              }}
+              icon={<StarIcon size={22} color={theme.colors.primary} />}
+              title="五星好评"
+            />
+            <LineItem
+              onPress={() => {
+                try {
+                  Linking.openURL('mailto://kongkx.yang@gmail.com')
+                } catch {
+                  props.navigation.push('feedback')
+                }
+              }}
+              icon={
+                <ChatBubbleLeftEllipsisIcon
+                  size={22}
+                  color={theme.colors.primary}
+                />
+              }
+              title="意见反馈"
+              isLast
+            />
+          </GroupWapper>
+
           <View className="py-2 w-full flex flex-row">
             <View className="basis-1/2 pr-2">
-              <Pressable
-                className={classNames(
-                  'h-[50px] rounded-md flex items-center justify-center mt-4',
-                  'active:opacity-60',
-                )}
-                style={[styles.layer1]}
-                onPress={async () => {
-                  // clear swr cache
-                  const keys = storage.getAllKeys()
-                  keys.forEach((key) => {
-                    if (/\$app\$/.test(key)) {
-                      return
-                    }
-                    storage.delete(key)
-                  })
-                  Image.clearDiskCache()
-                  await CookieManager.clearAll()
-                  RNRestart.Restart()
-                }}>
-                <Text style={styles.text}>清除缓存</Text>
-              </Pressable>
+              <GroupWapper>
+                <Pressable
+                  className={classNames(
+                    'h-[50px] rounded-md flex items-center justify-center mt-4',
+                    'active:opacity-60',
+                  )}
+                  style={[styles.layer1]}
+                  onPress={async () => {
+                    // clear swr cache
+                    const keys = storage.getAllKeys()
+                    keys.forEach((key) => {
+                      if (/\$app\$/.test(key)) {
+                        return
+                      }
+                      storage.delete(key)
+                    })
+                    Image.clearDiskCache()
+                    await CookieManager.clearAll()
+                    RNRestart.Restart()
+                  }}>
+                  <Text style={styles.text}>清除缓存</Text>
+                </Pressable>
+              </GroupWapper>
             </View>
             <View className="basis-1/2 pl-2">
-              <Pressable
-                className={classNames(
-                  'h-[50px] rounded-md flex items-center justify-center mt-4',
-                  'active:opacity-60',
-                )}
-                style={[styles.layer1]}
-                onPress={async () => {
-                  storage.clearAll()
-                  Image.clearDiskCache()
-                  await CookieManager.clearAll()
-                  RNRestart.Restart()
-                }}>
-                <Text style={styles.text_danger}>重置</Text>
-              </Pressable>
+              <GroupWapper>
+                <Pressable
+                  className={classNames(
+                    'h-[50px] rounded-md flex items-center justify-center mt-4',
+                    'active:opacity-60',
+                  )}
+                  style={[styles.layer1]}
+                  onPress={async () => {
+                    storage.clearAll()
+                    Image.clearDiskCache()
+                    await CookieManager.clearAll()
+                    RNRestart.Restart()
+                  }}>
+                  <Text style={styles.text_danger}>重置</Text>
+                </Pressable>
+              </GroupWapper>
             </View>
           </View>
-        </View>
-      </MaxWidthWrapper>
+        </MaxWidthWrapper>
+      </ScrollView>
     </SafeAreaView>
   )
 }

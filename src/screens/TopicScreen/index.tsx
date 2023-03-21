@@ -25,6 +25,7 @@ import CommonListFooter from '@/components/CommonListFooter'
 import ErrorNotice from '@/components/ErrorNotice'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import { BlockText } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
@@ -175,7 +176,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       [id],
     ),
     ([_, id, page]) => {
-      console.log('fetch ....', page)
       return v2exClient.getTopicReplies({ id, p: page })
     },
     {
@@ -218,7 +218,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const { composeAuthedNavigation } = useAuthService()
   const aIndicator = useActivityIndicator()
 
-  const { theme, styles } = useTheme()
+  const { theme, styles, colorScheme } = useTheme()
 
   const replyItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
@@ -441,6 +441,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                 ],
                 cancelButtonIndex: 0,
                 destructiveButtonIndex: 5,
+                tintColor: theme.colors.primary,
+                userInterfaceStyle: colorScheme,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
@@ -463,7 +465,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               },
             )
           }}>
-          <EllipsisHorizontalIcon size={24} color={theme.colors.primary} />
+          <EllipsisHorizontalIcon size={24} color={theme.colors.text_title} />
         </Pressable>
       ),
     })
@@ -785,13 +787,17 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         estimatedItemSize={140}
         onEndReachedThreshold={0.4}
         onEndReached={handleReachEnd}
-        onRefresh={() => {
-          if (listSwr.isValidating) {
-            return
-          }
-          listSwr.mutate()
-        }}
-        refreshing={isRefreshing(listSwr)}
+        refreshControl={
+          <MyRefreshControl
+            onRefresh={() => {
+              if (listSwr.isValidating) {
+                return
+              }
+              listSwr.mutate()
+            }}
+            refreshing={isRefreshing(listSwr)}
+          />
+        }
         onScroll={handleScroll}
         scrollEventThrottle={16}
       />

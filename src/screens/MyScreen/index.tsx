@@ -1,22 +1,22 @@
 import { useCallback, useEffect } from 'react'
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import {
-  ChatBubbleLeftEllipsisIcon,
   ClockIcon,
   Cog6ToothIcon,
   DocumentPlusIcon,
   HomeIcon,
   InformationCircleIcon,
+  PaintBrushIcon,
   PhotoIcon,
   StarIcon,
 } from 'react-native-heroicons/outline'
-import * as StoreReview from 'react-native-store-review'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { CompositeScreenProps } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 import { Image } from 'expo-image'
 
+import GroupWapper from '@/components/GroupWrapper'
 import { LineItem, LineItemGroup } from '@/components/LineItem'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
@@ -144,58 +144,62 @@ export default function MyScreen({ navigation }: ScreenProps) {
   const iconColor = theme.colors.primary
 
   return (
-    <ScrollView className="flex flex-col flex-1 py-3">
-      <MaxWidthWrapper>
+    <ScrollView className="flex-1 py-3">
+      <MaxWidthWrapper className="flex-1">
         <LineItemGroup className="mx-2 my-2">{header}</LineItemGroup>
 
         <View className="flex flex-wrap flex-row flex-1 mx-1">
           <View className="basis-1/2 px-1 my-2">
-            <LineItem
-              title="创建的主题"
-              isLast
-              className="overflow-hidden rounded-lg shadow-xs"
-              icon={<DocumentPlusIcon size={22} color={iconColor} />}
-              disabled={authStatus === 'loading'}
-              onPress={handleCreatedTopicsPressed}
-            />
+            <GroupWapper>
+              <LineItem
+                title="创建的主题"
+                isLast
+                icon={<DocumentPlusIcon size={22} color={iconColor} />}
+                disabled={authStatus === 'loading'}
+                onPress={handleCreatedTopicsPressed}
+              />
+            </GroupWapper>
           </View>
           <View className="basis-1/2 px-1 my-2">
-            <LineItem
-              title="收藏的主题"
-              isLast
-              className="overflow-hidden rounded-lg shadow-xs"
-              icon={<StarIcon size={22} color={iconColor} />}
-              disabled={authStatus === 'loading'}
-              onPress={handleCollectedTopicsPressed}
-            />
+            <GroupWapper>
+              <LineItem
+                title="收藏的主题"
+                isLast
+                icon={<StarIcon size={22} color={iconColor} />}
+                disabled={authStatus === 'loading'}
+                onPress={handleCollectedTopicsPressed}
+              />
+            </GroupWapper>
           </View>
           <View className="basis-1/2 px-1 my-2">
-            <LineItem
-              title="回复的主题"
-              isLast
-              className="overflow-hidden rounded-lg shadow-xs"
-              icon={<ReplyIcon size={22} color={iconColor} />}
-              disabled={authStatus === 'loading'}
-              onPress={handleRepliedTopicsPressed}
-            />
+            <GroupWapper>
+              <LineItem
+                title="回复的主题"
+                isLast
+                icon={<ReplyIcon size={22} color={iconColor} />}
+                disabled={authStatus === 'loading'}
+                onPress={handleRepliedTopicsPressed}
+              />
+            </GroupWapper>
           </View>
           <View className="basis-1/2 px-1 my-2">
-            <LineItem
-              title="浏览的主题"
-              isLast
-              className="overflow-hidden rounded-lg shadow-xs"
-              icon={<ClockIcon size={22} color={iconColor} />}
-              disabled={authStatus === 'loading'}
-              onPress={() => {
-                navigation.push('viewed-topics')
-              }}
-            />
+            <GroupWapper>
+              <LineItem
+                title="浏览的主题"
+                isLast
+                icon={<ClockIcon size={22} color={iconColor} />}
+                disabled={authStatus === 'loading'}
+                onPress={() => {
+                  navigation.push('viewed-topics')
+                }}
+              />
+            </GroupWapper>
           </View>
         </View>
 
         <LineItemGroup className="mx-2 my-2">
           <LineItem
-            title="主题标签设置"
+            title="首页 Tab 设置"
             icon={<HomeIcon size={22} color={iconColor} />}
             onPress={() => {
               navigation.push('home-tab-settings')
@@ -209,7 +213,14 @@ export default function MyScreen({ navigation }: ScreenProps) {
             icon={<PhotoIcon size={22} color={iconColor} />}
           />
           <LineItem
-            title="偏好设置"
+            title="主题样式"
+            icon={<PaintBrushIcon size={22} color={iconColor} />}
+            onPress={() => {
+              navigation.push('theme-settings')
+            }}
+          />
+          <LineItem
+            title="功能设置"
             icon={<Cog6ToothIcon size={22} color={iconColor} />}
             onPress={() => {
               navigation.push('preference-settings')
@@ -225,26 +236,12 @@ export default function MyScreen({ navigation }: ScreenProps) {
             }}
             icon={<InformationCircleIcon size={22} color={iconColor} />}
             title="关于"
-          />
-          <LineItem
-            onPress={() => {
-              StoreReview.requestReview()
-            }}
-            icon={<StarIcon size={22} color={iconColor} />}
-            title="五星好评"
-          />
-          <LineItem
-            onPress={() => {
-              navigation.push('feedback')
-            }}
-            icon={<ChatBubbleLeftEllipsisIcon size={22} color={iconColor} />}
-            title="意见反馈"
             isLast
           />
         </LineItemGroup>
 
         {currentUser && (
-          <View className="mx-2 py-7 mb-4 flex-1 justify-end">
+          <View className="mx-2 py-7 mb-4 mt-8 flex-1 justify-end">
             <Pressable
               className={classNames(
                 'flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60',

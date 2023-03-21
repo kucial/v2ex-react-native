@@ -13,6 +13,7 @@ import { SWRResponse } from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -178,12 +179,16 @@ export default function NodeTopicList(props: NodeTopicListProps) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}
-      refreshing={isRefreshing(listSwr)}
-      onRefresh={() => {
-        if (!listSwr.isValidating) {
-          listSwr.mutate()
-        }
-      }}
+      refreshControl={
+        <MyRefreshControl
+          refreshing={isRefreshing(listSwr)}
+          onRefresh={() => {
+            if (!listSwr.isValidating) {
+              listSwr.mutate()
+            }
+          }}
+        />
+      }
       ListHeaderComponent={header}
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />

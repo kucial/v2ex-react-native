@@ -1,8 +1,13 @@
+import { ReactNode } from 'react'
 import { Text, View } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
-export default function SectionHeader(props: { title: string; desc?: string }) {
+export default function SectionHeader(props: {
+  title: string
+  desc?: string
+  secondary?: ReactNode
+}) {
   const { styles } = useTheme()
   return (
     <View className="pt-4 pb-1 pl-3 flex flex-row items-end">
@@ -14,6 +19,7 @@ export default function SectionHeader(props: { title: string; desc?: string }) {
           {props.desc}
         </Text>
       )}
+      {props.secondary}
     </View>
   )
 }

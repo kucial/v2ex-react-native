@@ -53,7 +53,7 @@ function MainTab() {
           tabBarIcon: UserIcon,
           tabBarLabel: '我的',
           title: '我的',
-          header: (props) => <MainScreenHeader {...props} />,
+          header: (props) => <MainScreenHeader {...props} hasBorder />,
         }}
       />
     </Tab.Navigator>

@@ -9,6 +9,7 @@ import useSWRInfinite from 'swr/infinite'
 import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
@@ -145,13 +146,17 @@ export default function MemberReplies(props) {
           listSwr.setSize(listSwr.size + 1)
         }
       }}
-      onRefresh={() => {
-        if (listSwr.isValidating) {
-          return
-        }
-        listSwr.mutate()
-      }}
-      refreshing={isRefreshing(listSwr)}
+      refreshControl={
+        <MyRefreshControl
+          refreshing={isRefreshing(listSwr)}
+          onRefresh={() => {
+            if (listSwr.isValidating) {
+              return
+            }
+            listSwr.mutate()
+          }}
+        />
+      }
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}

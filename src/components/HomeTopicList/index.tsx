@@ -13,6 +13,7 @@ import { uniqBy } from 'lodash'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -176,12 +177,16 @@ function FeedTopicList(props: FeedTopicListProps) {
           listSwr.setSize((size) => size + 1)
         }
       }}
-      refreshing={isRefreshing(listSwr) || false}
-      onRefresh={() => {
-        if (!listSwr.isValidating) {
-          listSwr.mutate()
-        }
-      }}
+      refreshControl={
+        <MyRefreshControl
+          refreshing={isRefreshing(listSwr) || false}
+          onRefresh={() => {
+            if (!listSwr.isValidating) {
+              listSwr.mutate()
+            }
+          }}
+        />
+      }
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}

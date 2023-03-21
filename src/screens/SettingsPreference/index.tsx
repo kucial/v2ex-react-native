@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native'
-import { Switch } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import GroupWapper from '@/components/GroupWrapper'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import MySwitch from '@/components/MySwitch'
 import SectionHeader from '@/components/SectionHeader'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
@@ -153,7 +153,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   </Text>
                 </View>
                 <View className="mr-2 px-2">
-                  <Switch
+                  <MySwitch
                     value={state.feedShowAvatar}
                     onValueChange={(val) =>
                       setState((prev) => ({
@@ -177,7 +177,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   </Text>
                 </View>
                 <View className="mr-2 px-2">
-                  <Switch
+                  <MySwitch
                     value={state.feedShowLastReplyMember}
                     onValueChange={(val) =>
                       setState((prev) => ({
@@ -201,7 +201,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   </Text>
                 </View>
                 <View className="mr-2 px-2">
-                  <Switch
+                  <MySwitch
                     value={state.showHasViewed}
                     onValueChange={(val) => {
                       setState((prev) => ({
@@ -233,7 +233,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   </Text>
                 </View>
                 <View className="mr-2 px-2">
-                  <Switch
+                  <MySwitch
                     value={state.showHasNewReply}
                     onValueChange={(val) => {
                       setState((prev) => ({
@@ -272,7 +272,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   </Text>
                 </View>
                 <View className="mr-2 px-2">
-                  <Switch
+                  <MySwitch
                     value={state.autoRefresh}
                     onValueChange={(val) =>
                       setState((prev) => ({

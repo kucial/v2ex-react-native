@@ -81,7 +81,7 @@ export default function MainScreenHeader(
           <Text
             className="font-bold text-[19px]"
             style={{
-              color: theme.colors.primary,
+              color: theme.colors.text_title,
             }}>
             {title}
           </Text>

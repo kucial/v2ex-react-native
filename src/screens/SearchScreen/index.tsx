@@ -74,7 +74,7 @@ export default function SearchScreen({ navigation }: ScreenProps) {
         ]}>
         <View className="mr-1">
           <BackButton
-            tintColor={theme.colors.text}
+            tintColor={theme.colors.primary}
             onPress={() => {
               navigation.goBack()
             }}

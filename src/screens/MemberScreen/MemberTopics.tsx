@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -91,13 +92,17 @@ export default function MemberTopics(props: { username: string }) {
             listSwr.setSize(listSwr.size + 1)
           }
         }}
-        onRefresh={() => {
-          if (listSwr.isValidating) {
-            return
-          }
-          listSwr.mutate()
-        }}
-        refreshing={isRefreshing(listSwr)}
+        refreshControl={
+          <MyRefreshControl
+            onRefresh={() => {
+              if (listSwr.isValidating) {
+                return
+              }
+              listSwr.mutate()
+            }}
+            refreshing={isRefreshing(listSwr)}
+          />
+        }
         ListFooterComponent={() => {
           return <CommonListFooter data={listSwr} />
         }}

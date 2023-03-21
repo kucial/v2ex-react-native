@@ -49,7 +49,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   const { getItems, clear, removeItem } = useViewedTopics()
   const { showActionSheetWithOptions } = useActionSheet()
   const { data: settings } = useAppSettings()
-  const { styles } = useTheme()
+  const { styles, theme, colorScheme } = useTheme()
   const [filter, setFilter] = useState('')
   const { width } = useWindowDimensions()
 
@@ -116,6 +116,8 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
                 options: ['取消', '清除缓存'],
                 cancelButtonIndex: 0,
                 destructiveButtonIndex: 1,
+                tintColor: theme.colors.primary,
+                userInterfaceStyle: colorScheme,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
@@ -129,6 +131,8 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
       ),
       headerSearchBarOptions: {
         placeholder: '筛选',
+        tintColor: theme.colors.primary,
+        barTintColor: theme.colors.input_bg,
         onSearchButtonPress(e) {
           setFilter(e.nativeEvent.text)
         },

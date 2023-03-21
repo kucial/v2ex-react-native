@@ -129,8 +129,8 @@ function ReplyRow(props: ReplyRowProps) {
   return (
     <MaxWidthWrapper style={props.style}>
       <View
-        className={classNames('pt-2', isPivot && 'bg-yellow-700/5')}
-        style={!isLast && styles.border_b_light}>
+        className={classNames('pt-2')}
+        style={[!isLast && styles.border_b_light, isPivot && styles.highlight]}>
         <View className="flex flex-row pl-2">
           {showAvatar ? (
             <View className="mr-2">

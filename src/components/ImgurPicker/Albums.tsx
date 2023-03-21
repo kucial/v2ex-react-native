@@ -1,5 +1,6 @@
-import { RefreshControl, ScrollView, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 
+import MyRefreshControl from '@/components/MyRefreshControl'
 import { useImgurService } from '@/containers/ImgurService'
 import { ImgurAlbum } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
@@ -18,7 +19,7 @@ export default function Albums(props: AlbumsProps) {
   return (
     <ScrollView
       refreshControl={
-        <RefreshControl
+        <MyRefreshControl
           tintColor={theme.colors.primary}
           refreshing={isRefreshing(albumsSwr)}
           onRefresh={() => {

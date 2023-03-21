@@ -6,9 +6,8 @@ type AppSettings = {
   homeTabs?: HomeTabOption[]
   showHasViewed: boolean
   showHasNewReply: boolean
-  colorScheme?: 'light' | 'dark' | 'auto'
-  // @deprecate theme
-  theme: 'light' | 'dark' | 'auto'
+  colorScheme?: 'light' | 'dark' | 'system'
+  theme: string
   // themeColor: '',
   feedLayout: 'normal' | 'tide'
   feedShowAvatar: boolean

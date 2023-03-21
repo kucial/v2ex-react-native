@@ -47,6 +47,7 @@ type ThemeColors = Theme['colors'] & {
   bg_layer1: string
   bg_layer2: string
   bg_layer3: string
+  shadow: string
 
   bg_danger_mask: string
   bg_highlight_mask: string
@@ -105,6 +106,8 @@ type ThemeStyles = {
   border_l_light: ViewStyle
   tag__bg: ViewStyle
   tag__text: TextStyle
+  shadow: ViewStyle
+  shadow_light: ViewStyle
 }
 
 type MyTheme = {
@@ -112,11 +115,17 @@ type MyTheme = {
   colors: ThemeColors
 }
 
+type MyThemeDefinition = {
+  title: string
+  name: string
+  light: MyTheme
+  dark: MyTheme
+}
+
 type ThemeService = {
   theme: MyTheme
   styles: ThemeStyles
-  colorScheme: ColorSchemeName
-  setColorScheme: (str: ColorSchemeName) => void
+  colorScheme: 'light' | 'dark'
 }
 
 declare module 'react-native' {

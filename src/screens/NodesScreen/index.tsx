@@ -1,11 +1,12 @@
 import { useCallback, useMemo, useRef } from 'react'
-import { RefreshControl, SectionList, Text, View } from 'react-native'
+import { SectionList, Text, View } from 'react-native'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { useFocusEffect } from '@react-navigation/native'
 import useSWR from 'swr'
 
 import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import SearchInput from '@/components/SearchInput'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
@@ -23,7 +24,7 @@ type ScreenProps = BottomTabScreenProps<MainTabParamList, 'nodes'>
 export default function NodesScreen({ navigation }: ScreenProps) {
   const { status } = useAuthService()
 
-  const { theme, styles } = useTheme()
+  const { styles } = useTheme()
 
   const [filter, setFilter] = useCachedState<string>(CACHE_KEY, '')
 
@@ -94,7 +95,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
         )
       },
     }
-  }, [commonNodesSwr.data, collectedNodesSwr.data, filter])
+  }, [commonNodesSwr.data, collectedNodesSwr.data, filter, styles.layer1])
 
   useFocusEffect(
     useCallback(() => {
@@ -168,8 +169,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
           )
         }}
         refreshControl={
-          <RefreshControl
-            tintColor={theme.colors.primary}
+          <MyRefreshControl
             refreshing={
               isRefreshing(commonNodesSwr) ||
               (hasAuthed && isRefreshing(collectedNodesSwr))

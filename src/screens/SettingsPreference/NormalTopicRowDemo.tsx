@@ -10,12 +10,12 @@ import { DemoRowProps } from './types'
 const NormalTopicRowDemo = (props: DemoRowProps) => {
   const { node, member, title, replies, last_reply_time, last_reply_by } =
     props.data
-  const { showAvatar, showLastReplyMember, viewedStatus } = props
+  const { showAvatar, showLastReplyMember, viewedStatus, isLast } = props
   const { styles } = useTheme()
   return (
     <View
       className={classNames('flex flex-row items-center')}
-      style={[styles.layer1, styles.border_b_light]}>
+      style={[styles.layer1, !isLast && styles.border_b_light]}>
       {showAvatar ? (
         <View className="px-2 py-2 self-start">
           <Image

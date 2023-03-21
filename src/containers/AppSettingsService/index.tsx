@@ -13,7 +13,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   showHasViewed: true,
   showHasNewReply: true,
 
-  theme: 'auto', // 'light' | 'dark' | 'auto'
+  theme: 'r2v',
   // themeColor: '', // 主题强调色
   feedLayout: 'normal', // normal | tide
   feedShowAvatar: true,

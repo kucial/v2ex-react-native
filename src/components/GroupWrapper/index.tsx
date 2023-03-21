@@ -4,12 +4,23 @@ import { View } from 'react-native'
 import { styled } from 'nativewind'
 
 const GroupWapper = styled(
-  (props: { style?: ViewStyle; children: ReactNode }) => {
+  (props: {
+    style?: ViewStyle | ViewStyle[]
+    children: ReactNode
+    innerStyle?: ViewStyle | ViewStyle[]
+  }) => {
     return (
       <View
-        className="overflow-hidden rounded-lg shadow-xs"
-        style={props.style}>
-        {props.children}
+        className="flex-1"
+        style={[
+          props.style,
+          // styles.shadow_light
+        ]}>
+        <View
+          className="flex-1 w-full rounded-lg overflow-hidden"
+          style={props.innerStyle}>
+          {props.children}
+        </View>
       </View>
     )
   },
