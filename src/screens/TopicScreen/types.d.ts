@@ -12,4 +12,5 @@ export type BarProps = {
   thanked: boolean
   onThankTopic(): void
   onShare(): void
+  isFocused?: boolean
 }

@@ -12,6 +12,7 @@ import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { useIsFocused } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
@@ -418,6 +419,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     }
   }, [topic])
 
+  const isFocused = useIsFocused()
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: (props) => (
@@ -793,6 +796,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         scrollEventThrottle={16}
       />
       <BarComponent
+        isFocused={isFocused}
         onInitReply={initReply}
         scrollControlRef={scrollControlRef}
         repliesCount={topic.replies}
