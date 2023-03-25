@@ -9,14 +9,14 @@ import AppSidebar from '../AppSidebar'
 import { AppLayoutContext } from './context'
 
 const ANIMATE_DURATION = 300
-const OFFSET_Y = 150
+const OFFSET_X = -60
 
 export default function Layout(props: { children: ReactNode }) {
   const { styles } = useTheme()
   const padLayout = usePadLayout()
   const [nav, setNav] = useState(null)
   const fadeAnim = useRef(new Animated.Value(0)).current
-  const translateYAnim = useRef(new Animated.Value(OFFSET_Y)).current
+  const translateXAnim = useRef(new Animated.Value(OFFSET_X)).current
 
   useEffect(() => {
     if (!!nav) {
@@ -26,7 +26,7 @@ export default function Layout(props: { children: ReactNode }) {
           duration: ANIMATE_DURATION,
           useNativeDriver: true,
         }),
-        Animated.timing(translateYAnim, {
+        Animated.timing(translateXAnim, {
           toValue: 0,
           duration: ANIMATE_DURATION,
           useNativeDriver: true,
@@ -47,8 +47,8 @@ export default function Layout(props: { children: ReactNode }) {
               duration: ANIMATE_DURATION,
               useNativeDriver: true,
             }),
-            Animated.timing(translateYAnim, {
-              toValue: OFFSET_Y,
+            Animated.timing(translateXAnim, {
+              toValue: OFFSET_X,
               duration: ANIMATE_DURATION,
               useNativeDriver: true,
             }),
@@ -78,7 +78,7 @@ export default function Layout(props: { children: ReactNode }) {
                     marginTop: 'auto',
                     paddingBottom: 8,
                     alignItems: 'center',
-                    transform: [{ translateY: translateYAnim }],
+                    transform: [{ translateX: translateXAnim }],
                   }}>
                   {nav}
                 </Animated.View>
