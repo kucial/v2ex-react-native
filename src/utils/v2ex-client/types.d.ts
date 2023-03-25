@@ -41,8 +41,30 @@ export type MemberBasic = {
   avatar_large: UrlString
 }
 
+export type MemberProfile = {
+  username: string
+  website: string
+  company: string
+  company_title: string
+  location: string
+  tagline: string
+  bio: string
+}
+
 export type MemberDetail = MemberBasic & {
   id: number
+  bio: string | null
+  btc: string | null
+  github: string | null
+  location: string | null
+  psn: string | null
+  status: 'found' | 'not_found'
+  tagline: string | null
+  twitter: string | null
+  url: string
+  website: string | null
+  created: number
+  last_modified: number
   meta?: {
     blocked: boolean
     watched: boolean

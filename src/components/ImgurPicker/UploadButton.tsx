@@ -4,7 +4,6 @@ import { Pressable } from 'react-native'
 import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 import * as ImagePicker from 'expo-image-picker'
 import * as Sentry from 'sentry-expo'
-import { useSWRConfig } from 'swr'
 
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
@@ -15,7 +14,6 @@ import { useAlbum } from './context'
 export default function UploadButton(props) {
   const imgur = useImgurService()
   const album = useAlbum()
-  const { mutate } = useSWRConfig()
   const alert = useAlertService()
   const aIndicator = useActivityIndicator()
   const uploadImage = useCallback(
@@ -67,14 +65,14 @@ export default function UploadButton(props) {
         try {
           aIndicator.show('imgur-upload')
           let uploaded
-          if (result.selected) {
+          if (result.assets) {
             uploaded = await Promise.all(
-              result.selected.map((item) => {
-                return uploadImage(item, album)
+              result.assets.map((item) => {
+                return uploadImage(item)
               }),
             )
           } else {
-            const imageEntity = await uploadImage(result, album)
+            const imageEntity = await uploadImage(result)
             uploaded = [imageEntity]
           }
           // 刷新缓存

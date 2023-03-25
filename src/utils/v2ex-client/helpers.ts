@@ -10,7 +10,7 @@ import {
 
 import { BASE_URL } from './constants'
 
-const resolveUrl = (url?: string) => {
+export const resolveUrl = (url?: string) => {
   if (!url) {
     return url
   }
@@ -55,7 +55,7 @@ export function cheerioDoc(html: string) {
 
   $('.__cf_email__').each(function (i, el) {
     const email = decodeEmail($(el).attr('data-cfemail'), 0)
-    console.log('.__cf_email__', i, email)
+    // console.log('.__cf_email__', i, email)
     $(el).replaceWith(function () {
       return `<a href="mailto:${email}">${email}</a>`
     })

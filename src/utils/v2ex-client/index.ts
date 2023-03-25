@@ -9,6 +9,7 @@ import {
   HomeTabOption,
   HomeTopicFeed,
   MemberDetail,
+  MemberProfile,
   MemberTopicFeed,
   NodeDetail,
   NodeExtra,
@@ -30,6 +31,7 @@ import {
   nodeDetailFromPage,
   nodeFromLink,
   paginationFromText,
+  resolveUrl,
   topicDetailFromPage,
   topicFromLink,
   topicReplyFromCell,
@@ -1419,7 +1421,6 @@ export async function verify2faCode(data: { once: string; code: string }) {
 
   const $ = cheerioDoc(res.data)
   if (/\/2fa/.test(responseURL)) {
-    console.log(res.data)
     const problems = $('.problem ul li')
       .map(function (_, el) {
         return $(el).text().trim()
@@ -1453,5 +1454,168 @@ export async function logout(): Promise<StatusResponse> {
   return {
     success: true,
     message: '你已经完全登出',
+  }
+}
+
+const _settingsForm = ($) => {
+  const data: Record<string, any> = {}
+
+  //text
+  $(`form[action="/settings"] input[type=text]`).each((i, el) => {
+    const $el = $(el)
+    data[$el.attr('name')] = $el.attr('value')
+  })
+  // checkbox
+  $(`form[action="/settings"] input[type=checkbox]`).each((i, el) => {
+    const $el = $(el)
+    data[$el.attr('name')] = !!$el.attr('checked')
+  })
+  // select
+  $(`form[action="/settings"] select`).each((i, el) => {
+    const $el = $(el)
+    data[$el.attr('name')] = $el.val()
+  })
+
+  data.once = $('input[name=once]').attr('value')
+  return data
+}
+export async function fetchSettingsForm() {
+  const res = await request({
+    url: '/settings',
+  })
+
+  const $ = cheerioDoc(res.data)
+
+  return {
+    data: _settingsForm($),
+  }
+}
+
+export async function updateSettings(data: MemberProfile & { once: string }) {
+  const res = await request({
+    url: `/settings`,
+    method: 'POST',
+    data,
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      Referer: `${BASE_URL}/settings`,
+      origin: BASE_URL,
+    },
+  })
+
+  const $ = cheerioDoc(res.data)
+
+  return {
+    data: _settingsForm($),
+  }
+}
+
+export async function fetchSocialForm() {
+  const res = await request({
+    url: '/settings/social',
+  })
+
+  const fields = []
+  const values = {}
+
+  const $ = cheerioDoc(res.data)
+  $('form[action=/settings/social] input[type=text]').each((i, el) => {
+    const name = $(el).attr('name')
+    const label = $(el).prev().text()
+    const image = resolveUrl($(el).prev().find('img').attr('src'))
+    fields.push({
+      name,
+      label,
+      image,
+    })
+    values[name] = $(el).attr('value')
+  })
+  return {
+    data: {
+      values,
+      once: $('input[name=once]').attr('value'),
+      fields,
+    },
+  }
+}
+
+export async function updateSocial(data) {
+  const res = await request({
+    url: '/settings/social',
+    method: 'POST',
+    data,
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      Referer: `${BASE_URL}/settings`,
+      origin: BASE_URL,
+    },
+  })
+
+  const $ = cheerioDoc(res.data)
+  const values = {}
+  $('form[action=/settings/social] input[type=text]').each((i, el) => {
+    const name = $(el).attr('name')
+    values[name] = $(el).attr('value')
+  })
+
+  return {
+    data: values,
+  }
+}
+
+export async function fetchAvatarForm() {
+  const res = await request({
+    url: '/settings/avatar',
+  })
+  const $ = cheerioDoc(res.data)
+  const avatars = $('.avatar-list img')
+    .map(function (i, el) {
+      return $(el).attr('src')
+    })
+    .toArray()
+  const once = $('input[name=once]').attr('value')
+  return {
+    data: {
+      avatars,
+      once,
+    },
+  }
+}
+
+export async function uploadAvatar(data: {
+  avatar: {
+    uri: string
+    name: string
+    type: string
+  }
+  once?: string
+}) {
+  const formData = new FormData()
+  formData.append('avatar', data.avatar)
+  formData.append('once', data.once)
+  const res = await request({
+    url: '/settings/avatar',
+    method: 'POST',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    transformRequest: (data) => data,
+  })
+
+  const $ = cheerioDoc(res.data)
+
+  const avatars = $('.avatar-list img')
+    .map(function (i, el) {
+      return $(el).attr('src')
+    })
+    .toArray()
+  const once = $('input[name=once]').attr('value')
+
+  return {
+    data: {
+      avatars,
+      once,
+    },
   }
 }

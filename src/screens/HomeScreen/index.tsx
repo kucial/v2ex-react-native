@@ -9,9 +9,10 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import HomeTopicList from '@/components/HomeTopicList'
 import NodeTopicList from '@/components/NodeTopicList'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
+import { APP_SIDEBAR_WIDTH } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { useCachedState } from '@/utils/hooks'
+import { useCachedState, usePadLayout } from '@/utils/hooks'
 
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'
@@ -32,6 +33,7 @@ export default function HomeScreen(props: HomeScreenProps) {
   } = useAppSettings()
   const { navigation } = props
   const { width } = useWindowDimensions()
+  const padLayout = usePadLayout()
   const [error, setError] = useState<Error>(null)
   const { theme, styles } = useTheme()
   const routes = useMemo(() => {
@@ -210,7 +212,7 @@ export default function HomeScreen(props: HomeScreenProps) {
       renderScene={renderScene}
       renderTabBar={renderTabBar}
       onIndexChange={setIndex}
-      initialLayout={{ width }}
+      initialLayout={{ width: padLayout ? width - APP_SIDEBAR_WIDTH : width }}
     />
   )
 }

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { ViewStyle } from 'react-native'
+import type { ViewProps, ViewStyle } from 'react-native'
 import { View } from 'react-native'
 import { styled } from 'nativewind'
 
@@ -8,6 +8,7 @@ const GroupWapper = styled(
     style?: ViewStyle | ViewStyle[]
     children: ReactNode
     innerStyle?: ViewStyle | ViewStyle[]
+    pointerEvents?: ViewProps['pointerEvents']
   }) => {
     return (
       <View
@@ -15,7 +16,8 @@ const GroupWapper = styled(
         style={[
           props.style,
           // styles.shadow_light
-        ]}>
+        ]}
+        pointerEvents={props.pointerEvents}>
         <View
           className="flex-1 w-full rounded-lg overflow-hidden"
           style={props.innerStyle}>
