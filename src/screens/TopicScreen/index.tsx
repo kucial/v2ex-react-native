@@ -751,7 +751,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               </View>
             )}
 
-            {(!!topic.replies || !!topic.clicks) && (
+            {!!topic.replies || !!topic.clicks ? (
               <View className="flex flex-row py-3 pl-1 mt-3">
                 <Text className="text-xs pr-4" style={styles.text_desc}>
                   {topic.replies} 条回复
@@ -762,6 +762,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                   </Text>
                 )}
               </View>
+            ) : (
+              <View className="py-3" />
             )}
           </View>
         </MaxWidthWrapper>

@@ -137,10 +137,10 @@ export default function AboutScreen(props) {
               title="五星好评"
             />
             <LineItem
-              onPress={() => {
+              onPress={async () => {
                 try {
-                  Linking.openURL('mailto://kongkx.yang@gmail.com')
-                } catch {
+                  await Linking.openURL('mailto://kongkx.yang@gmail.com')
+                } catch (err) {
                   props.navigation.push('feedback')
                 }
               }}
