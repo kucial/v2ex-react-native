@@ -164,6 +164,12 @@ export type Notification = {
   time: string
 }
 
+export type BalanceBrief = {
+  gold: number
+  silver: number
+  bronze: number
+}
+
 // API RESPONSE
 type EntityResponse<T, M = null> = {
   data: T

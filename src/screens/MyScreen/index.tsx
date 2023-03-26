@@ -25,6 +25,8 @@ import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
+import BalanceArea from './BalanceArea'
+
 type ScreenProps = CompositeScreenProps<
   BottomTabScreenProps<MainTabParamList, 'my'>,
   NativeStackScreenProps<AppStackParamList>
@@ -38,6 +40,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
   }, [])
   const {
     user: currentUser,
+    meta: currentUserMeta,
     status: authStatus,
     logout,
     composeAuthedNavigation,
@@ -102,6 +105,18 @@ export default function MyScreen({ navigation }: ScreenProps) {
             </Text>
           </View>
         </View>
+        {currentUserMeta?.balance && (
+          <Pressable
+            className="-mr-2 pl-2 justify-center active:opacity-50"
+            onPress={(e) => {
+              e.stopPropagation()
+              navigation.push('profile', {
+                initialTab: 'balance',
+              })
+            }}>
+            <BalanceArea data={currentUserMeta.balance} />
+          </Pressable>
+        )}
       </Pressable>
     )
   } else if (

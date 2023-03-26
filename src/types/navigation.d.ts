@@ -30,7 +30,9 @@ declare global {
       node?: NodeDetail
     }
     notification: null
-    profile: null
+    profile: {
+      initialTab?: string
+    }
     'created-topics': null
     'collected-topics': null
     'replied-topics': null

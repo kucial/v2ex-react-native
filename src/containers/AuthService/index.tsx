@@ -15,7 +15,11 @@ import { useCachedState } from '@/utils/hooks'
 import { getJSON, setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import clientService from '@/utils/v2ex-client/service'
-import { MemberDetail, TFA_Error } from '@/utils/v2ex-client/types'
+import {
+  BalanceBrief,
+  MemberDetail,
+  TFA_Error,
+} from '@/utils/v2ex-client/types'
 
 import { useAlertService } from '../AlertService'
 import prompt2faInput from './prompt2FaInput'
@@ -249,6 +253,25 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
         }
       })
     })
+    return unsubscribe
+  }, [])
+
+  // 处理 钱包信息
+  useEffect(() => {
+    const unsubscribe = v2exClient.subscribe(
+      'balance_brief',
+      (balanceBrief: BalanceBrief) => {
+        setState((prev) => {
+          return {
+            ...prev,
+            meta: {
+              ...prev.meta,
+              balance: balanceBrief,
+            },
+          }
+        })
+      },
+    )
     return unsubscribe
   }, [])
 

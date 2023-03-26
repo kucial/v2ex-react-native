@@ -1,6 +1,7 @@
-import { MemberDetail } from '@/utils/v2ex-client/types'
+import { BalanceBrief, MemberDetail } from '@/utils/v2ex-client/types'
 export interface MemberMeta {
   unread_count: number
+  balance?: BalanceBrief
 }
 
 export interface AuthState {

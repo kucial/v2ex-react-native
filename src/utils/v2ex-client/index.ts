@@ -39,6 +39,7 @@ import {
 } from './helpers'
 import service from './service'
 import {
+  BalanceBrief,
   CollectionResponse,
   EntityResponse,
   PaginatedResponse,
@@ -47,15 +48,16 @@ import {
   TopicId,
 } from './types'
 
-type EVENT = 'unread_count' | 'current_user' | '2fa_enabled'
+type EVENT = 'unread_count' | 'current_user' | '2fa_enabled' | 'balance_brief'
 type UnreadCountValue = number
 
-type EventValue = UnreadCountValue | TFA_Error
+type EventValue = UnreadCountValue | TFA_Error | BalanceBrief
 type Callback = (data?: EventValue) => void
 const listeners: Record<EVENT, Set<Callback>> = {
   unread_count: new Set(),
   current_user: new Set(),
   '2fa_enabled': new Set(),
+  balance_brief: new Set(),
 }
 export const subscribe = (event: EVENT, callback: Callback) => {
   listeners[event].add(callback)
@@ -151,6 +153,19 @@ instance.interceptors.response.use(
         }
       }
       dispatch('unread_count', unread_count)
+
+      const balanceText = $('.balance_area').text()
+      if (balanceText) {
+        const els = [0, 0, 0]
+          .concat(balanceText.trim().split(/\s+/).map(Number))
+          .reverse()
+        const balanceBrief = {} as BalanceBrief
+        balanceBrief.bronze = els[0]
+        balanceBrief.silver = els[1]
+        balanceBrief.gold = els[2]
+        console.log(balanceBrief)
+        dispatch('balance_brief', balanceBrief)
+      }
     }
 
     return res
@@ -1617,5 +1632,48 @@ export async function uploadAvatar(data: {
       avatars,
       once,
     },
+  }
+}
+
+export async function getBalanceDetail(params: { p?: number }) {
+  const { data: html } = await request({
+    url: '/balance',
+    params,
+  })
+  const $ = cheerioDoc(html)
+
+  const detailTable = $('#Wrapper table').get(1)
+
+  const data = $(detailTable)
+    .find('tr')
+    .map(function (i, el) {
+      if (i === 0) {
+        // skip header
+        return null
+      }
+
+      const columns = $(el).find('td')
+      const typeText = $(columns[0]).text().trim()
+      const time = $(columns[0]).find('.gray').text().trim()
+      const amount = $(columns[1]).text().trim()
+      const balance = $(columns[2]).text().trim()
+      const description = $(columns[3]).text().trim()
+      return {
+        type: typeText.replace(time, '').trim(),
+        time,
+        amount: Number(amount),
+        balance,
+        description,
+      }
+    })
+    .toArray()
+    .filter(Boolean)
+  const footerTable = $('#Wrapper table').last()
+  const paginationText = $(footerTable).find('[align=center]').text()
+  const pagination = paginationFromText(paginationText)
+  return {
+    data,
+    pagination,
+    fetchedAt: Date.now(),
   }
 }
