@@ -163,7 +163,7 @@ instance.interceptors.response.use(
         balanceBrief.bronze = els[0]
         balanceBrief.silver = els[1]
         balanceBrief.gold = els[2]
-        console.log(balanceBrief)
+
         dispatch('balance_brief', balanceBrief)
       }
     }
