@@ -32,7 +32,7 @@ export default function HomeScreen(props: HomeScreenProps) {
     initHomeTabs,
   } = useAppSettings()
   const { navigation } = props
-  const { width } = useWindowDimensions()
+  const { width, height } = useWindowDimensions()
   const padLayout = usePadLayout()
   const [error, setError] = useState<Error>(null)
   const { theme, styles } = useTheme()
@@ -212,7 +212,10 @@ export default function HomeScreen(props: HomeScreenProps) {
       renderScene={renderScene}
       renderTabBar={renderTabBar}
       onIndexChange={setIndex}
-      initialLayout={{ width: padLayout ? width - APP_SIDEBAR_WIDTH : width }}
+      initialLayout={{
+        width: padLayout ? width - APP_SIDEBAR_WIDTH : width,
+        height: padLayout ? height - 42 - 20 : height - 42 - 50 - 20,
+      }}
     />
   )
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
+  Image,
   Linking,
-  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -19,7 +19,6 @@ import * as StoreReview from 'react-native-store-review'
 import CookieManager from '@react-native-cookies/cookies'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
-import { Image } from 'expo-image'
 
 import brand from '@/assets/brand.png'
 import brandInverse from '@/assets/brand-inverse.png'
@@ -59,10 +58,17 @@ export default function AboutScreen(props) {
               }}>
               <View className="my-5">
                 <View className="flex-1 flex flex-row justify-center">
-                  <Image
-                    source={colorScheme === 'light' ? brand : brandInverse}
-                    style={{ width: 120, height: (120 * 819) / 1085 }}
-                  />
+                  {colorScheme === 'light' ? (
+                    <Image
+                      source={brand}
+                      style={{ width: 120, height: (120 * 819) / 1085 }}
+                    />
+                  ) : (
+                    <Image
+                      source={brandInverse}
+                      style={{ width: 120, height: (120 * 819) / 1085 }}
+                    />
+                  )}
                 </View>
                 {/* <Text
                   className="text-2xl font-bold text-center"
@@ -78,24 +84,14 @@ export default function AboutScreen(props) {
               <View>
                 <Text className="text-center" style={styles.text}>
                   {Constants.manifest.version}
-                  <Text className="ml-2">
-                    {Platform.OS === 'ios' &&
-                      Constants.manifest.ios.buildNumber}
-                    {Platform.OS === 'android' &&
-                      Constants.manifest.android.versionCode}
-                  </Text>
                 </Text>
               </View>
 
-              {Constants.manifest.extra.buildTime && (
-                <View className="mt-2">
-                  <Text
-                    className="text-sm text-center"
-                    style={styles.text_meta}>
-                    构建时间: {Constants.manifest.extra.buildTime}
-                  </Text>
-                </View>
-              )}
+              <View className="mt-2">
+                <Text className="text-sm text-center" style={styles.text_meta}>
+                  {Constants.manifest.extra.buildTag}
+                </Text>
+              </View>
               <View className="ml-4 h-[20]" style={styles.border_b} />
             </Pressable>
 

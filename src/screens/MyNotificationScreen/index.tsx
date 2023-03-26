@@ -12,10 +12,13 @@ import NotificationRow from './NotificationRow'
 
 const fetcher = ([_, page]) => getMyNotifications({ p: page })
 export default function NotificationScreen() {
-  const { updateMeta } = useAuthService()
-  const getKey = useCallback((index: number): [string, number] => {
-    return ['/page/notifications.json', index + 1]
-  }, [])
+  const { updateMeta, user } = useAuthService()
+  const getKey = useCallback(
+    (index: number): [string, number] => {
+      return [`/member/${user.username}/notifications.json`, index + 1]
+    },
+    [user.username],
+  )
   const listSwr = useSWRInfinite(getKey, fetcher, {
     revalidateOnMount: true,
     onSuccess: () => {
