@@ -1,6 +1,8 @@
 import { CSSProperties, useEffect } from 'react'
-import { LayoutChangeEvent, Platform, Pressable } from 'react-native'
+import { LayoutChangeEvent, Pressable } from 'react-native'
 import WebView from 'react-native-webview'
+
+import { staticAsset } from '@/utils/assets'
 
 import { useEditor } from './context'
 
@@ -13,10 +15,7 @@ type EditorRenderProps = {
 }
 
 export default function EditorRender(props: EditorRenderProps) {
-  const source =
-    Platform.OS === 'ios'
-      ? 'Static.bundle/editor.html'
-      : 'file:///android_asset/editor.html'
+  const source = staticAsset('editor.html')
 
   const editor = useEditor()
   useEffect(() => {

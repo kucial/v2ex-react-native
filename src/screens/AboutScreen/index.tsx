@@ -20,8 +20,6 @@ import CookieManager from '@react-native-cookies/cookies'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
 
-import brand from '@/assets/brand.png'
-import brandInverse from '@/assets/brand-inverse.png'
 import GithubIcon from '@/components/GithubIcon'
 import GroupWapper from '@/components/GroupWrapper'
 import { LineItem } from '@/components/LineItem'
@@ -29,6 +27,7 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { staticAsset } from '@/utils/assets'
 import storage from '@/utils/storage'
 
 export default function AboutScreen(props) {
@@ -58,17 +57,15 @@ export default function AboutScreen(props) {
               }}>
               <View className="my-5">
                 <View className="flex-1 flex flex-row justify-center">
-                  {colorScheme === 'light' ? (
-                    <Image
-                      source={brand}
-                      style={{ width: 120, height: (120 * 819) / 1085 }}
-                    />
-                  ) : (
-                    <Image
-                      source={brandInverse}
-                      style={{ width: 120, height: (120 * 819) / 1085 }}
-                    />
-                  )}
+                  <Image
+                    source={{
+                      uri:
+                        colorScheme === 'light'
+                          ? staticAsset('brand-default.png')
+                          : staticAsset('brand-inverse.png'),
+                    }}
+                    style={{ width: 120, height: (120 * 819) / 1085 }}
+                  />
                 </View>
                 {/* <Text
                   className="text-2xl font-bold text-center"
