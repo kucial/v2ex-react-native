@@ -14,24 +14,24 @@ export default function BalanceArea(props: { data: BalanceBrief }) {
     <View className="flex flex-row items-center">
       {!!data.gold && (
         <View className="flex flex-row">
-          <Image className="w-[18] h-[18]" source={goldCoin} />
-          <View className="mx-2">
+          <Image className="w-[16] h-[16]" source={goldCoin} />
+          <View className="mx-[6]">
             <Text style={styles.text}>{data.gold}</Text>
           </View>
         </View>
       )}
       {!!data.silver && (
         <View className="flex flex-row">
-          <Image className="w-[18] h-[18]" source={silverCoin} />
-          <View className="mx-2">
+          <Image className="w-[16] h-[16]" source={silverCoin} />
+          <View className="mx-[6]">
             <Text style={styles.text}>{data.silver}</Text>
           </View>
         </View>
       )}
       {!!data.bronze && (
         <View className="flex flex-row">
-          <Image className="w-[18] h-[18]" source={bronzeCoin} />
-          <View className="mx-2">
+          <Image className="w-[16] h-[16]" source={bronzeCoin} />
+          <View className="mx-[6]">
             <Text style={styles.text}>{data.bronze}</Text>
           </View>
         </View>

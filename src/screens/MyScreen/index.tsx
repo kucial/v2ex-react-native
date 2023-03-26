@@ -91,7 +91,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
         }}>
         <Image
           source={{ uri: currentUser.avatar_normal }}
-          className="w-[40px] h-[40px] bg-neutral-100 mr-3"
+          className="w-[40px] h-[40px] rounded bg-neutral-100 mr-3"
         />
         <View className="flex-1">
           <Text
