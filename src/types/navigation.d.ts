@@ -38,6 +38,9 @@ declare global {
     'replied-topics': null
     'viewed-topics': null
     settings: null
+    'edit-topic': {
+      id: number
+    }
     'imgur-settings': {
       autoBack?: boolean
     }

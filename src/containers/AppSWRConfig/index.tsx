@@ -83,6 +83,8 @@ function AppSWRConfig(props: PropsWithChildren) {
         },
         compare(a, b) {
           if (
+            a &&
+            b &&
             typeof a === 'object' &&
             typeof b === 'object' &&
             a.data &&

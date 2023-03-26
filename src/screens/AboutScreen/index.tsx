@@ -166,7 +166,6 @@ export default function AboutScreen(props) {
                       }
                       storage.delete(key)
                     })
-                    Image.clearDiskCache()
                     await CookieManager.clearAll()
                     RNRestart.Restart()
                   }}>
@@ -184,7 +183,6 @@ export default function AboutScreen(props) {
                   style={[styles.layer1]}
                   onPress={async () => {
                     storage.clearAll()
-                    Image.clearDiskCache()
                     await CookieManager.clearAll()
                     RNRestart.Restart()
                   }}>

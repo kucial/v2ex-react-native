@@ -20,6 +20,7 @@ const debug = false
 
 type EditorProviderProps = {
   children: ReactNode
+  onChange?(value: any): void
 }
 const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
   (props, ref) => {
@@ -168,6 +169,10 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
                   _hasFocus: false,
                 }))
                 break
+              case 'data':
+                if (props.onChange) {
+                  props.onChange(data)
+                }
               default:
                 console.log('NOT_HANDLED EVENT', data)
             }

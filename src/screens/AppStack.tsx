@@ -28,6 +28,7 @@ import SettingsImgur from './SettingsImgur'
 import SettingsPreference from './SettingsPreference'
 import SettingsTheme from './SettingsTheme'
 import SigninScreen from './SigninScreen'
+import TopicEdit from './TopicEdit'
 import TopicScreen from './TopicScreen'
 
 const Stack = createNativeStackNavigator<AppStackParamList>()
@@ -67,7 +68,7 @@ function AppStack() {
           )
         },
       }}
-      // initialRouteName={'theme-settings'}
+      // initialRouteName={'edit-topic'}
     >
       {/* <Stack.Screen
         name="main"
@@ -179,6 +180,13 @@ function AppStack() {
           options={{
             title: '新主题',
             animation: 'slide_from_bottom',
+          }}
+        />
+        <Stack.Screen
+          name="edit-topic"
+          component={TopicEdit}
+          options={{
+            title: '编辑主题',
           }}
         />
       </Stack.Group>

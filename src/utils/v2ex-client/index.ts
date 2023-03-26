@@ -509,6 +509,177 @@ export async function reportTopic({
   }
 }
 
+export async function createTopic(data: {
+  title: string
+  content?: string
+  node_name: string
+  syntax: 'default' | 'markdown'
+  once?: string
+}) {
+  if (!data.once || data.once === ONCP) {
+    const onceRes = await fetchOnce()
+    data.once = onceRes.data
+  }
+  const res = await request({
+    url: `/write`,
+    method: 'POST',
+    data,
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      Referer: `${BASE_URL}/write`,
+      origin: BASE_URL,
+    },
+  })
+
+  const $ = cheerioDoc(res.data)
+
+  if (res.request?.responseURL && /\/write/.test(res.request.responseURL)) {
+    const messages = $('.problem ul li')
+      .map(function (_, el) {
+        return $(el).text().trim()
+      })
+      .toArray()
+
+    throw new ApiError({
+      code: 'PROBLEMS',
+      message: $('.problem').contents().first().text() || '主题创建失败',
+      data: messages,
+    })
+  }
+
+  if (res.request?.responseURL && /\/t\/\d+/.test(res.request.responseURL)) {
+    const match = /\/t\/(\d+)/.exec(res.request.responseURL)
+    const topic = topicDetailFromPage($, Number(match[1]))
+    return {
+      success: true,
+      data: topic,
+    }
+  }
+  throw new ApiError({
+    code: 'NOT_HANDLED_RESPONSE',
+    message: '服务异常（未知的返回类型）',
+  })
+}
+
+export async function fetchTopicEditForm(id: number) {
+  const res = await request({
+    url: `/edit/topic/${id}`,
+    method: 'GET',
+  })
+
+  const $ = cheerioDoc(res.data)
+
+  if (!$('form').length) {
+    throw new ApiError({
+      code: 'NOT_ALLOWED',
+      message: '你不能编辑这个主题',
+    })
+  }
+
+  const syntaxOptions = $('select[name=syntax] option')
+    .map(function (i, el) {
+      return {
+        value: $(el).attr('value'),
+        label: $(el).text().trim(),
+      }
+    })
+    .toArray()
+
+  const values = {
+    title: $('[name=title]').val() as string,
+    content: $('[name=content]').val() as string,
+    syntax: $('select[name=syntax]').val() as any,
+    once: $('input[name=once]').val() as string,
+  }
+
+  return {
+    data: {
+      schema: {
+        syntaxOptions,
+      },
+      values,
+    },
+  }
+}
+
+export async function editTopic(
+  id: number,
+  data: {
+    title: string
+    content?: string
+    syntax: 0 | 1 // 0: default | 1: markdown
+  },
+) {
+  // data: { title, content, syntax, selected_syntax, }
+  const res = await request({
+    url: `/edit/topic/${id}`,
+    method: 'POST',
+    data,
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      Referer: `${BASE_URL}/edit/topic/${id}`,
+      origin: BASE_URL,
+    },
+  })
+
+  if (
+    res.request?.responseURL &&
+    /\/edit\/topic\//.test(res.request.responseURL)
+  ) {
+    throw new ApiError({
+      code: 'EDIT_NOT_ALLOWED',
+      message: '你不能编辑这个主题',
+    })
+  }
+  const $ = cheerioDoc(res.data)
+  const topic = topicDetailFromPage($, id)
+  return {
+    data: topic,
+    fetchedAt: Date.now(),
+  }
+}
+
+export async function moveTopic(
+  id: number,
+  data: {
+    destination: string
+    memo?: string
+    once?: string
+  },
+) {
+  if (!data.once || data.once === ONCP) {
+    const onceRes = await fetchOnce()
+    data.once = onceRes.data
+  }
+
+  const res = await request({
+    url: `/move/topic/${id}`,
+    method: 'POST',
+    data,
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      Referer: `${BASE_URL}/move/topic/${id}`,
+      origin: BASE_URL,
+    },
+  })
+  if (
+    res.request?.responseURL &&
+    /\/edit\/move\//.test(res.request.responseURL)
+  ) {
+    throw new ApiError({
+      code: 'EDIT_NOT_ALLOWED',
+      message: '你不能编辑这个主题',
+    })
+  }
+
+  const $ = cheerioDoc(res.data)
+  const topic = topicDetailFromPage($, id)
+  return {
+    data: topic,
+    fetchedAt: Date.now(),
+  }
+}
+
 export async function appendTopic({
   id,
   once = ONCP,
@@ -696,7 +867,7 @@ export async function getNodeGroups(): Promise<CollectionResponse<NodeGroup>> {
   }
 }
 
-export async function getNodes(): Promise<CollectionResponse<NodeDetail[]>> {
+export async function getNodes(): Promise<CollectionResponse<NodeDetail>> {
   const { data: json } = await request({
     url: '/api/nodes/all.json',
   })

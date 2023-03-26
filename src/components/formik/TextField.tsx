@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import { Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native'
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import classNames from 'classnames'
 import { useField } from 'formik'
 import { styled } from 'nativewind'
@@ -11,14 +12,18 @@ function TextField({
   style,
   inputStyle,
   name,
+  bottomSheet,
   ...props
 }: {
   label: ReactNode | false
   inputStyle?: ViewStyle
   name: string
+  bottomSheet?: boolean
 } & TextInputProps) {
   const { styles, theme } = useTheme()
   const [field, meta, helpers] = useField(name)
+
+  const Component = bottomSheet ? BottomSheetTextInput : TextInput
   return (
     <View style={style}>
       {label !== false && (
@@ -38,8 +43,8 @@ function TextField({
           )}
         </View>
       )}
-      <TextInput
-        className="h-[44px] px-2 py-3 rounded-md"
+      <Component
+        className="min-h-[44px] px-2 py-3 rounded-md"
         style={[styles.text, styles.input__bg, inputStyle]}
         selectionColor={theme.colors.primary}
         placeholderTextColor={theme.colors.text_placeholder}

@@ -65,7 +65,14 @@ export default function Balance(props: { username: string }) {
         return (
           <MaxWidthWrapper>
             <View
-              style={[index % 2 ? styles.layer1 : null, styles.border_t_light]}>
+              style={[
+                index % 2 ? styles.layer1 : null,
+                styles.border_t_light,
+                {
+                  paddingLeft: 8,
+                  paddingRight: 8,
+                },
+              ]}>
               <View className="flex flex-row">
                 <View
                   style={{ flex: 2, paddingHorizontal: 4, paddingVertical: 6 }}>
@@ -108,7 +115,7 @@ export default function Balance(props: { username: string }) {
               <View
                 style={{
                   paddingHorizontal: 4,
-                  paddingVertical: 6,
+                  paddingBottom: 8,
                 }}>
                 <Text style={styles.text_desc}>{item.description}</Text>
               </View>

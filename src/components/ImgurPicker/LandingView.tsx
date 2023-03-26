@@ -20,7 +20,7 @@ type LandingProps = {
 }
 export default function Landing(props: LandingProps) {
   const { tabIndex } = props
-  const { theme, styles } = useTheme()
+  const { theme, styles, colorScheme } = useTheme()
 
   return (
     <View className="flex flex-1">
@@ -64,6 +64,7 @@ export default function Landing(props: LandingProps) {
               onChange={(event) => {
                 props.setTabIndex(event.nativeEvent.selectedSegmentIndex)
               }}
+              appearance={colorScheme}
             />
           </View>
         </View>

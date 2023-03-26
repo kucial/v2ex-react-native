@@ -47,6 +47,7 @@ import PadSidebar from './PadSidebar'
 import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
 import TopicInfo from './TopicInfo'
+import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
 
 const REPLY_PAGE_SIZE = 100
@@ -54,6 +55,7 @@ const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
 
 const replyModalSnapPoints = ['25%']
+const moveModalSnapPoints = [280]
 const conversationSnapPoints = ['60%', '90%']
 
 const hasRelatedMessages = (reply, replyList) => {
@@ -213,6 +215,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const listRef = useRef<FlashList<TopicReply>>()
   const replyModalRef = useRef<BottomSheetModal>()
   const conversationModalRef = useRef<BottomSheetModal>()
+  const movePanelModalRef = useRef<BottomSheetModal>()
   const scrollControlRef = useRef<ScrollControlApi>(null)
 
   const { composeAuthedNavigation } = useAuthService()
@@ -735,19 +738,43 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                 <BlockText lines={[5, 10]} />
               </View>
             )}
-            {topic.canAppend && (
+            {(topic.canAppend || topic.canEdit || topic.canMove) && (
               <View className="flex flex-row justify-end relative bottom-[-6px]">
-                <Pressable
-                  className="px-3 h-[36px] rounded items-center justify-center active:opacity-60"
-                  style={styles.layer2}
-                  onPress={() => {
-                    setReplyContext({
-                      type: 'append',
-                    })
-                    replyModalRef.current?.present()
-                  }}>
-                  <Text style={styles.text}>附言</Text>
-                </Pressable>
+                {topic.canAppend && (
+                  <Pressable
+                    className="px-3 h-[36px] rounded items-center justify-center active:opacity-60"
+                    style={styles.layer2}
+                    onPress={() => {
+                      setReplyContext({
+                        type: 'append',
+                      })
+                      replyModalRef.current?.present()
+                    }}>
+                    <Text style={styles.text}>附言</Text>
+                  </Pressable>
+                )}
+                {topic.canEdit && (
+                  <Pressable
+                    className="px-3 h-[36px] rounded items-center justify-center active:opacity-60 ml-2"
+                    style={styles.layer2}
+                    onPress={() => {
+                      navigation.push('edit-topic', {
+                        id: topic.id,
+                      })
+                    }}>
+                    <Text style={styles.text}>修改</Text>
+                  </Pressable>
+                )}
+                {topic.canMove && (
+                  <Pressable
+                    className="px-3 h-[36px] rounded items-center justify-center active:opacity-60 ml-2"
+                    style={styles.layer2}
+                    onPress={() => {
+                      movePanelModalRef.current?.present()
+                    }}>
+                    <Text style={styles.text}>移动</Text>
+                  </Pressable>
+                )}
               </View>
             )}
 
@@ -851,6 +878,23 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           />
         )}
       </MyBottomSheetModal>
+      {topicSwr.data?.canMove && (
+        <MyBottomSheetModal
+          ref={movePanelModalRef}
+          index={0}
+          snapPoints={moveModalSnapPoints}>
+          <TopicMovePanel
+            topicId={topicSwr.data.id}
+            node={topicSwr.data.node}
+            onExit={() => {
+              movePanelModalRef.current?.dismiss()
+            }}
+            onUpdated={(topic) => {
+              topicSwr.mutate(topic, { revalidate: false })
+            }}
+          />
+        </MyBottomSheetModal>
+      )}
     </>
   )
 }

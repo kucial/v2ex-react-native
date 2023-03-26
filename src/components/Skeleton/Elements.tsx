@@ -66,7 +66,10 @@ export function InlineText(props) {
   )
 }
 
-export function BlockText(props: { lines: number; style?: ViewStyle }) {
+export function BlockText(props: {
+  lines: number | number[]
+  style?: ViewStyle
+}) {
   const lines = useMemo(() => {
     if (Array.isArray(props.lines)) {
       return Math.round(valueInRange(props.lines))

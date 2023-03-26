@@ -165,6 +165,8 @@ export function topicDetailFromPage($: CheerioAPI, id: string | number) {
     collected: !!$('a.op[href^="/unfavorite"]').length,
     thanked: !!$('#topic_thank .topic_thanked').length,
     canAppend: !!$('a[href^="/append/topic"]').length,
+    canMove: !!$('a[href^="/move/topic"]').length,
+    canEdit: !!$('a[href^="/edit/topic"]').length,
     blocked: $('a.tb')
       .map((i, el) => $(el).text())
       .get()

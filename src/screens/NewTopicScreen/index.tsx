@@ -3,23 +3,21 @@ import { useCallback } from 'react'
 import {
   findNodeHandle,
   InteractionManager,
-  Pressable,
   SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   View,
 } from 'react-native'
-import WebView from 'react-native-webview'
 import type { BottomSheetModal } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { addBreadcrumb, captureMessage } from '@sentry/react-native'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
+import { mutate } from 'swr'
 
+import Button from '@/components/Button'
 import KeyboardAwareView from '@/components/KeyboardAwareView'
 import KeyboardDismiss from '@/components/KeyboardDismiss'
-import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import {
@@ -29,9 +27,9 @@ import {
   EditorToolbar,
 } from '@/components/SlateEditor'
 import { SlateEditorService } from '@/components/SlateEditor/types'
-import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
+import { createTopic } from '@/utils/v2ex-client'
 
 import NodeSelect from './NodeSelect'
 
@@ -59,8 +57,6 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
     scrollY: 0,
   })
   const editorRenderContainer = useRef<View>()
-  const webviewRef = useRef<WebView>()
-  const webviewScripts = useRef([])
 
   const [imagePickerOpened, showImagePicker] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -124,20 +120,25 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
     try {
       setIsSubmitting(true)
       const content = await editorRef.current.getMarkdown()
-      const payload = {
+      const { data: newTopic } = await createTopic({
         title: values.title,
-        syntax: 'markdown',
         content,
         node_name: values.node.name,
-      }
+        syntax: 'markdown',
+      })
 
-      webviewScripts.current.push(getResultScript())
-      webviewRef.current?.injectJavaScript(getSubmitScript(payload))
+      mutate([`/page/t/:id/topic.json`, newTopic.id], newTopic, {
+        revalidate: false,
+      })
+      navigation.replace('topic', {
+        id: newTopic.id,
+      })
+      alert.alertWithType('success', '成功', '主题创建成功')
     } catch (err) {
       setIsSubmitting(false)
       alert.alertWithType('error', '错误', err.message)
     }
-  }, [values])
+  }, [values, navigation])
 
   return (
     <View className="flex-1" style={styles.layer1}>
@@ -244,24 +245,12 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                     </View>
                   </View>
                   <View className="px-4 my-3">
-                    <Pressable
-                      className={classNames(
-                        'h-[50px] rounded-lg items-center justify-center active:opacity-60',
-                        isValid && 'opacity-60',
-                      )}
-                      style={styles.btn_primary__bg}
-                      disabled={!isValid || isSubmitting}
-                      onPress={handleSubmit}>
-                      {isSubmitting ? (
-                        <Loader size={20} />
-                      ) : (
-                        <Text
-                          className="text-base"
-                          style={styles.btn_primary__text}>
-                          发布
-                        </Text>
-                      )}
-                    </Pressable>
+                    <Button
+                      label="发布"
+                      disabled={!isValid}
+                      loading={isSubmitting}
+                      onPress={handleSubmit}
+                    />
                   </View>
 
                   <View className="h-[56px]"></View>
@@ -305,147 +294,6 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
           </EditorProvider>
         </SafeAreaView>
       </KeyboardAwareView>
-      {values.node && (
-        <View>
-          <WebView
-            originWhitelist={['*']}
-            injectedJavaScript={domReadyMessage}
-            userAgent={USER_AGENT}
-            source={{
-              uri: `https://www.v2ex.com/write?node=${values.node.name}`,
-            }}
-            ref={webviewRef}
-            onMessage={(event) => {
-              if (event.nativeEvent.data) {
-                const data = JSON.parse(event.nativeEvent.data)
-                console.log(data)
-                if (data.event === 'DocumentReady') {
-                  const script = webviewScripts.current.shift()
-                  if (script) {
-                    webviewRef.current.injectJavaScript(script)
-                  }
-                } else if (data.error) {
-                  if (data.code === 'PROBLEMS') {
-                    alert.alertWithType(
-                      'error',
-                      data.message,
-                      data.data.join('\n'),
-                    )
-                  } else {
-                    if (data.data) {
-                      addBreadcrumb({
-                        type: 'info',
-                        data: data.data,
-                        message: data.message,
-                      })
-                    }
-                    captureMessage('CREATE_ERROR')
-                    alert.alertWithType('error', '错误', data.message)
-                  }
-                  setIsSubmitting(false)
-                } else {
-                  alert.alertWithType('success', '成功', '主题发布成功')
-                  navigation.replace('topic', {
-                    id: data.id,
-                  })
-                }
-              } else {
-                console.log('onMessage', event)
-              }
-            }}
-          />
-        </View>
-      )}
     </View>
   )
-}
-
-const domReadyMessage = `(function() {
-  try {
-    window.ReactNativeWebView.postMessage(JSON.stringify({
-      event: 'DocumentReady'
-    }))
-  } catch (err) {
-    // do nothing
-  }
-}())`
-
-const getSubmitScript = (data) => {
-  return `(function() {
-    try {
-      const data = ${JSON.stringify(data)};
-      // set title
-      const titleTextarea = document.getElementById('topic_title')
-      titleTextarea.value = data.title;
-      // set content
-      editor.setValue(data.content);
-      // set node
-      // if (data.node_name) {
-      //   document.forms[0].elements.node_name.value = data.node_name;
-      // }
-      // select syntax
-      const syntax = document.querySelector('#compose input[name=syntax][value=${
-        data.syntax
-      }]')
-      syntax?.click();
-      // publishTopic
-      publishTopic();
-    } catch (err) {
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        error: true,
-        message: err.message
-      }))
-    }
-  }())`
-}
-
-const getResultScript = () => {
-  return `(function() {
-      try {
-        const match = /^\\/t\\/(\\d+)/.exec(window.location.pathname)
-        console.log('callback script injected')
-        if (match) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            id: Number(match[1]),
-          }))
-          return;
-        }
-        if (window.location.pathname === '/write') {
-          console.log('timeout setup');
-          const pDom = document.querySelector('.problem');
-          if (pDom) {
-            const message = pDom.firstChild.textContent;
-            const data = [...pDom.querySelectorAll('ul li')].map((li) => li.textContent.trim())
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              error: true,
-              code: 'PROBLEMS',
-              message,
-              data,
-            }))
-          } else {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-              error: true,
-              message: 'Unknown Error',
-              data: {
-                location: window.location.pathname,
-              }
-            }))
-          }
-          return;
-        }
-
-        window.ReactNativeWebView.postMessage(JSON.stringify({
-          error: true,
-          message: 'redirect location is not expected',
-          data: {
-            location: window.location.pathname
-          }
-        }))
-      } catch (err) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({
-          error: true,
-          message: err.message
-        }))
-      }
-    }())`
 }

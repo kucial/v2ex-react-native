@@ -30,6 +30,12 @@ export default function EditorRender(props: EditorRenderProps) {
     props.onCursorPositionUpdate?.()
   }, [editor.selectionBox?.top, editor.selectionBox?.bottom])
 
+  useEffect(() => {
+    return () => {
+      editor.blur()
+    }
+  }, [])
+
   return (
     <Pressable
       style={[editor.viewport]}
