@@ -95,7 +95,7 @@ export default function ProfileScreen(props: ScreenProps) {
         }
         return (
           <ScrollView>
-            <MaxWidthWrapper className="py-6">{scene}</MaxWidthWrapper>
+            <MaxWidthWrapper className="py-4 px-2">{scene}</MaxWidthWrapper>
           </ScrollView>
         )
       },
