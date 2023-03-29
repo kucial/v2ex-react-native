@@ -19,6 +19,7 @@ import * as StoreReview from 'react-native-store-review'
 import CookieManager from '@react-native-cookies/cookies'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
+import { stringify } from 'qs'
 
 import GithubIcon from '@/components/GithubIcon'
 import GroupWapper from '@/components/GroupWrapper'
@@ -132,7 +133,15 @@ export default function AboutScreen(props) {
             <LineItem
               onPress={async () => {
                 try {
-                  await Linking.openURL('mailto://kongkx.yang@gmail.com')
+                  const params = {
+                    subject: `R2V (${Constants.manifest.extra.buildTag}) 意见反馈`,
+                  }
+                  console.log(
+                    `mailto:kongkx.yang@gmail.com?${stringify(params)}`,
+                  )
+                  await Linking.openURL(
+                    `mailto:kongkx.yang@gmail.com?${stringify(params)}`,
+                  )
                 } catch (err) {
                   props.navigation.push('feedback')
                 }
