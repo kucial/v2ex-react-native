@@ -1,23 +1,28 @@
 import React, { useState } from 'react'
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Image, Pressable, ScrollView, View } from 'react-native'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as ImagePicker from 'expo-image-picker'
 import useSWR from 'swr'
 
 import Button from '@/components/Button'
 import GroupWapper from '@/components/GroupWrapper'
-import MaskLoader from '@/components/MaskLoader'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import SectionHeader from '@/components/SectionHeader'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchAvatarForm, uploadAvatar } from '@/utils/v2ex-client'
 
-const AvatarPicker = (props: { username: string; onUpdated?(): void }) => {
+const AvatarPicker = (props: {
+  username: string
+  isActive?: boolean
+  onUpdated?(): void
+}) => {
   const { styles, theme } = useTheme()
   const alert = useAlertService()
 
   const avatarSwr = useSWR(
-    `/member/${props.username}/avatar.json`,
+    props.isActive ? `/member/${props.username}/avatar.json` : null,
     async () => {
       const res = await fetchAvatarForm()
       return res.data
@@ -80,67 +85,81 @@ const AvatarPicker = (props: { username: string; onUpdated?(): void }) => {
   }
 
   return (
-    <GroupWapper
-      innerStyle={styles.layer1}
-      style={avatarSwr.isValidating && { opacity: 0.4 }}
-      pointerEvents={avatarSwr.isValidating ? 'none' : 'auto'}>
-      <SectionHeader title="当前头像" />
-      <View className="flex flex-row items-end px-1 py-2">
-        <Image
-          source={{ uri: avatarSwr.data?.avatars[0] }}
-          style={{ backgroundColor: theme.colors.skeleton }}
-          className="w-[73] h-[73] rounded mx-2"
+    <ScrollView
+      refreshControl={
+        <MyRefreshControl
+          refreshing={avatarSwr.isValidating}
+          onRefresh={() => {
+            if (!avatarSwr.isValidating && !loading) {
+              avatarSwr.mutate()
+            }
+          }}
         />
-        <Image
-          source={{ uri: avatarSwr.data?.avatars[1] }}
-          style={{ backgroundColor: theme.colors.skeleton }}
-          className="w-[48] h-[48] rounded mx-2"
-        />
-        <Image
-          source={{ uri: avatarSwr.data?.avatars[2] }}
-          style={{ backgroundColor: theme.colors.skeleton }}
-          className="w-[24] h-[24] rounded mx-2"
-        />
-      </View>
-      <SectionHeader title="新头像" />
+      }>
+      <MaxWidthWrapper className="py-4 px-2">
+        <GroupWapper
+          innerStyle={styles.layer1}
+          style={avatarSwr.isValidating && { opacity: 0.4 }}
+          pointerEvents={avatarSwr.isValidating ? 'none' : 'auto'}>
+          <SectionHeader title="当前头像" />
+          <View className="flex flex-row items-end px-1 py-2">
+            <Image
+              source={{ uri: avatarSwr.data?.avatars[0] }}
+              style={{ backgroundColor: theme.colors.skeleton }}
+              className="w-[73] h-[73] rounded mx-2"
+            />
+            <Image
+              source={{ uri: avatarSwr.data?.avatars[1] }}
+              style={{ backgroundColor: theme.colors.skeleton }}
+              className="w-[48] h-[48] rounded mx-2"
+            />
+            <Image
+              source={{ uri: avatarSwr.data?.avatars[2] }}
+              style={{ backgroundColor: theme.colors.skeleton }}
+              className="w-[24] h-[24] rounded mx-2"
+            />
+          </View>
+          <SectionHeader title="新头像" />
 
-      <View className="px-1 py-2">
-        <Pressable
-          className="flex flex-row items-end active:opacity-50"
-          onPress={pickImage}>
-          <Image
-            key={avatar?.uri + 'large'}
-            source={avatar}
-            style={{ backgroundColor: theme.colors.skeleton }}
-            className="w-[73] h-[73] rounded mx-2"
-          />
-          <Image
-            key={avatar?.uri + 'normal'}
-            source={avatar}
-            style={{ backgroundColor: theme.colors.skeleton }}
-            className="w-[48] h-[48] rounded mx-2"
-          />
-          <Image
-            key={avatar?.uri + 'mini'}
-            source={avatar}
-            style={{ backgroundColor: theme.colors.skeleton }}
-            className="w-[24] h-[24] rounded mx-2"
-          />
-        </Pressable>
-      </View>
-      <View className="p-3 flex flex-row mb-2">
-        {avatar ? (
-          <Button
-            loading={loading}
-            size="md"
-            label="上传头像"
-            onPress={handleUpload}
-          />
-        ) : (
-          <Button size="md" label="选择图片" onPress={pickImage} />
-        )}
-      </View>
-    </GroupWapper>
+          <View className="px-1 py-2">
+            <Pressable
+              className="flex flex-row items-end active:opacity-50"
+              onPress={pickImage}>
+              <Image
+                key={avatar?.uri + 'large'}
+                source={avatar}
+                style={{ backgroundColor: theme.colors.skeleton }}
+                className="w-[73] h-[73] rounded mx-2"
+              />
+              <Image
+                key={avatar?.uri + 'normal'}
+                source={avatar}
+                style={{ backgroundColor: theme.colors.skeleton }}
+                className="w-[48] h-[48] rounded mx-2"
+              />
+              <Image
+                key={avatar?.uri + 'mini'}
+                source={avatar}
+                style={{ backgroundColor: theme.colors.skeleton }}
+                className="w-[24] h-[24] rounded mx-2"
+              />
+            </Pressable>
+          </View>
+          <View className="p-3 flex flex-row mb-2">
+            {avatar ? (
+              <Button
+                loading={loading}
+                size="md"
+                label="上传头像"
+                onPress={handleUpload}
+              />
+            ) : (
+              <Button size="md" label="选择图片" onPress={pickImage} />
+            )}
+          </View>
+        </GroupWapper>
+      </MaxWidthWrapper>
+    </ScrollView>
   )
 }
 

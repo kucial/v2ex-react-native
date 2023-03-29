@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Text, View } from 'react-native'
+import { SafeAreaView, ScrollView, View } from 'react-native'
 import { Image } from 'expo-image'
 import { Formik, FormikHelpers } from 'formik'
 import useSWR from 'swr'
@@ -7,6 +7,8 @@ import useSWR from 'swr'
 import Button from '@/components/Button'
 import { TextField } from '@/components/formik'
 import GroupWapper from '@/components/GroupWrapper'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchSocialForm, updateSocial } from '@/utils/v2ex-client'
@@ -31,12 +33,15 @@ type FormValues = {
   social_coding: string
 }
 
-export default function SocialForm(props: { username: string }) {
+export default function SocialForm(props: {
+  username: string
+  isActive?: boolean
+}) {
   const { styles } = useTheme()
   const alert = useAlertService()
 
   const socialSwr = useSWR(
-    `/member/${props.username}/social.json`,
+    props.isActive ? `/member/${props.username}/social.json` : null,
     async () => {
       const res = await fetchSocialForm()
       return res.data
@@ -77,38 +82,54 @@ export default function SocialForm(props: { username: string }) {
       onSubmit={handleSubmit}
       enableReinitialize>
       {(formikProps) => (
-        <GroupWapper
-          innerStyle={styles.layer1}
-          style={socialSwr.isValidating && { opacity: 0.4 }}
-          pointerEvents={socialSwr.isValidating ? 'none' : 'auto'}>
-          <View className="p-3">
-            {socialSwr.data?.fields.map((field) => (
-              <View
-                className="flex flex-row items-center mb-2"
-                key={field.name}>
-                <Image
-                  source={{ uri: field.image }}
-                  style={{ width: 28, height: 28, marginRight: 12 }}
-                />
-                <View className="flex-1">
-                  <TextField
-                    placeholder={field.label}
-                    name={field.name}
-                    label={false}
-                  />
-                </View>
-              </View>
-            ))}
-            <Button
-              className="my-2"
-              label="提交"
-              loading={formikProps.isSubmitting}
-              onPress={() => {
-                formikProps.handleSubmit()
+        <ScrollView
+          refreshControl={
+            <MyRefreshControl
+              refreshing={socialSwr.isValidating}
+              onRefresh={() => {
+                if (!socialSwr.isValidating && !formikProps.isSubmitting) {
+                  socialSwr.mutate()
+                }
               }}
             />
-          </View>
-        </GroupWapper>
+          }>
+          <MaxWidthWrapper className="py-4 px-2 mb-4">
+            {socialSwr.data && (
+              <GroupWapper
+                innerStyle={styles.layer1}
+                style={socialSwr.isValidating && { opacity: 0.4 }}
+                pointerEvents={socialSwr.isValidating ? 'none' : 'auto'}>
+                <View className="p-3">
+                  {socialSwr.data.fields.map((field) => (
+                    <View
+                      className="flex flex-row items-center mb-2"
+                      key={field.name}>
+                      <Image
+                        source={{ uri: field.image }}
+                        style={{ width: 28, height: 28, marginRight: 12 }}
+                      />
+                      <View className="flex-1">
+                        <TextField
+                          placeholder={field.label}
+                          name={field.name}
+                          label={false}
+                        />
+                      </View>
+                    </View>
+                  ))}
+                  <Button
+                    className="my-2"
+                    label="提交"
+                    loading={formikProps.isSubmitting}
+                    onPress={() => {
+                      formikProps.handleSubmit()
+                    }}
+                  />
+                </View>
+              </GroupWapper>
+            )}
+          </MaxWidthWrapper>
+        </ScrollView>
       )}
     </Formik>
   )

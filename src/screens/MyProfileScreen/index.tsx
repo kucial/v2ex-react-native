@@ -65,39 +65,45 @@ export default function ProfileScreen(props: ScreenProps) {
       renderScene: ({ route }) => {
         const { key } = route
         let scene
+        const sceneIndex = routes.findIndex((item) => item.key === key)
+
         switch (key) {
           case 'settings':
-            scene = <SettingsForm username={user.username} />
-            break
+            return (
+              <SettingsForm
+                isActive={sceneIndex === index}
+                username={user.username}
+              />
+            )
           case 'social':
-            scene = (
-              <MaxWidthWrapper>
-                <SocialForm username={user.username} />
-              </MaxWidthWrapper>
+            return (
+              <SocialForm
+                isActive={sceneIndex === index}
+                username={user.username}
+              />
             )
             break
           case 'avatar':
-            scene = (
+            return (
               <AvatarForm
+                isActive={sceneIndex === index}
                 username={user.username}
                 onUpdated={fetchCurrentUser}
               />
             )
-            break
           case 'balance':
             return <Balance username={user.username} />
           default:
-            scene = (
-              <View>
-                <Text>{route.title}</Text>
-              </View>
+            return (
+              <ScrollView>
+                <MaxWidthWrapper className="py-4 px-2">
+                  <View>
+                    <Text>{route.title}</Text>
+                  </View>
+                </MaxWidthWrapper>
+              </ScrollView>
             )
         }
-        return (
-          <ScrollView>
-            <MaxWidthWrapper className="py-4 px-2">{scene}</MaxWidthWrapper>
-          </ScrollView>
-        )
       },
       renderTabBar: (props) => {
         return (
@@ -137,7 +143,7 @@ export default function ProfileScreen(props: ScreenProps) {
         )
       },
     }
-  }, [user.username, styles])
+  }, [user.username, styles, index])
 
   return (
     <TabView
