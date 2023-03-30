@@ -19,10 +19,12 @@ type AppSettings = {
 
   maxContainerWidth: number
   googleSigninEnabled?: boolean
+  payLayoutEnabled?: boolean
 }
 
 type AppSettingsService = {
   data: AppSettings
   update: (value: SetStateAction<AppSettings>) => void
+  staticUpdate: (value: AppSettings) => void
   initHomeTabs: () => Promise<HomeTabOption[]>
 }

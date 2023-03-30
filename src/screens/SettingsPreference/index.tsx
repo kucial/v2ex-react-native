@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native'
+import RNRestart from 'react-native-restart'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
@@ -37,16 +38,22 @@ type ScreenProps = NativeStackScreenProps<
   'preference-settings'
 >
 export default function PreferenceSettings({ navigation }: ScreenProps) {
-  const { data, update } = useAppSettings()
+  const { data, update, staticUpdate } = useAppSettings()
   const [state, setState] = useState(data)
   const [viewedStatus, setViewedStatus] =
     useState<DemoRowProps['viewedStatus']>(undefined)
   const { styles } = useTheme()
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', () => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
       if (state !== data) {
-        update(state)
+        if (state.payLayoutEnabled !== data.payLayoutEnabled) {
+          e.preventDefault()
+          staticUpdate(state)
+          RNRestart.Restart()
+        } else {
+          update(state)
+        }
       }
     })
     return unsubscribe
@@ -316,6 +323,40 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 </View>
               </View>
             </Pressable>
+          </GroupWapper>
+          <SectionHeader title="布局" desc="修改此项时会重新启动应用" />
+          <GroupWapper className="mb-8">
+            <View
+              sentry-label="AutoRefrehLineItem"
+              className={classNames('pl-4')}
+              style={styles.layer1}>
+              <View
+                className={classNames(
+                  'min-h-[52px] flex flex-row items-center',
+                )}>
+                <View className="flex-1 flex flex-row items-center">
+                  <Text className="text-base" style={styles.text}>
+                    启用平板布局
+                  </Text>
+                  <View className="ml-1">
+                    <Text className="text-xs" style={styles.text_desc}>
+                      窗口尺寸足够时生效
+                    </Text>
+                  </View>
+                </View>
+                <View className="mr-2 px-2">
+                  <MySwitch
+                    value={state.payLayoutEnabled}
+                    onValueChange={(val) =>
+                      setState((prev) => ({
+                        ...prev,
+                        payLayoutEnabled: val,
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+            </View>
           </GroupWapper>
         </MaxWidthWrapper>
       </ScrollView>

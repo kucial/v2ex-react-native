@@ -4,6 +4,7 @@ import { debounce } from 'lodash'
 import * as Sentry from 'sentry-expo'
 
 import { APP_SIDEBAR_WIDTH, CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
+import { useAppSettings } from '@/containers/AppSettingsService'
 
 import { getJSON, setJSON } from './storage'
 
@@ -82,6 +83,10 @@ export const usePressBreadcrumb = (
 }
 
 export const usePadLayout = () => {
+  const { data } = useAppSettings()
   const { width } = useWindowDimensions()
-  return width > CONTENT_CONTAINER_MAX_WIDTH + APP_SIDEBAR_WIDTH
+  return (
+    data.payLayoutEnabled &&
+    width > CONTENT_CONTAINER_MAX_WIDTH + APP_SIDEBAR_WIDTH
+  )
 }

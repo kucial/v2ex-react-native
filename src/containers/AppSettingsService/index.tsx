@@ -1,6 +1,7 @@
 import { createContext, ReactElement, useContext, useMemo } from 'react'
 
 import { useCachedState } from '@/utils/hooks'
+import { setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
@@ -25,6 +26,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   autoRefreshDuration: 10,
 
   maxContainerWidth: 600,
+  payLayoutEnabled: true,
 }
 
 const AppSettingsContext = createContext<AppSettingsService>(
@@ -49,6 +51,7 @@ export default function AppSettingsServiceProvider(props: {
     return {
       data: settings,
       update: setSettings,
+      staticUpdate: (data) => setJSON(CACHE_KEY, data),
       initHomeTabs: async () => {
         const { data } = await v2exClient.getHomeTabs()
         const mapped: HomeTabOption[] = [
