@@ -1,14 +1,12 @@
 import {
   createContext,
   ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from 'react'
-import { Appearance, ColorSchemeName, StyleSheet } from 'react-native'
-import { throttle } from 'lodash'
+import { Appearance, AppState, ColorSchemeName, StyleSheet } from 'react-native'
 
 import { useAppSettings } from '../AppSettingsService'
 import * as themes from './themes'
@@ -16,25 +14,49 @@ import { ThemeService, ThemeStyles } from './types'
 
 export const useColorScheme = (delay = 250) => {
   const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme())
-  const onColorSchemeChange = useCallback(
-    throttle(
-      ({ colorScheme }) => {
-        setColorScheme(colorScheme)
-      },
-      delay,
-      {
-        leading: false,
-      },
-    ),
-    [],
-  )
+  // const onColorSchemeChange = useCallback(
+  //   throttle(
+  //     ({ colorScheme }) => {
+  //       setColorScheme(colorScheme)
+  //     },
+  //     delay,
+  //     {
+  //       leading: false,
+  //     },
+  //   ),
+  //   [],
+  // )
+  // useEffect(() => {
+  //   const subscription = Appearance.addChangeListener(onColorSchemeChange)
+  //   return () => {
+  //     onColorSchemeChange.cancel()
+  //     subscription.remove()
+  //   }
+  // }, [])
+
   useEffect(() => {
-    const subscription = Appearance.addChangeListener(onColorSchemeChange)
-    return () => {
-      onColorSchemeChange.cancel()
-      subscription.remove()
+    function handleColorSchemeChange() {
+      const systemColorScheme = Appearance.getColorScheme()
+      console.log(systemColorScheme, AppState.currentState)
+      if (
+        AppState.currentState === 'active' &&
+        colorScheme !== systemColorScheme
+      ) {
+        setColorScheme(systemColorScheme)
+      }
     }
-  }, [])
+    const subscriptionA = AppState.addEventListener(
+      'change',
+      handleColorSchemeChange,
+    )
+    const subscriptionB = Appearance.addChangeListener(handleColorSchemeChange)
+
+    return () => {
+      subscriptionA.remove()
+      subscriptionB.remove()
+    }
+  }, [colorScheme])
+
   return {
     colorScheme,
     setColorScheme,
