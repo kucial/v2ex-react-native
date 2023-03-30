@@ -25,7 +25,7 @@ type NodeBrief = {
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'node'>
 export default function NodeScreen({ route, navigation }: ScreenProps) {
   const { name, brief } = route.params
-  const { styles } = useTheme()
+  const { styles, colorScheme } = useTheme()
   const [collecting, setCollecting] = useState(false)
   const { mutate } = useSWRConfig()
 
@@ -152,7 +152,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
               <View>
                 {!!node.header && (
                   <HtmlRender
-                    key={node.header}
+                    key={node.header + colorScheme}
                     navigation={navigation}
                     contentWidth={CONTAINER_WIDTH - 100}
                     {...htmlProps}

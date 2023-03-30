@@ -24,7 +24,7 @@ const NotificationRow = (props: { data: Notification }) => {
     data: { maxContainerWidth },
   } = useAppSettings()
   const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
-  const { styles } = useTheme()
+  const { styles, colorScheme } = useTheme()
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
@@ -216,7 +216,7 @@ const NotificationRow = (props: { data: Notification }) => {
           {data.content_rendered && (
             <View className="mt-1 p-1 rounded" style={styles.layer2}>
               <HtmlRender
-                key={data.content_rendered}
+                key={data.content_rendered + colorScheme}
                 navigation={navigation}
                 contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 8}
                 source={{

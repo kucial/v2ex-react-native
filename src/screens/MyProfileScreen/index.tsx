@@ -4,7 +4,7 @@ import { TabBar, TabView } from 'react-native-tab-view'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import { APP_SIDEBAR_WIDTH } from '@/constants'
+import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePadLayout } from '@/utils/hooks'
@@ -152,7 +152,10 @@ export default function ProfileScreen(props: ScreenProps) {
       renderTabBar={renderTabBar}
       onIndexChange={setIndex}
       initialLayout={{
-        width: padLayout ? width - APP_SIDEBAR_WIDTH : width,
+        width:
+          padLayout.active && padLayout.orientation === 'PORTRAIT'
+            ? width - APP_SIDEBAR_SIZE
+            : width,
         height: height - 50 - 42 - 20,
       }}
     />

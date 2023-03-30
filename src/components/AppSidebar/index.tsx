@@ -12,6 +12,7 @@ import {
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 import { Image } from 'expo-image'
 
 import { useAuthService } from '@/containers/AuthService'
@@ -21,7 +22,10 @@ import { usePressBreadcrumb } from '@/utils/hooks'
 
 import AppSidebarButton from './AppSidebarButton'
 
-export default function AppSidebar(props: { dynamic: ReactNode }) {
+export default function AppSidebar(props: {
+  dynamic: ReactNode
+  position: 'BOTTOM' | 'SIDE'
+}) {
   const { composeAuthedNavigation, meta, user } = useAuthService()
   const { theme, styles } = useTheme()
   const currentRoute = useCurrentRoute()
@@ -93,9 +97,20 @@ export default function AppSidebar(props: { dynamic: ReactNode }) {
 
   return (
     <SafeAreaView
-      className="flex-1 flex flex-column"
-      style={[styles.border_r_light, { justifyContent: 'space-between' }]}>
-      <View className="items-center pt-3">
+      style={[
+        { justifyContent: 'space-between', display: 'flex', flex: 1 },
+        props.position === 'BOTTOM'
+          ? {
+              flexDirection: 'row',
+            }
+          : {
+              flexDirection: 'column',
+            },
+      ]}>
+      <View
+        className={
+          props.position === 'BOTTOM' ? 'flex-row pl-2' : 'items-center pt-3'
+        }>
         <AppSidebarButton
           isActive={currentRouteName == 'feed'}
           label="主题"
@@ -132,11 +147,17 @@ export default function AppSidebar(props: { dynamic: ReactNode }) {
           Icon={MagnifyingGlassIcon}
           onPress={handleSearchButtonPress}
         />
+        {props.position === 'BOTTOM' && (
+          <View className="w-[52px] h-[52px]"></View>
+        )}
       </View>
 
       <View>{props.dynamic}</View>
 
-      <View className="items-center">
+      <View
+        className={
+          props.position === 'BOTTOM' ? 'flex-row pr-2' : 'items-center pb-3'
+        }>
         <AppSidebarButton
           isActive={currentRouteName == 'new-topic'}
           label="新主题"

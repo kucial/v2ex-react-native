@@ -3,4 +3,4 @@ export const USER_AGENT =
   ' - R2V'
 
 export const CONTENT_CONTAINER_MAX_WIDTH = 600
-export const APP_SIDEBAR_WIDTH = 68
+export const APP_SIDEBAR_SIZE = 68

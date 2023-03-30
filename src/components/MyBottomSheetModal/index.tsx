@@ -7,7 +7,7 @@ import {
   BottomSheetModalProps,
 } from '@gorhom/bottom-sheet'
 
-import { APP_SIDEBAR_WIDTH, CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
+import { APP_SIDEBAR_SIZE, CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
 import { useTheme } from '@/containers/ThemeService'
 import { usePadLayout } from '@/utils/hooks'
 
@@ -31,15 +31,22 @@ const MyBottomSheetModal = forwardRef<BaseModal, BottomSheetModalProps>(
     const padLayout = usePadLayout()
     const { width } = useWindowDimensions()
     const sheetOffsetStyle = useMemo(() => {
-      if (padLayout) {
-        const margin =
-          (width - APP_SIDEBAR_WIDTH - CONTENT_CONTAINER_MAX_WIDTH) / 2
+      if (padLayout.active) {
+        if (padLayout.orientation === 'LANDSCAPE') {
+          const margin =
+            (width - APP_SIDEBAR_SIZE - CONTENT_CONTAINER_MAX_WIDTH - 24) / 2
+          return {
+            marginLeft: margin + APP_SIDEBAR_SIZE,
+            marginRight: margin,
+          }
+        }
+        const margin = (width - CONTENT_CONTAINER_MAX_WIDTH - 24) / 2
         return {
-          marginLeft: margin + APP_SIDEBAR_WIDTH,
+          marginLeft: margin,
           marginRight: margin,
         }
       }
-    }, [padLayout, width])
+    }, [padLayout.active, padLayout.orientation, width])
     return (
       <BaseModal
         backdropComponent={DismissBackdropComponent}

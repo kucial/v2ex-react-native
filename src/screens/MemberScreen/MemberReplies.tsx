@@ -26,7 +26,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
   const { data, isLast } = props
-  const { styles } = useTheme()
+  const { styles, colorScheme } = useTheme()
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
@@ -76,7 +76,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
         </View>
         <View className="pt-1 pb-2 px-3">
           <HtmlRender
-            key={data.reply_content_rendered}
+            key={data.reply_content_rendered + colorScheme}
             navigation={navigation}
             contentWidth={CONTAINER_WIDTH - 24}
             source={{

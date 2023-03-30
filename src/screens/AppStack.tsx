@@ -79,7 +79,7 @@ function AppStack() {
           headerBackground: transparentHeaderBackground,
         }}
       /> */}
-      {padLayout ? (
+      {padLayout.active ? (
         <Stack.Group>
           <Stack.Screen
             name="feed"

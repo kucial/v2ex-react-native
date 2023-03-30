@@ -24,7 +24,7 @@ function MainTab() {
       backBehavior="initialRoute"
       screenOptions={{
         tabBarInactiveTintColor: theme.colors.text_meta,
-        tabBarStyle: padLayout ? { display: 'none' } : styles.overlay,
+        tabBarStyle: padLayout.active ? { display: 'none' } : styles.overlay,
       }}>
       <Tab.Screen
         name="nodes"

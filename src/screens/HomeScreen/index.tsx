@@ -9,7 +9,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import HomeTopicList from '@/components/HomeTopicList'
 import NodeTopicList from '@/components/NodeTopicList'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
-import { APP_SIDEBAR_WIDTH } from '@/constants'
+import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState, usePadLayout } from '@/utils/hooks'
@@ -213,8 +213,11 @@ export default function HomeScreen(props: HomeScreenProps) {
       renderTabBar={renderTabBar}
       onIndexChange={setIndex}
       initialLayout={{
-        width: padLayout ? width - APP_SIDEBAR_WIDTH : width,
-        height: padLayout ? height - 42 - 20 : height - 42 - 50 - 20,
+        width:
+          padLayout.active && padLayout.orientation === 'PORTRAIT'
+            ? width - APP_SIDEBAR_SIZE
+            : width,
+        height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
       }}
     />
   )

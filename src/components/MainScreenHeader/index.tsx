@@ -88,7 +88,7 @@ export default function MainScreenHeader(
         </View>
       </View>
 
-      {!padLayout && (
+      {!padLayout.active && (
         <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">
           <Pressable
             className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"

@@ -708,7 +708,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         <MaxWidthWrapper>
           <View
             className={classNames({
-              'px-4': !padLayout,
+              'px-4': !padLayout.active,
               'mb-2': !!replyItems?.length,
             })}
             style={replyItems?.length && styles.border_b}>
@@ -798,7 +798,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     </>
   )
 
-  const BarComponent = padLayout ? PadSidebar : BottomBar
+  const BarComponent = padLayout.active ? PadSidebar : BottomBar
 
   return (
     <>

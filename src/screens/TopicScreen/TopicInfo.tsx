@@ -20,7 +20,7 @@ function TopicInfo(props: {
   const {
     data: { maxContainerWidth },
   } = useAppSettings()
-  const { styles } = useTheme()
+  const { styles, colorScheme } = useTheme()
 
   const padLayout = usePadLayout()
 
@@ -94,9 +94,11 @@ function TopicInfo(props: {
       </View>
       {!!topic.content_rendered && (
         <HtmlRender
-          key={topic.content_rendered}
+          key={topic.content_rendered + colorScheme}
           navigation={navigation}
-          contentWidth={padLayout ? CONTAINER_WIDTH : CONTAINER_WIDTH - 32}
+          contentWidth={
+            padLayout.active ? CONTAINER_WIDTH : CONTAINER_WIDTH - 32
+          }
           baseStyle={{
             fontSize: 16,
           }}
@@ -118,7 +120,7 @@ function TopicInfo(props: {
                 <Text className="text-xs text-neutral-500">{subtle.meta}</Text>
               </View>
               <HtmlRender
-                key={subtle.content_rendered}
+                key={subtle.content_rendered + colorScheme}
                 navigation={navigation}
                 contentWidth={CONTAINER_WIDTH - 32}
                 baseStyle={{

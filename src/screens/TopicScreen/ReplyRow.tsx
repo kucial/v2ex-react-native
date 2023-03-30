@@ -50,7 +50,7 @@ function ReplyRow(props: ReplyRowProps) {
   const { data, isPivot, isLast, navigation, showAvatar = true } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
-  const { theme, styles } = useTheme()
+  const { theme, styles, colorScheme } = useTheme()
 
   const iconColor = theme.colors.text_meta
   const likedActiveColor = theme.colors.icon_liked_bg
@@ -242,7 +242,7 @@ function ReplyRow(props: ReplyRowProps) {
                 marginBottom: showMarkdown ? -14 : 0,
               }}>
               <HtmlRender
-                key={data.id}
+                key={data.id + colorScheme}
                 navigation={navigation}
                 contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 16}
                 source={{
