@@ -31,16 +31,16 @@ const MyBottomSheetModal = forwardRef<BaseModal, BottomSheetModalProps>(
     const padLayout = usePadLayout()
     const { width } = useWindowDimensions()
     const sheetOffsetStyle = useMemo(() => {
-      if (padLayout.active) {
-        if (padLayout.orientation === 'LANDSCAPE') {
-          const margin =
-            (width - APP_SIDEBAR_SIZE - CONTENT_CONTAINER_MAX_WIDTH - 24) / 2
-          return {
-            marginLeft: margin + APP_SIDEBAR_SIZE,
-            marginRight: margin,
-          }
+      if (padLayout.active && padLayout.orientation === 'LANDSCAPE') {
+        const margin =
+          (width - APP_SIDEBAR_SIZE - CONTENT_CONTAINER_MAX_WIDTH - 24) / 2
+        return {
+          marginLeft: margin + APP_SIDEBAR_SIZE,
+          marginRight: margin,
         }
-        const margin = (width - CONTENT_CONTAINER_MAX_WIDTH - 24) / 2
+      }
+      const margin = (width - CONTENT_CONTAINER_MAX_WIDTH - 24) / 2
+      if (margin > 0) {
         return {
           marginLeft: margin,
           marginRight: margin,
