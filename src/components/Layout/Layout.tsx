@@ -94,57 +94,39 @@ export default function Layout(props: { children: ReactNode }) {
           {props.children}
         </View>
         {padLayout.active && (
-          <View
-            style={[
-              padLayout.orientation === 'PORTRAIT'
-                ? {
-                    height: APP_SIDEBAR_SIZE,
-                    flexShrink: 0,
-                  }
-                : { width: APP_SIDEBAR_SIZE },
-              padLayout.orientation === 'PORTRAIT'
-                ? styles.border_t_light
-                : styles.border_r_light,
-              styles.layer1,
-            ]}>
-            <AppSidebar
-              position={
-                padLayout.orientation === 'PORTRAIT' ? 'BOTTOM' : 'SIDE'
-              }
-              dynamic={
-                <Animated.View
-                  style={[
-                    styles.layer2,
-                    padLayout.orientation === 'PORTRAIT'
-                      ? {
-                          opacity: fadeAnim,
-                          flexDirection: 'row',
-                          borderRadius: 8,
-                          height: 51,
-                          marginTop: 3,
-                          transform: [
-                            {
-                              translateY: translateYAnim,
-                            },
-                          ],
-                        }
-                      : {
-                          opacity: fadeAnim,
-                          marginTop: 'auto',
-                          borderRadius: 8,
-                          alignItems: 'center',
-                          marginLeft: 8,
-                          marginRight: 8,
-                          paddingTop: 1,
-                          paddingBottom: 1,
-                          transform: [{ translateX: translateXAnim }],
-                        },
-                  ]}>
-                  {nav}
-                </Animated.View>
-              }
-            />
-          </View>
+          <AppSidebar
+            position={padLayout.orientation === 'PORTRAIT' ? 'BOTTOM' : 'SIDE'}
+            dynamic={
+              <Animated.View
+                style={[
+                  styles.layer2,
+                  padLayout.orientation === 'PORTRAIT'
+                    ? {
+                        opacity: fadeAnim,
+                        flexDirection: 'row',
+                        borderRadius: 8,
+                        transform: [
+                          {
+                            translateY: translateYAnim,
+                          },
+                        ],
+                      }
+                    : {
+                        opacity: fadeAnim,
+                        marginTop: 'auto',
+                        borderRadius: 8,
+                        alignItems: 'center',
+                        marginLeft: 8,
+                        marginRight: 8,
+                        paddingTop: 1,
+                        paddingBottom: 1,
+                        transform: [{ translateX: translateXAnim }],
+                      },
+                ]}>
+                {nav}
+              </Animated.View>
+            }
+          />
         )}
       </View>
     </AppLayoutContext.Provider>

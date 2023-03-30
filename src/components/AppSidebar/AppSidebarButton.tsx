@@ -11,6 +11,8 @@ import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
 
+import { useLayoutStyle } from './context'
+
 function AppSidebarButton(props: {
   Icon: typeof HomeIcon
   label: string
@@ -22,6 +24,7 @@ function AppSidebarButton(props: {
   iconStyle?: ViewStyle
   badge?: number
   isLast?: boolean
+  style?: ViewStyle
 }) {
   const { styles, theme } = useTheme()
   const {
@@ -34,13 +37,14 @@ function AppSidebarButton(props: {
     iconStyle,
     isLast,
   } = props
+  const layoutStyle = useLayoutStyle()
   return (
     <Pressable
       className={classNames(
-        'w-[52px] h-[52px] rounded-lg items-center justify-center',
+        'w-[50px] h-[50px] rounded-lg items-center justify-center',
         'active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600',
-        !isLast && 'mb-1',
       )}
+      style={layoutStyle}
       disabled={props.disabled}
       onPress={(e) => {
         if (isActive) {
