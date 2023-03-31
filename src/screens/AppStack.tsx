@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { headerLeft } from '@/components/BackButton'
 import { useTheme } from '@/containers/ThemeService'
-import { usePadLayout } from '@/utils/hooks'
+import { usePadLayout } from '@/containers/AppSettingsService'
 
 import AboutScreen from './AboutScreen'
 import BrowserScreen from './BrowserScreen'

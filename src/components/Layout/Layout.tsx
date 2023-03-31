@@ -2,9 +2,8 @@ import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, View } from 'react-native'
 import classNames from 'classnames'
 
-import { APP_SIDEBAR_SIZE } from '@/constants'
+import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { usePadLayout } from '@/utils/hooks'
 
 import AppSidebar from '../AppSidebar'
 import { AppLayoutContext } from './context'

@@ -10,9 +10,10 @@ import type { BottomTabHeaderProps } from '@react-navigation/bottom-tabs'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import Constants from 'expo-constants'
 
+import { usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
-import { usePadLayout, usePressBreadcrumb } from '@/utils/hooks'
+import { usePressBreadcrumb } from '@/utils/hooks'
 
 export default function MainScreenHeader(
   props: BottomTabHeaderProps &

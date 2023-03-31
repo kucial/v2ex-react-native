@@ -14,13 +14,12 @@ import {
   ChatBubbleLeftEllipsisIcon,
   StarIcon,
 } from 'react-native-heroicons/outline'
-import RNRestart from 'react-native-restart'
 import * as StoreReview from 'react-native-store-review'
-import CookieManager from '@react-native-cookies/cookies'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
 import { stringify } from 'qs'
 
+import AppBrandIcon from '@/components/AppBrandIcon'
 import GithubIcon from '@/components/GithubIcon'
 import GroupWapper from '@/components/GroupWrapper'
 import { LineItem } from '@/components/LineItem'
@@ -28,11 +27,10 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { staticAsset } from '@/utils/assets'
-import storage from '@/utils/storage'
+import { clearCache, reset } from '@/utils/app-state'
 
 export default function AboutScreen(props) {
-  const { theme, styles, colorScheme } = useTheme()
+  const { theme, styles } = useTheme()
   const [count, setCount] = useState(0)
   const settings = useAppSettings()
   const alert = useAlertService()
@@ -58,15 +56,9 @@ export default function AboutScreen(props) {
               }}>
               <View className="my-5">
                 <View className="flex-1 flex flex-row justify-center">
-                  <Image
-                    source={{
-                      uri:
-                        colorScheme === 'light'
-                          ? staticAsset('brand-default.png')
-                          : staticAsset('brand-inverse.png'),
-                    }}
-                    style={{ width: 120, height: (120 * 819) / 1085 }}
-                  />
+                  <View className="ml-3">
+                    <AppBrandIcon />
+                  </View>
                 </View>
                 {/* <Text
                   className="text-2xl font-bold text-center"
@@ -166,18 +158,7 @@ export default function AboutScreen(props) {
                     'active:opacity-60',
                   )}
                   style={[styles.layer1]}
-                  onPress={async () => {
-                    // clear swr cache
-                    const keys = storage.getAllKeys()
-                    keys.forEach((key) => {
-                      if (/\$app\$/.test(key)) {
-                        return
-                      }
-                      storage.delete(key)
-                    })
-                    await CookieManager.clearAll()
-                    RNRestart.Restart()
-                  }}>
+                  onPress={clearCache}>
                   <Text style={styles.text}>清除缓存</Text>
                 </Pressable>
               </GroupWapper>
@@ -190,11 +171,7 @@ export default function AboutScreen(props) {
                     'active:opacity-60',
                   )}
                   style={[styles.layer1]}
-                  onPress={async () => {
-                    storage.clearAll()
-                    await CookieManager.clearAll()
-                    RNRestart.Restart()
-                  }}>
+                  onPress={reset}>
                   <Text style={styles.text_danger}>重置</Text>
                 </Pressable>
               </GroupWapper>

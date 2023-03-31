@@ -6,12 +6,8 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Dimensions, useWindowDimensions } from 'react-native'
 import { debounce } from 'lodash'
 import * as Sentry from 'sentry-expo'
-
-import { APP_SIDEBAR_SIZE, CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
-import { useAppSettings } from '@/containers/AppSettingsService'
 
 import { getJSON, setJSON } from './storage'
 
@@ -87,24 +83,4 @@ export const usePressBreadcrumb = (
     },
     [func],
   )
-}
-
-type PadLayoutInfo = {
-  active: boolean
-  orientation: 'PORTRAIT' | 'LANDSCAPE'
-}
-export const usePadLayout = () => {
-  const { data } = useAppSettings()
-  const { width, height } = useWindowDimensions()
-
-  const info = useMemo(() => {
-    return {
-      active:
-        data.payLayoutEnabled &&
-        width > CONTENT_CONTAINER_MAX_WIDTH + APP_SIDEBAR_SIZE,
-      orientation: height > width ? 'PORTRAIT' : 'LANDSCAPE',
-    }
-  }, [data.payLayoutEnabled, width, height])
-
-  return info as PadLayoutInfo
 }

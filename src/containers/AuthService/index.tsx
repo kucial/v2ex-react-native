@@ -7,14 +7,13 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { Alert, AppState, InteractionManager } from 'react-native'
+import { AppState, InteractionManager } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import { useCachedState } from '@/utils/hooks'
 import { getJSON, setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
-import clientService from '@/utils/v2ex-client/service'
 import {
   BalanceBrief,
   MemberDetail,
@@ -74,10 +73,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
   )
 
   const service: AuthService = useMemo(() => {
-    const fetchCurrentUser = async (refresh = false) => {
-      if (refresh) {
-        clientService.reload(true)
-      }
+    const fetchCurrentUser = async () => {
       setState((prev) => ({
         ...prev,
         status: 'loading',

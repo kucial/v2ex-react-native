@@ -5,7 +5,6 @@ import {
   Text,
   View,
 } from 'react-native'
-import { InformationCircleIcon } from 'react-native-heroicons/outline'
 import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -16,19 +15,14 @@ type Props = {
 }
 
 export default function ErrorNoticeView(props: Props) {
-  const { theme, styles } = useTheme()
+  const { styles } = useTheme()
   return (
     <SafeAreaView
       className="flex-1 items-center justify-center"
       style={styles.layer1}>
-      <View className="px-4 pb-8">
+      <View className="px-4 pb-16">
         <View className="pt-[48px]">
-          <View className="flex flex-row mb-8">
-            <InformationCircleIcon
-              size={36}
-              style={{ marginRight: 8 }}
-              color={theme.colors.text}
-            />
+          <View className="flex flex-row mb-6">
             <Text className="text-[32px]" style={styles.text}>
               哎呦，出了点问题
             </Text>
@@ -54,18 +48,13 @@ export default function ErrorNoticeView(props: Props) {
               className={classNames(
                 'h-[50px] rounded-lg items-center justify-center active:opacity-60 mt-6',
               )}
-              style={[styles.btn_primary__bg, ,]}
+              style={styles.btn_danger__bg}
               onPress={props.onReset}>
-              <View
-                style={{
-                  backgroundColor: theme.colors.bg_danger_mask,
-                }}>
-                <Text className="text-base" style={styles.text_danger}>
-                  重置 APP
-                </Text>
-              </View>
+              <Text className="text-base" style={styles.btn_danger__text}>
+                重置 APP
+              </Text>
             </Pressable>
-            <View className="mt-1">
+            <View className="mt-2">
               <Text className="text-xs text-center" style={styles.text_meta}>
                 （清理缓存）
               </Text>

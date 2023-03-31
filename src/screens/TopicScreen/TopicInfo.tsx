@@ -7,7 +7,7 @@ import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { usePadLayout } from '@/utils/hooks'
+import { usePadLayout } from '@/containers/AppSettingsService'
 import { TopicDetail } from '@/utils/v2ex-client/types'
 
 function TopicInfo(props: {

@@ -79,7 +79,7 @@ const ThemeContext = createContext<ThemeService>({
 
 export const ThemeProvider = (props: {
   theme?: string
-  colorScheme: 'light' | 'dark'
+  colorScheme?: 'light' | 'dark'
   children: ReactNode
 }) => {
   const { colorScheme } = useColorScheme()

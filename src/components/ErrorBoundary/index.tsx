@@ -1,9 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
-import RNRestart from 'react-native-restart'
-import { Image } from 'expo-image'
 import * as Sentry from 'sentry-expo'
-
-import storage from '@/utils/storage'
 
 interface Props {
   children?: ReactNode
@@ -12,6 +8,8 @@ interface Props {
 interface State {
   hasError: boolean
 }
+
+import { reset, restart } from '@/utils/app-state'
 
 import ErrorNoticeView from './ErrorNoticeView'
 class ErrorBoundary extends Component<Props, State> {
@@ -32,25 +30,9 @@ class ErrorBoundary extends Component<Props, State> {
     Sentry.Native.captureException(error)
   }
 
-  handleRestart = () => {
-    // restart app
-    RNRestart.Restart()
-  }
-
-  handleReset = () => {
-    storage.clearAll()
-    Image.clearDiskCache()
-    RNRestart.Restart()
-  }
-
   render() {
     if (this.state.hasError) {
-      return (
-        <ErrorNoticeView
-          onRestart={this.handleRestart}
-          onReset={this.handleReset}
-        />
-      )
+      return <ErrorNoticeView onRestart={restart} onReset={reset} />
     } else {
       return this.props.children
     }

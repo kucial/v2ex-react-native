@@ -9,7 +9,7 @@ import {
 
 import { APP_SIDEBAR_SIZE, CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
 import { useTheme } from '@/containers/ThemeService'
-import { usePadLayout } from '@/utils/hooks'
+import { usePadLayout } from '@/containers/AppSettingsService'
 
 const DismissBackdropComponent = (props: BottomSheetBackdropProps) => {
   return (

@@ -37,7 +37,6 @@ import {
   topicReplyFromCell,
   userMetaForCurrentUser,
 } from './helpers'
-import service from './service'
 import {
   BalanceBrief,
   CollectionResponse,
@@ -183,8 +182,6 @@ const ajaxHeaders = {
 
 export const request = instance.request
 
-export const manager = service
-
 export async function fetchOnce(
   headers: AxiosRequestHeaders = {
     Referer: BASE_URL,
@@ -207,7 +204,6 @@ export async function getHomeTabs(): Promise<
 > {
   const { data: html } = await request({
     url: '/',
-    adapter: service.fetch,
   })
   const $ = cheerioDoc(html)
   const tabs = $('#Wrapper .content a[class^=tab]')
@@ -1633,9 +1629,6 @@ export async function logout(): Promise<StatusResponse> {
     new Promise((resolve) => clearCookies(resolve)),
     CookieManager.clearAll(true),
   ])
-
-  // 重置 webview
-  service.reload(true)
 
   return {
     success: true,

@@ -5,9 +5,9 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { APP_SIDEBAR_SIZE } from '@/constants'
+import { usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
-import { usePadLayout } from '@/utils/hooks'
 
 import AvatarForm from './AvatarForm'
 import Balance from './Balance'
