@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useMemo } from 'react'
-import { SafeAreaView, View } from 'react-native'
+import { SafeAreaView, useWindowDimensions, View } from 'react-native'
 import {
   ClockIcon,
   DocumentPlusIcon,
@@ -29,6 +29,7 @@ export default function AppSidebar(props: {
 }) {
   const { composeAuthedNavigation, meta, user } = useAuthService()
   const { theme, styles } = useTheme()
+  const { width } = useWindowDimensions()
   const currentRoute = useCurrentRoute()
   const navigation = useNavigation<
     NativeStackNavigationProp<AppStackParamList> &
@@ -172,7 +173,7 @@ export default function AppSidebar(props: {
             Icon={MagnifyingGlassIcon}
             onPress={handleSearchButtonPress}
           />
-          {props.position === 'BOTTOM' && (
+          {props.position === 'BOTTOM' && width > 730 && (
             <View
               className="w-[50px] h-[50px]"
               style={buttonLayoutStyle}></View>
