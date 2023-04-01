@@ -4,6 +4,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   useWindowDimensions,
@@ -58,6 +59,20 @@ export default function ThemePreview(props: {
       },
       headerTintColor: theme.colors.text,
       headerTitleStyle: { color: theme.colors.text },
+      headerBackground() {
+        return (
+          <View
+            style={[
+              {
+                backgroundColor: theme.colors.card,
+                height: '100%',
+                borderBottomColor: theme.colors.border_light,
+                borderBottomWidth: StyleSheet.hairlineWidth,
+              },
+            ]}
+          />
+        )
+      },
     })
   }, [theme.colors.card])
 

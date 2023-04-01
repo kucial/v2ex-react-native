@@ -139,7 +139,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
       },
       headerBackground: null,
     })
-  }, [])
+  }, [theme])
 
   return (
     <FlashList

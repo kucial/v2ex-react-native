@@ -17,30 +17,64 @@ export const topic = {
 }
 
 export const html = `
-<h1>Heading 1</h1>
+<h1>R2v</h1>
 
-<h2>Heading 2</h2>
+<p>R2V是一款为V2EX社区打造的第三方客户端应用，它的主要目的是让用户能够更加方便地访问和浏览V2EX社区的内容。</p>
 
-<h3>Heading 3</h3>
+<ul>
+  <li><strong>简洁的用户界面</strong>：R2V的用户界面非常简洁，易于使用。用户可以通过简单的手势和操作轻松地浏览和查看帖子和评论</li>
+  <li><strong>多种主题选择</strong>：除默认主题外，提供了多种<em>强调色</em>主题供用户选择，以满足不同用户的审美和使用需求</li>
+  <li><strong>自定义设置</strong>：用户可以做一些自定义设置，如修改列表显示样式，编辑首页标签等</li>
+</ul>
 
-<h4>Heading 4</h4>
+<hr />
 
-<h5>Heading 5</h5>
+<h1>标题一</h1>
 
-<h6>Heading 6</h6>
+<h2>标题二</h2>
 
-<p>Paragraph text goes here.</p>
+<h3>标题三</h3>
 
-<p>You can add <em>emphasis</em> with asterisks or <em>underscores</em>.</p>
+<h4>标题四</h4>
 
-<p>You can also <strong>bold</strong> text with double asterisks or <strong>underscores</strong>.</p>
+<h5>标题五</h5>
 
-<p>You can create <code>inline code</code> with backticks.</p>
+<h6>标题六</h6>
 
-<pre><code>Code blocks
-can be created with triple backticks.
-</code></pre>
+<p>普通段落内容</p>
 
+<hr />
+<h2>代码块</h2>
+
+<pre><code class="hljs language-typescript"><span class="hljs-comment">// Define a variable with an explicit type</span>
+<span class="hljs-keyword">let</span> <span class="hljs-attr">myName</span>: <span class="hljs-built_in">string</span> = <span class="hljs-string">"Alice"</span>;
+
+<span class="hljs-comment">// Define a function with explicit parameter and return types</span>
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">greet</span>(<span class="hljs-params">name: <span class="hljs-built_in">string</span></span>): <span class="hljs-built_in">string</span> {
+  <span class="hljs-keyword">return</span> <span class="hljs-string">\`Hello, <span class="hljs-subst">\${name}</span>!\`</span>;
+}
+
+<span class="hljs-comment">// Define an interface</span>
+<span class="hljs-keyword">interface</span> <span class="hljs-title class_">Person</span> {
+  <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">age</span>: <span class="hljs-built_in">number</span>;
+}
+
+<span class="hljs-comment">// Define a class that implements an interface</span>
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">Student</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Person</span> {
+  <span class="hljs-title function_">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">public</span> name: <span class="hljs-built_in">string</span>, <span class="hljs-keyword">public</span> age: <span class="hljs-built_in">number</span></span>) {}
+}
+
+<span class="hljs-comment">// Create an instance of the class</span>
+<span class="hljs-keyword">const</span> alice = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Student</span>(<span class="hljs-string">"Alice"</span>, <span class="hljs-number">20</span>);
+
+<span class="hljs-comment">// Call the function and log the result to the console</span>
+<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">greet</span>(alice.<span class="hljs-property">name</span>));
+</code>
+</pre>
+<hr />
+
+<h2>列表</h2>
 <ul>
 <li>Unordered lists</li>
 <li>can be created</li>
@@ -53,26 +87,20 @@ can be created with triple backticks.
 <li>can also be created</li>
 <li>with numbers</li>
 </ol>
+<hr />
+
+<h2>引用</h2>
 
 <blockquote>
 <p>Blockquotes can be created with a greater than sign.</p>
 </blockquote>
+<hr />
 
-<hr>
-
-<p>Hyphens</p>
-
-<hr>
-
-<p>Asterisks</p>
-
-<hr>
-
-<p>Underscores</p>
-
-<p><a href="https://www.example.com">Links</a> can be created with square brackets and parentheses.</p>
-
+<h2>图片</h2>
 <p><img src="https://picsum.photos/id/220/600/400" alt="Images"> can be added with an exclamation mark and square brackets containing the alt text and parentheses containing the image URL.</p>
+<hr />
+
+<h2>表格</h2>
 
 <table>
 <thead>
@@ -93,23 +121,8 @@ can be created with triple backticks.
 </tbody>
 </table>
 
-<p>You can add <strong>bold</strong> or <em>italic</em> formatting to table cells.</p>
 
-<p>You can create footnotes<sup id="fnref1"><a href="#fn1" rel="footnote">1</a></sup> by using square brackets and caret characters followed by the footnote text.</p>
+<hr />
 
-<pre><code>&lt;p&gt;Raw HTML code&lt;/p&gt;
-</code></pre>
-
-<pre><code>    Raw text with four spaces of indentation
-</code></pre>
-
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1">
-<p>This is the footnote text. <a href="#fnref1" rev="footnote">&#8617;</a></p>
-</li>
-</ol>
-</div>
 
 `

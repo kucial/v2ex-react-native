@@ -1,5 +1,6 @@
 import CookieManager from '@react-native-cookies/cookies'
 import { Cheerio, CheerioAPI, Element, load } from 'cheerio'
+import hljs from 'highlight.js'
 
 import {
   MemberBasic,
@@ -58,6 +59,23 @@ export function cheerioDoc(html: string) {
     // console.log('.__cf_email__', i, email)
     $(el).replaceWith(function () {
       return `<a href="mailto:${email}">${email}</a>`
+    })
+  })
+
+  // handle code block
+  $('pre code[class^=language]').each(function (i, el) {
+    const $el = $(el)
+    $el.replaceWith(function () {
+      const className = $el.attr('class')
+      const language = className.replace('language-', '')
+      let highlighted
+      if (language && hljs.listLanguages().includes(language)) {
+        highlighted = hljs.highlight($el.text(), { language }).value
+      } else {
+        highlighted = hljs.highlightAuto($el.text()).value
+      }
+
+      return `<code class="hljs">${highlighted}</code>`
     })
   })
 

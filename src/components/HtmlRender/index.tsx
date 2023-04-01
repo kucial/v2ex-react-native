@@ -25,9 +25,11 @@ import {
 
 import AnchorRenderer from './AnchorRenderer'
 import { RenderContext } from './context'
+import HorizontalScrollRenderer from './HorizontalScrollRenderer'
 import ImageRenderer from './ImageRenderer'
 import type { ImageViewingService } from './ImageViewingService'
 import ImageViewingServiceProvider from './ImageViewingService'
+import { atomOne } from './styles'
 import TextRenderer from './TextRenderer'
 
 const renderers = {
@@ -35,6 +37,7 @@ const renderers = {
   iframe: IframeRenderer,
   _TEXT_: TextRenderer,
   a: AnchorRenderer,
+  pre: HorizontalScrollRenderer,
 }
 
 const customHTMLElementModels = {
@@ -54,7 +57,7 @@ function HtmlRender({
 }: RenderHTMLProps & {
   navigation: NativeStackNavigationProp<AppStackParamList>
 }) {
-  const { theme } = useTheme()
+  const { theme, colorScheme } = useTheme()
   const alert = useAlertService()
   const viewingRef = useRef<ImageViewingService>(null)
 
@@ -64,7 +67,7 @@ function HtmlRender({
       body: {
         color: theme.colors.text,
         fontSize: baseFontSize,
-        lineHeight: baseFontSize * 1.33,
+        lineHeight: baseFontSize * 1.4,
       },
       h1: {
         fontSize: (28 / 16) * baseFontSize,
@@ -137,23 +140,9 @@ function HtmlRender({
       ...(tagsStyles || {}),
     }
   }, [tagsStyles, baseStyle, theme])
+
   const renderersProps = useMemo(() => {
     return {
-      // a: {
-      //   onPress: (e, href) => {
-      //     if (isAppLink(href)) {
-      //       const screen = getScreenInfo(href)
-      //       if (screen) {
-      //         navigation.push(screen.name, screen.params)
-      //         return
-      //       }
-      //     }
-      //     WebBrowser.openBrowserAsync(href).catch((err) => {
-      //       captureException(err)
-      //       console.log(err)
-      //     })
-      //   }
-      // },
       iframe: {
         scalesPageToFit: true,
       },
@@ -266,6 +255,7 @@ function HtmlRender({
           defaultTextProps={defaultTextProps}
           customHTMLElementModels={customHTMLElementModels}
           bypassAnonymousTPhrasingNodes={false}
+          classesStyles={atomOne[colorScheme]}
           {...props}
         />
       </RenderContext.Provider>

@@ -6,8 +6,8 @@ import { Image } from 'expo-image'
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useTheme } from '@/containers/ThemeService'
 import { usePadLayout } from '@/containers/AppSettingsService'
+import { useTheme } from '@/containers/ThemeService'
 import { TopicDetail } from '@/utils/v2ex-client/types'
 
 function TopicInfo(props: {

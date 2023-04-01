@@ -6,8 +6,8 @@ import {
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 
 import MainScreenHeader from '@/components/MainScreenHeader'
-import { useTheme } from '@/containers/ThemeService'
 import { usePadLayout } from '@/containers/AppSettingsService'
+import { useTheme } from '@/containers/ThemeService'
 
 import HomeScreen from './HomeScreen'
 import MyScreen from './MyScreen'
