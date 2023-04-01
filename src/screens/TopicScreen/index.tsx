@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react'
 import { Linking, Pressable, Share, Text, View } from 'react-native'
+import { InteractionManager } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
@@ -31,10 +32,11 @@ import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { usePadLayout } from '@/containers/AppSettingsService'
+import { useCachedState } from '@/utils/hooks'
 import { useScrollDirection } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
 import { isLoading, isRefreshing, shouldLoadMore } from '@/utils/swr'
@@ -46,6 +48,7 @@ import Conversation from './Conversation'
 import PadSidebar from './PadSidebar'
 import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
+import ScrollToLastPosition from './ScrollToLastPosition'
 import TopicInfo from './TopicInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
@@ -169,6 +172,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const isFallback = topic === brief
 
   const { touchViewed } = useViewedTopics()
+  const [lastIndex, setLastIndex] = useCachedState(
+    `$app$/topic/${route.params.id}/last-position`,
+    null,
+  )
+  const [showScrollToLastPosition, setShowScrollToLastPosition] =
+    useState(false)
 
   const listSwr = useSWRInfinite(
     useCallback(
@@ -196,6 +205,9 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           )
           touchViewed(topic)
         }
+        if (lastIndex && !showScrollToLastPosition) {
+          setShowScrollToLastPosition(true)
+        }
       },
       onErrorRetry(err) {
         if (err.code === 'RESOURCE_ERROR') {
@@ -209,6 +221,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const alert = useAlertService()
 
   const [conversationContext, setConversationContext] = useState(null)
+
   const { data: settings } = useAppSettings()
   const padLayout = usePadLayout()
 
@@ -217,6 +230,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const conversationModalRef = useRef<BottomSheetModal>()
   const movePanelModalRef = useRef<BottomSheetModal>()
   const scrollControlRef = useRef<ScrollControlApi>(null)
+  const currentIndexRef = useRef(null)
 
   const { composeAuthedNavigation } = useAuthService()
   const aIndicator = useActivityIndicator()
@@ -613,6 +627,16 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     return unsubscribe
   }, [navigation])
 
+  useEffect(() => {
+    return () => {
+      if (currentIndexRef.current > 10) {
+        setLastIndex(currentIndexRef.current, true)
+      } else {
+        setLastIndex(undefined, true)
+      }
+    }
+  }, [])
+
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
       renderReply({ item, index }) {
@@ -816,6 +840,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         estimatedItemSize={140}
         onEndReachedThreshold={0.4}
         onEndReached={handleReachEnd}
+        onViewableItemsChanged={({ viewableItems }) => {
+          const item = viewableItems[0]
+          currentIndexRef.current = item?.index
+        }}
         refreshControl={
           <MyRefreshControl
             onRefresh={() => {
@@ -830,6 +858,25 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         onScroll={handleScroll}
         scrollEventThrottle={16}
       />
+      {showScrollToLastPosition && (
+        <ScrollToLastPosition
+          style={{
+            position: 'absolute',
+            bottom: 110,
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          onPress={() => {
+            InteractionManager.runAfterInteractions(() => {
+              listRef.current?.scrollToIndex({
+                index: lastIndex,
+                animated: true,
+              })
+            })
+          }}
+        />
+      )}
       <BarComponent
         isFocused={isFocused}
         onInitReply={initReply}
