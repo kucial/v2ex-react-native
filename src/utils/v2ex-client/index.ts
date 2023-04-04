@@ -23,7 +23,13 @@ import {
 } from '@/utils/v2ex-client/types'
 
 import ApiError from './ApiError'
-import { BASE_URL, ONCP, REQUEST_TIMEOUT, USER_AGENT } from './constants'
+import {
+  BASE_URL,
+  ONCP,
+  REQUEST_TIMEOUT,
+  USER_AGENT,
+  USER_AGENT_DESKTOP,
+} from './constants'
 import {
   base64File,
   cheerioDoc,
@@ -312,6 +318,48 @@ export async function getRecentFeeds({
   }
 }
 
+export async function getHotTopics() {
+  const { data: html } = await request({
+    url: '/',
+    headers: {
+      'user-agent': USER_AGENT_DESKTOP,
+    },
+  })
+  const $ = cheerioDoc(html)
+  const ids = $('#TopicsHot .cell')
+    .map(function (i, el) {
+      const $el = $(el)
+      const title = $el.find('.item_hot_topic_title').text()
+      if (!title) {
+        return null
+      }
+      const topicId = Number(
+        $el.find('.item_hot_topic_title a').attr('href').replace('/t/', ''),
+      )
+      return topicId
+    })
+    .toArray()
+    .filter(Boolean)
+
+  const topics = await Promise.all(
+    ids.map((id) =>
+      request({
+        url: '/api/topics/show.json',
+        params: { id },
+      }).then((res) => res.data[0]),
+    ),
+  )
+
+  return {
+    data: topics,
+    pagination: {
+      current: 1,
+      total: 1,
+    },
+    fetchedAt: Date.now(),
+  }
+}
+
 export async function getTopicDetail({
   id,
   api,
@@ -323,7 +371,6 @@ export async function getTopicDetail({
     const { data } = await request({
       url: '/api/topics/show.json',
       params: { id },
-      adapter: null,
     })
     return {
       data: data[0],

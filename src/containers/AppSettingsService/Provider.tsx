@@ -30,16 +30,36 @@ const DEFAULT_SETTINGS: AppSettings = {
   payLayoutEnabled: true,
 }
 
+const TODAY_HOT_TAB = {
+  value: 'today_hots',
+  label: '今日热议',
+  type: 'home',
+  disabled: true,
+}
+
 export default function AppSettingsServiceProvider(props: {
   children: ReactElement
 }) {
   const [settings, setSettings] = useCachedState<AppSettings>(
     CACHE_KEY,
     undefined,
-    (data = {}) => ({
-      ...DEFAULT_SETTINGS,
-      ...data,
-    }),
+    (data = {}) => {
+      const merged = {
+        ...DEFAULT_SETTINGS,
+        ...data,
+      }
+      if (
+        merged.homeTabs &&
+        merged.homeTabs.findIndex(
+          (item: HomeTabOption) =>
+            item.type === TODAY_HOT_TAB.type &&
+            item.value === TODAY_HOT_TAB.value,
+        ) === -1
+      ) {
+        merged.homeTabs.push(TODAY_HOT_TAB)
+      }
+      return merged
+    },
   )
 
   const service = useMemo(() => {
@@ -55,6 +75,7 @@ export default function AppSettingsServiceProvider(props: {
             label: '最近',
             type: 'home',
           },
+          TODAY_HOT_TAB,
           ...data,
         ]
           .filter((item) => item.value !== 'nodes')

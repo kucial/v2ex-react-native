@@ -76,24 +76,32 @@ export default function HomeScreen(props: HomeScreenProps) {
       renderScene: ({ route }) => {
         const { tab } = route
         const isActive = isFocused && route.key === routes[index].key
-        if (tab.type === 'node') {
-          return (
-            <NodeTopicList
-              key={`${tab.type}-${tab.value}`}
-              isFocused={isActive}
-              currentListRef={isActive && currentListRef}
-              name={tab.value}
-            />
-          )
+        switch (tab.type) {
+          case 'node':
+            return (
+              <NodeTopicList
+                key={`${tab.type}-${tab.value}`}
+                isFocused={isActive}
+                currentListRef={isActive && currentListRef}
+                name={tab.value}
+              />
+            )
+          case 'home':
+            return (
+              <HomeTopicList
+                key={`${tab.type}-${tab.value}`}
+                isFocused={isActive}
+                currentListRef={isActive && currentListRef}
+                tab={tab.value}
+              />
+            )
+          default:
+            return (
+              <View>
+                <Text>TO_HANDLE: {tab.type}</Text>
+              </View>
+            )
         }
-        return (
-          <HomeTopicList
-            key={`${tab.type}-${tab.value}`}
-            isFocused={isActive}
-            currentListRef={isActive && currentListRef}
-            tab={tab.value}
-          />
-        )
       },
       renderTabBar: (props) => {
         return (

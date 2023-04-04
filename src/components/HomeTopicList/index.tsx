@@ -18,7 +18,7 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/swr'
-import { getHomeFeeds, getRecentFeeds } from '@/utils/v2ex-client'
+import { getHomeFeeds, getHotTopics, getRecentFeeds } from '@/utils/v2ex-client'
 import { HomeTopicFeed } from '@/utils/v2ex-client/types'
 
 import TideTopicRow from './TideTopicRow'
@@ -48,6 +48,9 @@ function FeedTopicList(props: FeedTopicListProps) {
     async ([_, tab, page]) => {
       if (tab === 'recent') {
         return getRecentFeeds({ p: page })
+      }
+      if (tab === 'today_hots') {
+        return getHotTopics()
       }
       return getHomeFeeds({ tab })
     },

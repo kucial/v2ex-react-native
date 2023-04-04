@@ -146,32 +146,34 @@ export default function TopicRow(props: HomeFeedRowProps) {
               <Text className="text-xs" style={styles.text_meta}>
                 {data?.last_reply_time}
               </Text>
-              {showLastReplyMember && data?.last_reply_by && (
-                <>
+              {data?.last_reply_time &&
+                showLastReplyMember &&
+                data?.last_reply_by && (
                   <Text className="text-xs px-2" style={styles.text_meta}>
                     •
                   </Text>
-                  <View className="flex flex-row items-center">
-                    <Text className="text-xs" style={styles.text_meta}>
-                      最后回复来自
+                )}
+              {showLastReplyMember && data?.last_reply_by && (
+                <View className="flex flex-row items-center">
+                  <Text className="text-xs" style={styles.text_meta}>
+                    最后回复来自
+                  </Text>
+                  <FixedPressable
+                    className="px-1 active:opacity-60"
+                    hitSlop={4}
+                    onPress={() => {
+                      navigation.push('member', {
+                        username: data.last_reply_by,
+                        tab: 'replies',
+                      })
+                    }}>
+                    <Text
+                      className="text-xs font-[600]"
+                      style={styles.text_desc}>
+                      {data.last_reply_by}
                     </Text>
-                    <FixedPressable
-                      className="px-1 active:opacity-60"
-                      hitSlop={4}
-                      onPress={() => {
-                        navigation.push('member', {
-                          username: data.last_reply_by,
-                          tab: 'replies',
-                        })
-                      }}>
-                      <Text
-                        className="text-xs font-[600]"
-                        style={styles.text_desc}>
-                        {data.last_reply_by}
-                      </Text>
-                    </FixedPressable>
-                  </View>
-                </>
+                  </FixedPressable>
+                </View>
               )}
             </View>
           </View>
