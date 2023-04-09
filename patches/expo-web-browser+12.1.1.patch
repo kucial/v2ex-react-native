@@ -1,0 +1,198 @@
+diff --git a/node_modules/expo-web-browser/ios/SCModalPushPopAnimator.swift b/node_modules/expo-web-browser/ios/SCModalPushPopAnimator.swift
+new file mode 100644
+index 0000000..5febd7c
+--- /dev/null
++++ b/node_modules/expo-web-browser/ios/SCModalPushPopAnimator.swift
+@@ -0,0 +1,51 @@
++//
++//  SCAnimator.swift
++//  SCUtils
++//
++//  Created by stringCode on 3/1/15.
++//  Copyright (c) 2015 stringCode. All rights reserved.
++//
++
++import UIKit
++
++class SCModalPushPopAnimator: UIPercentDrivenInteractiveTransition, UIViewControllerAnimatedTransitioning {
++
++    var dismissing = false
++    var percentageDriven: Bool = false
++
++    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
++        return 0.75
++    }
++
++    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
++        guard let fromViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from),
++              let toViewController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) else { return }
++
++        let topView = dismissing ? fromViewController.view : toViewController.view
++        var bottomViewController = dismissing ? toViewController : fromViewController
++        var bottomView = bottomViewController.view
++        let offset = bottomView?.bounds.size.width ?? 0
++        if let navVC = bottomViewController as? UINavigationController {
++            bottomViewController = navVC.topViewController ?? bottomViewController
++            bottomView = bottomViewController.view
++        }
++
++        transitionContext.containerView.addSubview(toViewController.view)
++        if dismissing { transitionContext.containerView.insertSubview(toViewController.view, belowSubview: fromViewController.view) }
++
++        topView?.frame = fromViewController.view.frame
++        topView?.transform = dismissing ? CGAffineTransform.identity : CGAffineTransform(translationX: offset, y: 0)
++
++
++        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 1.0, options: SCModalPushPopAnimator.animOpts(), animations: { () -> Void in
++                topView?.transform = self.dismissing ? CGAffineTransform(translationX: offset, y: 0) : CGAffineTransform.identity
++            }) { ( finished ) -> Void in
++                topView?.transform = CGAffineTransform.identity
++                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
++        }
++    }
++
++    class func animOpts() -> UIView.AnimationOptions {
++        return [.allowAnimatedContent, .beginFromCurrentState, .layoutSubviews]
++    }
++}
+diff --git a/node_modules/expo-web-browser/ios/SCSafariViewController.swift b/node_modules/expo-web-browser/ios/SCSafariViewController.swift
+new file mode 100644
+index 0000000..16ec300
+--- /dev/null
++++ b/node_modules/expo-web-browser/ios/SCSafariViewController.swift
+@@ -0,0 +1,33 @@
++//
++//  SCSafariViewController.swift
++//  HackingSFViewController
++//
++//  Created by stringCode on 10/10/2015.
++//  Copyright © 2015 stringCode. All rights reserved.
++//
++
++import UIKit
++import SafariServices
++
++class SCSafariViewController: SFSafariViewController {
++    var edgeView: UIView? {
++        get {
++            if (_edgeView == nil && isViewLoaded) {
++                _edgeView = UIView()
++                _edgeView?.translatesAutoresizingMaskIntoConstraints = false
++                view.addSubview(_edgeView!)
++                _edgeView?.backgroundColor = UIColor(white: 1, alpha: 0.001)
++                let bindings = ["edgeView": _edgeView!]
++                let options = NSLayoutConstraint.FormatOptions(rawValue: 0)
++                let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "|-0-[edgeView(5)]", options: options, metrics: nil, views: bindings)
++                let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[edgeView]-0-|", options: options, metrics: nil, views: bindings)
++                view?.addConstraints(hConstraints)
++                view?.addConstraints(vConstraints)
++            }
++            return _edgeView
++        }
++    }
++
++    private var _edgeView: UIView?
++
++}
+diff --git a/node_modules/expo-web-browser/ios/WebBrowserSession.swift b/node_modules/expo-web-browser/ios/WebBrowserSession.swift
+index 1e6ad66..d2d4455 100644
+--- a/node_modules/expo-web-browser/ios/WebBrowserSession.swift
++++ b/node_modules/expo-web-browser/ios/WebBrowserSession.swift
+@@ -3,27 +3,33 @@
+ import SafariServices
+ import ExpoModulesCore
+ 
+-internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
+-  let viewController: SFSafariViewController
++internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAdaptivePresentationControllerDelegate, UIViewControllerTransitioningDelegate {
++  let viewController: SCSafariViewController
++  let animator = SCModalPushPopAnimator()
++
++  var currentVC: UIViewController?
+   var promise: Promise?
+   var isOpen: Bool {
+     promise != nil
+   }
+ 
+   init(url: URL, options: WebBrowserOptions) {
+-    let configuration = SFSafariViewController.Configuration()
++    let configuration = SCSafariViewController.Configuration()
+     configuration.barCollapsingEnabled = options.enableBarCollapsing
+     configuration.entersReaderIfAvailable = options.readerMode
+ 
+-    viewController = SFSafariViewController(url: url, configuration: configuration)
++    viewController = SCSafariViewController(url: url, configuration: configuration)
+     viewController.modalPresentationStyle = options.presentationStyle.toPresentationStyle()
+     viewController.dismissButtonStyle = options.dismissButtonStyle.toSafariDismissButtonStyle()
+     viewController.preferredBarTintColor = options.toolbarColor
+     viewController.preferredControlTintColor = options.controlsColor
+ 
++
+     super.init()
++
+     viewController.delegate = self
+     viewController.presentationController?.delegate = self
++//    viewController.transitioningDelegate = self
+   }
+ 
+   func open(_ promise: Promise) {
+@@ -31,8 +37,14 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
+     while currentViewController?.presentedViewController != nil {
+       currentViewController = currentViewController?.presentedViewController
+     }
+-    currentViewController?.present(viewController, animated: true, completion: nil)
+       
++    currentVC = currentViewController
++
++    currentViewController?.present(viewController, animated: true) { () -> Void in
++        let recognizer = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(self.handleGesture))
++        recognizer.edges = UIRectEdge.left
++        self.viewController.edgeView?.addGestureRecognizer(recognizer)
++    }
+     self.promise = promise
+   }
+ 
+@@ -42,6 +54,20 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
+     }
+   }
+ 
++  @objc func handleGesture(recognizer:UIScreenEdgePanGestureRecognizer) {
++    self.animator.percentageDriven = true
++    let view = currentVC?.view
++      let percentComplete = recognizer.location(in: view).x / (view?.bounds.size.width ?? 1) / 2.0
++    switch recognizer.state {
++        case .began: dismiss()
++        case .changed: animator.update(percentComplete > 0.99 ? 0.99 : percentComplete)
++        case .ended, .cancelled:
++          (recognizer.velocity(in: view).x < 0) ? animator.cancel() : animator.finish()
++          self.animator.percentageDriven = false
++        default: ()
++    }
++  }
++
+   // MARK: - SFSafariViewControllerDelegate
+ 
+   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+@@ -54,6 +80,22 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
+     finish(type: "cancel")
+   }
+ 
++
++  // MARK: - UIViewControllerTransitioningDelegate
++   func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
++    animator.dismissing = false
++    return animator
++  }
++
++  func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
++    animator.dismissing = true
++    return animator
++  }
++
++  func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
++    return self.animator.percentageDriven ? self.animator : nil
++  }
++
+   // MARK: - Private
+ 
+   private func finish(type: String) {

@@ -2,8 +2,8 @@ import { Platform, SafeAreaView, View } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { headerLeft } from '@/components/BackButton'
-import { useTheme } from '@/containers/ThemeService'
 import { usePadLayout } from '@/containers/AppSettingsService'
+import { useTheme } from '@/containers/ThemeService'
 
 import AboutScreen from './AboutScreen'
 import BrowserScreen from './BrowserScreen'
@@ -68,7 +68,7 @@ function AppStack() {
           )
         },
       }}
-      // initialRouteName={'edit-topic'}
+      // initialRouteName={'theme-settings'}
     >
       {/* <Stack.Screen
         name="main"

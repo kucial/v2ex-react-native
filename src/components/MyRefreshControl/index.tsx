@@ -6,10 +6,11 @@ import { useTheme } from '@/containers/ThemeService'
 
 const MyRefreshControl = forwardRef<RefreshControl, RefreshControlProps>(
   (props, ref) => {
-    const { theme } = useTheme()
+    const { theme, colorScheme } = useTheme()
 
     return (
       <RefreshControl
+        key={colorScheme + theme.colors.primary}
         tintColor={Color(theme.colors.primary)
           .saturate(0.6)
           .lighten(0.2)
