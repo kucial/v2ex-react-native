@@ -48,9 +48,10 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
       if (cache) {
         return cache
       }
-      console.log(context.target)
       return {
-        content: context.target ? `@${context.target.member.username} ` : '',
+        content: context.target
+          ? `@${context.target.member.username} #${context.target.num} `
+          : '',
       }
     },
   )

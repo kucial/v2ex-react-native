@@ -192,6 +192,12 @@ export function topicDetailFromPage($: CheerioAPI, id: string | number) {
   }
 }
 
+const getRepliedTo = (replyContent: string) => {
+  const regex = /(?<=<\/a>\s#)\d+/gm
+  const matches = replyContent.match(regex)
+  return matches ? matches.map((val) => Number(val)) : null
+}
+
 export function topicReplyFromCell(
   $el: Cheerio<Element>,
   $: CheerioAPI,
@@ -235,6 +241,9 @@ export function topicReplyFromCell(
     .find('td:nth-child(3) span.small.fade img[alt="❤️"]')
     .first()
   const thanks_count = heartImg ? Number(heartImg.parent().text().trim()) : 0
+
+  const replied_to = getRepliedTo(content_rendered)
+
   return {
     id: Number($el.attr('id').replace('r_', '')),
     content,
@@ -248,6 +257,7 @@ export function topicReplyFromCell(
     member_is_op: !!$el.find('.badge.op').length,
     member_is_mod: !!$el.find('.badge.mod').length,
     members_mentioned,
+    replied_to,
   }
 }
 

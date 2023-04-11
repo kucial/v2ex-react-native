@@ -147,6 +147,7 @@ export type TopicReply = {
   member_is_op: boolean
   member_is_mod: boolean
   members_mentioned: string[] // array of member name
+  replied_to: number[] | null
   thanked: boolean
 }
 

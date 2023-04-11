@@ -79,24 +79,43 @@ const getRelatedReplies = (pivot: TopicReply, replyList: TopicReply[]) => {
   const beforePivotReplies = replyList.slice(0, pivot.num - 1)
   const afterPivotReplies = replyList.slice(pivot.num)
 
-  console.log(
-    pivot.num,
-    replyList.length,
-    beforePivotReplies.length,
-    afterPivotReplies.length,
-  )
+  const conversationUsers = new Set(pivot.members_mentioned)
+  conversationUsers.add(pivot.member.username)
 
   /**
    * Pivot 之前的回复
    * 沿路查查中 被 mention 相关的回复，如果被 mention 的回复为 `root` 回复，则继续查找 回复作者的其他 `root` 回复
    */
-  //
   const beforeMetionInWay = new Set(pivot.members_mentioned)
   const rootReplyUsers = new Set()
+  const repliedToNums = new Set(pivot.replied_to)
   if (!pivot.members_mentioned.length) {
     rootReplyUsers.add(pivot.member.username)
   }
+
   beforePivotReplies.reverse().forEach((r) => {
+    if (repliedToNums.size) {
+      if (r.num > Math.max(...repliedToNums)) {
+        return
+      } else if (repliedToNums.has(r.num)) {
+        repliedToNums.delete(r.num)
+        if (r.replied_to) {
+          r.replied_to.forEach((num) => {
+            repliedToNums.add(num)
+          })
+        } else if (r.members_mentioned.length) {
+          r.members_mentioned.forEach((username) => {
+            beforeMetionInWay.add(username)
+            conversationUsers.add(username)
+          })
+        } else {
+          rootReplyUsers.add(r.member.username)
+        }
+        list.unshift(r)
+        return
+      }
+    }
+    // 根评论用户发表的其他根评论
     if (rootReplyUsers.has(r.member.username) && !r.members_mentioned.length) {
       list.unshift(r)
       return
@@ -105,9 +124,10 @@ const getRelatedReplies = (pivot: TopicReply, replyList: TopicReply[]) => {
     if (beforeMetionInWay.has(r.member.username)) {
       beforeMetionInWay.delete(r.member.username)
       if (r.members_mentioned.length) {
-        r.members_mentioned.forEach((username) =>
-          beforeMetionInWay.add(username),
-        )
+        r.members_mentioned.forEach((username) => {
+          beforeMetionInWay.add(username)
+          conversationUsers.add(username)
+        })
       } else {
         rootReplyUsers.add(r.member.username)
       }
@@ -120,18 +140,33 @@ const getRelatedReplies = (pivot: TopicReply, replyList: TopicReply[]) => {
   // 1. pivot 有 members_mentioned 用户， 则只包含 pivot member 与 members_mentioned 之间回复
   // 2. pivot 没有 members_mentioned 用户，则包含后续 向 pivot member 进行的回复
   const afterMentionInWay = new Set(pivot.members_mentioned)
+  const pivotIsRootReply = !pivot.members_mentioned.length
   afterPivotReplies.forEach((r) => {
+    // pivot 是根评论， r 也是来自同一用户的根评论
     if (
-      r.members_mentioned.includes(pivot.member.username) &&
-      !pivot.members_mentioned.length
+      pivotIsRootReply &&
+      !r.members_mentioned.length &&
+      r.member.username === pivot.member.username
+    ) {
+      list.push(r)
+      return
+    }
+
+    // pivot 是根评论，其他用户回复这个 pivot 用户
+    if (
+      pivotIsRootReply &&
+      r.members_mentioned.includes(pivot.member.username)
     ) {
       afterMentionInWay.add(r.member.username)
       list.push(r)
       return
     }
+
     if (
+      // pivot member replied to others
       (r.member.username === pivot.member.username &&
-        isIntersected(r.members_mentioned, pivot.members_mentioned)) ||
+        isIntersected(r.members_mentioned, afterMentionInWay)) ||
+      // others replied to pivot member
       (afterMentionInWay.has(r.member.username) &&
         r.members_mentioned.includes(pivot.member.username))
     ) {
@@ -190,7 +225,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       return v2exClient.getTopicReplies({ id, p: page })
     },
     {
-      initialSize: Math.max(1, Math.ceil((topic?.replies || 0) / 100)),
+      // initialSize: Math.max(1, Math.ceil((topic?.replies || 0) / 100)),
       revalidateOnMount: true,
       revalidateOnFocus: false,
       onSuccess: (data) => {
