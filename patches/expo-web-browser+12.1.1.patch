@@ -57,7 +57,7 @@ index 0000000..5febd7c
 +}
 diff --git a/node_modules/expo-web-browser/ios/SCSafariViewController.swift b/node_modules/expo-web-browser/ios/SCSafariViewController.swift
 new file mode 100644
-index 0000000..16ec300
+index 0000000..6b436a0
 --- /dev/null
 +++ b/node_modules/expo-web-browser/ios/SCSafariViewController.swift
 @@ -0,0 +1,33 @@
@@ -82,7 +82,7 @@ index 0000000..16ec300
 +                _edgeView?.backgroundColor = UIColor(white: 1, alpha: 0.001)
 +                let bindings = ["edgeView": _edgeView!]
 +                let options = NSLayoutConstraint.FormatOptions(rawValue: 0)
-+                let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "|-0-[edgeView(5)]", options: options, metrics: nil, views: bindings)
++                let hConstraints = NSLayoutConstraint.constraints(withVisualFormat: "|-0-[edgeView(15)]", options: options, metrics: nil, views: bindings)
 +                let vConstraints = NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[edgeView]-0-|", options: options, metrics: nil, views: bindings)
 +                view?.addConstraints(hConstraints)
 +                view?.addConstraints(vConstraints)
