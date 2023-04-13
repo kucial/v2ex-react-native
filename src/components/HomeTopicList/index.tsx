@@ -59,6 +59,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       revalidateOnReconnect: false,
       revalidateOnFocus: false,
       shouldRetryOnError: false,
+      parallel: true,
       onError(err) {
         if (err.code === '2FA_ENABLED') {
           return
