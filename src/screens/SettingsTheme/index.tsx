@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
+import AlertService from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { ThemeProvider, useColorScheme } from '@/containers/ThemeService'
 
@@ -31,13 +32,15 @@ export default function SettingsTheme(props: ScreenProps) {
 
   return (
     <ThemeProvider theme={preview} colorScheme={colorScheme}>
-      <ThemePreview
-        navigation={props.navigation}
-        theme={preview}
-        setTheme={setPreview}
-        colorScheme={colorScheme}
-        setColorScheme={setColorScheme}
-      />
+      <AlertService>
+        <ThemePreview
+          navigation={props.navigation}
+          theme={preview}
+          setTheme={setPreview}
+          colorScheme={colorScheme}
+          setColorScheme={setColorScheme}
+        />
+      </AlertService>
     </ThemeProvider>
   )
 }

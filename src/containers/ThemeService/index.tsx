@@ -142,6 +142,12 @@ export const ThemeProvider = (props: {
       btn_info__text: {
         color: theme.colors.text_info_inverse || contrastTextColor,
       },
+      btn_warning__bg: {
+        backgroundColor: theme.colors.warning,
+      },
+      btn_warning__text: {
+        color: theme.colors.text_info_warning || contrastTextColor,
+      },
       badge__bg: {
         backgroundColor: theme.colors.badge_bg,
       },

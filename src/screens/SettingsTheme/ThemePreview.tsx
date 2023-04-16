@@ -16,12 +16,14 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
+import Button from '@/components/Button'
 import GroupWapper from '@/components/GroupWrapper'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import SectionHeader from '@/components/SectionHeader'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
+import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import * as themes from '@/containers/ThemeService/themes'
 import NormalTopicRowDemo from '@/screens/SettingsPreference/NormalTopicRowDemo'
@@ -52,6 +54,7 @@ export default function ThemePreview(props: {
   const CONTAINER_WIDTH = Math.min(width, 600)
   const { styles, theme } = useTheme()
   const sheetRef = useRef<BottomSheetModal>()
+  const alert = useAlertService()
   useEffect(() => {
     props.navigation.setOptions({
       headerStyle: {
@@ -148,20 +151,12 @@ export default function ThemePreview(props: {
           </GroupWapper>
           <SectionHeader title="表单" />
           <GroupWapper className="mx-2" innerStyle={styles.overlay}>
-            <View className="px-2">
-              <Pressable
-                className={classNames(
-                  'h-[44px] rounded-md flex items-center justify-center my-4',
-                  'active:opacity-60',
-                )}
-                style={styles.btn_primary__bg}
+            <View className="px-2 py-4">
+              <Button
+                label="Open Sheet"
                 onPress={(e) => {
                   sheetRef.current?.present()
-                }}>
-                <Text className="text-base" style={styles.btn_primary__text}>
-                  Open Sheet
-                </Text>
-              </Pressable>
+                }}></Button>
             </View>
             <MyBottomSheetModal snapPoints={['50%', '75%']} ref={sheetRef}>
               <View className="p-3">
@@ -191,7 +186,9 @@ export default function ThemePreview(props: {
                     'active:opacity-60',
                   )}
                   style={styles.btn_primary__bg}
-                  onPress={(e) => {}}>
+                  onPress={(e) => {
+                    sheetRef.current?.dismiss()
+                  }}>
                   <Text className="text-base" style={styles.btn_primary__text}>
                     确认
                   </Text>
@@ -199,6 +196,66 @@ export default function ThemePreview(props: {
               </View>
             </MyBottomSheetModal>
           </GroupWapper>
+          <SectionHeader title="消息提示" />
+          <View className="flex flex-row gap-2 px-2">
+            <View className="flex-1">
+              <Button
+                onPress={() => {
+                  alert.alertWithType(
+                    'success',
+                    '成功',
+                    '成功消息提示',
+                    undefined,
+                    2,
+                  )
+                }}
+                variant="success"
+                label="success"></Button>
+            </View>
+            <View className="flex-1">
+              <Button
+                onPress={() => {
+                  alert.alertWithType(
+                    'warn',
+                    '注意',
+                    '注意消息提示',
+                    undefined,
+                    2,
+                  )
+                }}
+                variant="warning"
+                label="warning"></Button>
+            </View>
+            <View className="flex-1">
+              <Button
+                onPress={() => {
+                  alert.alertWithType(
+                    'error',
+                    '错误',
+                    '错误消息提示',
+                    undefined,
+                    2,
+                  )
+                }}
+                variant="danger"
+                label="error"></Button>
+            </View>
+            <View className="flex-1">
+              <Button
+                onPress={() => {
+                  alert.alertWithType(
+                    'info',
+                    '提示',
+                    '信息消息提示',
+                    undefined,
+                    2,
+                  )
+                }}
+                variant="info"
+                label="info"></Button>
+            </View>
+          </View>
+
           <SectionHeader title="富文本" />
           <GroupWapper className="mx-2" innerStyle={[styles.layer1]}>
             <View className="px-2">

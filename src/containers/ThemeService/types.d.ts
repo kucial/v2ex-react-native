@@ -83,6 +83,8 @@ type ThemeStyles = {
   btn_danger__text: TextStyle
   btn_success__bg: ViewStyle
   btn_success__text: TextStyle
+  btn_warning__bg: ViewStyle
+  btn_warning__text: TextStyle
   btn_info__bg: ViewStyle
   btn_info__text: ViewStyle
   badge__bg: ViewStyle

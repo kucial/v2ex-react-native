@@ -194,7 +194,7 @@ function HtmlRender({
           case `R_${MENU_ITEM_COPY}`:
             try {
               await Clipboard.setStringAsync(content)
-              alert?.alertWithType('success', '已复制到粘贴板', '')
+              // alert?.alertWithType('success', '已复制到粘贴板', '')
             } catch (err) {
               Sentry.Native.captureException(err)
             }

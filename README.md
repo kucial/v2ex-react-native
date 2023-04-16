@@ -60,6 +60,7 @@ React Native + Tailwindcss + SWR
   - [x] 消息通知
   - [x] 搜索
   - [x] 浏览历史
+  - [x] 用户资料编辑
 - [ ] Imgur 功能
   - [x] 创建相册
   - [x] 上传图片
@@ -79,23 +80,17 @@ React Native + Tailwindcss + SWR
     - [x] 已读内容“置灰”设置
     - [x] 已读内容更新提示
     - [x] 自动刷新设置
-    - [ ] 主题设置
-      - [ ] 强调色（Dark Mode）
-      - [ ] 字体大小
+    - [x] 主题设置
+    - [ ] 字体大小
 
 ## 下一步
 
-- [x] 计划使用 Typescript 重新整理代码。
-- [x] 优化网络请求 --- 从每个请求一个 webview --> 一个 webview 代理所有请求
 - [ ] 用户绑定的缓存
 - [ ] 加入 `/api/v2` 的请求设置，优化内容加载速度
 - [ ] 添加测试用例。
-- [ ] 优化图片资源加载
-  - [ ] 处理 react-native-html-render, 图片加载状态引起的跳动问题
-  - [ ] 图片加载/替换时的过渡效果
-  - [ ] 图片 Lightbox 的缓存处理，避免打开 Lightbox 时，仍需等待图片加载的情况
 - [ ] 调整用户主页的界面设计 尝试使用 Animated 处理用户主页头部高度
-- [ ] 添加当前用户 Profile 编辑页面
+- [ ] clipboard 监听，复制 url 时，显示打开链接提示
+- [ ] 使用 react-native-root-toast 替换 react-native-dropdownalert
 
 ## 框架/库 -- NOTES
 
@@ -111,7 +106,7 @@ React Native + Tailwindcss + SWR
 - react-native-render-html -- 内容渲染
 - marked -- markdown 预览
 - ~~react-native-image-modal -- 图片预览~~
-- react-hook-form -- 表单
+- ~~react-hook-form -- 表单~~ formik
 - slatejs + webview -- 富文本编辑
 - @gorhom/bottom-sheet -- 底部弹出层
 - react-native-image-viewing -- imgur 图片预览
