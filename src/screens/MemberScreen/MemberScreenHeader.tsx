@@ -10,7 +10,6 @@ import { SWRResponse } from 'swr'
 
 import BackButton from '@/components/BackButton'
 import { Box } from '@/components/Skeleton/Elements'
-import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { localTime } from '@/utils/time'
@@ -33,7 +32,6 @@ export default function MemberScreenHeader({
   const { showActionSheetWithOptions } = useActionSheet()
   const { theme, styles, colorScheme } = useTheme()
   const alert = useAlertService()
-  const aIndicator = useActivityIndicator()
   const openActionSheet = useCallback(() => {
     const options = [
       '取消',
@@ -50,7 +48,6 @@ export default function MemberScreenHeader({
         userInterfaceStyle: colorScheme,
       },
       (buttonIndex) => {
-        const KEY = `member-action-button-${buttonIndex}`
         let promise: Promise<StatusResponse<Pick<MemberDetail, 'meta'>>>
 
         if (buttonIndex === 1) {
@@ -67,12 +64,18 @@ export default function MemberScreenHeader({
             promise = v2exClient.blockMember({ id: data.id })
           }
         }
+
         if (promise) {
-          aIndicator.show(KEY)
+          const indicator = alert.show({
+            type: 'default',
+            message: '处理中',
+            loading: true,
+            duration: 0,
+          })
           promise
             .then(({ data: patch }) => {
               // notice
-              alert.alertWithType({
+              alert.show({
                 type: 'success',
                 message: `${options[buttonIndex]} ${data.username}`,
               })
@@ -85,10 +88,10 @@ export default function MemberScreenHeader({
               )
             })
             .catch((err) => {
-              alert.alertWithType({ type: 'error', message: err.message })
+              alert.show({ type: 'error', message: err.message })
             })
             .finally(() => {
-              aIndicator.hide(KEY)
+              alert.hide(indicator)
             })
         }
       },

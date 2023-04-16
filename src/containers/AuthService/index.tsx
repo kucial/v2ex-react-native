@@ -114,7 +114,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
           }))
         }
       } catch (err) {
-        alert.alertWithType({ type: 'error', message: err.message })
+        alert.show({ type: 'error', message: err.message })
         setState((prev) => ({
           ...prev,
           status: prevStatus,
@@ -133,7 +133,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
         return useCallback(
           (params?: T) => {
             if (state.status === 'loading') {
-              alert.alertWithType({
+              alert.show({
                 type: 'info',
                 message: '提示 正在验证登录状态，请稍候',
               })
@@ -181,16 +181,16 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
           dailySigning.current = true
           await v2exClient.dailySignin()
           setJSON(key, 1)
-          alert.alertWithType({ type: 'success', message: '签到成功' })
+          alert.show({ type: 'success', message: '签到成功' })
         } catch (err) {
           if (err.code === 'DAILY_SIGNED') {
             setJSON(key, 1)
-            alert.alertWithType({
+            alert.show({
               type: 'info',
               message: err.message,
             })
           } else {
-            alert.alertWithType({ type: 'error', message: err.message })
+            alert.show({ type: 'error', message: err.message })
           }
         } finally {
           dailySigning.current = false
@@ -283,7 +283,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
       async (error: TFA_Error) => {
         const result = await prompt2faInput(error)
         if (result.action === '2fa_verified') {
-          alert.alertWithType({ type: 'success', message: '2FA 验证成功' })
+          alert.show({ type: 'success', message: '2FA 验证成功' })
         }
       },
     )

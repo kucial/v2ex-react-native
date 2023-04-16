@@ -8,7 +8,6 @@ import * as Sentry from 'sentry-expo'
 
 import ErrorBoundary from './src/components/ErrorBoundary'
 import Layout from './src/components/Layout'
-import ActivityIndicator from './src/containers/ActivityIndicator'
 import AlertService from './src/containers/AlertService'
 import AppSettingsService from './src/containers/AppSettingsService'
 import AppSWRConfig from './src/containers/AppSWRConfig'
@@ -40,22 +39,20 @@ function App() {
                   <AppSWRConfig>
                     <AlertService>
                       <ActionSheetProvider>
-                        <ActivityIndicator>
-                          <NavigationContainer>
-                            <ImgurService>
-                              <BottomSheetModalProvider>
-                                <AuthService>
-                                  <ViewedTopicsService>
-                                    <Layout>
-                                      <AppStack />
-                                      {/* <DebugScreen /> */}
-                                    </Layout>
-                                  </ViewedTopicsService>
-                                </AuthService>
-                              </BottomSheetModalProvider>
-                            </ImgurService>
-                          </NavigationContainer>
-                        </ActivityIndicator>
+                        <NavigationContainer>
+                          <ImgurService>
+                            <BottomSheetModalProvider>
+                              <AuthService>
+                                <ViewedTopicsService>
+                                  <Layout>
+                                    <AppStack />
+                                    {/* <DebugScreen /> */}
+                                  </Layout>
+                                </ViewedTopicsService>
+                              </AuthService>
+                            </BottomSheetModalProvider>
+                          </ImgurService>
+                        </NavigationContainer>
                       </ActionSheetProvider>
                     </AlertService>
                   </AppSWRConfig>

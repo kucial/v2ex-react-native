@@ -29,7 +29,6 @@ import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { BlockText } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
-import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { usePadLayout } from '@/containers/AppSettingsService'
@@ -189,6 +188,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     params: { brief, id },
   } = route
 
+  const alert = useAlertService()
   const topicSwr = useSWR(
     [`/page/t/:id/topic.json`, id],
     async ([_, id]) => {
@@ -253,7 +253,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   )
 
   const { showActionSheetWithOptions } = useActionSheet()
-  const alert = useAlertService()
 
   const [conversationContext, setConversationContext] = useState(null)
 
@@ -268,7 +267,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const currentIndexRef = useRef(null)
 
   const { composeAuthedNavigation } = useAuthService()
-  const aIndicator = useActivityIndicator()
 
   const { theme, styles, colorScheme } = useTheme()
 
@@ -287,25 +285,35 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   }, [listSwr])
 
   const handleBlockMember = composeAuthedNavigation((username: string) => {
-    aIndicator.show('MEMBER_BLOCK')
+    const indicator = alert.show({
+      type: 'default',
+      message: '正在屏蔽用户',
+      loading: true,
+      duration: 0,
+    })
     v2exClient
       .blockMember({
         username,
       })
       .then(() => {
-        alert.alertWithType({ type: 'success', message: '已屏蔽用户' })
+        alert.show({ type: 'success', message: '已屏蔽用户' })
       })
       .catch((err) => {
-        alert.alertWithType({ type: 'error', message: err.message })
+        alert.show({ type: 'error', message: err.message })
       })
       .finally(() => {
-        aIndicator.hide('MEMBER_BLOCK')
+        alert.hide(indicator)
       })
   })
 
   const handleToggleBlock = composeAuthedNavigation(
     useCallback(() => {
-      aIndicator.show('TOPIC_BLOCK')
+      const indicator = alert.show({
+        type: 'default',
+        message: '处理中',
+        loading: true,
+        duration: 0,
+      })
       const request = topic?.blocked
         ? v2exClient.unblockTopic
         : v2exClient.blockTopic
@@ -319,23 +327,28 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               ...prev,
               ...data,
             }))
-          alert.alertWithType({
+          alert.show({
             type: 'success',
             message: data.blocked ? '已忽略主题' : '已撤销主题忽略',
           })
         })
         .catch((err) => {
-          alert.alertWithType({ type: 'error', message: err.message })
+          alert.show({ type: 'error', message: err.message })
         })
         .finally(() => {
-          aIndicator.hide('TOPIC_BLOCK')
+          alert.hide(indicator)
         })
     }, [id, topic?.blocked]),
   )
 
   const handleReportTopic = composeAuthedNavigation(
     useCallback(() => {
-      aIndicator.show('TOPIC_REPORT')
+      const indicator = alert.show({
+        type: 'default',
+        message: '正在举报',
+        loading: true,
+        duration: 0,
+      })
       v2exClient
         .reportTopic({ id })
         .then(({ data }) => {
@@ -345,19 +358,19 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               ...data,
             }))
           if (data.reported) {
-            alert.alertWithType({ type: 'success', message: '已举报主题' })
+            alert.show({ type: 'success', message: '已举报主题' })
           } else {
-            alert.alertWithType({
+            alert.show({
               type: 'error',
-              message: '错误 未成功举报举报主题',
+              message: '未成功举报举报主题',
             })
           }
         })
         .catch((err) => {
-          alert.alertWithType({ type: 'error', message: err.message })
+          alert.show({ type: 'error', message: err.message })
         })
         .finally(() => {
-          aIndicator.hide('TOPIC_REPORT')
+          alert.hide(indicator)
         })
     }, [id]),
   )
@@ -378,7 +391,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             id,
           })
           .then(() => {
-            alert.alertWithType({
+            alert.show({
               type: 'success',
               message: '已取消收藏',
             })
@@ -391,7 +404,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               }),
               false,
             )
-            alert.alertWithType({ type: 'error', message: err.message })
+            alert.show({ type: 'error', message: err.message })
           })
       } else {
         topicSwr.mutate(
@@ -406,7 +419,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             id,
           })
           .then(() => {
-            alert.alertWithType({
+            alert.show({
               type: 'success',
               message: '已加入收藏',
             })
@@ -419,7 +432,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               }),
               false,
             )
-            alert.alertWithType({ type: 'error', message: err.message })
+            alert.show({ type: 'error', message: err.message })
           })
       }
     }, [id, topic?.collected]),
@@ -428,7 +441,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const handleThankTopic = composeAuthedNavigation(
     useCallback(() => {
       if (topic.thanked) {
-        alert.alertWithType({ type: 'info', message: '已感谢过主题' })
+        alert.show({ type: 'info', message: '已感谢过主题' })
         return
       }
       topicSwr.mutate(
@@ -444,7 +457,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           id,
         })
         .then(() => {
-          alert.alertWithType({
+          alert.show({
             type: 'success',
             message: '已感谢主题',
           })
@@ -457,7 +470,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             }),
             false,
           )
-          alert.alertWithType({ type: 'error', message: err.message })
+          alert.show({ type: 'error', message: err.message })
         })
     }, [id, topic?.thanked]),
   )
@@ -566,9 +579,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         })
         .then(({ data, success, message }) => {
           if (success) {
-            alert.alertWithType?.('success', '操作成功', message)
+            alert.show({
+              type: 'success',
+              message,
+            })
           } else {
-            alert.alertWithType({ type: 'error', message: message })
+            alert.show({ type: 'error', message: message })
           }
           listSwr.mutate(
             (currentData) => {
@@ -600,7 +616,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           )
         })
         .catch((err) => {
-          alert.alertWithType?.('error', '错误', err.message)
+          alert.show({
+            type: 'error',
+            message: err.message,
+          })
         })
     },
     [id],
@@ -610,8 +629,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     async (values: { content: string }) => {
       replyModalRef.current?.dismiss()
       setReplyContext(null)
-      const KEY = `topic-reply:${id}`
-      aIndicator.show(KEY)
+      const indicator = alert.show({
+        type: 'default',
+        message: '正在提交...',
+        loading: true,
+        duration: 0,
+      })
       try {
         switch (replyContext.type) {
           case 'reply':
@@ -635,9 +658,9 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               )
               const cacheKey = getReplyFormCacheKey(replyContext)
               setJSON(cacheKey, undefined)
-              alert.alertWithType({ type: 'success', message: '回复成功' })
+              alert.show({ type: 'success', message: '回复成功' })
             } catch (err) {
-              alert.alertWithType({ type: 'error', message: err.message })
+              alert.show({ type: 'error', message: err.message })
             }
             break
           case 'append':
@@ -649,13 +672,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               topicSwr.mutate(topic, false)
               const cacheKey = getReplyFormCacheKey(replyContext)
               setJSON(cacheKey, undefined)
-              alert.alertWithType({ type: 'success', message: '附言成功' })
+              alert.show({ type: 'success', message: '附言成功' })
             } catch (err) {
-              alert.alertWithType({ type: 'error', message: err.message })
+              alert.show({ type: 'error', message: err.message })
             }
         }
       } finally {
-        aIndicator.hide(KEY)
+        alert.hide(indicator)
       }
     },
     [id, replyContext],

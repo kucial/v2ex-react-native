@@ -114,7 +114,7 @@ export default function HomeTabs(props: ScreenProps) {
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
-                  const instance = alert.alertWithType({
+                  const instance = alert.show({
                     type: 'info',
                     message: '正在重新获取首页标签初始设置',
                     duration: 0,
@@ -123,14 +123,14 @@ export default function HomeTabs(props: ScreenProps) {
                     .then((newTabs) => {
                       setTabs(newTabs)
                       instance.manager.destroy()
-                      alert.alertWithType({
+                      alert.show({
                         type: 'success',
                         message: '首页标签已重置',
                       })
                     })
                     .catch((err) => {
                       instance.manager.destroy()
-                      alert.alertWithType({
+                      alert.show({
                         type: 'error',
                         message: err.message,
                       })

@@ -18,17 +18,12 @@
   "Alert Success": {
     "scope": "javascript,typescript,typescriptreact",
     "prefix": "als",
-    "body": ["alert.alertWithType({ type: 'success', message: '$1' })"]
+    "body": ["alert.show({ type: 'success', message: '$1' })"]
   },
   "Alert Error": {
     "scope": "javascript,typescript,typescriptreact",
     "prefix": "ale",
-    "body": ["alert.alertWithType({ type: 'error', message: '$1' })"]
-  },
-  "Use ActivityIndicator": {
-    "scope": "javascript,typescript,typescriptreact",
-    "prefix": "uindicator",
-    "body": ["const aIndicator = useActivityIndicator()"]
+    "body": ["alert.show({ type: 'error', message: '$1' })"]
   },
   "Import app component": {
     "scope": "javascript,typescript,typescriptreact",

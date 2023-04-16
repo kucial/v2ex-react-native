@@ -204,7 +204,7 @@ export default function ThemePreview(props: {
             <View className="flex-1">
               <Button
                 onPress={() => {
-                  alert.alertWithType({
+                  alert.show({
                     type: 'success',
                     message: '成功消息提示',
                   })
@@ -215,7 +215,7 @@ export default function ThemePreview(props: {
             <View className="flex-1">
               <Button
                 onPress={() => {
-                  alert.alertWithType({
+                  alert.show({
                     type: 'warn',
                     message: '注意消息提示',
                   })
@@ -226,7 +226,7 @@ export default function ThemePreview(props: {
             <View className="flex-1">
               <Button
                 onPress={() => {
-                  alert.alertWithType({
+                  alert.show({
                     type: 'error',
                     message: '错误消息提示',
                   })
@@ -237,13 +237,25 @@ export default function ThemePreview(props: {
             <View className="flex-1">
               <Button
                 onPress={() => {
-                  alert.alertWithType({
+                  alert.show({
                     type: 'info',
                     message: '信息消息提示',
                   })
                 }}
                 variant="info"
                 label="info"></Button>
+            </View>
+            <View className="flex-1">
+              <Button
+                onPress={() => {
+                  alert.show({
+                    type: 'default',
+                    loading: true,
+                    message: '处理中消息提示',
+                  })
+                }}
+                variant="primary"
+                label="loading"></Button>
             </View>
           </View>
 

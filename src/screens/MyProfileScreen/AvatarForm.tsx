@@ -42,7 +42,7 @@ const AvatarPicker = (props: {
   const pickImage = async () => {
     const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (!granted) {
-      alert.alertWithType({ type: 'error', message: '需要访问相册的权限' })
+      alert.show({ type: 'error', message: '需要访问相册的权限' })
       return
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -75,10 +75,10 @@ const AvatarPicker = (props: {
       })
       avatarSwr.mutate(updateRes.data, { revalidate: false })
       setAvatar(null)
-      alert.alertWithType({ type: 'success', message: '头像已更新' })
+      alert.show({ type: 'success', message: '头像已更新' })
       props.onUpdated?.()
     } catch (err) {
-      alert.alertWithType({ type: 'error', message: err.message })
+      alert.show({ type: 'error', message: err.message })
     } finally {
       setLoading(false)
     }

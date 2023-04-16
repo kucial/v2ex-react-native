@@ -9,7 +9,6 @@ import useSWR, { useSWRConfig } from 'swr'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NodeTopicList from '@/components/NodeTopicList'
-import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
@@ -34,7 +33,6 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
     data: { maxContainerWidth },
   } = useAppSettings()
   const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
-  const aIndicator = useActivityIndicator()
   const alert = useAlertService()
   const { composeAuthedNavigation } = useAuthService()
 
@@ -47,7 +45,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
         if (err.code === '2FA_ENABLED') {
           return
         }
-        alert.alertWithType({
+        alert.show({
           type: 'error',
           message: err.message || '请求资源失败',
         })
@@ -74,11 +72,15 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
   const handleCollectToggle = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        const KEY = `node-collect-toggle:${name}`
         const request = node.collected
           ? v2exClient.uncollectNode
           : v2exClient.collectNode
-        aIndicator.show(KEY)
+        const indicator = alert.show({
+          type: 'default',
+          message: '处理中',
+          loading: true,
+          duration: 0,
+        })
         setCollecting(true)
         request({
           name,
@@ -91,10 +93,10 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
             mutate('/page/my/nodes.json')
           })
           .catch((err) => {
-            alert.alertWithType({ type: 'error', message: err.message })
+            alert.show({ type: 'error', message: err.message })
           })
           .finally(() => {
-            aIndicator.hide(KEY)
+            alert.hide(indicator)
             setCollecting(false)
           })
       }, [node]),

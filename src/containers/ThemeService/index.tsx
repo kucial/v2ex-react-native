@@ -244,6 +244,7 @@ export const ThemeProvider = (props: {
     const getSemanticStyle = (code: SemanticType) => {
       switch (code) {
         case 'primary':
+        case 'default':
           return [styles.btn_primary__bg, styles.btn_primary__text]
         case 'input':
           return [styles.input__bg, styles.text]

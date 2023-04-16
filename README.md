@@ -90,7 +90,6 @@ React Native + Tailwindcss + SWR
 - [ ] 添加测试用例。
 - [ ] 调整用户主页的界面设计 尝试使用 Animated 处理用户主页头部高度
 - [ ] clipboard 监听，复制 url 时，显示打开链接提示
-- [ ] 使用 react-native-root-toast 替换 react-native-dropdownalert
 
 ## 框架/库 -- NOTES
 

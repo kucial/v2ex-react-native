@@ -40,7 +40,7 @@ export default function AboutScreen(props) {
         ...prev,
         googleSigninEnabled: true,
       }))
-      alert.alertWithType({ type: 'success', message: '😁 Google 登陆已启用' })
+      alert.show({ type: 'success', message: '😁 Google 登陆已启用' })
     }
   }, [count])
   return (

@@ -160,7 +160,7 @@ export default function ImgurSettings(props: ScreenProps) {
                       style={styles.layer2}
                       onPress={async () => {
                         await Clipboard.setStringAsync(REDIRECT_URI)
-                        alert.alertWithType({
+                        alert.show({
                           type: 'success',
                           message: ' URL 已复制到剪切板',
                         })

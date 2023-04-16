@@ -41,12 +41,12 @@ export default function TopicEdit(props: ScreenProps) {
       try {
         formikProps.setSubmitting(true)
         const res = await editTopic(route.params.id, values)
-        alert.alertWithType({ type: 'success', message: '主题更新成功' })
+        alert.show({ type: 'success', message: '主题更新成功' })
         mutate([`/page/t/:id/topic.json`, route.params.id], res.data)
         formSwr.mutate(null, { revalidate: false })
         navigation.goBack()
       } catch (err) {
-        alert.alertWithType({ type: 'error', message: err.message })
+        alert.show({ type: 'error', message: err.message })
       }
     },
     [],

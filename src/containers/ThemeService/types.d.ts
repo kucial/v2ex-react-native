@@ -14,6 +14,7 @@ interface ThemeBackgroundStyle {
 
 type SemanticType =
   | 'primary'
+  | 'default'
   | 'secondary'
   | 'warn'
   | 'warning'

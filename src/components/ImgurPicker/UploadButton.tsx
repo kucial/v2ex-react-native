@@ -5,7 +5,6 @@ import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 import * as ImagePicker from 'expo-image-picker'
 import * as Sentry from 'sentry-expo'
 
-import { useActivityIndicator } from '@/containers/ActivityIndicator'
 import { useAlertService } from '@/containers/AlertService'
 import { useImgurService } from '@/containers/ImgurService'
 
@@ -15,7 +14,6 @@ export default function UploadButton(props) {
   const imgur = useImgurService()
   const album = useAlbum()
   const alert = useAlertService()
-  const aIndicator = useActivityIndicator()
   const uploadImage = useCallback(
     async (imageInfo) => {
       if (!imgur) {
@@ -62,8 +60,16 @@ export default function UploadButton(props) {
         if (result.canceled) {
           return
         }
+        const indicator = alert.show({
+          type: 'default',
+          message: '上传中',
+          loading: true,
+          duration: 0,
+        })
         try {
-          aIndicator.show('imgur-upload')
+          await new Promise((resolve) => {
+            setTimeout(resolve, 3000)
+          })
           let uploaded
           if (result.assets) {
             uploaded = await Promise.all(
@@ -82,11 +88,12 @@ export default function UploadButton(props) {
             imgur.refreshImages()
           }
           // mutate album cache
+          alert.show({ type: 'success', message: '上传成功' })
         } catch (err) {
-          alert.alertWithType({ type: 'error', message: err.message })
+          alert.show({ type: 'error', message: err.message })
           Sentry.Native.captureException(err)
         } finally {
-          aIndicator.hide('imgur-upload')
+          alert.hide(indicator)
         }
       }}>
       <ArrowUpTrayIcon size={22} color={props.tintColor} />

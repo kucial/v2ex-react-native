@@ -65,7 +65,7 @@ function FeedTopicList(props: FeedTopicListProps) {
           return
         }
         console.log(err.message)
-        alert.alertWithType({
+        alert.show({
           type: 'error',
           message: err.message || '请求资源失败',
         })

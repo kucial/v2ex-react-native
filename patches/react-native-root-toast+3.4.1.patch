@@ -1,5 +1,17 @@
+diff --git a/node_modules/react-native-root-toast/index.d.ts b/node_modules/react-native-root-toast/index.d.ts
+index 7c93779..104370e 100644
+--- a/node_modules/react-native-root-toast/index.d.ts
++++ b/node_modules/react-native-root-toast/index.d.ts
+@@ -8,6 +8,7 @@ declare module "react-native-root-toast"{
+     import {TextStyle,StyleProp,ViewStyle} from "react-native";
+     export interface ToastOptions {
+         containerStyle?:StyleProp<ViewStyle>
++        loader?: React.ReactElement
+         duration?:number
+         visible?: boolean,
+         position?: number,
 diff --git a/node_modules/react-native-root-toast/lib/ToastContainer.js b/node_modules/react-native-root-toast/lib/ToastContainer.js
-index 7cc32fa..5627f91 100644
+index 7cc32fa..8ffeb05 100644
 --- a/node_modules/react-native-root-toast/lib/ToastContainer.js
 +++ b/node_modules/react-native-root-toast/lib/ToastContainer.js
 @@ -10,8 +10,9 @@ import {
@@ -13,7 +25,34 @@ index 7cc32fa..5627f91 100644
  import { ViewPropTypes, TextPropTypes } from 'deprecated-react-native-prop-types';
  const TOAST_MAX_WIDTH = 0.8;
  const TOAST_ANIMATION_DURATION = 200;
-@@ -234,49 +235,58 @@ class ToastContainer extends Component {
+@@ -36,10 +37,14 @@ let styles = StyleSheet.create({
+         alignItems: 'center'
+     },
+     containerStyle: {
+-        padding: 10,
++        paddingVertical: 10,
++        paddingHorizontal: 16,
+         backgroundColor: '#000',
+-        opacity: 0.8,
+-        borderRadius: 5
++        opacity: 0.9,
++        borderRadius: 24,
++        display: 'flex',
++        flexDirection: 'row',
++        alignItems: 'center'
+     },
+     shadowStyle: {
+         shadowColor: '#000',
+@@ -94,7 +99,7 @@ class ToastContainer extends Component {
+         animation: true,
+         shadow: true,
+         position: positions.BOTTOM,
+-        opacity: 0.8,
++        opacity: 0.9,
+         delay: 0,
+         hideOnPress: true,
+         keyboardAvoiding: true,
+@@ -234,49 +239,59 @@ class ToastContainer extends Component {
              top: 0,
              bottom: keyboardHeight
          };
@@ -97,6 +136,7 @@ index 7cc32fa..5627f91 100644
 +                                    pointerEvents="none"
 +                                    ref={ele => this._root = ele}
 +                                >
++                                    {props.loader || null}
 +                                    <Text style={[
 +                                        styles.textStyle,
 +                                        props.textStyle,

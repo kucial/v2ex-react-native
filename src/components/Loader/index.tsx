@@ -15,10 +15,7 @@ type LoaderProps = {
   autoPlay?: boolean
 }
 const Loader = forwardRef<LottieView, LoaderProps>(
-  (
-    { style, color, size = 28, speed = 1.8, autoPlay = true, ...props },
-    ref,
-  ) => {
+  ({ style, color, size = 28, speed = 2, autoPlay = true, ...props }, ref) => {
     const { theme } = useTheme()
 
     const innerRef = useRef<LottieView>()
