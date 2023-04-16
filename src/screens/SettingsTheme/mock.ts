@@ -25,6 +25,7 @@ export const html = `
   <li><strong>简洁的用户界面</strong>：R2V的用户界面非常简洁，易于使用。用户可以通过简单的手势和操作轻松地浏览和查看帖子和评论</li>
   <li><strong>多种主题选择</strong>：除默认主题外，提供了多种<em>强调色</em>主题供用户选择，以满足不同用户的审美和使用需求</li>
   <li><strong>自定义设置</strong>：用户可以做一些自定义设置，如修改列表显示样式，编辑首页标签等</li>
+  <li><strong>剪切板监听</strong>：当用户复制内容包含链接时，显示打开链接提示。示例: https://www.github.com</li>
 </ul>
 
 <hr />

@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -12,6 +13,7 @@ import AlertService from './src/containers/AlertService'
 import AppSettingsService from './src/containers/AppSettingsService'
 import AppSWRConfig from './src/containers/AppSWRConfig'
 import AuthService from './src/containers/AuthService'
+import ClipboardWatcher from './src/containers/ClipboardWatcher'
 import FetchPrepare from './src/containers/FetchPrepare'
 import ImgurService from './src/containers/ImgurService'
 import NavigationContainer from './src/containers/NavigationContainer'
@@ -42,14 +44,16 @@ function App() {
                         <NavigationContainer>
                           <ImgurService>
                             <BottomSheetModalProvider>
-                              <AuthService>
-                                <ViewedTopicsService>
-                                  <Layout>
-                                    <AppStack />
-                                    {/* <DebugScreen /> */}
-                                  </Layout>
-                                </ViewedTopicsService>
-                              </AuthService>
+                              <ClipboardWatcher>
+                                <AuthService>
+                                  <ViewedTopicsService>
+                                    <Layout>
+                                      <AppStack />
+                                      {/* <DebugScreen /> */}
+                                    </Layout>
+                                  </ViewedTopicsService>
+                                </AuthService>
+                              </ClipboardWatcher>
                             </BottomSheetModalProvider>
                           </ImgurService>
                         </NavigationContainer>

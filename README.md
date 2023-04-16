@@ -82,6 +82,10 @@ React Native + Tailwindcss + SWR
     - [x] 自动刷新设置
     - [x] 主题设置
     - [ ] 字体大小
+- [ ] 其他
+  - [x] 二维码识别
+  - [x] clipboard 链接识别
+  - [ ] “表情图” ｜ emoji
 
 ## 下一步
 
@@ -89,7 +93,6 @@ React Native + Tailwindcss + SWR
 - [ ] 加入 `/api/v2` 的请求设置，优化内容加载速度
 - [ ] 添加测试用例。
 - [ ] 调整用户主页的界面设计 尝试使用 Animated 处理用户主页头部高度
-- [ ] clipboard 监听，复制 url 时，显示打开链接提示
 
 ## 框架/库 -- NOTES
 
