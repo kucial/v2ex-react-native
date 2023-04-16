@@ -33,6 +33,9 @@ declare global {
     profile: {
       initialTab?: string
     }
+    balance: {
+      username: string
+    }
     'created-topics': null
     'collected-topics': null
     'replied-topics': null

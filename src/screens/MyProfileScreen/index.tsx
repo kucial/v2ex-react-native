@@ -10,7 +10,6 @@ import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 
 import AvatarForm from './AvatarForm'
-import Balance from './Balance'
 import SettingsForm from './SettingsForm'
 import SocialForm from './SocialForm'
 
@@ -26,10 +25,6 @@ const routes = [
   {
     key: 'social',
     title: '社交网络',
-  },
-  {
-    key: 'balance',
-    title: '账户余额',
   },
 ]
 
@@ -91,8 +86,6 @@ export default function ProfileScreen(props: ScreenProps) {
                 onUpdated={fetchCurrentUser}
               />
             )
-          case 'balance':
-            return <Balance username={user.username} />
           default:
             return (
               <ScrollView>

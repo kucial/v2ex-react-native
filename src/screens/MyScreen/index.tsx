@@ -110,8 +110,8 @@ export default function MyScreen({ navigation }: ScreenProps) {
             className="-mr-2 pl-2 justify-center active:opacity-50"
             onPress={(e) => {
               e.stopPropagation()
-              navigation.push('profile', {
-                initialTab: 'balance',
+              navigation.push('balance', {
+                username: currentUser.username,
               })
             }}>
             <BalanceArea data={currentUserMeta.balance} />

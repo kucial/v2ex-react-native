@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native'
-import PropTypes from 'prop-types'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SWRInfiniteResponse } from 'swr/infinite'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -19,10 +19,12 @@ type CommonListFooterProps = {
 export default function CommonListFooter(props: CommonListFooterProps) {
   const { data: listSwr } = props
   const { styles } = useTheme()
+  const insets = useSafeAreaInsets()
   return (
     <View
       sentry-label="ListFooter"
-      className="min-h-[60px] py-4 flex flex-col items-center justify-center">
+      className="min-h-[60px] flex flex-col items-center justify-center"
+      style={{ paddingBottom: (insets?.bottom || 4) + 12, paddingTop: 16 }}>
       {isLoadingMore(listSwr) && (
         <View className="w-full flex flex-row items-center justify-center">
           <Loader />

@@ -12,6 +12,7 @@ import HomeScreen from './HomeScreen'
 import MainTab from './MainTab'
 import MemberInfoScreen from './MemberInfoScreen'
 import MemberScreen from './MemberScreen'
+import MyBalanceScreen from './MyBalanceScreen'
 import MyCollectedTopicsScreen from './MyCollectedTopicsScreen'
 import MyCreatedTopicsScreen from './MyCreatedTopicsScreen'
 import MyNotificationScreen from './MyNotificationScreen'
@@ -203,6 +204,13 @@ function AppStack() {
           component={MyProfileScreen}
           options={{
             title: '用户档案',
+          }}
+        />
+        <Stack.Screen
+          name="balance"
+          component={MyBalanceScreen}
+          options={{
+            title: '账户余额',
           }}
         />
         <Stack.Screen
