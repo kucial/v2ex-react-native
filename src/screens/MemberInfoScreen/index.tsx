@@ -75,7 +75,6 @@ function Field({ label, value }: { label: string; value: string }) {
               case `R_复制`:
                 try {
                   await Clipboard.setStringAsync(content)
-                  alert?.alertWithType('success', '已复制到粘贴板', content)
                 } catch (err) {
                   Sentry.Native.captureException(err)
                 }

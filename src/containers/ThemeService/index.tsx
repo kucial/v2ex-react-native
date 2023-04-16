@@ -10,7 +10,7 @@ import { Appearance, AppState, ColorSchemeName, StyleSheet } from 'react-native'
 
 import { useAppSettings } from '../AppSettingsService'
 import * as themes from './themes'
-import { ThemeService, ThemeStyles } from './types'
+import { SemanticType, ThemeService, ThemeStyles } from './types'
 
 export const useColorScheme = (delay = 250) => {
   const [colorScheme, setColorScheme] = useState(Appearance.getColorScheme())
@@ -240,10 +240,35 @@ export const ThemeProvider = (props: {
         shadowColor: theme.colors.shadow,
       },
     })
+
+    const getSemanticStyle = (code: SemanticType) => {
+      switch (code) {
+        case 'primary':
+          return [styles.btn_primary__bg, styles.btn_primary__text]
+        case 'input':
+          return [styles.input__bg, styles.text]
+        case 'secondary':
+          return [styles.layer2, styles.text_primary]
+        case 'success':
+          return [styles.btn_success__bg, styles.btn_success__text]
+        case 'danger':
+        case 'error':
+          return [styles.btn_danger__bg, styles.btn_danger__text]
+        case 'info':
+          return [styles.btn_info__bg, styles.btn_info__text]
+        case 'warning':
+        case 'warn':
+          return [styles.btn_warning__bg, styles.btn_warning__text]
+        case 'custom':
+        default:
+          return []
+      }
+    }
     return {
       colorScheme: activeScheme,
       theme,
       styles,
+      getSemanticStyle,
     }
   }, [activeScheme, activeTheme])
 

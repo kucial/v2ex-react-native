@@ -44,7 +44,7 @@ export default function TopicMovePanel(props: {
         props.onUpdated(topic)
       } catch (err) {
         formikProps.setSubmitting(false)
-        alert.alertWithType('error', '错误', err.message)
+        alert.alertWithType({ type: 'error', message: err.message })
         if (err.code === 'EDIT_NOT_ALLOWED') {
           props.onExit()
         }

@@ -18,12 +18,12 @@
   "Alert Success": {
     "scope": "javascript,typescript,typescriptreact",
     "prefix": "als",
-    "body": ["alert.alertWithType('success', '成功', '$1')"]
+    "body": ["alert.alertWithType({ type: 'success', message: '$1' })"]
   },
   "Alert Error": {
     "scope": "javascript,typescript,typescriptreact",
     "prefix": "ale",
-    "body": ["alert.alertWithType('error', '错误', $1)"]
+    "body": ["alert.alertWithType({ type: 'error', message: '$1' })"]
   },
   "Use ActivityIndicator": {
     "scope": "javascript,typescript,typescriptreact",

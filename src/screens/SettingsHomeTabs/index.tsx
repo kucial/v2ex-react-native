@@ -114,29 +114,25 @@ export default function HomeTabs(props: ScreenProps) {
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
-                  alert.alertWithType(
-                    'info',
-                    '提示',
-                    '正在重新获取首页标签初始设置',
-                    undefined,
-                    0,
-                  )
+                  const instance = alert.alertWithType({
+                    type: 'info',
+                    message: '正在重新获取首页标签初始设置',
+                    duration: 0,
+                  })
                   initHomeTabs()
                     .then((newTabs) => {
                       setTabs(newTabs)
-                      alert.closeAction(undefined, () => {
-                        alert.alertWithType(
-                          'success',
-                          '成功',
-                          '首页标签已重置',
-                          undefined,
-                          1000,
-                        )
+                      instance.manager.destroy()
+                      alert.alertWithType({
+                        type: 'success',
+                        message: '首页标签已重置',
                       })
                     })
                     .catch((err) => {
-                      alert.closeAction(undefined, () => {
-                        alert.alertWithType('error', '错误', err.message)
+                      instance.manager.destroy()
+                      alert.alertWithType({
+                        type: 'error',
+                        message: err.message,
                       })
                     })
                 }

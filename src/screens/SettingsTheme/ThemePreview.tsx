@@ -32,7 +32,10 @@ import { html, topic } from './mock'
 import Swatch from './Swatch'
 import ThemeOption from './ThemeOption'
 
-const options = [
+const options: Array<{
+  value: 'light' | 'dark'
+  label: string
+}> = [
   {
     value: 'light',
     label: '浅色',
@@ -201,13 +204,10 @@ export default function ThemePreview(props: {
             <View className="flex-1">
               <Button
                 onPress={() => {
-                  alert.alertWithType(
-                    'success',
-                    '成功',
-                    '成功消息提示',
-                    undefined,
-                    2,
-                  )
+                  alert.alertWithType({
+                    type: 'success',
+                    message: '成功消息提示',
+                  })
                 }}
                 variant="success"
                 label="success"></Button>
@@ -215,13 +215,10 @@ export default function ThemePreview(props: {
             <View className="flex-1">
               <Button
                 onPress={() => {
-                  alert.alertWithType(
-                    'warn',
-                    '注意',
-                    '注意消息提示',
-                    undefined,
-                    2,
-                  )
+                  alert.alertWithType({
+                    type: 'warn',
+                    message: '注意消息提示',
+                  })
                 }}
                 variant="warning"
                 label="warning"></Button>
@@ -229,13 +226,10 @@ export default function ThemePreview(props: {
             <View className="flex-1">
               <Button
                 onPress={() => {
-                  alert.alertWithType(
-                    'error',
-                    '错误',
-                    '错误消息提示',
-                    undefined,
-                    2,
-                  )
+                  alert.alertWithType({
+                    type: 'error',
+                    message: '错误消息提示',
+                  })
                 }}
                 variant="danger"
                 label="error"></Button>
@@ -243,13 +237,10 @@ export default function ThemePreview(props: {
             <View className="flex-1">
               <Button
                 onPress={() => {
-                  alert.alertWithType(
-                    'info',
-                    '提示',
-                    '信息消息提示',
-                    undefined,
-                    2,
-                  )
+                  alert.alertWithType({
+                    type: 'info',
+                    message: '信息消息提示',
+                  })
                 }}
                 variant="info"
                 label="info"></Button>

@@ -83,7 +83,7 @@ export default function UploadButton(props) {
           }
           // mutate album cache
         } catch (err) {
-          alert.alertWithType('error', '错误', err.message)
+          alert.alertWithType({ type: 'error', message: err.message })
           Sentry.Native.captureException(err)
         } finally {
           aIndicator.hide('imgur-upload')

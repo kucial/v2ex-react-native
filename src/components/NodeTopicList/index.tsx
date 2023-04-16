@@ -59,7 +59,10 @@ export default function NodeTopicList(props: NodeTopicListProps) {
         if (err.code === '2FA_ENABLED') {
           return
         }
-        alert.alertWithType('error', '错误', err.message || '请求资源失败')
+        alert.alertWithType({
+          type: 'error',
+          message: err.message || '请求资源失败',
+        })
       },
     },
   )

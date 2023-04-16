@@ -110,7 +110,7 @@ React Native + Tailwindcss + SWR
 - slatejs + webview -- 富文本编辑
 - @gorhom/bottom-sheet -- 底部弹出层
 - react-native-image-viewing -- imgur 图片预览
-- react-native-dropdownalert -- 信息提示
+- ~~react-native-dropdownalert~~ react-native-root-toast -- 信息提示
 - react-native-selectable-text -- 可选择文本
 
 ## ENV 参数

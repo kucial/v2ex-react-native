@@ -72,11 +72,10 @@ export default function MemberScreenHeader({
           promise
             .then(({ data: patch }) => {
               // notice
-              alert.alertWithType(
-                'success',
-                '成功',
-                `${options[buttonIndex]} ${data.username}`,
-              )
+              alert.alertWithType({
+                type: 'success',
+                message: `${options[buttonIndex]} ${data.username}`,
+              })
               swr.mutate(
                 (prev) => ({
                   ...prev,
@@ -86,7 +85,7 @@ export default function MemberScreenHeader({
               )
             })
             .catch((err) => {
-              alert.alertWithType('error', '错误', err.message)
+              alert.alertWithType({ type: 'error', message: err.message })
             })
             .finally(() => {
               aIndicator.hide(KEY)

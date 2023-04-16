@@ -44,7 +44,10 @@ export default function ImgurSettings(props: ScreenProps) {
             client_id: clientInfo.clientId,
             ...queryParams,
           } as ImgurCredentials)
-          alert?.alertWithType('success', '成功', 'Imgur 授权成功')
+          alert?.alertWithType({
+            type: 'success',
+            message: 'Imgur 授权成功',
+          })
           if (route.params?.autoBack) {
             navigation.goBack()
           }
@@ -157,7 +160,10 @@ export default function ImgurSettings(props: ScreenProps) {
                       style={styles.layer2}
                       onPress={async () => {
                         await Clipboard.setStringAsync(REDIRECT_URI)
-                        alert.alertWithType('success', '', 'URL 已复制到剪切板')
+                        alert.alertWithType({
+                          type: 'success',
+                          message: ' URL 已复制到剪切板',
+                        })
                       }}>
                       <Text style={styles.text}>{REDIRECT_URI}</Text>
                     </Pressable>

@@ -66,9 +66,9 @@ export default function SocialForm(props: {
           }),
           { revalidate: false },
         )
-        alert.alertWithType('success', '成功', '社交帐号已更新')
+        alert.alertWithType({ type: 'success', message: '社交帐号已更新' })
       } catch (err) {
-        alert.alertWithType('error', '错误', err.message)
+        alert.alertWithType({ type: 'error', message: err.message })
       } finally {
         formikProps.setSubmitting(false)
       }

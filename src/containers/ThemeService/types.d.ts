@@ -12,6 +12,18 @@ interface ThemeBackgroundStyle {
   backgroundColor?: string
 }
 
+type SemanticType =
+  | 'primary'
+  | 'secondary'
+  | 'warn'
+  | 'warning'
+  | 'danger'
+  | 'error'
+  | 'info'
+  | 'success'
+  | 'input'
+  | 'custom'
+
 type ThemeColors = Theme['colors'] & {
   white: string
   black: string
@@ -128,6 +140,7 @@ type ThemeService = {
   theme: MyTheme
   styles: ThemeStyles
   colorScheme: 'light' | 'dark'
+  getSemanticStyle(code: SemanticType): [ViewStyle, TextStyle]
 }
 
 declare module 'react-native' {

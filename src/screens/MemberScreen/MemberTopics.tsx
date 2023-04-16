@@ -30,7 +30,10 @@ export default function MemberTopics(props: { username: string }) {
     {
       onError(err) {
         if (!err.code) {
-          alert.alertWithType('error', '错误', err.message || '请求资源失败')
+          alert.alertWithType({
+            type: 'error',
+            message: err.message || '请求资源失败',
+          })
         }
       },
       onErrorRetry(err) {

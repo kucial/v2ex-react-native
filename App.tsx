@@ -1,4 +1,6 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { RootSiblingParent } from 'react-native-root-siblings'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { SENTRY_DSN } from '@env'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
@@ -28,38 +30,42 @@ Sentry.init({
 
 function App() {
   return (
-    <AppSettingsService>
-      <ThemeProvider>
-        <ErrorBoundary>
-          <FetchPrepare>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <AppSWRConfig>
-                <AlertService>
-                  <ActionSheetProvider>
-                    <ActivityIndicator>
-                      <NavigationContainer>
-                        <ImgurService>
-                          <BottomSheetModalProvider>
-                            <AuthService>
-                              <ViewedTopicsService>
-                                <Layout>
-                                  <AppStack />
-                                  {/* <DebugScreen /> */}
-                                </Layout>
-                              </ViewedTopicsService>
-                            </AuthService>
-                          </BottomSheetModalProvider>
-                        </ImgurService>
-                      </NavigationContainer>
-                    </ActivityIndicator>
-                  </ActionSheetProvider>
-                </AlertService>
-              </AppSWRConfig>
-            </GestureHandlerRootView>
-          </FetchPrepare>
-        </ErrorBoundary>
-      </ThemeProvider>
-    </AppSettingsService>
+    <SafeAreaProvider>
+      <RootSiblingParent>
+        <AppSettingsService>
+          <ThemeProvider>
+            <ErrorBoundary>
+              <FetchPrepare>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <AppSWRConfig>
+                    <AlertService>
+                      <ActionSheetProvider>
+                        <ActivityIndicator>
+                          <NavigationContainer>
+                            <ImgurService>
+                              <BottomSheetModalProvider>
+                                <AuthService>
+                                  <ViewedTopicsService>
+                                    <Layout>
+                                      <AppStack />
+                                      {/* <DebugScreen /> */}
+                                    </Layout>
+                                  </ViewedTopicsService>
+                                </AuthService>
+                              </BottomSheetModalProvider>
+                            </ImgurService>
+                          </NavigationContainer>
+                        </ActivityIndicator>
+                      </ActionSheetProvider>
+                    </AlertService>
+                  </AppSWRConfig>
+                </GestureHandlerRootView>
+              </FetchPrepare>
+            </ErrorBoundary>
+          </ThemeProvider>
+        </AppSettingsService>
+      </RootSiblingParent>
+    </SafeAreaProvider>
   )
 }
 

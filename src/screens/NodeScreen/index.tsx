@@ -47,7 +47,10 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
         if (err.code === '2FA_ENABLED') {
           return
         }
-        alert.alertWithType('error', '错误', err.message || '请求资源失败')
+        alert.alertWithType({
+          type: 'error',
+          message: err.message || '请求资源失败',
+        })
       },
     },
   )
@@ -88,7 +91,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
             mutate('/page/my/nodes.json')
           })
           .catch((err) => {
-            alert.alertWithType('error', '错误', err.message)
+            alert.alertWithType({ type: 'error', message: err.message })
           })
           .finally(() => {
             aIndicator.hide(KEY)

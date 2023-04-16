@@ -1,4 +1,3 @@
-/*global Proxy */
 import {
   createContext,
   forwardRef,
@@ -6,77 +5,59 @@ import {
   useContext,
   useImperativeHandle,
   useMemo,
-  useRef,
 } from 'react'
-import DropdownAlert from 'react-native-dropdownalert'
+import Toast from 'react-native-root-toast'
 
 import { useTheme } from '../ThemeService'
-const AlertService = createContext<Partial<DropdownAlert>>({})
+const AlertServiceContext = createContext<Partial<AlertService>>({})
+import { AlertService } from './types'
 
 const AlertServiceProvider = forwardRef<
-  Partial<DropdownAlert>,
+  Partial<AlertService>,
   {
     children: ReactNode
   }
 >((props, ref) => {
-  const { theme } = useTheme()
-  const innerRef = useRef<DropdownAlert>(null)
-
-  const service: Partial<DropdownAlert> = useMemo(() => {
-    return new Proxy(
-      {},
-      {
-        get: function (_, prop) {
-          if (innerRef.current) {
-            return innerRef.current[prop]
-          }
-          if (typeof prop !== 'symbol') {
-            if (prop === 'alertWithType') {
-              return () => {
-                console.warn('alert service instance not ref...')
-              }
-            }
-          }
-          return null
-        },
+  const { getSemanticStyle, styles } = useTheme()
+  const service = useMemo(() => {
+    const s = {
+      alertWithType({ type, message, ...options }) {
+        const [bgStyle, textStyle] = getSemanticStyle(type)
+        const sibling = Toast.show(message, {
+          opacity: 0.9,
+          shadow: false,
+          position: -110,
+          containerStyle: [
+            bgStyle,
+            {
+              borderRadius: 24,
+              paddingHorizontal: 16,
+            },
+            styles.shadow_light,
+          ],
+          textStyle,
+          onHidden() {
+            sibling.manager.destroy()
+          },
+          ...options,
+        })
+        return sibling
       },
-    )
-  }, [])
+    } as AlertService
+
+    return s
+  }, [getSemanticStyle])
 
   useImperativeHandle(ref, () => service, [])
 
   return (
-    <AlertService.Provider value={service}>
+    <AlertServiceContext.Provider value={service}>
       {props.children}
-      <DropdownAlert
-        ref={innerRef}
-        renderImage={() => null}
-        closeInterval={2500}
-        defaultContainer={{
-          paddingHorizontal: 6,
-        }}
-        defaultTextContainer={{
-          paddingTop: 6,
-          paddingHorizontal: 6,
-          paddingBottom: 8,
-        }}
-        titleStyle={{
-          fontSize: 16,
-          textAlign: 'left',
-          fontWeight: 'bold',
-          color: theme.colors.white,
-          backgroundColor: 'transparent',
-          marginBottom: 2,
-        }}
-        successColor={theme.colors.success}
-        errorColor={theme.colors.danger}
-        infoColor={theme.colors.info}
-      />
-    </AlertService.Provider>
+    </AlertServiceContext.Provider>
   )
 })
 AlertServiceProvider.displayName = 'AlertServiceProvider'
 
 export default AlertServiceProvider
 
-export const useAlertService = () => useContext(AlertService)
+export const useAlertService = () => useContext(AlertServiceContext)

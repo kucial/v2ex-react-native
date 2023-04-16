@@ -5,7 +5,6 @@ import { styled } from 'nativewind'
 
 import Loader from '@/components/Loader'
 import { useTheme } from '@/containers/ThemeService'
-import { ThemeStyles } from '@/containers/ThemeService/types'
 
 type ButtonVariant =
   | 'primary'
@@ -15,27 +14,6 @@ type ButtonVariant =
   | 'warning'
   | 'danger'
   | 'info'
-
-const getBtnStyle = (styles: ThemeStyles, variant: ButtonVariant) => {
-  switch (variant) {
-    case 'primary':
-      return [styles.btn_primary__bg, styles.btn_primary__text]
-    case 'input':
-      return [styles.input__bg, styles.text]
-    case 'secondary':
-      return [styles.layer2, styles.text_primary]
-    case 'success':
-      return [styles.btn_success__bg, styles.btn_success__text]
-    case 'danger':
-      return [styles.btn_danger__bg, styles.btn_danger__text]
-    case 'info':
-      return [styles.btn_info__bg, styles.btn_info__text]
-    case 'warning':
-      return [styles.btn_warning__bg, styles.btn_warning__text]
-    default:
-      return []
-  }
-}
 
 function Button(props: {
   loading?: boolean
@@ -47,10 +25,10 @@ function Button(props: {
   variant?: ButtonVariant
   size?: 'md' | 'sm'
 }) {
-  const { styles } = useTheme()
+  const { styles, getSemanticStyle } = useTheme()
   const { size = 'md', variant = 'primary' } = props
 
-  const [bgStyle, textStyle] = getBtnStyle(styles, variant)
+  const [bgStyle, textStyle] = getSemanticStyle(variant)
 
   const children = useMemo(() => {
     if (props.children) {

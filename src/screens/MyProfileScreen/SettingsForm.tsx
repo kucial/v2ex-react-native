@@ -39,9 +39,9 @@ export default function SettingsForm(props: {
       try {
         const res = await updateSettings(values)
         settingsSwr.mutate(res.data, { revalidate: false })
-        alert.alertWithType('success', '成功', '用户信息已更新')
+        alert.alertWithType({ type: 'success', message: '用户信息已更新' })
       } catch (err) {
-        alert.alertWithType('error', '错误', err.message)
+        alert.alertWithType({ type: 'error', message: err.message })
       } finally {
         formikProps.setSubmitting(false)
       }

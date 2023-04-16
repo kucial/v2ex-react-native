@@ -68,7 +68,7 @@ function AppStack() {
           )
         },
       }}
-      initialRouteName={'theme-settings'}
+      // initialRouteName={'theme-settings'}
     >
       {/* <Stack.Screen
         name="main"

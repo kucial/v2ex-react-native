@@ -194,7 +194,7 @@ function HtmlRender({
           case `R_${MENU_ITEM_COPY}`:
             try {
               await Clipboard.setStringAsync(content)
-              // alert?.alertWithType('success', '已复制到粘贴板', '')
+              // alert.alertWithType({ type: 'success', message: '已复制到粘贴板 ' })
             } catch (err) {
               Sentry.Native.captureException(err)
             }
@@ -204,9 +204,15 @@ function HtmlRender({
               const result = decode(content)
               if (result) {
                 await Clipboard.setStringAsync(result)
-                alert?.alertWithType('success', '已复制到粘贴板', result)
+                alert.alertWithType({
+                  type: 'success',
+                  message: '已复制到粘贴板: ' + result,
+                })
               } else {
-                alert?.alertWithType('error', '未识别到有效内容', '')
+                alert.alertWithType({
+                  type: 'error',
+                  message: '未识别到有效内容 ',
+                })
               }
             } catch (err) {
               Sentry.Native.captureException(err)
@@ -237,7 +243,10 @@ function HtmlRender({
           text: '复制',
           onPress: async () => {
             await Clipboard.setStringAsync(data)
-            alert?.alertWithType('success', '操作成功', '已复制到粘贴板')
+            alert.alertWithType({
+              type: 'success',
+              message: '已复制到粘贴板',
+            })
           },
         },
       ])

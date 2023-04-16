@@ -22,7 +22,7 @@ export default function SigninScreen(props: SigninScreenProps) {
 
   const handleSuccess = useCallback(() => {
     fetchCurrentUser(true).then(() => {
-      alert.alertWithType('success', '成功', '登录成功')
+      alert.alertWithType({ type: 'success', message: '登录成功' })
     })
   }, [])
 

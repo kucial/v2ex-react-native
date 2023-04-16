@@ -133,10 +133,10 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
       navigation.replace('topic', {
         id: newTopic.id,
       })
-      alert.alertWithType('success', '成功', '主题创建成功')
+      alert.alertWithType({ type: 'success', message: '主题创建成功' })
     } catch (err) {
       setIsSubmitting(false)
-      alert.alertWithType('error', '错误', err.message)
+      alert.alertWithType({ type: 'error', message: err.message })
     }
   }, [values, navigation])
 

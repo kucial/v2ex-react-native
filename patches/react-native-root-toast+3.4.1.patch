@@ -1,0 +1,117 @@
+diff --git a/node_modules/react-native-root-toast/lib/ToastContainer.js b/node_modules/react-native-root-toast/lib/ToastContainer.js
+index 7cc32fa..5627f91 100644
+--- a/node_modules/react-native-root-toast/lib/ToastContainer.js
++++ b/node_modules/react-native-root-toast/lib/ToastContainer.js
+@@ -10,8 +10,9 @@ import {
+     Dimensions,
+     TouchableWithoutFeedback,
+     Easing,
+-    Keyboard
++    Keyboard,
+ } from 'react-native';
++import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
+ import { ViewPropTypes, TextPropTypes } from 'deprecated-react-native-prop-types';
+ const TOAST_MAX_WIDTH = 0.8;
+ const TOAST_ANIMATION_DURATION = 200;
+@@ -234,49 +235,58 @@ class ToastContainer extends Component {
+             top: 0,
+             bottom: keyboardHeight
+         };
+-
+-        return (this.state.visible || this._animating) ? <View
+-            style={[
+-                styles.defaultStyle,
+-                position
+-            ]}
+-            pointerEvents="box-none"
+-            accessible={this.props.accessible ? this.props.accessible : true}
+-            accessibilityLabel={this.props.accessibilityLabel ? this.props.accessibilityLabel : undefined}
+-            accessibilityHint={this.props.accessibilityHint ? this.props.accessibilityHint : undefined}
+-            accessibilityRole={this.props.accessibilityRole ? this.props.accessibilityRole : "alert"}
+-        >
+-            <TouchableWithoutFeedback
+-                onPress={() => {
+-                  typeof this.props.onPress === 'function' ? this.props.onPress() : null
+-                  this.props.hideOnPress ? this._hide() : null
+-                }}
+-            >
+-                <Animated.View
+-                    style={[
+-                        styles.containerStyle,
+-                        { marginHorizontal: windowWidth * ((1 - TOAST_MAX_WIDTH) / 2) },
+-                        props.containerStyle,
+-                        props.backgroundColor && {backgroundColor: props.backgroundColor},
+-                        {
+-                            opacity: this.state.opacity
+-                        },
+-                        props.shadow && styles.shadowStyle,
+-                        props.shadowColor && {shadowColor: props.shadowColor}
+-                    ]}
+-                    pointerEvents="none"
+-                    ref={ele => this._root = ele}
+-                >
+-                    <Text style={[
+-                        styles.textStyle,
+-                        props.textStyle,
+-                        props.textColor && {color: props.textColor}
+-                    ]}>
+-                        {this.props.children}
+-                    </Text>
+-                </Animated.View>
+-            </TouchableWithoutFeedback>
+-        </View> : null;
++        if (this.state.visible || this._animating) {
++            return  (
++                <SafeAreaInsetsContext.Consumer>
++                    {insets => (
++                        <View
++                            style={[
++                                styles.defaultStyle,
++                                position,
++                                position.top ? { paddingTop: insets.top } : { paddingBottom: position.bottom > insets.bottom ? 0 : insets.bottom }
++                            ]}
++                            pointerEvents="box-none"
++                            accessible={this.props.accessible ? this.props.accessible : true}
++                            accessibilityLabel={this.props.accessibilityLabel ? this.props.accessibilityLabel : undefined}
++                            accessibilityHint={this.props.accessibilityHint ? this.props.accessibilityHint : undefined}
++                            accessibilityRole={this.props.accessibilityRole ? this.props.accessibilityRole : "alert"}
++                        >
++                            <TouchableWithoutFeedback
++                                onPress={() => {
++                                typeof this.props.onPress === 'function' ? this.props.onPress() : null
++                                this.props.hideOnPress ? this._hide() : null
++                                }}
++                            >
++                                <Animated.View
++                                    style={[
++                                        styles.containerStyle,
++                                        { marginHorizontal: windowWidth * ((1 - TOAST_MAX_WIDTH) / 2) },
++                                        props.containerStyle,
++                                        props.backgroundColor && {backgroundColor: props.backgroundColor},
++                                        {
++                                            opacity: this.state.opacity
++                                        },
++                                        props.shadow && styles.shadowStyle,
++                                        props.shadowColor && {shadowColor: props.shadowColor}
++                                    ]}
++                                    pointerEvents="none"
++                                    ref={ele => this._root = ele}
++                                >
++                                    <Text style={[
++                                        styles.textStyle,
++                                        props.textStyle,
++                                        props.textColor && {color: props.textColor}
++                                    ]}>
++                                        {this.props.children}
++                                    </Text>
++                                </Animated.View>
++                            </TouchableWithoutFeedback>
++                        </View>
++                    )}
++                </SafeAreaInsetsContext.Consumer>
++            )
++        }
++        return null;
+     }
+ }
+ 

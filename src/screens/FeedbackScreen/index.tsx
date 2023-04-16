@@ -41,7 +41,7 @@ export default function FeedbackScreen(props: ScreenProps) {
         event_id: sentryId,
         ...values,
       })
-      alert.alertWithType('success', '成功', '反馈已提交')
+      alert.alertWithType({ type: 'success', message: '反馈已提交' })
       navigation.goBack()
     },
     [],

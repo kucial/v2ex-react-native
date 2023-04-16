@@ -61,7 +61,7 @@ function GoogleSign(props: GoogleSigninProps) {
           break
         case 'cooldown':
           setLoading(false)
-          alert.alertWithType('error', '错误', data.message)
+          alert.alertWithType({ type: 'error', message: data.message })
           break
         default:
           console.log('NOT_HANDLED_MESSAGE: ', data)
