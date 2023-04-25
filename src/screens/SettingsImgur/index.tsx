@@ -44,7 +44,7 @@ export default function ImgurSettings(props: ScreenProps) {
             client_id: clientInfo.clientId,
             ...queryParams,
           } as ImgurCredentials)
-          alert?.alertWithType({
+          alert.show({
             type: 'success',
             message: 'Imgur 授权成功',
           })
