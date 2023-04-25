@@ -282,7 +282,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
       '2fa_enabled',
       async (error: TFA_Error) => {
         const result = await prompt2faInput(error)
-        if (result.action === '2fa_verified') {
+        if (result?.action === '2fa_verified') {
           alert.show({ type: 'success', message: '2FA 验证成功' })
         }
       },
