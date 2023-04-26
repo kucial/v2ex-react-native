@@ -23,7 +23,6 @@ import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
-import ErrorNotice from '@/components/ErrorNotice'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MyRefreshControl from '@/components/MyRefreshControl'
@@ -48,6 +47,7 @@ import PadSidebar from './PadSidebar'
 import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
 import ScrollToLastPosition from './ScrollToLastPosition'
+import TopicBaseInfo from './TopicBaseInfo'
 import TopicInfo from './TopicInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
@@ -684,6 +684,27 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     [id, replyContext],
   )
 
+  const handleAppend = useCallback(() => {
+    setReplyContext({
+      type: 'append',
+    })
+    replyModalRef.current?.present()
+  }, [])
+
+  const handleEdit = useCallback(() => {
+    navigation.push('edit-topic', {
+      id: topic.id,
+    })
+  }, [topic.id])
+
+  const handleMove = useCallback(() => {
+    movePanelModalRef.current?.present()
+  }, [])
+
+  const handleRefetch = useCallback(() => {
+    topicSwr.mutate()
+  }, [])
+
   const showConversation = useCallback((reply) => {
     setConversationContext(reply)
     conversationModalRef.current?.present()
@@ -795,102 +816,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     return <TopicSkeleton />
   }
 
-  const baseContent = (
-    <>
-      <View className="pt-3" style={[styles.layer1]}>
-        <MaxWidthWrapper>
-          <View
-            className={classNames({
-              'px-4': !padLayout.active,
-              'mb-2': !!replyItems?.length,
-            })}
-            style={replyItems?.length && styles.border_b}>
-            <TopicInfo data={topic} navigation={navigation} />
-            {!topicSwr.data && topicSwr.error && !isLoading(topicSwr) && (
-              <ErrorNotice
-                error={topicSwr.error}
-                extra={
-                  <View className="mt-2 flex flex-row justify-center">
-                    <Pressable
-                      className={classNames(
-                        'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
-                        'active:opacity-60',
-                      )}
-                      style={[styles.btn_primary__bg]}
-                      onPress={() => {
-                        topicSwr.mutate()
-                      }}>
-                      <Text style={styles.btn_primary__text}>重试</Text>
-                    </Pressable>
-                  </View>
-                }
-              />
-            )}
-            {isFallback && isLoading(topicSwr) && (
-              <View className="mt-1">
-                <BlockText lines={[5, 10]} />
-              </View>
-            )}
-            {(topic.canAppend || topic.canEdit || topic.canMove) && (
-              <View className="flex flex-row justify-end relative bottom-[-6px]">
-                {topic.canAppend && (
-                  <Pressable
-                    className="px-3 h-[36px] rounded items-center justify-center active:opacity-60"
-                    style={styles.layer2}
-                    onPress={() => {
-                      setReplyContext({
-                        type: 'append',
-                      })
-                      replyModalRef.current?.present()
-                    }}>
-                    <Text style={styles.text}>附言</Text>
-                  </Pressable>
-                )}
-                {topic.canEdit && (
-                  <Pressable
-                    className="px-3 h-[36px] rounded items-center justify-center active:opacity-60 ml-2"
-                    style={styles.layer2}
-                    onPress={() => {
-                      navigation.push('edit-topic', {
-                        id: topic.id,
-                      })
-                    }}>
-                    <Text style={styles.text}>修改</Text>
-                  </Pressable>
-                )}
-                {topic.canMove && (
-                  <Pressable
-                    className="px-3 h-[36px] rounded items-center justify-center active:opacity-60 ml-2"
-                    style={styles.layer2}
-                    onPress={() => {
-                      movePanelModalRef.current?.present()
-                    }}>
-                    <Text style={styles.text}>移动</Text>
-                  </Pressable>
-                )}
-              </View>
-            )}
-
-            {!!topic.replies || !!topic.clicks ? (
-              <View className="flex flex-row py-3 pl-1 mt-3">
-                <Text className="text-xs pr-4" style={styles.text_desc}>
-                  {topic.replies} 条回复
-                </Text>
-                {topic.clicks && (
-                  <Text className="text-xs" style={styles.text_meta}>
-                    {topic.clicks} 次点击
-                  </Text>
-                )}
-              </View>
-            ) : (
-              <View className="py-3" />
-            )}
-          </View>
-        </MaxWidthWrapper>
-      </View>
-    </>
-  )
-
   const BarComponent = padLayout.active ? PadSidebar : BottomBar
 
   return (
@@ -902,7 +827,20 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         data={replyItems}
         renderItem={renderReply}
         keyExtractor={keyExtractor}
-        ListHeaderComponent={() => baseContent}
+        ListHeaderComponent={
+          <TopicBaseInfo
+            isLoading={isLoading(topicSwr)}
+            data={topicSwr.data}
+            hasReply={!!replyItems.length}
+            error={topicSwr.error}
+            fallback={brief}
+            navigation={navigation}
+            onAppend={handleAppend}
+            onEdit={handleEdit}
+            onMove={handleMove}
+            onRefetch={handleRefetch}
+          />
+        }
         ListFooterComponent={
           <CommonListFooter data={listSwr} emptyMessage="目前尚无回复" />
         }
