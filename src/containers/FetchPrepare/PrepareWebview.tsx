@@ -9,7 +9,7 @@ export default function PrepareWebview(props: {
   onReady(): void
   onError(err: Error): void
 }) {
-  const timerRef = useRef<number>(null)
+  const timerRef = useRef<number>(Date.now())
   const cfState = useRef(null)
 
   const handleError = useCallback((e) => {

@@ -43,6 +43,7 @@ export default function FetchPrepare(props) {
         props.children
       ) : (
         <Status
+          error={state.error}
           onRetry={() => {
             setState((prev) => ({
               ...prev,
