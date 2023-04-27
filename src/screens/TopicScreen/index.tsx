@@ -693,9 +693,9 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const handleEdit = useCallback(() => {
     navigation.push('edit-topic', {
-      id: topic.id,
+      id: topic?.id,
     })
-  }, [topic.id])
+  }, [topic?.id])
 
   const handleMove = useCallback(() => {
     movePanelModalRef.current?.present()
