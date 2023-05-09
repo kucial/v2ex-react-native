@@ -20,6 +20,7 @@ export const html = `
 <h1>R2V</h1>
 
 <p>R2V是一款为V2EX社区打造的第三方客户端应用，它的主要目的是让用户能够更加方便地访问和浏览V2EX社区的内容。<a href="https://apps.apple.com/cn/app/r2v/id1645766550">App Store</a></p>
+<p><a href="https://github.com/kucial/v2ex-react-native">Github</a></p>
 
 <ul>
   <li><strong>简洁的用户界面</strong>：R2V的用户界面非常简洁，易于使用。用户可以通过简单的手势和操作轻松地浏览和查看帖子和评论</li>

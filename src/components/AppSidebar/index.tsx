@@ -51,7 +51,6 @@ export default function AppSidebar(props: {
   const handleNotificationPress = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        console.log(navigation)
         navigation.navigate('notification')
       }, [navigation]),
     ),

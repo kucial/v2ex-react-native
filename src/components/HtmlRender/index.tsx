@@ -180,6 +180,7 @@ function HtmlRender({
         WebBrowser.openBrowserAsync(url, {
           controlsColor: theme.colors.primary,
           dismissButtonStyle: 'close',
+          presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
         }).catch((err) => {
           Sentry.Native.captureException(err)
           console.log(err)
