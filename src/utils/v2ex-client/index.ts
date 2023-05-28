@@ -53,7 +53,12 @@ import {
   TopicId,
 } from './types'
 
-type EVENT = 'unread_count' | 'current_user' | '2fa_enabled' | 'balance_brief'
+type EVENT =
+  | 'unread_count'
+  | 'current_user'
+  | '2fa_enabled'
+  | 'balance_brief'
+  | 'should_prepare_fetch'
 type UnreadCountValue = number
 
 type EventValue = UnreadCountValue | TFA_Error | BalanceBrief
@@ -63,6 +68,7 @@ const listeners: Record<EVENT, Set<Callback>> = {
   current_user: new Set(),
   '2fa_enabled': new Set(),
   balance_brief: new Set(),
+  should_prepare_fetch: new Set(),
 }
 export const subscribe = (event: EVENT, callback: Callback) => {
   listeners[event].add(callback)
@@ -127,6 +133,8 @@ instance.interceptors.request.use(async (config) => {
   return config
 })
 
+let n_403 = 0
+
 instance.interceptors.response.use(
   function (res) {
     if (
@@ -171,6 +179,17 @@ instance.interceptors.response.use(
 
         dispatch('balance_brief', balanceBrief)
       }
+    }
+
+    if (res.status === 403) {
+      console.log('403 url: ', res.request?.responseURL)
+      if (n_403 > 3) {
+        dispatch('should_prepare_fetch')
+      } else {
+        n_403 += 1
+      }
+    } else {
+      n_403 = 0
     }
 
     return res
