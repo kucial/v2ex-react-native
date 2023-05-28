@@ -12,12 +12,14 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/5c24d369-c0ba-41e3-8679-8b8cee82fc13"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kucial.v2ex",
+      "runtimeVersion": "1.0.0",
       "splash": {
         "image": "./src/assets/splash.png",
         "backgroundColor": "#ffffff",

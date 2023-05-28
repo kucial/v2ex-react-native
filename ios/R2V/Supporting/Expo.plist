@@ -8,9 +8,9 @@
     <true/>
     <key>EXUpdatesLaunchWaitMs</key>
     <integer>0</integer>
-    <key>EXUpdatesSDKVersion</key>
-    <string>48.0.0</string>
     <key>EXUpdatesURL</key>
-    <string>https://exp.host/@kongkx/v2ex-react-native</string>
+    <string>https://u.expo.dev/5c24d369-c0ba-41e3-8679-8b8cee82fc13</string>
+    <key>EXUpdatesRuntimeVersion</key>
+    <string>1.0.0</string>
   </dict>
 </plist>

@@ -9,7 +9,8 @@
       },
       "ios": {
         "buildConfiguration": "Debug"
-      }
+      },
+      "channel": "development"
     },
     "staging": {
       "credentialsSource": "local",
@@ -21,7 +22,8 @@
         "SENTRY_ORG": "kucial",
         "SENTRY_PROJECT": "v2ex-react-native",
         "SENTRY_DSN": "https://7580d23586fd42838e4c0eb78a17d165@sentry.kongkx.com/6"
-      }
+      },
+      "channel": "staging"
     },
     "production": {
       "autoIncrement": true,
@@ -34,7 +36,8 @@
       },
       "android": {
         "buildType": "apk"
-      }
+      },
+      "channel": "production"
     }
   },
   "submit": {
