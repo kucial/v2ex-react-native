@@ -68,7 +68,7 @@ const AvatarPicker = (props: {
       const updateRes = await uploadAvatar({
         avatar: {
           uri: manipResult.uri,
-          name: avatar.fileName,
+          name: avatar.fileName || 'avatar.jpg',
           type: avatar.type,
         },
         once: avatarSwr.data.once,
