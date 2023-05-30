@@ -40,11 +40,6 @@ const AvatarPicker = (props: {
   const [avatar, setAvatar] = useState(null)
 
   const pickImage = async () => {
-    const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (!granted) {
-      alert.show({ type: 'error', message: '需要访问相册的权限' })
-      return
-    }
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -68,7 +63,7 @@ const AvatarPicker = (props: {
       const updateRes = await uploadAvatar({
         avatar: {
           uri: manipResult.uri,
-          name: avatar.fileName || 'avatar.jpg',
+          name: avatar.fileName || 'avatar.png',
           type: avatar.type,
         },
         once: avatarSwr.data.once,
