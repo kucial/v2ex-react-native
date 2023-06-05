@@ -75,7 +75,6 @@ function PasswordSignin(props: PasswordSigninProps) {
 
   const submitLoginForm = useCallback(
     async (data) => {
-      console.log(data)
       if (isSubmitting) {
         return
       }
