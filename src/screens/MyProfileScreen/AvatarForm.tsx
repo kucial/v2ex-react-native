@@ -144,12 +144,18 @@ const AvatarPicker = (props: {
             {avatar ? (
               <Button
                 loading={loading}
+                variant="primary"
                 size="md"
                 label="上传头像"
                 onPress={handleUpload}
               />
             ) : (
-              <Button size="md" label="选择图片" onPress={pickImage} />
+              <Button
+                variant="primary"
+                size="md"
+                label="选择图片"
+                onPress={pickImage}
+              />
             )}
           </View>
         </GroupWapper>

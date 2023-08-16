@@ -101,6 +101,8 @@ export default function TopicEdit(props: ScreenProps) {
                 />
                 <Button
                   className="mt-4"
+                  size="md"
+                  variant="primary"
                   label="更新"
                   loading={formikProps.isSubmitting}
                   onPress={() => {

@@ -1,19 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  InteractionManager,
-  Platform,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
+import { InteractionManager, Platform, TextInput, View } from 'react-native'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
 import WebView from 'react-native-webview'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import classNames from 'classnames'
 import Constants from 'expo-constants'
 
 import BackButton from '@/components/BackButton'
+import Button from '@/components/Button'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
 import { getScreenInfo } from '@/utils/url'
@@ -74,14 +69,21 @@ export default function SearchScreen({ navigation }: ScreenProps) {
         ]}>
         <View className="mr-1">
           <BackButton
-            tintColor={theme.colors.primary}
+            tintColor={theme.colors.text}
             onPress={() => {
               navigation.goBack()
             }}
           />
         </View>
         <View className="flex flex-row flex-1 pr-3 items-center">
-          <View className="relative flex-1 py-[6px]">
+          <View
+            className={classNames(
+              'relative flex-1',
+              Platform.select({
+                ios: 'py-[6]',
+                android: 'py-[8]',
+              }),
+            )}>
             <TextInput
               className="rounded-lg flex-1 px-2 text-base"
               style={[styles.input__bg, styles.text, { lineHeight: 20 }]}
@@ -97,8 +99,10 @@ export default function SearchScreen({ navigation }: ScreenProps) {
             />
             {!!keyword && (
               <View className="absolute right-0 top-[6px] h-full flex flex-row items-center justify-center">
-                <Pressable
-                  className="rounded-full w-[40px] h-[40px] active:bg-neutral-100 active:opacity-60 items-center justify-center dark:active:bg-neutral-600"
+                <Button
+                  className="rounded-full w-[40px] h-[40px]"
+                  variant="icon"
+                  radius={20}
                   onPress={() => {
                     setKeyword('')
                     setLoading(false)
@@ -106,19 +110,10 @@ export default function SearchScreen({ navigation }: ScreenProps) {
                     searchInput.current?.focus()
                   }}>
                   <XMarkIcon size={18} color={theme.colors.text} />
-                </Pressable>
+                </Button>
               </View>
             )}
           </View>
-          <Pressable
-            hitSlop={6}
-            className="rounded px-3 py-[10px] ml-2 active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600">
-            <Text
-              className="font-medium tracking-wide text-md"
-              style={styles.text_primary}>
-              搜索
-            </Text>
-          </Pressable>
         </View>
       </View>
       <View className="flex-1 relative">

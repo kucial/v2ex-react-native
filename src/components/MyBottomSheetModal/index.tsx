@@ -1,5 +1,5 @@
 import { forwardRef, useMemo } from 'react'
-import { Keyboard, useWindowDimensions } from 'react-native'
+import { Keyboard, Platform, useWindowDimensions } from 'react-native'
 import {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
@@ -8,8 +8,8 @@ import {
 } from '@gorhom/bottom-sheet'
 
 import { APP_SIDEBAR_SIZE, CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
-import { useTheme } from '@/containers/ThemeService'
 import { usePadLayout } from '@/containers/AppSettingsService'
+import { useTheme } from '@/containers/ThemeService'
 
 const DismissBackdropComponent = (props: BottomSheetBackdropProps) => {
   return (
@@ -19,7 +19,9 @@ const DismissBackdropComponent = (props: BottomSheetBackdropProps) => {
       disappearsOnIndex={-1}
       pressBehavior="close"
       onPress={() => {
-        Keyboard.dismiss()
+        if (Platform.OS === 'ios') {
+          Keyboard.dismiss()
+        }
       }}
     />
   )

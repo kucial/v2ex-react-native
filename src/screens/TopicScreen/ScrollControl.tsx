@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Platform, Pressable, Text, TextInput, View } from 'react-native'
 import { Keyboard } from 'react-native'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import classNames from 'classnames'
@@ -66,6 +66,8 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
       [],
     )
 
+    const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
+
     return (
       <>
         {props.renderButton({ action, onPress: handlePress })}
@@ -83,10 +85,11 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                   <Text style={styles.text_desc}>#</Text>
                 </View>
                 <View className="flex-1">
-                  <BottomSheetTextInput
+                  <Input
                     autoFocus
                     keyboardType="number-pad"
                     placeholder={`最大: ${props.max}`}
+                    placeholderTextColor={theme.colors.text_placeholder}
                     value={target}
                     onChangeText={setTarget}
                     style={[

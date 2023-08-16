@@ -43,6 +43,7 @@ export default function Status(props: { error?: Error; onRetry(): void }) {
               style={{
                 width: 200,
               }}
+              size="md"
               variant="primary"
               label="重试"
               onPress={props.onRetry}

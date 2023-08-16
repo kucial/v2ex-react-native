@@ -16,6 +16,7 @@ import { Image } from 'expo-image'
 import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
+import Button from '@/components/Button'
 import GoogleIcon from '@/components/GoogleIcon'
 import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -120,7 +121,9 @@ function PasswordSignin(props: PasswordSigninProps) {
 
   const values = watch()
   return (
-    <View className="flex-1" style={styles.overlay}>
+    <View
+      className="flex-1"
+      style={Platform.OS === 'android' ? styles.layer1 : styles.overlay}>
       <View className="u-absolute left-1 top-1">
         <BackButton
           tintColor={theme.colors.text}
@@ -155,7 +158,12 @@ function PasswordSignin(props: PasswordSigninProps) {
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                       className="h-[44px] px-2 mb-2 rounded-md"
-                      style={[styles.text, styles.overlay_input__bg]}
+                      style={[
+                        styles.text,
+                        Platform.OS === 'android'
+                          ? styles.input__bg
+                          : styles.overlay_input__bg,
+                      ]}
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
@@ -183,7 +191,12 @@ function PasswordSignin(props: PasswordSigninProps) {
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                       className="h-[44px] px-2 mb-2 rounded-md"
-                      style={[styles.text, styles.overlay_input__bg]}
+                      style={[
+                        styles.text,
+                        Platform.OS === 'android'
+                          ? styles.input__bg
+                          : styles.overlay_input__bg,
+                      ]}
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
@@ -235,7 +248,12 @@ function PasswordSignin(props: PasswordSigninProps) {
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
                       className="h-[44px] px-2 mb-2 rounded-md"
-                      style={[styles.text, styles.overlay_input__bg]}
+                      style={[
+                        styles.text,
+                        Platform.OS === 'android'
+                          ? styles.input__bg
+                          : styles.overlay_input__bg,
+                      ]}
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
@@ -256,35 +274,20 @@ function PasswordSignin(props: PasswordSigninProps) {
                   rules={{ required: true }}
                 />
 
-                <Pressable
+                <Button
+                  className="mt-4"
                   disabled={!formSwr.data}
-                  className={classNames(
-                    'h-[44px] rounded-md flex items-center justify-center mt-4',
-                    'active:opacity-60',
-                    {
-                      'opacity-60': isSubmitting,
-                    },
-                  )}
-                  style={styles.btn_primary__bg}
+                  size="md"
+                  variant="primary"
+                  loading={isSubmitting}
                   onPress={(e) => {
                     if (isSubmitting) {
                       return
                     }
                     handleSubmit(submitLoginForm)(e)
-                  }}>
-                  {isSubmitting ? (
-                    <Loader
-                      size={20}
-                      color={styles.btn_primary__text.color as string}
-                    />
-                  ) : (
-                    <Text
-                      className="text-base"
-                      style={styles.btn_primary__text}>
-                      登录
-                    </Text>
-                  )}
-                </Pressable>
+                  }}
+                  label="登录"
+                />
 
                 {error && (
                   <View className="mt-4">

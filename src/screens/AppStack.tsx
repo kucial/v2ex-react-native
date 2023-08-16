@@ -1,4 +1,10 @@
-import { Platform, SafeAreaView, View } from 'react-native'
+import {
+  Platform,
+  SafeAreaView,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { headerLeft } from '@/components/BackButton'
@@ -44,8 +50,26 @@ const transparentHeaderBackground = () => (
   />
 )
 
+const headerTitle = (props) => {
+  const { width } = useWindowDimensions()
+  return (
+    <View style={{ maxWidth: width - 100 }}>
+      <Text
+        numberOfLines={1}
+        style={{
+          color: props.tintColor,
+          textAlign: 'center',
+          fontSize: 19,
+          fontWeight: 'bold',
+        }}>
+        {props.children}
+      </Text>
+    </View>
+  )
+}
+
 function AppStack() {
-  const { theme, styles } = useTheme()
+  const { theme, styles, colorScheme } = useTheme()
   const tintColor = theme.colors.text_title
 
   const padLayout = usePadLayout()
@@ -54,10 +78,23 @@ function AppStack() {
     <Stack.Navigator
       screenOptions={{
         headerBackTitleVisible: false,
+        headerBackVisible: false,
         headerLeft,
+        headerTitle: Platform.select({
+          ios: undefined,
+          android: headerTitle,
+        }),
         headerTintColor: tintColor,
-        headerTitleStyle: styles.text,
         fullScreenGestureEnabled: true,
+        animation: 'slide_from_right',
+        headerTitleAlign: 'center',
+        statusBarStyle: Platform.select({
+          ios: undefined,
+          android: colorScheme === 'light' ? 'dark' : 'light',
+        }),
+        statusBarColor: Platform.select({
+          android: theme.colors.bg_layer1,
+        }),
         headerBackground() {
           return (
             <View

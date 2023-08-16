@@ -239,6 +239,9 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                             overflow: 'hidden',
                             minHeight: 200,
                             backgroundColor: theme.colors.bg_layer2,
+                            '--placeholder-color':
+                              theme.colors.text_placeholder,
+                            color: theme.colors.text,
                           }}
                         />
                       </View>
@@ -246,6 +249,8 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                   </View>
                   <View className="px-4 my-3">
                     <Button
+                      variant="primary"
+                      size="md"
                       label="发布"
                       disabled={!isValid}
                       loading={isSubmitting}

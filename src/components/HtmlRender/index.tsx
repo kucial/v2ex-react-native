@@ -193,6 +193,7 @@ function HtmlRender({
         const { eventType, content } = payload
         switch (eventType) {
           case `R_${MENU_ITEM_COPY}`:
+          case MENU_ITEM_COPY:
             try {
               await Clipboard.setStringAsync(content)
               // alert.show({ type: 'success', message: '已复制到粘贴板 ' })
@@ -201,6 +202,7 @@ function HtmlRender({
             }
             break
           case `R_${MENU_ITEM_BASE64_DECODE}`:
+          case MENU_ITEM_BASE64_DECODE:
             try {
               const result = decode(content)
               if (result) {

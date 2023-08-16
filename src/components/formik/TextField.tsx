@@ -1,5 +1,12 @@
 import { ReactNode } from 'react'
-import { Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native'
+import {
+  Platform,
+  Text,
+  TextInput,
+  TextInputProps,
+  View,
+  ViewStyle,
+} from 'react-native'
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import classNames from 'classnames'
 import { useField } from 'formik'
@@ -23,7 +30,11 @@ function TextField({
   const { styles, theme } = useTheme()
   const [field, meta, helpers] = useField(name)
 
-  const Component = bottomSheet ? BottomSheetTextInput : TextInput
+  const Component = bottomSheet
+    ? Platform.OS === 'android'
+      ? TextInput
+      : BottomSheetTextInput
+    : TextInput
   return (
     <View style={style}>
       {label !== false && (

@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import React from 'react'
-import { Text } from 'react-native'
+import { Platform, Text } from 'react-native'
 import {
   CustomTextualRenderer,
   getNativePropsForTNode,
@@ -9,11 +9,13 @@ import {
 
 import { getImgurResourceImageLink, isImgurResourceLink } from '@/utils/url'
 
+import { RenderContext } from './context'
 import { useImageViewing } from './ImageViewingService'
 
 const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
   const renderProps = getNativePropsForTNode(props)
   const url = useNormalizedUrl(props.tnode.attributes.href)
+  const { handleUrlPress } = useContext(RenderContext)
   const service = useImageViewing()
   useEffect(() => {
     if (isImgurResourceLink(url)) {
@@ -27,7 +29,21 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
     }
   }, [url])
 
-  return <Text {...renderProps} url={url} />
+  if (Platform.OS == 'ios') {
+    return <Text {...renderProps} url={url} />
+  }
+
+  return (
+    <Text
+      {...renderProps}
+      onPress={() => {
+        handleUrlPress({
+          interaction: 'default',
+          url,
+        })
+      }}
+    />
+  )
 }
 
 export default AnchorRenderer

@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Linking, Pressable, Share, Text, View } from 'react-native'
+import { Linking, Share } from 'react-native'
 import { InteractionManager } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 // import { TagIcon } from 'react-native-heroicons/outline'
@@ -16,17 +16,15 @@ import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useIsFocused } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
-import classNames from 'classnames'
 import deepmerge from 'deepmerge'
 import { debounce } from 'lodash'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
+import Button from '@/components/Button'
 import CommonListFooter from '@/components/CommonListFooter'
-import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MyRefreshControl from '@/components/MyRefreshControl'
-import { BlockText } from '@/components/Skeleton/Elements'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
@@ -48,7 +46,6 @@ import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
 import ScrollToLastPosition from './ScrollToLastPosition'
 import TopicBaseInfo from './TopicBaseInfo'
-import TopicInfo from './TopicInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
 
@@ -56,7 +53,7 @@ const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
 
-const replyModalSnapPoints = ['25%']
+const replyModalSnapPoints = ['30%']
 const moveModalSnapPoints = [280]
 const conversationSnapPoints = ['60%', '90%']
 
@@ -204,7 +201,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   )
 
   const topic = topicSwr.data || (brief as TopicDetail)
-  const isFallback = topic === brief
 
   const { touchViewed } = useViewedTopics()
   const [lastIndex, setLastIndex] = useCachedState(
@@ -500,8 +496,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: (props) => (
-        <Pressable
-          className="h-[44px] w-[44px] items-center justify-center -mr-4 active:opacity-60"
+        <Button
+          className="h-[44px] w-[44px] rounded-full -mr-4"
+          variant="icon"
+          radius={22}
           onPress={() => {
             // actionsheet
             showActionSheetWithOptions(
@@ -519,6 +517,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                 destructiveButtonIndex: 5,
                 tintColor: theme.colors.primary,
                 userInterfaceStyle: colorScheme,
+                containerStyle: styles.layer1,
+                titleTextStyle: styles.text,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
@@ -542,7 +542,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             )
           }}>
           <EllipsisHorizontalIcon size={24} color={theme.colors.text_title} />
-        </Pressable>
+        </Button>
       ),
     })
   }, [id, topic?.blocked])

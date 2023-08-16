@@ -1,10 +1,13 @@
 import { useContext } from 'react'
-import { Text } from 'react-native'
+import { Platform, Text } from 'react-native'
 import {
   CustomTextualRenderer,
   getNativePropsForTNode,
 } from 'react-native-render-html'
 import { SelectableText } from '@alentoma/react-native-selectable-text'
+import Color from 'color'
+
+import { useTheme } from '@/containers/ThemeService'
 
 import { RenderContext, SelectableTextAncestor } from './context'
 
@@ -14,6 +17,7 @@ const SelectableTextRender: CustomTextualRenderer =
     const { handleUrlPress, handleSelection, menuItems } =
       useContext(RenderContext)
     const hasSelectableTextAncestor = useContext(SelectableTextAncestor)
+    const { theme } = useTheme()
 
     if (hasSelectableTextAncestor) {
       return <Text {...renderProps} />
@@ -23,12 +27,17 @@ const SelectableTextRender: CustomTextualRenderer =
       <SelectableTextAncestor.Provider value={true}>
         <SelectableText
           selectable
+          selectionColor={Platform.select({
+            ios: theme.colors.primary,
+            android: Color(theme.colors.primary).alpha(0.5).toString(),
+          })}
           value={renderProps.children}
           style={[
             renderProps.style,
             {
-              paddingVertical: 8,
+              paddingVertical: 12,
               marginVertical: -8,
+              // backgroundColor: 'orange',
             },
           ]}
           menuItems={menuItems}

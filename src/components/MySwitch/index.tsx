@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
-import { Switch, SwitchProps } from 'react-native'
+import { Platform, Switch, SwitchProps } from 'react-native'
+import Color from 'color'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -8,9 +9,19 @@ const MySwitch = forwardRef<Switch, SwitchProps>((props, ref) => {
 
   return (
     <Switch
-      trackColor={{
-        true: theme.colors.primary,
-      }}
+      trackColor={Platform.select({
+        ios: {
+          true: theme.colors.switch_track || theme.colors.primary,
+        },
+        android: {
+          true:
+            theme.colors.switch_track ||
+            Color(theme.colors.primary).alpha(0.3).toString(),
+        },
+      })}
+      thumbColor={Platform.select({
+        android: props.value ? theme.colors.primary : theme.colors.white,
+      })}
       {...props}
       ref={ref}
     />

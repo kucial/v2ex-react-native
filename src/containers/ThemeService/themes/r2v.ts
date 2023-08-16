@@ -54,6 +54,8 @@ export const r2v: MyThemeDefinition = {
       input_bg: '#f5f5f5', // neutral 100
 
       shadow: '#111111',
+
+      switch_track: '#15803d',
     },
   },
   dark: {
@@ -109,8 +111,10 @@ export const r2v: MyThemeDefinition = {
 
       tag_bg: '#404040', // neutral[600]
       overlay_input_bg: '#171717',
-      input_bg: '#404040', // neutral[700]
+      input_bg: '#121212', // neutral[700]
       shadow: '#111111',
+
+      switch_track: '#34d399', // colors.emerald[400]
     },
   },
 }

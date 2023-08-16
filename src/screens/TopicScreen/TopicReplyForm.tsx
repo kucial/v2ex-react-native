@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Keyboard, Pressable, Text, View } from 'react-native'
+import { Keyboard, Pressable, Text, TextInput, View } from 'react-native'
+import { Platform } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/outline'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import classNames from 'classnames'
@@ -39,6 +40,8 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
   const { context } = props
   const { theme, styles } = useTheme()
   const [imagePickerOpened, showImagePicker] = useState(false)
+
+  const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
   // Use SWR as cache.
 
   const [cache, setCache] = useCachedState<ReplyCache>(
@@ -90,16 +93,17 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                     borderColor: theme.colors.danger,
                   },
               ]}>
-              <BottomSheetTextInput
+              <Input
                 autoFocus
                 style={[
                   {
                     width: '100%',
-                    height: '100%',
+                    height: 200,
                     borderRadius: 8,
                     paddingHorizontal: 8,
-                    paddingVertical: 1,
+                    paddingVertical: Platform.OS === 'android' ? 8 : 1,
                     color: theme.colors.text,
+                    verticalAlign: 'top',
                   },
                   isTouched &&
                     error && {

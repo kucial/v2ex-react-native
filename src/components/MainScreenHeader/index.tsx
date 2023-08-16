@@ -15,6 +15,8 @@ import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
+import Button from '../Button'
+
 export default function MainScreenHeader(
   props: BottomTabHeaderProps &
     NativeStackScreenProps<AppStackParamList> & {
@@ -91,13 +93,17 @@ export default function MainScreenHeader(
 
       {!padLayout.active && (
         <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">
-          <Pressable
-            className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          <Button
+            className="w-[44px] h-[44px] rounded-full"
+            variant="icon"
+            radius={22}
             onPress={handleNewTopicPress}>
             <DocumentPlusIcon size={24} color={iconColor} />
-          </Pressable>
-          <Pressable
-            className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          </Button>
+          <Button
+            className="w-[44px] h-[44px] rounded-full"
+            variant="icon"
+            radius={22}
             onPress={handleNotificationPress}>
             <View className="relative w-[24px] h-[24px]">
               <EnvelopeIcon size={24} color={iconColor} />
@@ -109,19 +115,23 @@ export default function MainScreenHeader(
                 </View>
               )}
             </View>
-          </Pressable>
+          </Button>
 
-          <Pressable
-            className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          <Button
+            className="w-[44px] h-[44px] rounded-full"
+            variant="icon"
+            radius={22}
             onPress={handleSearchButtonPress}>
             <MagnifyingGlassIcon size={24} color={iconColor} />
-          </Pressable>
+          </Button>
 
-          <Pressable
-            className="w-[44px] h-[44px] flex items-center justify-center rounded-full active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+          <Button
+            className="w-[44px] h-[44px] rounded-full"
+            variant="icon"
+            radius={22}
             onPress={handleViewedTopicButtonPress}>
             <ClockIcon size={24} color={iconColor} />
-          </Pressable>
+          </Button>
         </View>
       )}
     </View>

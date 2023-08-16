@@ -24,6 +24,7 @@ type SemanticType =
   | 'success'
   | 'input'
   | 'custom'
+  | 'icon'
 
 type ThemeColors = Theme['colors'] & {
   white: string
@@ -81,6 +82,9 @@ type ThemeColors = Theme['colors'] & {
   // others
   overlay_input_bg: string
   input_bg: string
+
+  // swtich
+  switch_track?: string
 }
 type ThemeStyles = {
   text: ThemeTextStyle
@@ -107,6 +111,7 @@ type ThemeStyles = {
   layer1: ThemeBackgroundStyle
   layer2: ThemeBackgroundStyle
   layer3: ThemeBackgroundStyle
+  underlay: ThemeBackgroundStyle
   overlay: ViewStyle
   highlight: ViewStyle
   border: ViewStyle
@@ -141,7 +146,7 @@ type ThemeService = {
   theme: MyTheme
   styles: ThemeStyles
   colorScheme: 'light' | 'dark'
-  getSemanticStyle(code: SemanticType): [ViewStyle, TextStyle]
+  getSemanticStyle(code: SemanticType): [ViewStyle?, TextStyle?, ViewStyle?]
 }
 
 declare module 'react-native' {

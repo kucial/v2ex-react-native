@@ -34,6 +34,7 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
+import Button from '@/components/Button'
 import GroupWapper from '@/components/GroupWrapper'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import SectionHeader from '@/components/SectionHeader'
@@ -111,6 +112,7 @@ export default function HomeTabs(props: ScreenProps) {
                 destructiveButtonIndex: 1,
                 tintColor: theme.colors.primary,
                 userInterfaceStyle: colorScheme,
+                containerStyle: styles.layer1,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
@@ -289,18 +291,19 @@ export default function HomeTabs(props: ScreenProps) {
       <SafeAreaView
         className="absolute w-full bottom-0 flex flex-row justify-center"
         pointerEvents="box-none">
-        <Pressable
+        <Button
+          variant="primary"
           className={classNames(
             'mb-3',
-            'w-[62px] h-[62px] items-center justify-center rounded-full shadow-sm active:opacity-60',
+            'w-[62px] h-[62px] rounded-full shadow-sm',
           )}
-          style={styles.btn_primary__bg}
+          radius={31}
           onPress={() => {
             sheetRef.current?.snapToIndex(1)
             sheetRef.current?.present()
           }}>
           <PlusIcon color={styles.btn_primary__text.color} size={24} />
-        </Pressable>
+        </Button>
       </SafeAreaView>
       <AddTabPanelSheet
         ref={sheetRef}

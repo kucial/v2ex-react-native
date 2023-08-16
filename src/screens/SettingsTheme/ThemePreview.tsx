@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,6 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import Button from '@/components/Button'
+import { StyledPressable } from '@/components/Button'
 import GroupWapper from '@/components/GroupWrapper'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -86,11 +86,6 @@ export default function ThemePreview(props: {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}>
-      <StatusBar
-        barStyle={
-          props.colorScheme === 'light' ? 'dark-content' : 'light-content'
-        }
-      />
       <ScrollView style={{ backgroundColor: theme.colors.background }}>
         <MaxWidthWrapper>
           <View className="flex flex-row px-3 py-3 items-center">
@@ -156,6 +151,8 @@ export default function ThemePreview(props: {
           <GroupWapper className="mx-2" innerStyle={styles.overlay}>
             <View className="px-2 py-4">
               <Button
+                size="md"
+                variant="primary"
                 label="Open Sheet"
                 onPress={(e) => {
                   sheetRef.current?.present()
@@ -183,7 +180,7 @@ export default function ThemePreview(props: {
                   autoCorrect={false}
                   autoCapitalize="none"
                 />
-                <Pressable
+                <StyledPressable
                   className={classNames(
                     'h-[44px] rounded-md flex items-center justify-center my-4',
                     'active:opacity-60',
@@ -195,7 +192,7 @@ export default function ThemePreview(props: {
                   <Text className="text-base" style={styles.btn_primary__text}>
                     确认
                   </Text>
-                </Pressable>
+                </StyledPressable>
               </View>
             </MyBottomSheetModal>
           </GroupWapper>
@@ -209,6 +206,7 @@ export default function ThemePreview(props: {
                     message: '成功消息提示',
                   })
                 }}
+                size="sm"
                 variant="success"
                 label="success"></Button>
             </View>
@@ -220,6 +218,7 @@ export default function ThemePreview(props: {
                     message: '注意消息提示',
                   })
                 }}
+                size="sm"
                 variant="warning"
                 label="warning"></Button>
             </View>
@@ -231,6 +230,7 @@ export default function ThemePreview(props: {
                     message: '错误消息提示',
                   })
                 }}
+                size="sm"
                 variant="danger"
                 label="error"></Button>
             </View>
@@ -242,6 +242,7 @@ export default function ThemePreview(props: {
                     message: '信息消息提示',
                   })
                 }}
+                size="sm"
                 variant="info"
                 label="info"></Button>
             </View>
@@ -254,6 +255,7 @@ export default function ThemePreview(props: {
                     message: '处理中消息提示',
                   })
                 }}
+                size="sm"
                 variant="primary"
                 label="loading"></Button>
             </View>

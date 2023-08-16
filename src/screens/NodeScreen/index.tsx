@@ -1,11 +1,11 @@
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import { Text, useWindowDimensions, View } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import classNames from 'classnames'
 import { Image } from 'expo-image'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
 
+import Button from '@/components/Button'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NodeTopicList from '@/components/NodeTopicList'
@@ -165,29 +165,21 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                 )}
               </View>
               <View className="flex flex-row mt-3 mb-2 justify-end mr-1">
-                <Pressable
-                  className={classNames(
-                    'h-[38px] rounded-lg px-3 items-center justify-center active:opacity-60',
-                    {
-                      'opacity-60': collecting,
-                    },
-                  )}
-                  style={[styles.border_light]}
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="mr-2"
                   disabled={collecting || node.collected === undefined}
-                  onPress={handleCollectToggle}>
-                  <Text style={styles.text}>
-                    {node.collected ? '取消收藏' : '加入收藏'}
-                  </Text>
-                </Pressable>
-                <Pressable
-                  className={classNames(
-                    'ml-2 h-[38px] rounded-lg px-3 items-center justify-center active:opacity-60',
-                  )}
+                  onPress={handleCollectToggle}
+                  label={node.collected ? '取消收藏' : '加入收藏'}
+                />
+                <Button
+                  variant="default"
+                  size="sm"
                   disabled={!nodeSwr.data}
-                  style={[styles.border_light]}
-                  onPress={handleCreateNewTopic}>
-                  <Text style={styles.text}>创建新主题</Text>
-                </Pressable>
+                  onPress={handleCreateNewTopic}
+                  label="创建新主题"
+                />
               </View>
             </View>
           </View>

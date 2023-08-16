@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { ImageBackground, Pressable, Text, View } from 'react-native'
+import { ImageBackground, Platform, Pressable, Text, View } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -9,6 +9,7 @@ import { Image } from 'expo-image'
 import { SWRResponse } from 'swr'
 
 import BackButton from '@/components/BackButton'
+import Button from '@/components/Button'
 import { Box } from '@/components/Skeleton/Elements'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
@@ -46,6 +47,7 @@ export default function MemberScreenHeader({
         destructiveButtonIndex: 2,
         tintColor: theme.colors.primary,
         userInterfaceStyle: colorScheme,
+        containerStyle: styles.layer1,
       },
       (buttonIndex) => {
         let promise: Promise<StatusResponse<Pick<MemberDetail, 'meta'>>>
@@ -104,7 +106,7 @@ export default function MemberScreenHeader({
         style={{
           position: 'absolute',
           left: 6,
-          top: Constants.statusBarHeight,
+          top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
           zIndex: 10,
         }}>
         <BackButton
@@ -118,21 +120,26 @@ export default function MemberScreenHeader({
         style={{
           position: 'absolute',
           right: 6,
-          top: Constants.statusBarHeight,
+          top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
           zIndex: 10,
         }}>
-        <Pressable
-          className="w-[44px] h-[44px] rounded-full items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
+        <Button
+          className="w-[44px] h-[44px] rounded-full"
+          variant="icon"
+          radius={22}
           onPress={openActionSheet}>
           <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
-        </Pressable>
+        </Button>
       </View>
       <View className="relative">
         <View
           className="flex flex-row items-end"
           style={[
             {
-              height: Constants.statusBarHeight + HEADER_CANVAS_HEIGHT,
+              height:
+                Platform.OS === 'android'
+                  ? HEADER_CANVAS_HEIGHT + 6
+                  : HEADER_CANVAS_HEIGHT + Constants.statusBarHeight,
             },
             styles.layer1,
           ]}>

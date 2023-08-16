@@ -117,6 +117,8 @@ export default function SettingsForm(props: {
                 />
                 <View className="mt-4 mb-2">
                   <Button
+                    variant="primary"
+                    size="md"
                     label="提交"
                     loading={formikProps.isSubmitting}
                     onPress={() => {

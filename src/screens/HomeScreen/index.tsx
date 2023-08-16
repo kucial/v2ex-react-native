@@ -108,6 +108,7 @@ export default function HomeScreen(props: HomeScreenProps) {
           <TabBar
             {...props}
             scrollEnabled
+            pressColor={theme.colors.bg_layer3}
             indicatorStyle={{
               backgroundColor: theme.colors.primary,
             }}

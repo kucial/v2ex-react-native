@@ -119,6 +119,8 @@ export default function SocialForm(props: {
                   ))}
                   <Button
                     className="my-2"
+                    variant="primary"
+                    size="md"
                     label="提交"
                     loading={formikProps.isSubmitting}
                     onPress={() => {

@@ -12,6 +12,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 
+import Button from '@/components/Button'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
@@ -106,8 +107,10 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: (props) => (
-        <Pressable
-          className="h-[44px] w-[44px] items-center justify-center active:opacity-60"
+        <Button
+          className="h-[44px] w-[44px] rounded-full"
+          variant="icon"
+          radius={22}
           style={width < 750 ? { marginRight: -16 } : null}
           onPress={() => {
             // actionsheet
@@ -118,6 +121,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
                 destructiveButtonIndex: 1,
                 tintColor: theme.colors.primary,
                 userInterfaceStyle: colorScheme,
+                containerStyle: styles.layer1,
               },
               (buttonIndex) => {
                 if (buttonIndex === 1) {
@@ -127,7 +131,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
             )
           }}>
           <EllipsisHorizontalIcon size={24} color={props.tintColor} />
-        </Pressable>
+        </Button>
       ),
       headerSearchBarOptions: {
         placeholder: '筛选',

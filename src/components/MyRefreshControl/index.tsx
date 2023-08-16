@@ -11,6 +11,8 @@ const MyRefreshControl = forwardRef<RefreshControl, RefreshControlProps>(
     return (
       <RefreshControl
         key={colorScheme + theme.colors.primary}
+        progressBackgroundColor={theme.colors.bg_overlay}
+        colors={[theme.colors.primary]}
         tintColor={Color(theme.colors.primary)
           .saturate(0.6)
           .lighten(0.2)

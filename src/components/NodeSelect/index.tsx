@@ -1,5 +1,13 @@
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react'
-import { Pressable, Text, TextStyle, View, ViewStyle } from 'react-native'
+import {
+  Pressable,
+  Text,
+  TextInput,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native'
+import { Platform } from 'react-native'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
@@ -32,6 +40,8 @@ function NodeSelect(props: NodeSelectProps) {
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
   const selectRef = useRef<BottomSheetModal>()
+
+  const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
 
   const filtered = useMemo(() => {
     if (!nodesSwr.data) {
@@ -111,7 +121,7 @@ function NodeSelect(props: NodeSelectProps) {
         {open && (
           <View className="flex-1 w-full">
             <View className="p-3">
-              <BottomSheetTextInput
+              <Input
                 autoFocus={!props.value}
                 style={{
                   height: 36,

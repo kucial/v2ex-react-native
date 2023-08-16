@@ -33,7 +33,9 @@ class App extends React.Component {
   componentDidMount() {
     // FOR DEBUG
     window._editor = this;
-    window.addEventListener('message', this.handleMessage)
+
+    // receive from message
+    window.addEventListener('editor-message', this.handleMessage)
     // window.addEventListener('blur', this.watchWindowBlur)
     this.postMessage({
       type: 'event',
@@ -113,7 +115,7 @@ class App extends React.Component {
   }
 
   handleMessage = (e) => {
-    const data = parseData(e.data);
+    const data = e.detail;
     if (!data) {
       return ;
     }
@@ -311,7 +313,6 @@ class App extends React.Component {
     }
     if (html) {
       const value = this.editor.html.fragmentFromHtml(html);
-      console.log(value);
       this.setState({
         value,
         placeholder,

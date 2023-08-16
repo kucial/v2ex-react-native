@@ -75,6 +75,8 @@ export default function TopicMovePanel(props: {
             />
             <View className="mt-7 mb-2">
               <Button
+                variant="primary"
+                size="md"
                 label="确认"
                 loading={formikProps.isSubmitting}
                 onPress={() => {

@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useMemo, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Platform, Pressable, Text, TextInput, View } from 'react-native'
 import {
   BottomSheetFlatList,
   BottomSheetModal,
@@ -43,6 +43,8 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
       ),
     )
   }, [nodesSwr.data, filter])
+
+  const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
 
   const renderItem = useCallback(({ item, index }) => {
     return (
@@ -122,7 +124,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
       }}>
       <View className="flex-1 h-full w-full">
         <View className="p-3">
-          <BottomSheetTextInput
+          <Input
             onFocus={() => {
               setIndex(0)
             }}

@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useMemo, useRef, useState } from 'react'
+import { ReactNode, useMemo, useRef, useState } from 'react'
 import { forwardRef } from 'react'
 import { useImperativeHandle } from 'react'
 import WebView from 'react-native-webview'
@@ -16,7 +16,7 @@ const uniqId = () => {
   return `${Date.now()}-${count++}`
 }
 
-const debug = false
+const DEBUG = false
 
 type EditorProviderProps = {
   children: ReactNode
@@ -44,13 +44,14 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
             return new Promise((resolve, reject) => {
               const requestId = `${method}-${uniqId()}`
               requests.current[requestId] = { resolve, reject }
-              webviewRef.current.postMessage(
-                JSON.stringify({
+              const actionScript = `window.dispatchEvent(new CustomEvent('editor-message', { detail: ${JSON.stringify(
+                {
                   requestId,
                   method,
                   args,
-                }),
-              )
+                },
+              )} }));`
+              webviewRef.current.injectJavaScript(actionScript)
             })
           }
         })
@@ -107,8 +108,8 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
         webview: webviewRef,
         handleMessage: (e) => {
           const data = JSON.parse(e.nativeEvent.data)
-          if (debug) {
-            console.log('editor webview', data)
+          if (DEBUG) {
+            console.log('editor webview provider handleMessage', data)
           }
           if (data.requestId) {
             const { requestId, result } = data
