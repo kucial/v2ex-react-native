@@ -44,7 +44,7 @@ const maybeOutdated = (data: any, ttl: number) => {
 }
 
 export const shouldFetch = (swr: SWRResponse, ttl?: number) => {
-  console.log('.....shouldFetch.... check')
+  // console.log('.....shouldFetch.... check')
   if (swr.data && ttl && maybeOutdated(swr.data, ttl)) {
     console.log('fetch as data maybe outdated')
     return true

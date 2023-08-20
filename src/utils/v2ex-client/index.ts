@@ -59,6 +59,7 @@ type EVENT =
   | '2fa_enabled'
   | 'balance_brief'
   | 'should_prepare_fetch'
+  | 'warn_vpn_status'
 type UnreadCountValue = number
 
 type EventValue = UnreadCountValue | TFA_Error | BalanceBrief
@@ -69,6 +70,7 @@ const listeners: Record<EVENT, Set<Callback>> = {
   '2fa_enabled': new Set(),
   balance_brief: new Set(),
   should_prepare_fetch: new Set(),
+  warn_vpn_status: new Set(),
 }
 export const subscribe = (event: EVENT, callback: Callback) => {
   listeners[event].add(callback)
@@ -181,20 +183,22 @@ instance.interceptors.response.use(
       }
     }
 
-    if (res.status === 403) {
-      console.log('403 url: ', res.request?.responseURL)
-      if (n_403 > 3) {
+    return res
+  },
+  function (error) {
+    console.log(error)
+    if (error.response?.status === 403) {
+      console.log('403 url: ', error.response?.config?.url, 'count', n_403)
+      n_403 += 1
+      if (n_403 === 3) {
         dispatch('should_prepare_fetch')
-      } else {
-        n_403 += 1
+      }
+      if (n_403 === 6) {
+        dispatch('warn_vpn_status')
       }
     } else {
       n_403 = 0
     }
-
-    return res
-  },
-  function (error) {
     Sentry.Native.captureEvent(error)
     return Promise.reject(error)
   },

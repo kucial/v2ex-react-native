@@ -1,4 +1,3 @@
-import { StatusBar } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -36,10 +35,10 @@ function App() {
         <AppSettingsService>
           <ThemeProvider>
             <ErrorBoundary>
-              <FetchPrepare>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <AppSWRConfig>
-                    <AlertService>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <AlertService>
+                  <FetchPrepare>
+                    <AppSWRConfig>
                       <ActionSheetProvider>
                         <NavigationContainer>
                           <ImgurService>
@@ -58,10 +57,10 @@ function App() {
                           </ImgurService>
                         </NavigationContainer>
                       </ActionSheetProvider>
-                    </AlertService>
-                  </AppSWRConfig>
-                </GestureHandlerRootView>
-              </FetchPrepare>
+                    </AppSWRConfig>
+                  </FetchPrepare>
+                </AlertService>
+              </GestureHandlerRootView>
             </ErrorBoundary>
           </ThemeProvider>
         </AppSettingsService>

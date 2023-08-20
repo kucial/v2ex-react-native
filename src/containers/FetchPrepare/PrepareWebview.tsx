@@ -22,17 +22,17 @@ export default function PrepareWebview(props: {
     <View style={{ height: 0 }}>
       <WebView
         source={{
-          uri: BASE_URL + '/about',
+          uri: BASE_URL + '/',
         }}
         userAgent={USER_AGENT}
         originWhitelist={['*']}
         sharedCookiesEnabled={true}
         onLoad={(e) => {
           const duration = Date.now() - timerRef.current
-          console.log(e.nativeEvent.url, cfState.current)
+          console.log('PrepareWebview', e.nativeEvent.url, cfState.current)
+          // TODO: check content instead of checking url
           if (/__cf_chl_tk/.test(e.nativeEvent.url)) {
             cfState.current = 'checked'
-
             return
           }
           if (/__cf_chl_rt_tk/.test(e.nativeEvent.url)) {
