@@ -1,9 +1,12 @@
 import { useCallback, useMemo } from 'react'
 import { Text, View } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useTheme } from '@/containers/ThemeService'
@@ -12,6 +15,8 @@ import { getBalanceDetail } from '@/utils/v2ex-client'
 
 export default function Balance(props: { username: string }) {
   const { theme, styles } = useTheme()
+  const navigation =
+    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
   const getKey = useCallback(
     (index: number): [string, number] => {
       return [`/member/${props.username}/balance`, index + 1]
@@ -117,7 +122,20 @@ export default function Balance(props: { username: string }) {
                   paddingHorizontal: 4,
                   paddingBottom: 8,
                 }}>
-                <Text style={styles.text_desc}>{item.description}</Text>
+                <HtmlRender
+                  source={{
+                    html: item.description,
+                    baseUrl: 'https://v2ex.com',
+                  }}
+                  navigation={navigation}
+                  tagsStyles={{
+                    body: styles.text_desc,
+                    a: {
+                      color: theme.colors.text_desc,
+                      textDecorationLine: 'none',
+                    },
+                  }}
+                />
               </View>
             </View>
           </MaxWidthWrapper>

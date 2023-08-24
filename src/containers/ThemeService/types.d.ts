@@ -88,7 +88,7 @@ type ThemeColors = Theme['colors'] & {
 }
 type ThemeStyles = {
   text: ThemeTextStyle
-  text_desc: TextStyle
+  text_desc: ThemeTextStyle
   text_meta: TextStyle
   text_primary: TextStyle
   text_danger: TextStyle

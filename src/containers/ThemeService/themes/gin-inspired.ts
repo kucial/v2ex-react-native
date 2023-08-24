@@ -117,10 +117,10 @@ const createTheme = (info: AccentInfo): MyThemeDefinition => {
       colors: {
         primary: accent_dark,
         background: Color('#101010')
-          .mix(Color(accent_dark), 0.02 * dark_mix_alpha)
+          .mix(Color(accent_dark), 0.01 * dark_mix_alpha)
           .toString(),
         card: Color('#171717')
-          .mix(Color(accent_dark), 0.02 * dark_mix_alpha)
+          .mix(Color(accent_dark), 0.01 * dark_mix_alpha)
           .toString(), // alias bg_layer1
         text: '#d4d4d4', // neutral[200]
         border: Color('#525252')

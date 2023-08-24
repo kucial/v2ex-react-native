@@ -1891,7 +1891,7 @@ export async function getBalanceDetail(params: { p?: number }) {
       const time = $(columns[0]).find('.gray').text().trim()
       const amount = $(columns[1]).text().trim()
       const balance = $(columns[2]).text().trim()
-      const description = $(columns[3]).text().trim()
+      const description = $(columns[3]).html().trim()
       return {
         type: typeText.replace(time, '').trim(),
         time,
