@@ -53,7 +53,7 @@ const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
 
-const replyModalSnapPoints = ['30%']
+const replyModalSnapPoints = [220]
 const moveModalSnapPoints = [280]
 const conversationSnapPoints = ['60%', '90%']
 
