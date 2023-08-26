@@ -1,13 +1,7 @@
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react'
-import {
-  Pressable,
-  Text,
-  TextInput,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native'
+import { Pressable, Text, TextInput, View } from 'react-native'
 import { Platform } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
@@ -20,17 +14,20 @@ import { getNodes } from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
 
 import Button from '../Button'
+import MyClearButton from '../MyClearButton'
 
-const pickerSnapPoints = ['50%']
+const pickerSnapPoints = Platform.select({
+  ios: ['50%'],
+  android: ['50%', '80%'],
+})
 
 type NodeSelectProps = {
-  filterPlaceholder: string
+  filterPlaceholder?: string
   placeholder: string
-  placeholderStyle: TextStyle
-  style: ViewStyle | ViewStyle[]
-  renderLabel(item: NodeDetail): ReactElement
-  value?: NodeDetail
-  onChange(item: NodeDetail): void
+  renderLabel?(item: NodeDetail): ReactElement
+  canClear?: boolean
+  value?: NodeDetail | string
+  onChange(item?: NodeDetail): void
   onBlur?(): void
 }
 
@@ -57,10 +54,27 @@ function NodeSelect(props: NodeSelectProps) {
     )
   }, [nodesSwr.data, filter])
 
+  const value = useMemo(() => {
+    if (!props.value) {
+      return null
+    }
+    if (typeof props.value === 'object') {
+      return props.value
+    }
+    if (!nodesSwr.data) {
+      return { name: props.value } as NodeDetail
+    }
+    return nodesSwr.data.data.find((item) => item.name === props.value)
+  }, [props.value, nodesSwr.data])
+
   const renderLabel = useCallback(
     (n: NodeDetail) => {
       if (props.renderLabel) {
-        return props.renderLabel(n)
+        const label = props.renderLabel(n)
+        if (typeof label === 'string') {
+          return <Text style={styles.text}>{label}</Text>
+        }
+        return label
       }
       return (
         <Text style={styles.text}>
@@ -90,26 +104,36 @@ function NodeSelect(props: NodeSelectProps) {
     },
     [renderLabel],
   )
-
   return (
     <>
-      <Button
-        size="md"
-        variant="input"
-        onPress={() => {
-          setOpen(true)
-          selectRef.current?.present()
-        }}>
-        <View className="w-full">
-          {props.value ? (
-            <Text className="text-[16px]">{renderLabel(props.value)}</Text>
-          ) : (
-            <Text className="text-[16px]" style={styles.text_placeholder}>
-              {props.placeholder}
-            </Text>
-          )}
-        </View>
-      </Button>
+      <View className="relative">
+        <Button
+          size="md"
+          variant="input"
+          onPress={() => {
+            setOpen(true)
+            selectRef.current?.present()
+          }}>
+          <View className="w-full">
+            {value ? (
+              <Text className="text-[16px]">{renderLabel(value)}</Text>
+            ) : (
+              <Text className="text-[16px]" style={styles.text_placeholder}>
+                {props.placeholder}
+              </Text>
+            )}
+          </View>
+        </Button>
+        {props.canClear && props.value && (
+          <View className="absolute right-0 h-full flex flex-row items-center justify-center">
+            <MyClearButton
+              onPress={() => {
+                props.onChange(undefined)
+              }}
+            />
+          </View>
+        )}
+      </View>
       <MyBottomSheetModal
         ref={selectRef}
         index={0}
@@ -146,6 +170,7 @@ function NodeSelect(props: NodeSelectProps) {
               estimatedItemSize={50}
               renderItem={renderItem}
               keyExtractor={(n) => n.name}
+              renderScrollComponent={ScrollView}
             />
           </View>
         )}

@@ -1,0 +1,66 @@
+diff --git a/node_modules/react-native-date-picker/index.d.ts b/node_modules/react-native-date-picker/index.d.ts
+index ba1de42..174f3ad 100644
+--- a/node_modules/react-native-date-picker/index.d.ts
++++ b/node_modules/react-native-date-picker/index.d.ts
+@@ -1,5 +1,5 @@
+ import { Component } from 'react'
+-import { ViewProps } from 'react-native'
++import { ColorValue, ViewProps } from 'react-native'
+
+ export interface DatePickerProps extends ViewProps {
+   /**
+@@ -103,6 +103,9 @@ export interface DatePickerProps extends ViewProps {
+
+   /** Modal color theme on iOS. Defaults to 'auto' */
+   theme?: 'light' | 'dark' | 'auto'
++
++  /** action tint color on iOS */
++  tintColor?: ColorValue
+ }
+
+ export default class DatePicker extends Component<DatePickerProps> {}
+diff --git a/node_modules/react-native-date-picker/ios/RNDatePicker/RNDatePickerManager.m b/node_modules/react-native-date-picker/ios/RNDatePicker/RNDatePickerManager.m
+index 74f6abf..3cf7fc7 100644
+--- a/node_modules/react-native-date-picker/ios/RNDatePicker/RNDatePickerManager.m
++++ b/node_modules/react-native-date-picker/ios/RNDatePicker/RNDatePickerManager.m
+@@ -72,6 +72,9 @@ - (UIView *)view
+         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+         UIView * alertView = alertController.view;
+
++        UIColor *tintColor = [RCTConvert UIColor:[props objectForKey:@"tintColor"]];
++        alertView.tintColor = tintColor;
++
+         CGRect pickerBounds = picker.bounds;
+
+         // height
+diff --git a/node_modules/react-native-date-picker/src/DatePickerIOS.js b/node_modules/react-native-date-picker/src/DatePickerIOS.js
+index d251870..e6377c8 100644
+--- a/node_modules/react-native-date-picker/src/DatePickerIOS.js
++++ b/node_modules/react-native-date-picker/src/DatePickerIOS.js
+@@ -1,5 +1,5 @@
+ import React from 'react'
+-import { StyleSheet, requireNativeComponent, NativeModules, Platform } from 'react-native'
++import { StyleSheet, requireNativeComponent, NativeModules, Platform, processColor } from 'react-native'
+ import { shouldCloseModal, shouldOpenModal } from './modal'
+
+ const RCTDatePickerIOS =
+@@ -34,6 +34,7 @@ export default class DatePickerIOS extends React.Component {
+       maximumDate: props.maximumDate ? props.maximumDate.getTime() : undefined,
+       minimumDate: props.minimumDate ? props.minimumDate.getTime() : undefined,
+       theme: props.theme ? props.theme : 'auto',
++      tintColor: props.tintColor ? processColor(props.tintColor) : undefined,
+     }
+   }
+
+diff --git a/node_modules/react-native-date-picker/src/propTypes.js b/node_modules/react-native-date-picker/src/propTypes.js
+index 43af23e..b2223ef 100644
+--- a/node_modules/react-native-date-picker/src/propTypes.js
++++ b/node_modules/react-native-date-picker/src/propTypes.js
+@@ -10,6 +10,7 @@ const androidPropTypes = {
+
+ const iOSPropTypes = {
+   theme: PropTypes.oneOf(['light', 'dark', 'auto']),
++  tintColor: PropTypes.string,
+ }
+
+ const modalPropTypes = {

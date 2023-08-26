@@ -24,17 +24,17 @@ function SelectField({
 
   const labels = useMemo(() => options.map((o) => o.label), [options])
 
-  console.log(options.findIndex((item) => item.value === field.value))
-
   return (
     <View className="flex flex-row w-full items-center py-3" style={style}>
-      <View className="flex-1">
-        <Text
-          className={classNames('text-xs pl-2 pb-[2px]')}
-          style={styles.text}>
-          {label}
-        </Text>
-      </View>
+      {label && (
+        <View className="flex-1">
+          <Text
+            className={classNames('text-xs pl-2 pb-[2px]')}
+            style={styles.text}>
+            {label}
+          </Text>
+        </View>
+      )}
       <View className="flex-1">
         <SegmentedControl
           values={labels}

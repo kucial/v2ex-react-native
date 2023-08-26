@@ -8,6 +8,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
+import { ScrollView } from 'react-native-gesture-handler'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
@@ -125,6 +126,7 @@ function NodeSelect(props: NodeSelectProps) {
               estimatedItemSize={50}
               renderItem={renderItem}
               keyExtractor={(n) => n.id}
+              renderScrollComponent={ScrollView}
             />
           </View>
         )}

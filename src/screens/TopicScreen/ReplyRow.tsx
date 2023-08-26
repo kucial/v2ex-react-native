@@ -237,7 +237,7 @@ function ReplyRow(props: ReplyRowProps) {
               </View>
             </View>
             <View
-              className="pr-2 pb-3 min-h-[28px]"
+              className="pr-2 pb-1 min-h-[28px]"
               style={{
                 marginBottom: showMarkdown ? -14 : 0,
               }}>

@@ -20,6 +20,8 @@ type AppSettings = {
   maxContainerWidth: number
   googleSigninEnabled?: boolean
   payLayoutEnabled?: boolean
+
+  searchProvider: 'google' | 'sov2ex'
 }
 
 type AppSettingsService = {

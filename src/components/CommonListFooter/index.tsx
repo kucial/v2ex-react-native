@@ -15,9 +15,11 @@ import Loader from '../Loader'
 type CommonListFooterProps = {
   data: SWRInfiniteResponse
   emptyMessage?: string
+  isEmpty?: (data: any) => boolean
+  hasReachEnd?: boolean
 }
 export default function CommonListFooter(props: CommonListFooterProps) {
-  const { data: listSwr } = props
+  const { data: listSwr, isEmpty = isEmptyList } = props
   const { styles } = useTheme()
   const insets = useSafeAreaInsets()
   return (
@@ -49,8 +51,8 @@ export default function CommonListFooter(props: CommonListFooterProps) {
           )}
         </View>
       )}
-      {hasReachEnd(listSwr) &&
-        (isEmptyList(listSwr) ? (
+      {(props.hasReachEnd || hasReachEnd(listSwr)) &&
+        (isEmpty(listSwr) ? (
           <View className="w-full flex flex-row justify-center py-4">
             <Text style={styles.text_meta}>
               {props.emptyMessage || '还没有内容哦'}

@@ -14,18 +14,22 @@ import { styled } from 'nativewind'
 
 import { useTheme } from '@/containers/ThemeService'
 
+import MyClearButton from '../MyClearButton'
+
 function TextField({
   label,
   style,
   inputStyle,
   name,
   bottomSheet,
+  canClear,
   ...props
 }: {
   label: ReactNode | false
   inputStyle?: ViewStyle
   name: string
   bottomSheet?: boolean
+  canClear?: boolean
 } & TextInputProps) {
   const { styles, theme } = useTheme()
   const [field, meta, helpers] = useField(name)
@@ -54,18 +58,42 @@ function TextField({
           )}
         </View>
       )}
-      <Component
-        className="min-h-[44px] px-2 py-3 rounded-md"
-        style={[styles.text, styles.input__bg, inputStyle]}
-        selectionColor={theme.colors.primary}
-        placeholderTextColor={theme.colors.text_placeholder}
-        {...props}
-        value={field.value}
-        onChangeText={helpers.setValue}
-        onBlur={() => {
-          helpers.setTouched(true)
-        }}
-      />
+      <View className="relative">
+        <Component
+          className={classNames(
+            'px-2 rounded-md text-base',
+            Platform.select({
+              android: 'min-h-[44px] align-top py-2',
+              ios: 'min-h-[44px] py-2',
+            }),
+          )}
+          style={[
+            styles.text,
+            styles.input__bg,
+            inputStyle,
+            !props.multiline && {
+              lineHeight: 20,
+            },
+          ]}
+          selectionColor={theme.colors.primary}
+          placeholderTextColor={theme.colors.text_placeholder}
+          {...props}
+          value={field.value}
+          onChangeText={helpers.setValue}
+          onBlur={() => {
+            helpers.setTouched(true)
+          }}
+        />
+        {canClear && field.value && (
+          <View className="absolute right-0 h-full flex flex-row items-center justify-center">
+            <MyClearButton
+              onPress={() => {
+                helpers.setValue(undefined)
+              }}
+            />
+          </View>
+        )}
+      </View>
     </View>
   )
 }

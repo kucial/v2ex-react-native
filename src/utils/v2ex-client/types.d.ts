@@ -173,6 +173,28 @@ export type BalanceBrief = {
   bronze: number
 }
 
+export type SearchHit = {
+  _score: number
+  _index: string
+  _type: 'topic'
+  _id: string
+  sort?: string
+  highlight: {
+    content: string[]
+    'reply_list.content': string[]
+    title: string[]
+  }
+  _source: {
+    node: number
+    replies: number
+    created: string
+    member: string
+    id: number
+    title: string
+    content: string
+  }
+}
+
 // API RESPONSE
 type EntityResponse<T, M = null> = {
   data: T

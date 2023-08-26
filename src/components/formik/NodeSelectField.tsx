@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { Text, View } from 'react-native'
 import { ViewStyle } from 'react-native'
 import classNames from 'classnames'
@@ -7,17 +7,22 @@ import { styled } from 'nativewind'
 
 import NodeSelect from '@/components/NodeSelect'
 import { useTheme } from '@/containers/ThemeService'
+import { NodeDetail } from '@/utils/v2ex-client/types'
 
 function NodeSelectField({
   name,
   label,
   placeholder,
   style,
+  canClear,
+  renderLabel,
 }: {
   name: string
   label: ReactNode | false
   placeholder: string
   style?: ViewStyle
+  canClear?: boolean
+  renderLabel?: (node: NodeDetail) => ReactElement
 }) {
   const { styles } = useTheme()
   const [field, meta, helpers] = useField(name)
@@ -44,12 +49,14 @@ function NodeSelectField({
         </View>
       )}
       <NodeSelect
+        canClear={canClear}
         value={field.value}
         onChange={helpers.setValue}
         onBlur={() => {
           helpers.setTouched(true)
         }}
         placeholder={placeholder}
+        renderLabel={renderLabel}
       />
     </View>
   )

@@ -1,26 +1,29 @@
 import { ReactNode } from 'react'
-import { Keyboard, Pressable, ViewStyle } from 'react-native'
+import { Keyboard, TouchableWithoutFeedback, ViewStyle } from 'react-native'
+import { styled } from 'nativewind'
 
 import { useEditor } from '../SlateEditor/context'
 
 type Props = {
   children: ReactNode
-  style: ViewStyle
+  style?: ViewStyle
 }
-export default function KeyboardDismiss(props: Props) {
+function KeyboardDismiss(props: Props) {
   const editor = useEditor()
   return (
-    <Pressable
+    <TouchableWithoutFeedback
       sentry-label="KeyboardDismiss"
       style={props.style}
       onPress={() => {
-        if (editor && editor.hasFocus()) {
+        if (editor && editor.hasFocus?.()) {
           editor.blur()
         } else {
           Keyboard.dismiss()
         }
       }}>
       {props.children}
-    </Pressable>
+    </TouchableWithoutFeedback>
   )
 }
+
+export default styled(KeyboardDismiss)

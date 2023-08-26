@@ -29,47 +29,49 @@ function TopicInfo(props: {
   return (
     <>
       <View className="flex flex-row mb-2">
-        <View className="flex flex-row flex-1">
-          <Pressable
-            hitSlop={4}
-            onPress={() => {
-              navigation.push('member', {
-                username: member.username,
-              })
-            }}>
-            {member.avatar_large ? (
-              <Image
-                source={{
-                  uri: member.avatar_large,
-                }}
-                priority="low"
-                className="w-[32px] h-[32px] rounded"
-              />
-            ) : (
-              <Box className="w-[32px] h-[32px] rounded" />
-            )}
-          </Pressable>
-          <View className="pl-2 flex flex-row items-center">
-            <View className="py-[2px]">
-              <Pressable
-                hitSlop={4}
-                onPress={() => {
-                  navigation.push('member', {
-                    username: member.username,
-                  })
-                }}>
-                <Text className="font-medium" style={styles.text_meta}>
-                  {member.username}
+        {member && (
+          <View className="flex flex-row flex-1">
+            <Pressable
+              hitSlop={4}
+              onPress={() => {
+                navigation.push('member', {
+                  username: member.username,
+                })
+              }}>
+              {member.avatar_large ? (
+                <Image
+                  source={{
+                    uri: member.avatar_large,
+                  }}
+                  priority="low"
+                  className="w-[32px] h-[32px] rounded"
+                />
+              ) : (
+                <Box className="w-[32px] h-[32px] rounded" />
+              )}
+            </Pressable>
+            <View className="pl-2 flex flex-row items-center">
+              <View className="py-[2px]">
+                <Pressable
+                  hitSlop={4}
+                  onPress={() => {
+                    navigation.push('member', {
+                      username: member.username,
+                    })
+                  }}>
+                  <Text className="font-medium" style={styles.text_meta}>
+                    {member.username}
+                  </Text>
+                </Pressable>
+              </View>
+              <View className="ml-2">
+                <Text className="text-xs" style={styles.text_meta}>
+                  {topic.created_time}
                 </Text>
-              </Pressable>
-            </View>
-            <View className="ml-2">
-              <Text className="text-xs" style={styles.text_meta}>
-                {topic.created_time}
-              </Text>
+              </View>
             </View>
           </View>
-        </View>
+        )}
         <View>
           {node && (
             <Pressable

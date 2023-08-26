@@ -33,6 +33,14 @@ const refreshDurationOptions = [
   { value: 30, label: '30 分钟' },
 ]
 
+const searchProviderOptions: Array<{
+  value: 'google' | 'sov2ex'
+  label: string
+}> = [
+  { value: 'google', label: 'Google' },
+  { value: 'sov2ex', label: 'sov2ex' },
+]
+
 type ScreenProps = NativeStackScreenProps<
   AppStackParamList,
   'preference-settings'
@@ -324,6 +332,46 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               </View>
             </Pressable>
           </GroupWapper>
+          <SectionHeader title="搜索" />
+
+          <GroupWapper>
+            <Pressable
+              className={classNames('pl-4', 'active:opacity-50')}
+              style={styles.layer1}
+              onPress={() => {
+                const index = searchProviderOptions.findIndex(
+                  (o) => o.value === state.searchProvider,
+                )
+                const nextIndex = (index + 1) % searchProviderOptions.length
+                const next = searchProviderOptions[nextIndex]
+
+                setState((prev) => ({
+                  ...prev,
+                  searchProvider: next.value,
+                }))
+              }}>
+              <View
+                className={classNames(
+                  'min-h-[52px] flex flex-row items-center',
+                )}>
+                <View className="flex-1">
+                  <Text className="text-base" style={styles.text}>
+                    搜索服务
+                  </Text>
+                </View>
+                <View className="mr-2 px-2">
+                  <Text style={styles.text_desc}>
+                    {
+                      searchProviderOptions.find(
+                        (item) => item.value === state.searchProvider,
+                      )?.label
+                    }
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
+          </GroupWapper>
+
           <SectionHeader title="布局" desc="修改此项时会重新启动应用" />
           <GroupWapper className="mb-8">
             <View

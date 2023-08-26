@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from 'react'
-import { Platform, PressableProps, Text, ViewStyle } from 'react-native'
+import { Platform, PressableProps, Text } from 'react-native'
 import { PlatformPressable } from '@react-navigation/elements'
 import classNames from 'classnames'
 import { styled } from 'nativewind'

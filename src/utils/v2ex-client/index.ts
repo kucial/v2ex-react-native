@@ -17,6 +17,7 @@ import {
   NodeTopicFeed,
   Notification,
   RepliedTopicFeed,
+  SearchHit,
   TFA_Error,
   TopicDetail,
   TopicReply,
@@ -186,7 +187,6 @@ instance.interceptors.response.use(
     return res
   },
   function (error) {
-    console.log(error)
     if (error.response?.status === 403) {
       console.log('403 url: ', error.response?.config?.url, 'count', n_403)
       n_403 += 1
@@ -1910,4 +1910,19 @@ export async function getBalanceDetail(params: { p?: number }) {
     pagination,
     fetchedAt: Date.now(),
   }
+}
+
+type SearchResponse = {
+  took: number
+  total: number
+  hits: SearchHit[]
+  timed_out: boolean
+}
+export async function search(params) {
+  const data = await request({
+    baseURL: 'https://www.sov2ex.com',
+    url: '/api/search',
+    params,
+  })
+  return data.data as SearchResponse
 }

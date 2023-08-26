@@ -28,6 +28,8 @@ const DEFAULT_SETTINGS: AppSettings = {
 
   maxContainerWidth: 600,
   payLayoutEnabled: true,
+
+  searchProvider: 'google',
 }
 
 const TODAY_HOT_TAB = {
