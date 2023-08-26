@@ -18,11 +18,16 @@ export default function MemberInfoScreen(props: ScreenProps) {
       const { data } = await getMemberDetail({ username })
       return data
     },
+    {
+      onErrorRetry(err) {
+        if (err.response?.status === 404) {
+          return
+        }
+      },
+    },
   )
 
   const { styles } = useTheme()
-
-  console.log(memberSwr.data)
 
   return (
     <ScrollView className="flex-1" style={styles.layer1}>

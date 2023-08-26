@@ -219,7 +219,7 @@ export default function MemberScreenHeader({
               'h-[44px] px-4 flex flex-row items-center rounded-full',
               'active:opacity-60 active:bg-neutral-100 dark:active:bg-neutral-600',
             )}>
-            <Text style={styles.text}>更多</Text>
+            <Text style={styles.text}>信息</Text>
           </Pressable>
         </View>
       </View>

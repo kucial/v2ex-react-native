@@ -22,6 +22,13 @@ export default function MemberScreen({ route, navigation }: MemberScreenProps) {
       const { data } = await getMemberDetail({ username })
       return data
     },
+    {
+      onErrorRetry(err) {
+        if (err.response?.status === 404) {
+          return
+        }
+      },
+    },
   )
 
   const tabs = useMemo(() => {
