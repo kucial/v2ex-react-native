@@ -5,6 +5,7 @@ import { stringify } from 'qs'
 import useSWRInfinite, { SWRInfiniteResponse } from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
+import Loader from '@/components/Loader'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useTheme } from '@/containers/ThemeService'
 import { isRefreshing } from '@/utils/swr'
@@ -107,7 +108,11 @@ export default function SearchResultView(props: { params: SearchParams }) {
             </View>
           )
         }
-        return null
+        return (
+          <View className="py-3 w-full flex flex-row items-center justify-center">
+            <Loader />
+          </View>
+        )
       }}
       ListFooterComponent={() => {
         return (
