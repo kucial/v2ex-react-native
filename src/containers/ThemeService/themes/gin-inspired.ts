@@ -105,7 +105,7 @@ const createTheme = (info: AccentInfo): MyThemeDefinition => {
           .mix(Color(accent_light).alpha(0.8), 0.03 * light_mix_alpha)
           .toString(),
         input_bg: Color('#f5f5f5')
-          .mix(Color(accent_light), 0.03 * light_mix_alpha)
+          .mix(Color(accent_light), 0.01 * light_mix_alpha)
           .toString(),
         shadow: Color('#111111')
           .mix(Color(accent_light), 0.2 * light_mix_alpha)
