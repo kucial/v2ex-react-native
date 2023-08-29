@@ -85,6 +85,7 @@ type ThemeColors = Theme['colors'] & {
 
   // swtich
   switch_track?: string
+  switch_thumb?: string
 }
 type ThemeStyles = {
   text: ThemeTextStyle

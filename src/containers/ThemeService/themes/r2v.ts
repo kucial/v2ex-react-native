@@ -56,6 +56,7 @@ export const r2v: MyThemeDefinition = {
       shadow: '#111111',
 
       switch_track: '#15803d',
+      switch_thumb: '#fffbeb',
     },
   },
   dark: {
@@ -115,6 +116,7 @@ export const r2v: MyThemeDefinition = {
       shadow: '#111111',
 
       switch_track: '#34d399', // colors.emerald[400]
+      switch_thumb: '#fffbeb',
     },
   },
 }

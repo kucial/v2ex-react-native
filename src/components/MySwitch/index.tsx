@@ -20,7 +20,9 @@ const MySwitch = forwardRef<Switch, SwitchProps>((props, ref) => {
         },
       })}
       thumbColor={Platform.select({
-        android: props.value ? theme.colors.primary : theme.colors.white,
+        android: props.value
+          ? theme.colors.switch_thumb || theme.colors.primary
+          : theme.colors.white,
       })}
       {...props}
       ref={ref}
