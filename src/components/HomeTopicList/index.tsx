@@ -77,7 +77,10 @@ function FeedTopicList(props: FeedTopicListProps) {
     if (listSwr.isValidating) {
       return
     }
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    if (settings.refreshHaptics) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    }
+
     if (listSwr.data) {
       listViewRef.current.scrollToOffset({
         offset: scrollY.current > 0 ? 0 : -60,
@@ -85,7 +88,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       })
     }
     listSwr.mutate()
-  }, [listSwr])
+  }, [listSwr, settings.refreshHaptics])
 
   useEffect(() => {
     if (

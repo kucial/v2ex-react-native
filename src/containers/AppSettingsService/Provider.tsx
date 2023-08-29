@@ -25,6 +25,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 
   autoRefresh: true,
   autoRefreshDuration: 10,
+  refreshHaptics: true,
 
   maxContainerWidth: 600,
   payLayoutEnabled: true,

@@ -71,7 +71,9 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     if (listSwr.isValidating) {
       return
     }
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    if (settings.refreshHaptics) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+    }
     if (listSwr.data) {
       listViewRef.current.scrollToOffset({
         offset: scrollY.current > 0 ? 0 : -60,
@@ -79,7 +81,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       })
     }
     listSwr.mutate()
-  }, [listSwr])
+  }, [listSwr, settings.refreshHaptics])
 
   useEffect(() => {
     if (

@@ -16,6 +16,7 @@ type AppSettings = {
   feedTitleStyle: 'normal' | 'emphasized'
   autoRefresh: boolean
   autoRefreshDuration: number // minutes
+  refreshHaptics?: boolean
 
   maxContainerWidth: number
   googleSigninEnabled?: boolean
