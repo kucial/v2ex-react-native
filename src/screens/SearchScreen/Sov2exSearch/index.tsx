@@ -151,7 +151,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     searchInput.current?.blur()
                     advancedSearchModalRef.current?.present()
                   }}>
-                  <FunnelIcon size={18} color={theme.colors.text} />
+                  <FunnelIcon size={20} color={theme.colors.text} />
                 </Button>
               </View>
             </View>
