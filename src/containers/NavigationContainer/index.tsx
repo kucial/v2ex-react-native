@@ -6,27 +6,51 @@ import {
   useState,
 } from 'react'
 import {
+  getStateFromPath,
+  LinkingOptions,
   NavigationContainer,
   Route,
   useNavigationContainerRef,
 } from '@react-navigation/native'
+import * as Linking from 'expo-linking'
 import * as Sentry from 'sentry-expo'
 
 import { useTheme } from '../ThemeService'
 
 const CurrentRoute = createContext(null)
 
+const myGetStateFromPath = (path, options) => {
+  // cleanup hash
+  const state = getStateFromPath(path.replace(/#.*$/, ''), options)
+  return state
+}
+const linking: LinkingOptions<AppStackParamList> = {
+  prefixes: [Linking.createURL('/v2ex.com'), Linking.createURL('/*.v2ex.com')],
+  config: {
+    screens: {
+      topic: {
+        path: 't/:id',
+      },
+      node: 'go/:name',
+      member: 'member/:username',
+    },
+  },
+  getStateFromPath: myGetStateFromPath,
+}
+
 export default function WrappedNavigationContainer(props: {
   children: ReactElement
 }) {
   const { theme } = useTheme()
-  const navigationRef = useNavigationContainerRef()
+  const navigationRef = useNavigationContainerRef<NavigationParamList>()
   const [currentRoute, setCurrentRoute] = useState(null)
   const routeRef = useRef<Route<string>>()
+
   return (
-    <NavigationContainer
+    <NavigationContainer<NavigationParamList>
       ref={navigationRef}
       theme={theme}
+      linking={linking}
       onReady={() => {
         routeRef.current = navigationRef.getCurrentRoute()
         setCurrentRoute(routeRef.current)

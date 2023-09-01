@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
-  Image,
   Linking,
+  Platform,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -92,36 +92,41 @@ export default function AboutScreen(props) {
               icon={<GithubIcon color={theme.colors.primary} />}
               title="Github"
             />
-            <LineItem
-              onPress={async () => {
-                try {
-                  const result = await Share.share({
-                    message: 'R2V -- 第三方V2EX客户端',
-                    url: 'https://apps.apple.com/cn/app/r2v/id1645766550',
-                  })
-                  if (result.action === Share.sharedAction) {
-                    if (result.activityType) {
-                      // shared with activity type of result.activityType
-                    } else {
-                      // shared
+            {Platform.OS == 'ios' && (
+              <>
+                <LineItem
+                  onPress={async () => {
+                    try {
+                      const result = await Share.share({
+                        message: 'R2V -- 第三方V2EX客户端',
+                        url: 'https://apps.apple.com/cn/app/r2v/id1645766550',
+                      })
+                      if (result.action === Share.sharedAction) {
+                        if (result.activityType) {
+                          // shared with activity type of result.activityType
+                        } else {
+                          // shared
+                        }
+                      } else if (result.action === Share.dismissedAction) {
+                        // dismissed
+                      }
+                    } catch (error) {
+                      console.log(error.message)
                     }
-                  } else if (result.action === Share.dismissedAction) {
-                    // dismissed
-                  }
-                } catch (error) {
-                  console.log(error.message)
-                }
-              }}
-              icon={<ArrowUpOnSquareIcon color={theme.colors.primary} />}
-              title="分享"
-            />
-            <LineItem
-              onPress={() => {
-                StoreReview.requestReview()
-              }}
-              icon={<StarIcon size={22} color={theme.colors.primary} />}
-              title="五星好评"
-            />
+                  }}
+                  icon={<ArrowUpOnSquareIcon color={theme.colors.primary} />}
+                  title="分享"
+                />
+                <LineItem
+                  onPress={() => {
+                    StoreReview.requestReview()
+                  }}
+                  icon={<StarIcon size={22} color={theme.colors.primary} />}
+                  title="五星好评"
+                />
+              </>
+            )}
+
             <LineItem
               onPress={async () => {
                 try {

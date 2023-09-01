@@ -65,6 +65,10 @@ React Native + Tailwindcss + SWR
   - [x] 创建相册
   - [x] 上传图片
   - [ ] 删除图片
+- [x] Url Scheme, `r2v`
+  - [x] Topic: `r2v://t/:id`
+  - [x] Node: `r2v://node/:name`
+  - [x] Member: `r2v://member/:username`
 - [ ] 设置
   - [x] Imgur 图床连接
   - [ ] 偏好设置

@@ -62,6 +62,8 @@ declare global {
     nodes: null
     my: null
   }
+
+  type NavigationParamList = MainTabParamList & AppStackParamList
 }
 
 export {}

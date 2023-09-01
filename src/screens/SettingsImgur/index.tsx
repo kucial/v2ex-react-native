@@ -22,8 +22,6 @@ import { useImgurService } from '@/containers/ImgurService'
 import { ImgurCredentials } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 
-const CACHE_KEY = `$app$/settings/imgur`
-
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'imgur-settings'>
 export default function ImgurSettings(props: ScreenProps) {
   const { route, navigation } = props
