@@ -57,7 +57,7 @@ export default function ViewedTopicsService(props) {
     },
   )
   const {
-    data: { showHasViewed, showHasNewReply },
+    data: { showHasViewed, showHasNewReply, historyRecordLimit },
   } = useAppSettings()
 
   const service: ViewedTopicsService = useMemo(() => {
@@ -97,16 +97,25 @@ export default function ViewedTopicsService(props) {
               ...prev.ids.slice(index + 1),
             ]
           }
+          const data = {
+            ...prev.data,
+            [topic.id]: {
+              ...topic,
+              viewed_at: Date.now(),
+            },
+          }
+          if (historyRecordLimit && updatedIds.length > historyRecordLimit) {
+            const itemsToRemove = updatedIds.slice(historyRecordLimit)
+            updatedIds = updatedIds.slice(0, historyRecordLimit)
+            itemsToRemove.forEach((id) => {
+              delete data[id]
+            })
+          }
+
           return {
             ...prev,
             ids: updatedIds,
-            data: {
-              ...prev.data,
-              [topic.id]: {
-                ...topic,
-                viewed_at: Date.now(),
-              },
-            },
+            data,
           }
         })
       },
@@ -128,7 +137,7 @@ export default function ViewedTopicsService(props) {
         })
       },
     }
-  }, [state, setState])
+  }, [state, setState, showHasViewed, showHasNewReply, historyRecordLimit])
 
   return (
     <ViewedTopicsContext.Provider value={service}>

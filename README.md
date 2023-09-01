@@ -40,6 +40,8 @@ React Native + Tailwindcss + SWR
   - [x] Imgur 网页省流（直接打开 imgur post 链接 对应的图片）
   - [x] 滚动到顶部/底部，定位到某一楼层
   - [x] 图片预览，及分享、保存
+  - [ ] 回复，“表情图” ｜ emoji
+  - [ ] 回复，"mention" 功能
 - [ ] 节点相关
   - [x] 收藏/取消收藏
   - [x] 节点主题列表
@@ -88,8 +90,8 @@ React Native + Tailwindcss + SWR
     - [ ] 字体大小
 - [ ] 其他
   - [x] 二维码识别
-  - [x] clipboard 链接识别
-  - [ ] “表情图” ｜ emoji
+  - [x] clipboard 链接识别，检测当 `url` 时显示打开链接提示
+  - [x] 历史记录自动清理（超过限制数量时，自动旧清理）
 
 ## 下一步
 

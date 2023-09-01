@@ -31,6 +31,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   payLayoutEnabled: true,
 
   searchProvider: 'google',
+  historyRecordLimit: 500,
 }
 
 const TODAY_HOT_TAB = {

@@ -22,7 +22,8 @@ type AppSettings = {
   googleSigninEnabled?: boolean
   payLayoutEnabled?: boolean
 
-  searchProvider: 'google' | 'sov2ex'
+  searchProvider: SearchProvider
+  historyRecordLimit: number
 }
 
 type AppSettingsService = {
@@ -31,3 +32,5 @@ type AppSettingsService = {
   staticUpdate: (value: AppSettings) => void
   initHomeTabs: () => Promise<HomeTabOption[]>
 }
+
+export type SearchProvider = 'google' | 'sov2ex'

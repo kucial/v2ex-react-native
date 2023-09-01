@@ -9,6 +9,7 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MySwitch from '@/components/MySwitch'
 import SectionHeader from '@/components/SectionHeader'
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { SearchProvider } from '@/containers/AppSettingsService/types'
 import { useTheme } from '@/containers/ThemeService'
 
 import { topic } from './mock'
@@ -34,11 +35,22 @@ const refreshDurationOptions = [
 ]
 
 const searchProviderOptions: Array<{
-  value: 'google' | 'sov2ex'
+  value: SearchProvider
   label: string
 }> = [
   { value: 'google', label: 'Google' },
   { value: 'sov2ex', label: 'sov2ex' },
+]
+
+const historyRecordLimitOptions: Array<{
+  value: number | null
+  label: string
+}> = [
+  { value: 3, label: '3条' },
+  { value: 100, label: '100条' },
+  { value: 300, label: '300条' },
+  { value: 500, label: '500条' },
+  { value: null, label: '不限' },
 ]
 
 type ScreenProps = NativeStackScreenProps<
@@ -359,8 +371,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               </View>
             </View>
           </GroupWapper>
-          <SectionHeader title="搜索" />
-
+          <SectionHeader title="其他" />
           <GroupWapper>
             <Pressable
               className={classNames('pl-4', 'active:opacity-50')}
@@ -397,6 +408,45 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 </View>
               </View>
             </Pressable>
+            <Pressable
+              className={classNames('pl-4', 'active:opacity-50')}
+              style={styles.layer1}
+              onPress={() => {
+                const index = historyRecordLimitOptions.findIndex((o) => {
+                  return o.value === state.historyRecordLimit
+                })
+                const nextIndex = (index + 1) % historyRecordLimitOptions.length
+                const next = historyRecordLimitOptions[nextIndex]
+                setState((prev) => ({
+                  ...prev,
+                  historyRecordLimit: next.value,
+                }))
+              }}>
+              <View
+                className={classNames(
+                  'min-h-[52px] flex flex-row items-center',
+                )}>
+                <View className="flex-1 flex flex-row items-center">
+                  <Text className="text-base" style={styles.text}>
+                    本地历史保留
+                  </Text>
+                  <View className="ml-1 mt-1">
+                    <Text className="text-xs" style={styles.text_desc}>
+                      自动清理过往记录
+                    </Text>
+                  </View>
+                </View>
+                <View className="mr-2 px-2">
+                  <Text style={styles.text_desc}>
+                    {
+                      historyRecordLimitOptions.find(
+                        (item) => item.value === state.historyRecordLimit,
+                      )?.label
+                    }
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
           </GroupWapper>
 
           <SectionHeader title="布局" desc="修改此项时会重新启动应用" />
@@ -413,9 +463,9 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   <Text className="text-base" style={styles.text}>
                     启用平板布局
                   </Text>
-                  <View className="ml-1">
+                  <View className="ml-1 mt-1">
                     <Text className="text-xs" style={styles.text_desc}>
-                      窗口尺寸足够时生效
+                      窗口尺寸满足条件时生效
                     </Text>
                   </View>
                 </View>
