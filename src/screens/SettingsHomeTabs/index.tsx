@@ -124,14 +124,14 @@ export default function HomeTabs(props: ScreenProps) {
                   initHomeTabs()
                     .then((newTabs) => {
                       setTabs(newTabs)
-                      instance.manager.destroy()
+                      alert.hide(instance)
                       alert.show({
                         type: 'success',
                         message: '首页标签已重置',
                       })
                     })
                     .catch((err) => {
-                      instance.manager.destroy()
+                      alert.hide(instance)
                       alert.show({
                         type: 'error',
                         message: err.message,
@@ -261,7 +261,7 @@ export default function HomeTabs(props: ScreenProps) {
       <NestableScrollContainer>
         <MaxWidthWrapper className="px-2">
           <SectionHeader title="已启用" desc="长按拖放可调整顺序" />
-          <GroupWapper style={{ marginRight: 36 }}>
+          <GroupWapper style={{ marginRight: 54 }}>
             <NestableDraggableFlatList
               data={enabledTabs}
               onDragEnd={({ data }) => setTabs([...data, ...disabledTabs])}
@@ -272,7 +272,7 @@ export default function HomeTabs(props: ScreenProps) {
             />
           </GroupWapper>
           <SectionHeader title="已停用" />
-          <GroupWapper style={{ marginRight: 36 }}>
+          <GroupWapper style={{ marginRight: 54 }}>
             {disabledTabs.length ? (
               <NestableDraggableFlatList
                 data={disabledTabs}
