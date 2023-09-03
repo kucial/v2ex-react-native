@@ -46,6 +46,12 @@ const customHTMLElementModels = {
 
 const defaultTextProps = { selectable: false }
 
+const renderersProps = {
+  iframe: {
+    scalesPageToFit: true,
+  },
+}
+
 const MENU_ITEM_COPY = '复制'
 const MENU_ITEM_BASE64_DECODE = 'Base64 解码'
 
@@ -53,9 +59,11 @@ function HtmlRender({
   tagsStyles,
   baseStyle,
   navigation,
+  onOpenMemberInfo,
   ...props
 }: RenderHTMLProps & {
   navigation: NativeStackNavigationProp<AppStackParamList>
+  onOpenMemberInfo?: (data) => void
 }) {
   const { theme, colorScheme } = useTheme()
   const alert = useAlertService()
@@ -141,14 +149,6 @@ function HtmlRender({
     }
   }, [tagsStyles, baseStyle, theme])
 
-  const renderersProps = useMemo(() => {
-    return {
-      iframe: {
-        scalesPageToFit: true,
-      },
-    }
-  }, [])
-
   const renderContext = useMemo(
     () => ({
       menuItems: [MENU_ITEM_COPY, MENU_ITEM_BASE64_DECODE],
@@ -163,15 +163,20 @@ function HtmlRender({
         if (isAppLink(url)) {
           const screen = getScreenInfo(url)
           if (screen) {
+            if (screen.name === 'member' && onOpenMemberInfo) {
+              onOpenMemberInfo({
+                type: 'member',
+                data: screen.params.username,
+              })
+              return
+            }
             navigation.push(screen.name, screen.params)
             return
           }
         }
         if (isImgurResourceLink(url) && viewingRef.current) {
-          console.log(viewingRef.current)
           viewingRef.current.open(getImgurResourceImageLink(url))
           return
-          // OPEN URL
         }
         if (url.startsWith('mailto:')) {
           Linking.openURL(url)
@@ -226,7 +231,7 @@ function HtmlRender({
         }
       },
     }),
-    [navigation],
+    [navigation, onOpenMemberInfo],
   )
 
   const handleQrCode = useCallback((result: BarCodeScannerResult) => {

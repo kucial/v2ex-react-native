@@ -1,5 +1,7 @@
 import { MutableRefObject } from 'react'
 
+import { TopicReply } from '@/utils/v2ex-client/types'
+
 import { ScrollControlApi } from './ScrollControl'
 
 export type BarProps = {
@@ -14,3 +16,13 @@ export type BarProps = {
   onShare(): void
   isFocused?: boolean
 }
+
+export type ConversationContext =
+  | {
+      type: 'reply'
+      data: TopicReply
+    }
+  | {
+      type: 'member'
+      data: string // username
+    }

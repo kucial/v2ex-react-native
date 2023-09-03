@@ -1,6 +1,13 @@
 import { View } from 'react-native'
 
+import { TopicReply } from '@/utils/v2ex-client/types'
+
 import ReplyRow from './ReplyRow'
+
+type ConversationProps = {
+  data: TopicReply[]
+  pivot: TopicReply | string
+}
 
 export default function Conversation({
   data,
@@ -9,9 +16,11 @@ export default function Conversation({
   onThank,
   navigation,
   showAvatar,
+  header,
 }) {
   return (
     <View>
+      {header}
       {data.map((reply) => (
         <ReplyRow
           showAvatar={showAvatar}

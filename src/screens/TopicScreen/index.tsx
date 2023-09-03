@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Linking, Share } from 'react-native'
+import { Linking, Share, Text, View } from 'react-native'
 import { InteractionManager } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 // import { TagIcon } from 'react-native-heroicons/outline'
@@ -45,9 +45,11 @@ import PadSidebar from './PadSidebar'
 import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
 import ScrollToLastPosition from './ScrollToLastPosition'
+import SimpleMemberInfo from './SimpleMemberInfo'
 import TopicBaseInfo from './TopicBaseInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
+import { ConversationContext } from './types'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
@@ -173,6 +175,10 @@ const getRelatedReplies = (pivot: TopicReply, replyList: TopicReply[]) => {
   return list
 }
 
+const getMemberReplies = (pivot: string, replyList: TopicReply[]) => {
+  return replyList.filter((item) => item.member.username === pivot)
+}
+
 type ReplyContext = {
   type: 'reply' | 'append'
   target?: TopicReply
@@ -250,7 +256,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const { showActionSheetWithOptions } = useActionSheet()
 
-  const [conversationContext, setConversationContext] = useState(null)
+  const [conversationContext, setConversationContext] =
+    useState<ConversationContext>(null)
 
   const { data: settings } = useAppSettings()
   const padLayout = usePadLayout()
@@ -705,8 +712,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     topicSwr.mutate()
   }, [])
 
-  const showConversation = useCallback((reply) => {
-    setConversationContext(reply)
+  const showConversation = useCallback((context: ConversationContext) => {
+    setConversationContext(context)
     conversationModalRef.current?.present()
   }, [])
 
@@ -777,7 +784,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     if (!conversationContext) {
       return null
     }
-    return getRelatedReplies(conversationContext, replyItems)
+    if (conversationContext.type === 'reply') {
+      return getRelatedReplies(conversationContext.data, replyItems)
+    }
+    if (conversationContext.type === 'member') {
+      return getMemberReplies(conversationContext.data, replyItems)
+    }
   }, [conversationContext, replyItems])
 
   const directionCallback = useCallback((direction) => {
@@ -907,7 +919,17 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               showAvatar={settings.feedShowAvatar}
               navigation={navigation}
               data={conversation}
-              pivot={conversationContext}
+              header={
+                conversationContext.type === 'member' && (
+                  <SimpleMemberInfo
+                    username={conversationContext.data}
+                    navigation={navigation}
+                  />
+                )
+              }
+              pivot={
+                conversationContext.type === 'reply' && conversationContext.data
+              }
               onReply={initReply}
               onThank={handleThankToReply}
             />

@@ -28,6 +28,8 @@ import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
+import { ConversationContext } from './types'
+
 type ReplyRowProps = {
   data: TopicReply
   style?: ViewStyle
@@ -36,7 +38,7 @@ type ReplyRowProps = {
   navigation: NativeStackNavigationProp<AppStackParamList>
   hasConversation?: boolean
   onReply(data: TopicReply): void
-  onShowConversation?: (data: TopicReply) => void
+  onShowConversation?: (data: ConversationContext) => void
   onThank(data: TopicReply): void
   showAvatar?: boolean
 }
@@ -90,7 +92,10 @@ function ReplyRow(props: ReplyRowProps) {
 
   const handleConversation = usePressBreadcrumb(
     useCallback(() => {
-      props.onShowConversation(data)
+      props.onShowConversation({
+        type: 'reply',
+        data: data,
+      })
     }, [data, props.onShowConversation]),
     {
       message: '[ReplyRow] `conversation` button press',
@@ -244,6 +249,7 @@ function ReplyRow(props: ReplyRowProps) {
               <HtmlRender
                 key={data.id + colorScheme}
                 navigation={navigation}
+                onOpenMemberInfo={props.onShowConversation}
                 contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 16}
                 source={{
                   html: showMarkdown
