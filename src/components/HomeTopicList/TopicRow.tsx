@@ -8,6 +8,7 @@ import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
+import { preloadTopicInfo } from '@/utils/preload'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
 
@@ -68,6 +69,7 @@ export default function TopicRow(props: HomeFeedRowProps) {
         )}
         style={[styles.layer1, styles.border_b_light]}
         onPress={() => {
+          preloadTopicInfo(props.data.id)
           navigation.push('topic', {
             id: props.data.id,
             brief: props.data,

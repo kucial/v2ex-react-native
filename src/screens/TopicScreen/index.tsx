@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Linking, Share, Text, View } from 'react-native'
+import { Linking, Share } from 'react-native'
 import { InteractionManager } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 // import { TagIcon } from 'react-native-heroicons/outline'
@@ -223,8 +223,18 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       },
       [id],
     ),
-    ([_, id, page]) => {
-      return v2exClient.getTopicReplies({ id, p: page })
+    async ([_, id, page]) => {
+      const data = await v2exClient.getTopicReplies({ id, p: page })
+      if (data.meta?.topic) {
+        topicSwr.mutate(
+          (prev) =>
+            deepmerge(prev, data.meta.topic, {
+              arrayMerge: (a, b) => b,
+            }),
+          false,
+        )
+      }
+      return data
     },
     {
       // initialSize: Math.max(1, Math.ceil((topic?.replies || 0) / 100)),
@@ -233,14 +243,9 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       onSuccess: (data) => {
         const topic = data[data.length - 1]?.meta?.topic
         if (topic) {
-          topicSwr.mutate(
-            (prev) =>
-              deepmerge(prev, topic, {
-                arrayMerge: (a, b) => b,
-              }),
-            false,
-          )
-          touchViewed(topic)
+          setTimeout(() => {
+            touchViewed(topic)
+          }, 500)
         }
         if (lastIndex && !showScrollToLastPosition) {
           setShowScrollToLastPosition(true)

@@ -1,6 +1,7 @@
 import {
   createContext,
   ReactElement,
+  useCallback,
   useContext,
   useRef,
   useState,
@@ -46,33 +47,37 @@ export default function WrappedNavigationContainer(props: {
   const [currentRoute, setCurrentRoute] = useState(null)
   const routeRef = useRef<Route<string>>()
 
+  const onReady = useCallback(() => {
+    routeRef.current = navigationRef.getCurrentRoute()
+    setCurrentRoute(routeRef.current)
+  }, [])
+
+  const onStateChange = useCallback(() => {
+    const previousRoute = routeRef.current
+    const currentRoute = navigationRef.getCurrentRoute()
+    if (previousRoute.key !== currentRoute.key) {
+      const info = {
+        prev: previousRoute,
+        current: currentRoute,
+      }
+      Sentry.Native.addBreadcrumb({
+        level: 'info',
+        category: 'navigation',
+        message: `[${previousRoute.name}] ==> [${currentRoute.name}]`,
+        data: info,
+      })
+    }
+    routeRef.current = currentRoute
+    setCurrentRoute(routeRef.current)
+  }, [])
+
   return (
     <NavigationContainer<NavigationParamList>
       ref={navigationRef}
       theme={theme}
       linking={linking}
-      onReady={() => {
-        routeRef.current = navigationRef.getCurrentRoute()
-        setCurrentRoute(routeRef.current)
-      }}
-      onStateChange={() => {
-        const previousRoute = routeRef.current
-        const currentRoute = navigationRef.getCurrentRoute()
-        if (previousRoute.key !== currentRoute.key) {
-          const info = {
-            prev: previousRoute,
-            current: currentRoute,
-          }
-          Sentry.Native.addBreadcrumb({
-            level: 'info',
-            category: 'navigation',
-            message: `[${previousRoute.name}] ==> [${currentRoute.name}]`,
-            data: info,
-          })
-        }
-        routeRef.current = currentRoute
-        setCurrentRoute(routeRef.current)
-      }}>
+      onReady={onReady}
+      onStateChange={onStateChange}>
       <CurrentRoute.Provider value={currentRoute}>
         {props.children}
       </CurrentRoute.Provider>
