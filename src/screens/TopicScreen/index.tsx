@@ -40,8 +40,8 @@ import * as v2exClient from '@/utils/v2ex-client'
 import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
 
 import BottomBar from './BottomBar'
-import Conversation from './Conversation'
 import PadSidebar from './PadSidebar'
+import ReplyList from './ReplyList'
 import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
 import ScrollToLastPosition from './ScrollToLastPosition'
@@ -49,7 +49,7 @@ import SimpleMemberInfo from './SimpleMemberInfo'
 import TopicBaseInfo from './TopicBaseInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
-import { ConversationContext } from './types'
+import { ConversationContext, UserInfoContext } from './types'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
@@ -263,6 +263,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const [conversationContext, setConversationContext] =
     useState<ConversationContext>(null)
+  const [userInfoContext, setUserInfoContext] = useState<UserInfoContext>(null)
 
   const { data: settings } = useAppSettings()
   const padLayout = usePadLayout()
@@ -270,6 +271,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const listRef = useRef<FlashList<TopicReply>>()
   const replyModalRef = useRef<BottomSheetModal>()
   const conversationModalRef = useRef<BottomSheetModal>()
+  const userInfoModalRef = useRef<BottomSheetModal>()
   const movePanelModalRef = useRef<BottomSheetModal>()
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
@@ -722,9 +724,15 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     conversationModalRef.current?.present()
   }, [])
 
+  const showUserInfo = useCallback((context: UserInfoContext) => {
+    setUserInfoContext(context)
+    userInfoModalRef.current?.present()
+  }, [])
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
       conversationModalRef.current?.dismiss()
+      userInfoModalRef.current?.dismiss()
     })
     return unsubscribe
   }, [navigation])
@@ -753,6 +761,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             onThank={handleThankToReply}
             hasConversation={hasRelatedMessages(item, replyItems)}
             onShowConversation={showConversation}
+            onShowUserInfo={showUserInfo}
           />
         )
       },
@@ -789,13 +798,15 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     if (!conversationContext) {
       return null
     }
-    if (conversationContext.type === 'reply') {
-      return getRelatedReplies(conversationContext.data, replyItems)
-    }
-    if (conversationContext.type === 'member') {
-      return getMemberReplies(conversationContext.data, replyItems)
-    }
+    return getRelatedReplies(conversationContext.data, replyItems)
   }, [conversationContext, replyItems])
+
+  const userPostedMessages = useMemo(() => {
+    if (!userInfoContext) {
+      return null
+    }
+    return getMemberReplies(userInfoContext.data, replyItems)
+  }, [userInfoContext, replyItems])
 
   const directionCallback = useCallback((direction) => {
     if (direction === 'down') {
@@ -920,20 +931,33 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         snapPoints={conversationSnapPoints}>
         {conversationContext && (
           <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
-            <Conversation
+            <ReplyList
               showAvatar={settings.feedShowAvatar}
               navigation={navigation}
               data={conversation}
+              pivot={conversationContext.data}
+              onReply={initReply}
+              onThank={handleThankToReply}
+              onShowUserInfo={showUserInfo}
+            />
+          </BottomSheetScrollView>
+        )}
+      </MyBottomSheetModal>
+      <MyBottomSheetModal
+        ref={userInfoModalRef}
+        index={0}
+        snapPoints={conversationSnapPoints}>
+        {userInfoContext && (
+          <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
+            <ReplyList
+              showAvatar={settings.feedShowAvatar}
+              navigation={navigation}
+              data={userPostedMessages}
               header={
-                conversationContext.type === 'member' && (
-                  <SimpleMemberInfo
-                    username={conversationContext.data}
-                    navigation={navigation}
-                  />
-                )
-              }
-              pivot={
-                conversationContext.type === 'reply' && conversationContext.data
+                <SimpleMemberInfo
+                  username={userInfoContext.data}
+                  navigation={navigation}
+                />
               }
               onReply={initReply}
               onThank={handleThankToReply}
@@ -941,6 +965,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           </BottomSheetScrollView>
         )}
       </MyBottomSheetModal>
+
       <MyBottomSheetModal
         ref={replyModalRef}
         index={0}

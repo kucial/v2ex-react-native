@@ -94,7 +94,7 @@ export const r2v: MyThemeDefinition = {
 
       bg_overlay: '#262626',
       bg_layer1: '#171717', // neutral[900]
-      bg_layer2: '#262626', // neutral[800]
+      bg_layer2: '#222222', // neutral[800]
       bg_layer3: '#333333', // neutral[750] custom
 
       bg_danger_mask: 'rgba(225, 29, 72, 0.05)', // rose[600]/8

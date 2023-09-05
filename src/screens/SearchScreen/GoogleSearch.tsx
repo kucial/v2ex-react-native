@@ -143,7 +143,6 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               if (event.nativeEvent.data) {
                 const data = JSON.parse(event.nativeEvent.data)
                 if (data.type === 'open-app-link') {
-                  console.log(data.payload)
                   const screen = getScreenInfo(data.payload.link)
                   if (screen) {
                     navigation.push(screen.name, screen.params)

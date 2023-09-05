@@ -162,7 +162,7 @@ const createTheme = (info: AccentInfo): MyThemeDefinition => {
         bg_layer1: Color('#171717')
           .mix(Color(accent_dark), 0.01 * dark_mix_alpha)
           .toString(),
-        bg_layer2: Color('#262626')
+        bg_layer2: Color('#222222')
           .mix(Color(accent_dark).alpha(0.9), 0.05 * dark_mix_alpha)
           .toString(),
         bg_layer3: Color('#333333')

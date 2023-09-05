@@ -126,8 +126,6 @@ export default function ImgurPicker(props: ImgurPickerProps) {
       break
   }
 
-  console.log(stack)
-
   return (
     <AlbumContext.Provider
       value={'params' in current ? current.params?.album : undefined}>

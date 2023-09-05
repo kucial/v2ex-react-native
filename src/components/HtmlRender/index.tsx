@@ -188,7 +188,6 @@ function HtmlRender({
           presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
         }).catch((err) => {
           Sentry.Native.captureException(err)
-          console.log(err)
         })
       },
       handleSelection: async (payload: {

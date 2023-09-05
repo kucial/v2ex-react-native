@@ -28,7 +28,7 @@ import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
-import { ConversationContext } from './types'
+import { ConversationContext, UserInfoContext } from './types'
 
 type ReplyRowProps = {
   data: TopicReply
@@ -39,6 +39,7 @@ type ReplyRowProps = {
   hasConversation?: boolean
   onReply(data: TopicReply): void
   onShowConversation?: (data: ConversationContext) => void
+  onShowUserInfo?: (data: UserInfoContext) => void
   onThank(data: TopicReply): void
   showAvatar?: boolean
 }
@@ -142,9 +143,16 @@ function ReplyRow(props: ReplyRowProps) {
               <Pressable
                 hitSlop={3}
                 onPress={() => {
-                  navigation.push('member', {
-                    username: member.username,
-                  })
+                  if (props.onShowUserInfo) {
+                    props.onShowUserInfo({
+                      type: 'member',
+                      data: member.username,
+                    })
+                  } else {
+                    navigation.push('member', {
+                      username: member.username,
+                    })
+                  }
                 }}>
                 <Image
                   source={{
@@ -167,9 +175,16 @@ function ReplyRow(props: ReplyRowProps) {
                   hitSlop={4}
                   className="active:opacity-60"
                   onPress={() => {
-                    navigation.push('member', {
-                      username: member.username,
-                    })
+                    if (props.onShowUserInfo) {
+                      props.onShowUserInfo({
+                        type: 'member',
+                        data: member.username,
+                      })
+                    } else {
+                      navigation.push('member', {
+                        username: member.username,
+                      })
+                    }
                   }}>
                   <Text className="font-bold text-xs" style={styles.text_desc}>
                     {member.username}
@@ -249,7 +264,7 @@ function ReplyRow(props: ReplyRowProps) {
               <HtmlRender
                 key={data.id + colorScheme}
                 navigation={navigation}
-                onOpenMemberInfo={props.onShowConversation}
+                onOpenMemberInfo={props.onShowUserInfo}
                 contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 16}
                 source={{
                   html: showMarkdown

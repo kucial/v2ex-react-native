@@ -17,12 +17,12 @@ export type BarProps = {
   isFocused?: boolean
 }
 
-export type ConversationContext =
-  | {
-      type: 'reply'
-      data: TopicReply
-    }
-  | {
-      type: 'member'
-      data: string // username
-    }
+export type ConversationContext = {
+  type: 'reply'
+  data: TopicReply
+}
+
+export type UserInfoContext = {
+  type: 'member'
+  data: string
+}

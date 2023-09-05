@@ -1,6 +1,5 @@
-import { Pressable, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import classNames from 'classnames'
 import { Image } from 'expo-image'
 import useSWR from 'swr'
 
@@ -34,7 +33,6 @@ export default function SimpleMemberInfo(props: {
   )
 
   const { data } = memberSwr
-  console.log(data)
 
   return (
     <View className="px-2 pt-1 pb-3" style={styles.border_b_light}>
@@ -48,7 +46,7 @@ export default function SimpleMemberInfo(props: {
                   width: AVATAR_SIZE,
                   height: AVATAR_SIZE,
                 },
-                styles.layer1,
+                styles.layer2,
               ]}
               source={{ uri: data.avatar_large }}
             />
@@ -60,7 +58,7 @@ export default function SimpleMemberInfo(props: {
                   width: AVATAR_SIZE,
                   height: AVATAR_SIZE,
                 },
-                styles.layer1,
+                styles.layer2,
               ]}
             />
           )}
