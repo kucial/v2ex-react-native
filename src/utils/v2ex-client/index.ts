@@ -819,13 +819,25 @@ export async function getTopicReplies({
     }
   }
 
-  return {
-    data,
-    pagination,
-    meta: {
-      topic: topicDetailFromPage($, id),
-    },
-    fetchedAt: Date.now(),
+  try {
+    return {
+      data,
+      pagination,
+      meta: {
+        topic: topicDetailFromPage($, id),
+      },
+      fetchedAt: Date.now(),
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      data: { html },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回',
+    })
   }
 }
 
