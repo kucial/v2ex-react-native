@@ -863,14 +863,28 @@ export async function postReply({
     })
   }
 
-  const topic = topicReplyFromCell(
-    $('#Wrapper .content .box div[id^=r_]').last(),
-    $,
-  )
-  return {
-    success: true,
-    message: '回复成功',
-    data: topic,
+  try {
+    const topic = topicReplyFromCell(
+      $('#Wrapper .content .box div[id^=r_]').last(),
+      $,
+    )
+    return {
+      success: true,
+      message: '回复成功',
+      data: topic,
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'response',
+      data: {
+        html,
+      },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回, 请刷新后查看结果',
+    })
   }
 }
 
