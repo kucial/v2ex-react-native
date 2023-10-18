@@ -276,7 +276,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
 
-  const { composeAuthedNavigation } = useAuthService()
+  const { composeAuthedNavigation, user: currentUser } = useAuthService()
 
   const { theme, styles, colorScheme } = useTheme()
 
@@ -955,6 +955,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               data={userPostedMessages}
               header={
                 <SimpleMemberInfo
+                  currentUser={currentUser}
                   username={userInfoContext.data}
                   navigation={navigation}
                 />
