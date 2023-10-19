@@ -46,7 +46,6 @@ const historyRecordLimitOptions: Array<{
   value: number | null
   label: string
 }> = [
-  { value: 3, label: '3条' },
   { value: 100, label: '100条' },
   { value: 300, label: '300条' },
   { value: 500, label: '500条' },
