@@ -412,8 +412,20 @@ export async function getTopicDetail({
     })
   }
 
-  return {
-    data: topicDetailFromPage($, id),
+  try {
+    return {
+      data: topicDetailFromPage($, id),
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      data: { html },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回结果',
+    })
   }
 }
 export async function collectTopic({
@@ -436,11 +448,23 @@ export async function collectTopic({
   const { data: html } = await request({ url: `/t/${id}` })
   const $ = cheerioDoc(html)
 
-  const topic = topicDetailFromPage($, id)
-  return {
-    success: topic.collected,
-    message: topic.collected ? '收藏成功' : '操作失败',
-    data: topic,
+  try {
+    const topic = topicDetailFromPage($, id)
+    return {
+      success: topic.collected,
+      message: topic.collected ? '收藏成功' : '操作失败',
+      data: topic,
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      data: { html },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回结果',
+    })
   }
 }
 export async function uncollectTopic({
@@ -462,12 +486,23 @@ export async function uncollectTopic({
   })
 
   const $ = cheerioDoc(html)
-
-  const topic = topicDetailFromPage($, id)
-  return {
-    success: !topic.collected,
-    message: !topic.collected ? '取消收藏成功' : '操作失败',
-    data: topic,
+  try {
+    const topic = topicDetailFromPage($, id)
+    return {
+      success: !topic.collected,
+      message: !topic.collected ? '取消收藏成功' : '操作失败',
+      data: topic,
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      data: { html },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回结果',
+    })
   }
 }
 export async function thankTopic({
@@ -491,11 +526,22 @@ export async function thankTopic({
   })
 
   const $ = cheerioDoc(html)
-
-  return {
-    success: json.success,
-    message: json.success ? '感谢已发送' : json.message,
-    data: topicDetailFromPage($, id),
+  try {
+    return {
+      success: json.success,
+      message: json.success ? '感谢已发送' : json.message,
+      data: topicDetailFromPage($, id),
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      data: { html },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回结果',
+    })
   }
 }
 // TODO: rename to ignore
@@ -615,10 +661,22 @@ export async function createTopic(data: {
 
   if (res.request?.responseURL && /\/t\/\d+/.test(res.request.responseURL)) {
     const match = /\/t\/(\d+)/.exec(res.request.responseURL)
-    const topic = topicDetailFromPage($, Number(match[1]))
-    return {
-      success: true,
-      data: topic,
+    try {
+      const topic = topicDetailFromPage($, Number(match[1]))
+      return {
+        success: true,
+        data: topic,
+      }
+    } catch (err) {
+      Sentry.Native.addBreadcrumb({
+        type: 'info',
+        data: { html: res.data },
+      })
+      Sentry.Native.captureException(err)
+      throw new ApiError({
+        code: 'UNEXPECTED_RESPONSE',
+        message: '意想不到的返回结果',
+      })
     }
   }
   throw new ApiError({
@@ -698,10 +756,22 @@ export async function editTopic(
     })
   }
   const $ = cheerioDoc(res.data)
-  const topic = topicDetailFromPage($, id)
-  return {
-    data: topic,
-    fetchedAt: Date.now(),
+  try {
+    const topic = topicDetailFromPage($, id)
+    return {
+      data: topic,
+      fetchedAt: Date.now(),
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      data: { html: res.data },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回结果',
+    })
   }
 }
 
@@ -738,11 +808,23 @@ export async function moveTopic(
     })
   }
 
-  const $ = cheerioDoc(res.data)
-  const topic = topicDetailFromPage($, id)
-  return {
-    data: topic,
-    fetchedAt: Date.now(),
+  try {
+    const $ = cheerioDoc(res.data)
+    const topic = topicDetailFromPage($, id)
+    return {
+      data: topic,
+      fetchedAt: Date.now(),
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      data: { html: res.data },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回结果',
+    })
   }
 }
 
@@ -769,10 +851,22 @@ export async function appendTopic({
     data: stringify({ content, once: postOnce }),
   })
   const $ = cheerioDoc(html)
-  return {
-    success: true,
-    message: '附言成功',
-    data: topicDetailFromPage($, id),
+  try {
+    return {
+      success: true,
+      message: '附言成功',
+      data: topicDetailFromPage($, id),
+    }
+  } catch (err) {
+    Sentry.Native.addBreadcrumb({
+      type: 'info',
+      data: { html },
+    })
+    Sentry.Native.captureException(err)
+    throw new ApiError({
+      code: 'UNEXPECTED_RESPONSE',
+      message: '意想不到的返回结果',
+    })
   }
 }
 
@@ -836,7 +930,7 @@ export async function getTopicReplies({
     Sentry.Native.captureException(err)
     throw new ApiError({
       code: 'UNEXPECTED_RESPONSE',
-      message: '意想不到的返回',
+      message: '意想不到的返回结果',
     })
   }
 }

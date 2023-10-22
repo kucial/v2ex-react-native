@@ -94,7 +94,7 @@ export function topicFromLink($el: Cheerio<Element>): TopicBasic {
 export function nodeFromLink($el: Cheerio<Element>): NodeBasic {
   return {
     title: $el.text().trim(),
-    name: $el.attr('href')?.replace(/.*\/go\//, '') || '--',
+    name: $el.attr('href').replace(/.*\/go\//, '') || '--',
   }
 }
 
