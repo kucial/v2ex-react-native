@@ -4,19 +4,55 @@
 <img src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/logo.png" alt="R2V" />
 </p>
 
+## 下载
+
+- [Apple Store](https://apps.apple.com/cn/app/r2v/id1645766550)
+
 ## 截图
 
-<img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/01.png" alt="screenshot 01" />
-<img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/02.png" alt="screenshot 02" />
-<img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/03.png" alt="screenshot 03" />
-<img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/04.png" alt="screenshot 04" />
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/01.png" alt="screenshot 01" />
+      </td>
+      <td>
+        <img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/02.png" alt="screenshot 02" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/03.png" alt="screenshot 03" />
+      </td>
+      <td>
+        <img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/04.png" alt="screenshot 04" />
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ### Dark Mode
 
-<img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d01.png" alt="screenshot d01" />
-<img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d02.png" alt="screenshot d02" />
-<img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d03.png" alt="screenshot d03" />
-<img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d04.png" alt="screenshot d04" />
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d01.png" alt="screenshot d01" />
+      </td>
+      <td>
+        <img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d02.png" alt="screenshot d02" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d03.png" alt="screenshot d03" />
+      </td>
+      <td>
+        <img width="300px" src="https://raw.githubusercontent.com/kucial/v2ex-react-native/main/public/d04.png" alt="screenshot d04" />
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 ## 主要开发库
 
