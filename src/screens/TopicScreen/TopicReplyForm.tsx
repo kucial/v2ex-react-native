@@ -98,12 +98,13 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                 style={[
                   {
                     width: '100%',
-                    height: 200,
+                    height: Platform.OS === 'android' ? 200 : '100%',
                     borderRadius: 8,
                     paddingHorizontal: 8,
                     paddingVertical: Platform.OS === 'android' ? 8 : 1,
                     color: theme.colors.text,
-                    verticalAlign: 'top',
+                    verticalAlign:
+                      Platform.OS === 'android' ? 'top' : undefined,
                   },
                   isTouched &&
                     error && {
