@@ -63,7 +63,7 @@ function PasswordSignin(props: PasswordSigninProps) {
   } = useAppSettings()
 
   const nameInput = useRef<TextInput>(null)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string[]>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const { handleSubmit, control, watch } = useForm({
@@ -289,11 +289,18 @@ function PasswordSignin(props: PasswordSigninProps) {
                   label="登录"
                 />
 
+                {formSwr.error && (
+                  <View className="mt-4">
+                    <Text style={styles.text_danger}>
+                      {formSwr.error.message}
+                    </Text>
+                  </View>
+                )}
                 {error && (
                   <View className="mt-4">
                     {error.map((str) => (
                       <View key={str}>
-                        <Text className="text-red-700">{str}</Text>
+                        <Text style={styles.text_danger}>{str}</Text>
                       </View>
                     ))}
                   </View>
