@@ -139,7 +139,7 @@ export default function SimpleMemberInfo(props: {
         </View>
         <View className="flex flex-col justify-center">
           <View className="flex flex-row">
-            {data && username !== currentUser.username && (
+            {data && currentUser && username !== currentUser.username && (
               <Button
                 size="sm"
                 variant="default"

@@ -7,6 +7,7 @@
 ## 下载
 
 - [Apple Store](https://apps.apple.com/cn/app/r2v/id1645766550)
+- [Android, eas build](https://expo.dev/artifacts/eas/5XY3aPrTLfyE8kSP4EjAHB.apk)
 
 ## 截图
 

@@ -64,7 +64,7 @@ function AppSWRConfig(props: PropsWithChildren) {
                 config,
               },
             })
-          } else {
+          } else if (!(err instanceof ApiError)) {
             Sentry.Native.addBreadcrumb({
               type: 'info',
               message: 'swr info',

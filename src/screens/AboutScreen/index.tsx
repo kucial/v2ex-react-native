@@ -73,13 +73,13 @@ export default function AboutScreen(props) {
               </View>
               <View>
                 <Text className="text-center" style={styles.text}>
-                  {Constants.manifest.version}
+                  {Constants.manifest?.version}
                 </Text>
               </View>
 
               <View className="mt-2">
                 <Text className="text-sm text-center" style={styles.text_meta}>
-                  {Constants.manifest.extra.buildTag}
+                  {Constants.manifest?.extra.buildTag}
                 </Text>
               </View>
               <View className="ml-4 h-[20]" style={styles.border_b} />
@@ -131,7 +131,7 @@ export default function AboutScreen(props) {
               onPress={async () => {
                 try {
                   const params = {
-                    subject: `R2V (${Constants.manifest.extra.buildTag}) 意见反馈`,
+                    subject: `R2V (${Constants.manifest.extra?.buildTag}) 意见反馈`,
                   }
                   console.log(
                     `mailto:kongkx.yang@gmail.com?${stringify(params)}`,
