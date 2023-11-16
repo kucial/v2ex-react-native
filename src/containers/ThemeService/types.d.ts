@@ -147,7 +147,6 @@ type ThemeService = {
   theme: MyTheme
   styles: ThemeStyles
   colorScheme: 'light' | 'dark'
-  getSemanticStyle(code: SemanticType): [ViewStyle?, TextStyle?, ViewStyle?]
 }
 
 declare module 'react-native' {

@@ -5,34 +5,9 @@ import { setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
+import { CACHE_KEY, DEFAULT_SETTINGS } from './constants'
 import { AppSettingsContext } from './context'
 import { AppSettings, AppSettingsService } from './types'
-
-const CACHE_KEY = '$app$/settings'
-
-const DEFAULT_SETTINGS: AppSettings = {
-  homeTabs: undefined, // Array<TabDesc>
-  showHasViewed: true,
-  showHasNewReply: true,
-
-  theme: 'r2v',
-  // themeColor: '', // 主题强调色
-  feedLayout: 'normal', // normal | tide
-  feedShowAvatar: true,
-  feedShowLastReplyMember: true,
-  feedShowViewedHint: true,
-  feedTitleStyle: 'normal', // normal | emphasized
-
-  autoRefresh: true,
-  autoRefreshDuration: 10,
-  refreshHaptics: true,
-
-  maxContainerWidth: 600,
-  payLayoutEnabled: true,
-
-  searchProvider: 'google',
-  historyRecordLimit: 500,
-}
 
 const TODAY_HOT_TAB = {
   value: 'today_hots',

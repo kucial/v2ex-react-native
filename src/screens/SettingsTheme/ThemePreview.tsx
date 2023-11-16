@@ -9,7 +9,6 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native'
-import { StatusBar } from 'react-native'
 import type { BottomSheetModal } from '@gorhom/bottom-sheet'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'

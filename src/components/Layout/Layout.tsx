@@ -81,7 +81,7 @@ export default function Layout(props: { children: ReactNode }) {
     <AppLayoutContext.Provider value={context}>
       <View
         className={classNames(
-          'flex-1 flex',
+          'flex-1 flex dark:bg-neutral-900',
           padLayout.orientation === 'PORTRAIT'
             ? 'flex-col'
             : 'flex-row-reverse',

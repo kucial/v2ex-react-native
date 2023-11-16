@@ -10,7 +10,7 @@ import Toast from 'react-native-root-toast'
 
 import Loader from '@/components/Loader'
 
-import { useTheme } from '../ThemeService'
+import { getSemanticStyle, useTheme } from '../ThemeService'
 const AlertServiceContext = createContext<Partial<AlertService>>({})
 import { AlertService } from './types'
 
@@ -20,11 +20,11 @@ const AlertServiceProvider = forwardRef<
     children: ReactNode
   }
 >((props, ref) => {
-  const { getSemanticStyle, styles } = useTheme()
+  const { styles } = useTheme()
   const service = useMemo(() => {
     const s = {
       show({ type, message, loading, ...options }) {
-        const [bgStyle, textStyle] = getSemanticStyle(type)
+        const [bgStyle, textStyle] = getSemanticStyle(type, styles)
         const sibling = Toast.show(message, {
           shadow: false,
           position: -110,
@@ -51,7 +51,7 @@ const AlertServiceProvider = forwardRef<
     } as AlertService
 
     return s
-  }, [getSemanticStyle])
+  }, [styles])
 
   useImperativeHandle(ref, () => service, [])
 

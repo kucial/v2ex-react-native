@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { styled } from 'nativewind'
 
 import Loader from '@/components/Loader'
-import { useTheme } from '@/containers/ThemeService'
+import { getSemanticStyle, useTheme } from '@/containers/ThemeService'
 
 type ButtonVariant =
   | 'primary'
@@ -43,10 +43,10 @@ function Button(props: {
   className?: string
   radius?: number | 'md' | 'sm' | 'full'
 }) {
-  const { styles, theme, getSemanticStyle } = useTheme()
+  const { styles, theme } = useTheme()
   const { size, variant, radius = 'md' } = props
 
-  const [bgStyle, textStyle, bdStyle] = getSemanticStyle(variant)
+  const [bgStyle, textStyle, bdStyle] = getSemanticStyle(variant, styles)
 
   const children = useMemo(() => {
     if (props.children) {
