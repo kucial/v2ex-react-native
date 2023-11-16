@@ -19,7 +19,7 @@ const topicLinkCapture = `(function() {
   try {
     document.body.addEventListener('click', function(e) {
       const a = e.target.closest('a');
-      if (a && /^https:\\/\\/(www\\.)?v2ex\\.com/.test(a.href)) {
+      if (a && /^https:\\/\\/(www|fast|hk\\.)?v2ex\\.com/.test(a.href)) {
         e.preventDefault();
         e.stopPropagation();
         window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -54,6 +54,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
       return state
     },
   )
+  const onceLoaded = useRef(false)
   const [loading, setLoading] = useState(false)
   useEffect(() => {
     setTimeout(() => {
@@ -136,9 +137,16 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                 'site:v2ex.com/t ' + searchParams.q,
               )}`,
             }}
+            style={[
+              styles.layer1,
+              loading && !onceLoaded.current && { opacity: 0 },
+            ]}
             decelerationRate="normal"
             onLoadStart={() => setLoading(true)}
-            onLoadEnd={() => setLoading(false)}
+            onLoadEnd={() => {
+              setLoading(false)
+              onceLoaded.current = true
+            }}
             onMessage={(event) => {
               if (event.nativeEvent.data) {
                 const data = JSON.parse(event.nativeEvent.data)
@@ -152,7 +160,11 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
             }}></WebView>
         )}
         <View className="absolute w-full top-0">
-          <NProgress backgroundColor="#333" height={3} enabled={loading} />
+          <NProgress
+            backgroundColor={theme.colors.primary}
+            height={3}
+            enabled={loading}
+          />
         </View>
       </View>
     </View>
