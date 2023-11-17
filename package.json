@@ -1,6 +1,6 @@
 {
   "name": "v2ex-react-native",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "scripts": {
     "start": "expo start --dev-client -c",
     "android": "expo run:android",

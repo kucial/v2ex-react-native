@@ -1,3 +1,4 @@
+import { useColorScheme } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
@@ -16,7 +17,7 @@ import ClipboardWatcher from './src/containers/ClipboardWatcher'
 import FetchPrepare from './src/containers/FetchPrepare'
 import ImgurService from './src/containers/ImgurService'
 import NavigationContainer from './src/containers/NavigationContainer'
-import { ThemeProvider } from './src/containers/ThemeService'
+import { getThemeService, ThemeProvider } from './src/containers/ThemeService'
 import ViewedTopicsService from './src/containers/ViewedTopicsService'
 import AppStack from './src/screens/AppStack'
 // import DebugScreen from './src/screens/DebugScreen'
@@ -29,8 +30,9 @@ Sentry.init({
 })
 
 function App() {
+  const { styles } = getThemeService()
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={styles.layer1}>
       <RootSiblingParent>
         <AppSettingsService>
           <ThemeProvider>

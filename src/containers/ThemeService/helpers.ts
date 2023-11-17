@@ -8,14 +8,14 @@ import {
 
 import { getActiveTheme } from '../AppSettingsService'
 import * as themes from './themes'
-import { SemanticType, ThemeStyles } from './types'
+import { SemanticType, ThemeService, ThemeStyles } from './types'
 
 const themeServiceMap = {}
 
 export function getThemeService(
   themeName?: string,
   colorScheme?: ColorSchemeName,
-) {
+): ThemeService {
   const name = themeName || getActiveTheme()
   const scheme = colorScheme || Appearance.getColorScheme()
 
