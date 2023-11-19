@@ -62,12 +62,12 @@ export const isAppLink = (href: string) => {
 }
 
 export const isImgurResourceLink = (href: string) => {
-  return /^https?:\/\/imgur\.com\/[^/]+$/.test(href)
+  return /^https?:\/\/(i\.)?imgur\.com\/[^/]+$/.test(href)
 }
 
 export const getImgurResourceImageLink = (href: string) => {
   return href.replace(
-    /^https?:\/\/imgur\.com\/([^/]+)$/,
+    /^https?:\/\/(?:i\.)?imgur\.com\/([^/]+)$/,
     'https://i.imgur.com/$1.png',
   )
 }
