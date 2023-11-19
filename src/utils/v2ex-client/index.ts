@@ -140,10 +140,8 @@ let n_403 = 0
 
 instance.interceptors.response.use(
   function (res) {
-    if (
-      res.request?.responseURL === BASE_URL + '/2fa' &&
-      res.config.url !== '/2fa'
-    ) {
+    const responseURL: string = res.request?.responseURL
+    if (responseURL === BASE_URL + '/2fa' && res.config.url !== '/2fa') {
       const $ = cheerioDoc(res.data)
       const once = $('form[action="/2fa"] input[name=once]').attr('value')
       const error = new ApiError({
@@ -154,6 +152,19 @@ instance.interceptors.response.use(
         },
       })
       dispatch('2fa_enabled', error as TFA_Error)
+      throw error
+    }
+    if (
+      responseURL &&
+      responseURL.startsWith('/signin') &&
+      !res.config.url.startsWith('/signin')
+    ) {
+      const $ = cheerioDoc(res.data)
+      const message = $('.message').text()
+      const error = new ApiError({
+        code: 'AUTH_REQUIRED',
+        message: message || '需要登录后再继续',
+      })
       throw error
     }
 

@@ -846,6 +846,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const BarComponent = padLayout.active ? PadSidebar : BottomBar
 
+  const error = !topicSwr.data
+    ? topicSwr.error || listSwr.error
+    : topicSwr.error
+
   return (
     <>
       {/* {baseContent} */}
@@ -860,7 +864,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             isLoading={isLoading(topicSwr)}
             data={topicSwr.data}
             hasReply={!!replyItems.length}
-            error={topicSwr.error}
+            error={error}
             fallback={brief}
             navigation={navigation}
             onAppend={handleAppend}

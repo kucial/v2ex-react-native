@@ -8,13 +8,14 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText } from '@/components/Skeleton/Elements'
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import ApiError from '@/utils/v2ex-client/ApiError'
 import { TopicBasic, TopicDetail } from '@/utils/v2ex-client/types'
 
 import TopicInfo from './TopicInfo'
 
 function TopicBaseInfo(props: {
   data?: TopicDetail
-  error?: Error
+  error?: Error | ApiError
   isLoading?: boolean
   hasReply?: boolean
   fallback?: TopicBasic
@@ -40,24 +41,40 @@ function TopicBaseInfo(props: {
               'mb-2': props.hasReply,
             })}
             style={props.hasReply && styles.border_b}>
-            <TopicInfo data={topic} navigation={navigation} />
-            {!data && error && !isLoading && (
+            {!data && error && !isLoading ? (
               <ErrorNotice
                 error={error}
                 extra={
                   <View className="mt-2 flex flex-row justify-center">
-                    <Pressable
-                      className={classNames(
-                        'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
-                        'active:opacity-60',
-                      )}
-                      style={[styles.btn_primary__bg]}
-                      onPress={props.onRefetch}>
-                      <Text style={styles.btn_primary__text}>重试</Text>
-                    </Pressable>
+                    {error instanceof ApiError &&
+                    error?.code === 'AUTH_REQUIRED' ? (
+                      <Pressable
+                        className={classNames(
+                          'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
+                          'active:opacity-60',
+                        )}
+                        style={[styles.btn_primary__bg]}
+                        onPress={() => {
+                          navigation.navigate('signin')
+                        }}>
+                        <Text style={styles.btn_primary__text}>登录</Text>
+                      </Pressable>
+                    ) : (
+                      <Pressable
+                        className={classNames(
+                          'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
+                          'active:opacity-60',
+                        )}
+                        style={[styles.btn_primary__bg]}
+                        onPress={props.onRefetch}>
+                        <Text style={styles.btn_primary__text}>重试</Text>
+                      </Pressable>
+                    )}
                   </View>
                 }
               />
+            ) : (
+              <TopicInfo data={topic} navigation={navigation} />
             )}
             {isFallback && isLoading && (
               <View className="mt-1">

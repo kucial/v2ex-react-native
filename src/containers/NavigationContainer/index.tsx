@@ -28,6 +28,7 @@ const myGetStateFromPath = (path, options) => {
 const linking: LinkingOptions<AppStackParamList> = {
   prefixes: [Linking.createURL('/v2ex.com'), Linking.createURL('/*.v2ex.com')],
   config: {
+    initialRouteName: 'main',
     screens: {
       topic: {
         path: 't/:id',
