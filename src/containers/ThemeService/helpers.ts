@@ -176,7 +176,7 @@ export function getThemeService(
     })
 
     themeServiceMap[key] = {
-      colorScheme: colorScheme,
+      colorScheme: scheme,
       theme,
       styles,
     }
