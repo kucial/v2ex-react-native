@@ -107,7 +107,7 @@ function ReplyRow(props: ReplyRowProps) {
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
-        <View className="py-2" style={[styles.layer1, styles.border_b]}>
+        <View className="py-2" style={[styles.layer1, styles.border_b_light]}>
           <View className="flex flex-row pl-2">
             {showAvatar && <Box className="w-[24px] h-[24px] rounded mr-2" />}
             <View className="flex-1 ml-1">

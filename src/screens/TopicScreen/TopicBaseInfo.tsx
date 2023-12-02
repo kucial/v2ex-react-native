@@ -40,7 +40,7 @@ function TopicBaseInfo(props: {
               'px-4': !padLayout.active,
               'mb-2': props.hasReply,
             })}
-            style={props.hasReply && styles.border_b}>
+            style={props.hasReply && styles.border_b_light}>
             {!data && error && !isLoading ? (
               <ErrorNotice
                 error={error}
