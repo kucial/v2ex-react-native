@@ -1,15 +1,11 @@
 import { ReactElement, ReactNode } from 'react'
-import {
-  GestureResponderEvent,
-  Pressable,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native'
+import { GestureResponderEvent, Text, View, ViewStyle } from 'react-native'
 import classNames from 'classnames'
 import { styled } from 'nativewind'
 
 import { useTheme } from '@/containers/ThemeService'
+
+import FixedPressable from '../FixedPressable'
 
 export const LineItemGroup = styled(
   (props: { style?: ViewStyle | ViewStyle[]; children: ReactNode }) => {
@@ -35,7 +31,7 @@ export const LineItem = styled(
   }) => {
     const { styles } = useTheme()
     return (
-      <Pressable
+      <FixedPressable
         className={classNames(
           'min-h-[50px] flex flex-row items-center pl-4',
           'active:opacity-50',
@@ -58,7 +54,7 @@ export const LineItem = styled(
             </View>
           )}
         </View>
-      </Pressable>
+      </FixedPressable>
     )
   },
 )

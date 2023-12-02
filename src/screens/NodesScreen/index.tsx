@@ -15,7 +15,7 @@ import { isRefreshing } from '@/utils/swr'
 import { getMyCollectedNodes, getNodeGroups } from '@/utils/v2ex-client'
 
 import CollectedNodes from './CollectedNodes'
-import CommonNodes from './CommonNodes'
+import PubliicNodeItem from './PubliicNodeItem'
 
 const CACHE_KEY = '$app$/nodes-filter'
 
@@ -46,8 +46,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
               title: '收藏的节点',
               data: [
                 {
-                  type: 'self',
-                  name: 'collected',
+                  type: 'favorite',
                   nodes: collectedNodesSwr.data.data,
                 },
               ],
@@ -55,44 +54,24 @@ export default function NodesScreen({ navigation }: ScreenProps) {
           : null,
         commonNodesSwr.data?.data.map((group) => ({
           title: group.title,
-          data: [
-            {
-              type: 'public',
-              name: group.name,
-              nodes: filter
-                ? group.nodes.filter(
-                    (node) =>
-                      node.name.match(new RegExp(filter, 'i')) ||
-                      node.title.match(new RegExp(filter, 'i')),
-                  )
-                : group.nodes,
-            },
-          ],
+          data: filter
+            ? group.nodes.filter(
+                (node) =>
+                  node.name.match(new RegExp(filter, 'i')) ||
+                  node.title.match(new RegExp(filter, 'i')),
+              )
+            : group.nodes,
         })),
       ]
         .flat()
-        .filter((section) => !!section && !!section.data[0].nodes.length),
+        .filter((section) => !!section && !!section.data.length),
       renderItem: ({ item }) => {
-        let content
         switch (item.type) {
-          case 'public':
-            content = <CommonNodes data={item.nodes} />
-            break
-          case 'self':
-            content = <CollectedNodes data={item.nodes} />
-            break
+          case 'favorite':
+            return <CollectedNodes data={item.nodes} />
           default:
-            content = (
-              <View>
-                <Text>UNKNOWN</Text>
-              </View>
-            )
+            return <PubliicNodeItem data={item} />
         }
-        return (
-          <View className="rounded-b-sm" style={styles.layer1}>
-            <MaxWidthWrapper>{content}</MaxWidthWrapper>
-          </View>
-        )
       },
     }
   }, [commonNodesSwr.data, collectedNodesSwr.data, filter, styles.layer1])
@@ -116,7 +95,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
 
   return (
     <View className="flex-1">
-      <View className="h-[52px]" style={styles.layer1}>
+      <View className="h-[52px] mb-1" style={styles.layer1}>
         <SearchInput
           placeholder="筛选"
           initialValue={filter}
@@ -151,7 +130,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
         renderItem={renderItem}
         renderSectionHeader={({ section }) => {
           return (
-            <View style={styles.layer1}>
+            <View>
               <MaxWidthWrapper>
                 <View className="mx-1">
                   <View
@@ -168,6 +147,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
             </View>
           )
         }}
+        renderSectionFooter={() => <View style={{ height: 12 }}></View>}
         refreshControl={
           <MyRefreshControl
             refreshing={

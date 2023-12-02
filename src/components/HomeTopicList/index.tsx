@@ -64,7 +64,6 @@ function FeedTopicList(props: FeedTopicListProps) {
         if (err.code === '2FA_ENABLED') {
           return
         }
-        console.log(err.message)
         alert.show({
           type: 'error',
           message: err.message || '请求资源失败',
