@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kucial.v2ex",
-      "runtimeVersion": "1.1.0",
+      "runtimeVersion": "1.1.1",
       "splash": {
         "image": "./src/assets/splash.png",
         "backgroundColor": "#ffffff",
