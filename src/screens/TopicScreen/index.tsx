@@ -1,15 +1,11 @@
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import { Linking, Share } from 'react-native'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Share } from 'react-native'
 import { InteractionManager } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
+import {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
@@ -17,10 +13,11 @@ import { useIsFocused } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import deepmerge from 'deepmerge'
-import { debounce } from 'lodash'
 import useSWR from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
+import AnimatedFlashList from '@/components/AnimatedFlashList'
+import AnimatedHeader from '@/components/AnimatedHeader'
 import Button from '@/components/Button'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
@@ -33,7 +30,6 @@ import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { useCachedState } from '@/utils/hooks'
-import { useScrollDirection } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
 import { isLoading, isRefreshing, shouldLoadMore } from '@/utils/swr'
 import * as v2exClient from '@/utils/v2ex-client'
@@ -272,7 +268,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const replyModalRef = useRef<BottomSheetModal>()
   const conversationModalRef = useRef<BottomSheetModal>()
   const userInfoModalRef = useRef<BottomSheetModal>()
-  const movePanelModalRef = useRef<BottomSheetModal>()
+  const changeNodeModalRef = useRef<BottomSheetModal>()
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
 
@@ -293,28 +289,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     }, [])
     return items
   }, [listSwr])
-
-  const handleBlockMember = composeAuthedNavigation((username: string) => {
-    const indicator = alert.show({
-      type: 'default',
-      message: '正在屏蔽用户',
-      loading: true,
-      duration: 0,
-    })
-    v2exClient
-      .blockMember({
-        username,
-      })
-      .then(() => {
-        alert.show({ type: 'success', message: '已屏蔽用户' })
-      })
-      .catch((err) => {
-        alert.show({ type: 'error', message: err.message })
-      })
-      .finally(() => {
-        alert.hide(indicator)
-      })
-  })
 
   const handleToggleBlock = composeAuthedNavigation(
     useCallback(() => {
@@ -507,67 +481,48 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const isFocused = useIsFocused()
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: (props) => (
-        <Button
-          className="h-[44px] w-[44px] rounded-full -mr-4"
-          variant="icon"
-          radius={22}
-          onPress={() => {
-            // actionsheet
-            showActionSheetWithOptions(
-              {
-                title: `#${id}`,
-                options: [
-                  '取消',
-                  '在内部 WebView 打开',
-                  '在外部浏览器中打开',
-                  '屏蔽用户',
-                  topic?.blocked ? '取消忽略主题' : '忽略主题',
-                  '举报',
-                ],
-                cancelButtonIndex: 0,
-                destructiveButtonIndex: 5,
-                tintColor: theme.colors.primary,
-                userInterfaceStyle: colorScheme,
-                containerStyle: styles.layer1,
-                titleTextStyle: styles.text,
-              },
-              (buttonIndex) => {
-                if (buttonIndex === 1) {
-                  navigation.push('browser', {
-                    url: getTopicLink(id),
-                  })
-                } else if (buttonIndex === 2) {
-                  Linking.openURL(getTopicLink(id))
-                } else if (buttonIndex === 3) {
-                  const username = topic.member?.username
-                  if (!username) {
-                    return
-                  }
-                  handleBlockMember(username)
-                } else if (buttonIndex === 4) {
-                  handleToggleBlock()
-                } else if (buttonIndex === 5) {
-                  handleReportTopic()
-                }
-              },
-            )
-          }}>
-          <EllipsisHorizontalIcon size={24} color={theme.colors.text_title} />
-        </Button>
-      ),
-    })
-  }, [id, topic?.blocked])
-
-  useLayoutEffect(() => {
-    if (topic?.title) {
-      navigation.setOptions({
-        title: topic.title,
-      })
-    }
-  }, [topic?.title])
+  const headerRight = useMemo(
+    () => (
+      <Button
+        className="h-[44px] w-[44px] rounded-full"
+        variant="icon"
+        radius={22}
+        onPress={() => {
+          // actionsheet
+          showActionSheetWithOptions(
+            {
+              title: `#${id}`,
+              options: [
+                '取消',
+                '在内部 WebView 打开',
+                topic?.blocked ? '取消忽略主题' : '忽略主题',
+                '举报',
+              ],
+              cancelButtonIndex: 0,
+              destructiveButtonIndex: 3,
+              tintColor: styles.text_primary.color as string,
+              userInterfaceStyle: colorScheme,
+              containerStyle: styles.layer1,
+              titleTextStyle: styles.text,
+            },
+            (buttonIndex) => {
+              if (buttonIndex === 1) {
+                navigation.push('browser', {
+                  url: getTopicLink(id),
+                })
+              } else if (buttonIndex === 2) {
+                handleToggleBlock()
+              } else if (buttonIndex === 3) {
+                handleReportTopic()
+              }
+            },
+          )
+        }}>
+        <EllipsisHorizontalIcon size={24} color={theme.colors.text_title} />
+      </Button>
+    ),
+    [id, topic?.blocked],
+  )
 
   const [replyContext, setReplyContext] = useState<ReplyContext>(null)
   const initReply = useCallback(
@@ -711,8 +666,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     })
   }, [topic?.id])
 
-  const handleMove = useCallback(() => {
-    movePanelModalRef.current?.present()
+  const handleChangeNode = useCallback(() => {
+    changeNodeModalRef.current?.present()
   }, [])
 
   const handleRefetch = useCallback(() => {
@@ -808,37 +763,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     return getMemberReplies(userInfoContext.data, replyItems)
   }, [userInfoContext, replyItems])
 
-  const directionCallback = useCallback((direction) => {
-    if (direction === 'down') {
-      scrollControlRef.current?.setAction('to_bottom')
-    } else {
-      scrollControlRef.current?.setAction('to_top')
-    }
-  }, [])
-  const { onScroll, resetDirection } = useScrollDirection({
-    callback: directionCallback,
+  const scrollY = useSharedValue(0)
+  const handleScroll = useAnimatedScrollHandler({
+    onScroll: (e) => {
+      scrollY.value = e.contentOffset.y
+    },
   })
-
-  const resetScrollControlAction = useCallback(
-    debounce(
-      () => {
-        resetDirection()
-        scrollControlRef.current?.setAction('')
-      },
-      500,
-      { trailing: true },
-    ),
-    [],
-  )
-  const handleScroll = useCallback((e) => {
-    onScroll(e)
-    resetScrollControlAction()
-  }, [])
-  useEffect(() => {
-    return () => {
-      resetScrollControlAction.cancel()
-    }
-  }, [resetScrollControlAction])
 
   if (!topic) {
     return <TopicSkeleton />
@@ -852,8 +782,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   return (
     <>
-      {/* {baseContent} */}
-      <FlashList
+      <AnimatedHeader
+        scrollY={scrollY}
+        title={topic?.title}
+        headerRight={headerRight}
+      />
+      <AnimatedFlashList
         ref={listRef}
         className="flex-1"
         data={replyItems}
@@ -869,7 +803,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             navigation={navigation}
             onAppend={handleAppend}
             onEdit={handleEdit}
-            onMove={handleMove}
+            onChangeNode={handleChangeNode}
             onRefetch={handleRefetch}
           />
         }
@@ -991,14 +925,14 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       </MyBottomSheetModal>
       {topicSwr.data?.canMove && (
         <MyBottomSheetModal
-          ref={movePanelModalRef}
+          ref={changeNodeModalRef}
           index={0}
           snapPoints={moveModalSnapPoints}>
           <TopicMovePanel
             topicId={topicSwr.data.id}
             node={topicSwr.data.node}
             onExit={() => {
-              movePanelModalRef.current?.dismiss()
+              changeNodeModalRef.current?.dismiss()
             }}
             onUpdated={(topic) => {
               topicSwr.mutate(topic, { revalidate: false })

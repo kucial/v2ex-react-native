@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from 'react'
-import { FlashList } from '@shopify/flash-list'
-import PropTypes from 'prop-types'
+import { SharedValue } from 'react-native-reanimated'
+import { FlashList, FlashListProps } from '@shopify/flash-list'
 import useSWRInfinite from 'swr/infinite'
 
+import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
@@ -13,7 +14,14 @@ import { getMemberTopics } from '@/utils/v2ex-client'
 
 import UserTopicRow from './MemberTopicRow'
 
-export default function MemberTopics(props: { username: string }) {
+export default function MemberTopics(
+  props: {
+    username: string
+    scrollY: SharedValue<number>
+    isFocused?: boolean
+    onGetRef: (ref: any) => void
+  } & Omit<FlashListProps<any>, 'data' | 'renderItem' | 'estimatedItemSize'>,
+) {
   const alert = useAlertService()
   const { getViewedStatus } = useViewedTopics()
   const { data: settings } = useAppSettings()
@@ -79,40 +87,42 @@ export default function MemberTopics(props: { username: string }) {
   }, [listItems?.length])
 
   return (
-    <>
-      <FlashList
-        className="flex-1"
-        data={listItems}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        onEndReachedThreshold={0.4}
-        estimatedItemSize={110}
-        onEndReached={() => {
-          if (listSwr.error?.code === 'member_locked') {
-            return
-          }
-          if (shouldLoadMore(listSwr)) {
-            listSwr.setSize(listSwr.size + 1)
-          }
-        }}
-        refreshControl={
-          <MyRefreshControl
-            onRefresh={() => {
-              if (listSwr.isValidating) {
-                return
-              }
-              listSwr.mutate()
-            }}
-            refreshing={isRefreshing(listSwr)}
-          />
+    <AnimatedFlashList
+      data={listItems}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      onEndReachedThreshold={0.4}
+      estimatedItemSize={110}
+      scrollEventThrottle={16}
+      onEndReached={() => {
+        if (listSwr.error?.code === 'member_locked') {
+          return
         }
-        ListFooterComponent={() => {
-          return <CommonListFooter data={listSwr} />
-        }}
-      />
-    </>
+        if (shouldLoadMore(listSwr)) {
+          listSwr.setSize(listSwr.size + 1)
+        }
+      }}
+      refreshControl={
+        <MyRefreshControl
+          onRefresh={() => {
+            if (listSwr.isValidating) {
+              return
+            }
+            listSwr.mutate()
+          }}
+          refreshing={isRefreshing(listSwr)}
+          progressViewOffset={props.contentContainerStyle.paddingTop as number}
+        />
+      }
+      ListFooterComponent={() => {
+        return <CommonListFooter data={listSwr} />
+      }}
+      onScroll={props.onScroll}
+      onScrollEndDrag={props.onScrollEndDrag}
+      onMomentumScrollBegin={props.onMomentumScrollBegin}
+      onMomentumScrollEnd={props.onMomentumScrollEnd}
+      contentContainerStyle={props.contentContainerStyle}
+      ref={props.onGetRef}
+    />
   )
-}
-MemberTopics.propTypes = {
-  username: PropTypes.string,
 }

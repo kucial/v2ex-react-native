@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useWindowDimensions } from 'react-native'
+import { useSharedValue } from 'react-native-reanimated'
 import { TabBar, TabView } from 'react-native-tab-view'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native'
@@ -66,6 +67,7 @@ export default function HomeScreen(props: HomeScreenProps) {
   const tabIdleForRefresh = useRef<string>(null)
   const tabIdleResetTimer = useRef<NodeJS.Timeout>()
   const isFocused = useIsFocused()
+  const scrollY = useSharedValue(0)
 
   const { renderScene, renderTabBar } = useMemo(() => {
     if (!homeTabs) {
@@ -84,6 +86,7 @@ export default function HomeScreen(props: HomeScreenProps) {
                 isFocused={isActive}
                 currentListRef={isActive && currentListRef}
                 name={tab.value}
+                scrollY={scrollY}
               />
             )
           case 'home':

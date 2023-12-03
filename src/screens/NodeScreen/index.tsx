@@ -1,10 +1,12 @@
-import { useCallback, useLayoutEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Text, useWindowDimensions, View } from 'react-native'
+import { useSharedValue } from 'react-native-reanimated'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Image } from 'expo-image'
 import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
 
+import AnimatedHeader from '@/components/AnimatedHeader'
 import Button from '@/components/Button'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -54,11 +56,6 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
   )
 
   const node = nodeSwr.data?.data || (brief as NodeBrief) || ({} as NodeBrief)
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: node?.title,
-    })
-  }, [node?.title])
 
   const htmlProps = useMemo(() => {
     return {
@@ -188,7 +185,14 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
     </MaxWidthWrapper>
   )
 
-  return <NodeTopicList header={header} name={name} isFocused />
+  const scrollY = useSharedValue(0)
+
+  return (
+    <View style={{ flex: 1 }}>
+      <AnimatedHeader title={node?.title} scrollY={scrollY} />
+      <NodeTopicList header={header} name={name} isFocused scrollY={scrollY} />
+    </View>
+  )
 }
 
 NodeScreen.propTypes = {

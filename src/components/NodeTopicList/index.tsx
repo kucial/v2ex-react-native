@@ -7,11 +7,13 @@ import {
   useRef,
 } from 'react'
 import { AppState } from 'react-native'
+import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
 import { FlashList } from '@shopify/flash-list'
 import * as Haptics from 'expo-haptics'
 import { SWRResponse } from 'swr'
 import useSWRInfinite from 'swr/infinite'
 
+import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
@@ -30,15 +32,20 @@ type NodeTopicListProps = {
   currentListRef?: MutableRefObject<any>
   header?: ReactElement
   nodeSwr?: SWRResponse
+  scrollY: SharedValue<number>
 }
 
 export default function NodeTopicList(props: NodeTopicListProps) {
-  const { header, name, isFocused, currentListRef } = props
+  const { header, name, isFocused, currentListRef, scrollY } = props
   const { getViewedStatus } = useViewedTopics()
   const alert = useAlertService()
   const { data: settings } = useAppSettings()
   const listViewRef = useRef<FlashList<NodeTopicFeed>>()
-  const scrollY = useRef(0)
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (e) => {
+      scrollY.value = e.contentOffset.y
+    },
+  })
 
   const getKey = useCallback(
     (index: number): [string, string, number] => {
@@ -76,7 +83,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     }
     if (listSwr.data) {
       listViewRef.current.scrollToOffset({
-        offset: scrollY.current > 0 ? 0 : -60,
+        offset: scrollY.value > 0 ? 0 : -60,
         animated: true,
       })
     }
@@ -170,7 +177,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
   }, [getViewedStatus, settings, listItems])
 
   return (
-    <FlashList
+    <AnimatedFlashList
       scrollToOverflowEnabled
       ref={listViewRef}
       className="flex-1"
@@ -198,9 +205,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       ListFooterComponent={() => {
         return <CommonListFooter data={listSwr} />
       }}
-      onScroll={(e) => {
-        scrollY.current = e.nativeEvent.contentOffset.y
-      }}
+      onScroll={scrollHandler}
     />
   )
 }

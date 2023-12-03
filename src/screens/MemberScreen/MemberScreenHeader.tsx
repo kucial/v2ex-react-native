@@ -1,228 +1,383 @@
 import { useCallback } from 'react'
-import { ImageBackground, Platform, Pressable, Text, View } from 'react-native'
-import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
-import { useActionSheet } from '@expo/react-native-action-sheet'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import classNames from 'classnames'
+import { ImageBackground, Platform, Text, View } from 'react-native'
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated'
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Constants from 'expo-constants'
 import { Image } from 'expo-image'
-import { SWRResponse } from 'swr'
+import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
-import { Box } from '@/components/Skeleton/Elements'
 import { useAlertService } from '@/containers/AlertService'
+import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { localTime } from '@/utils/time'
-import * as v2exClient from '@/utils/v2ex-client'
-import { MemberDetail } from '@/utils/v2ex-client/types'
+import {
+  blockMember,
+  unblockMember,
+  unwatchMember,
+  watchMember,
+} from '@/utils/v2ex-client'
+import { getMemberDetail } from '@/utils/v2ex-client'
+import { MemberBasic, MemberDetail } from '@/utils/v2ex-client/types'
 import { StatusResponse } from '@/utils/v2ex-client/types'
+
+import MemberInfoLinks from './MemberInfoLinks'
+
+const AnimatedImage = Animated.createAnimatedComponent(Image)
 
 const AVATAR_SIZE = 72
 const HEADER_CANVAS_HEIGHT = 64
 
-export default function MemberScreenHeader({
-  route,
-  navigation,
-  swr,
-}: NativeStackScreenProps<AppStackParamList, 'member'> & {
-  swr: SWRResponse
+export default function MemberScreenHeader(props: {
+  username: string
+  brief?: MemberBasic
+  setHeaderHeight: (val: number) => void
+  headerHeight: number
+  headerCollapsedHeight: number
+  scrollY: SharedValue<number>
 }) {
-  const { brief, username } = route.params
-  const data = swr.data || brief || { username }
-  const { showActionSheetWithOptions } = useActionSheet()
-  const { theme, styles, colorScheme } = useTheme()
-  const alert = useAlertService()
-  const openActionSheet = useCallback(() => {
-    const options = [
-      '取消',
-      data.meta?.watched ? '取消特别关注' : '加入特别关注',
-      data.meta?.blocked ? '取消拉黑' : '拉黑',
-    ]
-    showActionSheetWithOptions(
-      {
-        title: data.username,
-        options,
-        cancelButtonIndex: 0,
-        destructiveButtonIndex: 2,
-        tintColor: theme.colors.primary,
-        userInterfaceStyle: colorScheme,
-        containerStyle: styles.layer1,
+  const navigation = useNavigation<
+    NativeStackNavigationProp<AppStackParamList> &
+      BottomTabNavigationProp<MainTabParamList>
+  >()
+  const {
+    username,
+    brief,
+    headerHeight,
+    setHeaderHeight,
+    headerCollapsedHeight,
+    scrollY,
+  } = props
+
+  const { user: currentUser } = useAuthService()
+
+  const memberSwr = useSWR(
+    [`/page/member/:username/info.json`, username],
+    async ([_, username]) => {
+      const { data } = await getMemberDetail({ username })
+      return data
+    },
+    {
+      onErrorRetry(err) {
+        if (err.response?.status === 404) {
+          return
+        }
       },
-      (buttonIndex) => {
-        let promise: Promise<StatusResponse<Pick<MemberDetail, 'meta'>>>
+    },
+  )
 
-        if (buttonIndex === 1) {
-          if (data.meta?.watched) {
-            promise = v2exClient.unwatchMember({ id: data.id })
-          } else {
-            promise = v2exClient.watchMember({ id: data.id })
-          }
-        }
-        if (buttonIndex === 2) {
-          if (data.meta?.blocked) {
-            promise = v2exClient.unblockMember({ id: data.id })
-          } else {
-            promise = v2exClient.blockMember({ id: data.id })
-          }
-        }
+  const data = memberSwr.data
+  const avatar = data?.avatar_large || brief?.avatar_large
+  const { theme, styles } = useTheme()
+  const alert = useAlertService()
 
-        if (promise) {
-          const indicator = alert.show({
-            type: 'default',
-            message: '处理中',
-            loading: true,
-            duration: 0,
-          })
-          promise
-            .then(({ data: patch }) => {
-              // notice
-              alert.show({
-                type: 'success',
-                message: `${options[buttonIndex]} ${data.username}`,
-              })
-              swr.mutate(
-                (prev) => ({
-                  ...prev,
-                  meta: patch.meta,
-                }),
-                false,
-              )
-            })
-            .catch((err) => {
-              alert.show({ type: 'error', message: err.message })
-            })
-            .finally(() => {
-              alert.hide(indicator)
-            })
-        }
+  const handleBlockToggle = useCallback(() => {
+    const { data } = memberSwr
+    if (!data) {
+      return
+    }
+    let promise: Promise<StatusResponse<Pick<MemberDetail, 'meta'>>>
+    let successMsg: string
+    if (data.meta?.blocked) {
+      promise = unblockMember({ id: data.id })
+      successMsg = '成功取消用户屏蔽'
+    } else {
+      promise = blockMember({ id: data.id })
+      successMsg = '成功屏蔽用户'
+    }
+    const indicator = alert.show({
+      type: 'default',
+      message: '处理中',
+      loading: true,
+      duration: 0,
+    })
+    promise
+      .then(({ data: patch }) => {
+        // notice
+        alert.show({
+          type: 'success',
+          message: successMsg,
+        })
+        memberSwr.mutate(
+          (prev) => ({
+            ...prev,
+            meta: patch.meta,
+          }),
+          false,
+        )
+      })
+      .catch((err) => {
+        alert.show({ type: 'error', message: err.message })
+      })
+      .finally(() => {
+        alert.hide(indicator)
+      })
+  }, [memberSwr.data, memberSwr.mutate])
+
+  const handleWatchToggle = useCallback(() => {
+    const { data } = memberSwr
+    if (!data) {
+      return
+    }
+    let promise: Promise<StatusResponse<Pick<MemberDetail, 'meta'>>>
+    let successMsg: string
+    if (data.meta?.blocked) {
+      promise = unwatchMember({ id: data.id })
+      successMsg = '成功取消用户关注'
+    } else {
+      promise = watchMember({ id: data.id })
+      successMsg = '成功关注'
+    }
+    const indicator = alert.show({
+      type: 'default',
+      message: '处理中',
+      loading: true,
+      duration: 0,
+    })
+    promise
+      .then(({ data: patch }) => {
+        // notice
+        alert.show({
+          type: 'success',
+          message: successMsg,
+        })
+        memberSwr.mutate(
+          (prev) => ({
+            ...prev,
+            meta: patch.meta,
+          }),
+          false,
+        )
+      })
+      .catch((err) => {
+        alert.show({ type: 'error', message: err.message })
+      })
+      .finally(() => {
+        alert.hide(indicator)
+      })
+  }, [memberSwr.data, memberSwr.mutate])
+
+  const topBannerHeight =
+    Platform.OS === 'android'
+      ? HEADER_CANVAS_HEIGHT + 6
+      : HEADER_CANVAS_HEIGHT + Constants.statusBarHeight
+
+  const topDelta = topBannerHeight - headerCollapsedHeight
+
+  const handleLayout = useCallback((e) => {
+    setHeaderHeight(e.nativeEvent.layout.height)
+  }, [])
+
+  const layer2OffsetStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      scrollY.value,
+      [0, headerHeight],
+      [0, -1 * headerHeight],
+      {
+        extrapolateRight: Extrapolation.CLAMP,
+        extrapolateLeft: Extrapolation.CLAMP,
       },
     )
-  }, [data.meta?.blocked, data.meta?.watched, data.username])
+    return {
+      transform: [{ translateY }],
+      zIndex: scrollY.value >= topDelta ? 1 : 3,
+    }
+  }, [headerHeight])
+
+  const layer1OffsetStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      scrollY.value,
+      [0, topDelta],
+      [0, -topDelta],
+      {
+        extrapolateRight: Extrapolation.CLAMP,
+        extrapolateLeft: Extrapolation.CLAMP,
+      },
+    )
+    return {
+      transform: [{ translateY }],
+    }
+  })
+
+  const avatarSizeStyle = useAnimatedStyle(() => {
+    const size = interpolate(
+      scrollY.value,
+      [0, topDelta],
+      [AVATAR_SIZE, AVATAR_SIZE - topDelta],
+      {
+        extrapolateRight: Extrapolation.CLAMP,
+        extrapolateLeft: Extrapolation.CLAMP,
+      },
+    )
+    return {
+      width: size,
+      height: size,
+    }
+  })
+
+  const headerTitleStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      scrollY.value,
+      [90, headerHeight - 48],
+      [0, 1],
+      {
+        extrapolateRight: Extrapolation.CLAMP,
+      },
+    )
+    return { opacity }
+  }, [headerHeight])
 
   return (
-    <View className="w-full" style={styles.layer1}>
+    <>
       <View
         style={{
           position: 'absolute',
-          left: 6,
+          left: 12,
           top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
           zIndex: 10,
         }}>
         <BackButton
           tintColor={theme.colors.text}
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, .4)',
+            width: 36,
+            height: 36,
+          }}
           onPress={() => {
             navigation.goBack()
           }}
         />
       </View>
-      <View
-        style={{
-          position: 'absolute',
-          right: 6,
-          top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
-          zIndex: 10,
-        }}>
-        <Button
-          className="w-[44px] h-[44px] rounded-full"
-          variant="icon"
-          radius={22}
-          onPress={openActionSheet}>
-          <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
-        </Button>
-      </View>
-      <View className="relative">
-        <View
-          className="flex flex-row items-end"
-          style={[
-            {
-              height:
-                Platform.OS === 'android'
-                  ? HEADER_CANVAS_HEIGHT + 6
-                  : HEADER_CANVAS_HEIGHT + Constants.statusBarHeight,
-            },
-            styles.layer1,
-          ]}>
-          <ImageBackground
-            style={{ width: '100%', height: '100%', position: 'absolute' }}
-            source={{ uri: data.avatar_large }}
-            resizeMode="cover"
-            blurRadius={10}
-          />
-          {/* <View
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            zIndex: 2,
+            top: 0,
+            width: '100%',
+            height: topBannerHeight,
+          },
+          styles.layer1,
+          layer1OffsetStyle,
+        ]}>
+        <ImageBackground
+          style={{ width: '100%', height: '100%', position: 'absolute' }}
+          source={{ uri: avatar }}
+          resizeMode="cover"
+          blurRadius={10}
+        />
+      </Animated.View>
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            top: 0,
+            width: '100%',
+          },
+          layer2OffsetStyle,
+        ]}>
+        <View style={[{ width: '100%' }]} onLayout={handleLayout}>
+          <View
             style={{
-              marginLeft: AVATAR_SIZE + 16 + 12,
+              height: topBannerHeight,
+              zIndex: 2,
             }}>
-            <OutlinedText
-              text={data.username}
-              width={200}
-              height={40}
-              fontSize={18}
-              color="#111111"
-              outlineColor="#ffffff50"
-            />
-          </View> */}
-        </View>
-        <View
-          className="absolute"
-          style={{
-            left: 16,
-            bottom: -AVATAR_SIZE * 0.7,
-          }}>
-          {data.avatar_large ? (
-            <Image
-              className="w-full h-full rounded-full"
+            <View
               style={{
+                position: 'absolute',
+                zIndex: 2,
+                left: 16,
+                bottom: -AVATAR_SIZE * 0.7,
                 width: AVATAR_SIZE,
-                height: AVATAR_SIZE,
-                borderWidth: 3,
-                borderColor: theme.colors.bg_layer1,
-                backgroundColor: theme.colors.text_placeholder,
-              }}
-              source={{ uri: data.avatar_large }}
-            />
-          ) : (
-            <Box
-              className="rounded-full bg-white"
+                alignItems: 'center',
+              }}>
+              <AnimatedImage
+                className="w-full h-full rounded-full"
+                style={[
+                  {
+                    borderWidth: 3,
+                    borderColor: theme.colors.bg_layer1,
+                    backgroundColor: theme.colors.text_placeholder,
+                  },
+                  avatarSizeStyle,
+                ]}
+                source={{ uri: avatar }}
+              />
+            </View>
+          </View>
+          <View style={styles.layer1}>
+            <View
+              className="flex flex-row"
               style={{
-                width: AVATAR_SIZE,
-                height: AVATAR_SIZE,
-              }}
-            />
-          )}
+                marginLeft: AVATAR_SIZE + 16 + 12,
+                minHeight: AVATAR_SIZE * 0.7,
+              }}>
+              <View className="flex flex-row pr-3 pt-2 ml-auto">
+                {data && currentUser && username !== currentUser.username && (
+                  <Button
+                    size="md"
+                    variant="default"
+                    onPress={handleBlockToggle}
+                    label={data.meta?.blocked ? '已屏蔽' : '屏蔽'}></Button>
+                )}
+                {data && currentUser && username !== currentUser.username && (
+                  <Button
+                    size="md"
+                    variant="default"
+                    className="ml-3"
+                    onPress={handleWatchToggle}
+                    label={data.meta?.watched ? '已关注' : '关注'}></Button>
+                )}
+              </View>
+            </View>
+            <View className="px-3 pb-2">
+              <View className="flex-1 pb-2">
+                <Text className="text-lg font-bold" style={styles.text_primary}>
+                  {username}
+                </Text>
+                {data?.tagline && (
+                  <View>
+                    <Text className="text-sm" style={styles.text}>
+                      {data.tagline}
+                    </Text>
+                  </View>
+                )}
+                <Text className="text-sm" style={styles.text_meta}>
+                  {data?.created
+                    ? `${localTime(data.created * 1000)} 加入`
+                    : ''}
+                </Text>
+              </View>
+              <MemberInfoLinks data={memberSwr.data} />
+            </View>
+          </View>
         </View>
-      </View>
-      <View
-        className="flex flex-row"
-        style={{
-          marginLeft: AVATAR_SIZE + 16 + 12,
-          minHeight: AVATAR_SIZE * 0.7,
-        }}>
-        <View className="flex-1">
-          <Text className="text-lg font-bold" style={styles.text_primary}>
-            {data.username}
-          </Text>
-          <Text className="text-sm" style={styles.text_meta}>
-            <Text className="pl-2 mb-1">
-              {data.created ? `${localTime(data.created * 1000)} 加入` : ''}
-            </Text>
-          </Text>
-        </View>
-        <View className="flex flex-col justify-center pr-1">
-          <Pressable
-            onPress={() => {
-              navigation.navigate('member-info', {
-                username: data.username,
-              })
-            }}
-            className={classNames(
-              'h-[44px] px-4 flex flex-row items-center rounded-full',
-              'active:opacity-60 active:bg-neutral-100 dark:active:bg-neutral-600',
-            )}>
-            <Text style={styles.text}>信息</Text>
-          </Pressable>
-        </View>
-      </View>
-    </View>
+      </Animated.View>
+      {/* Collapsed */}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            top: Constants.statusBarHeight,
+            left: 64,
+            zIndex: 6,
+            height: 36,
+            justifyContent: 'center',
+          },
+          headerTitleStyle,
+        ]}>
+        <Text style={[styles.text, { fontSize: 17, fontWeight: '500' }]}>
+          {username}
+        </Text>
+      </Animated.View>
+    </>
   )
 }

@@ -172,14 +172,18 @@ function AppStack() {
           name="topic"
           component={TopicScreen}
           options={{
-            title: '话题',
+            headerShown: false,
+            headerTransparent: true,
+            headerBackground: transparentHeaderBackground,
           }}
         />
         <Stack.Screen
           name="node"
           component={NodeScreen}
           options={{
-            title: '节点',
+            headerShown: false,
+            headerTransparent: true,
+            headerBackground: transparentHeaderBackground,
           }}
         />
         <Stack.Screen

@@ -22,7 +22,7 @@ function TopicBaseInfo(props: {
   navigation: NativeStackNavigationProp<AppStackParamList>
   onAppend(): void
   onEdit(): void
-  onMove(): void
+  onChangeNode(): void
   onRefetch(): void
 }) {
   const { styles } = useTheme()
@@ -103,7 +103,7 @@ function TopicBaseInfo(props: {
                   <Pressable
                     className="px-3 h-[36px] rounded items-center justify-center active:opacity-60 ml-2"
                     style={styles.layer2}
-                    onPress={props.onMove}>
+                    onPress={props.onChangeNode}>
                     <Text style={styles.text}>移动</Text>
                   </Pressable>
                 )}
