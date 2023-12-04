@@ -30,6 +30,7 @@ import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { useCachedState } from '@/utils/hooks'
+import { isBouncingBottom, isBouncingTop } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
 import { isLoading, isRefreshing, shouldLoadMore } from '@/utils/swr'
 import * as v2exClient from '@/utils/v2ex-client'
@@ -42,6 +43,7 @@ import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
 import ScrollToLastPosition from './ScrollToLastPosition'
 import SimpleMemberInfo from './SimpleMemberInfo'
+import TopBottomNav from './TopBottomNav'
 import TopicBaseInfo from './TopicBaseInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
@@ -764,9 +766,22 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   }, [userInfoContext, replyItems])
 
   const scrollY = useSharedValue(0)
+  const lastOffsetY = useSharedValue(0)
+  const scrollDirection = useSharedValue('')
+
   const handleScroll = useAnimatedScrollHandler({
     onScroll: (e) => {
       scrollY.value = e.contentOffset.y
+
+      if (isBouncingTop(e) || isBouncingBottom(e)) {
+        return
+      }
+      const offsetY = e.contentOffset.y
+      if (offsetY - lastOffsetY.value !== 0) {
+        const direction = offsetY - lastOffsetY.value > 0 ? 'down' : 'up'
+        scrollDirection.value = direction
+        lastOffsetY.value = offsetY
+      }
     },
   })
 
@@ -861,6 +876,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         thanked={topic.thanked}
         onThankTopic={handleThankTopic}
         onShare={handleShare}
+      />
+      <TopBottomNav
+        repliesCount={topic.replies}
+        onNavTo={handleNavTo}
+        scrollDirection={scrollDirection}
       />
 
       <MyBottomSheetModal

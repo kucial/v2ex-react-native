@@ -2,11 +2,13 @@ import { useCallback, useRef } from 'react'
 import { NativeScrollEvent } from 'react-native'
 
 export const isBouncingTop = (e: NativeScrollEvent) => {
+  'worklet'
   const { contentOffset, contentInset } = e
   return contentOffset.y < -contentInset.top
 }
 
 export const isBouncingBottom = (e: NativeScrollEvent) => {
+  'worklet'
   const {
     contentSize,
     contentInset,
