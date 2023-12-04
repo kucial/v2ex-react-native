@@ -24,7 +24,7 @@ function AnimatedHeader(props: {
   const navigation = useNavigation()
 
   const titleStyles = useAnimatedStyle(() => {
-    const opacity = interpolate(scrollY.value, [50, 200], [0, 1], {
+    const opacity = interpolate(scrollY.value, [50, 150], [0, 1], {
       extrapolateRight: Extrapolation.CLAMP,
     })
 

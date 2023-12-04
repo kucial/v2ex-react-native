@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native'
 import RNRestart from 'react-native-restart'
+import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
@@ -9,7 +10,11 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MySwitch from '@/components/MySwitch'
 import SectionHeader from '@/components/SectionHeader'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { SearchProvider } from '@/containers/AppSettingsService/types'
+import {
+  FeedLayoutStyle,
+  FeedTitleStyle,
+  SearchProvider,
+} from '@/containers/AppSettingsService/types'
 import { useTheme } from '@/containers/ThemeService'
 
 import { topic } from './mock'
@@ -17,16 +22,21 @@ import NormalTopicRowDemo from './NormalTopicRowDemo'
 import TideTopicRowDemo from './TideTopicRowDemo'
 import { DemoRowProps } from './types'
 
-const styleLabels = {
-  normal: '默认',
-  tide: '紧凑',
-}
+const feedLayoutOptions: Array<{
+  value: FeedLayoutStyle
+  label: string
+}> = [
+  { value: 'normal', label: '默认' },
+  { value: 'tide', label: '紧凑' },
+]
 
-const titleStylesLabel = {
-  normal: '默认',
-  emphasized: '强调',
-}
-
+const titleStyleOptions: Array<{
+  value: FeedTitleStyle
+  label: string
+}> = [
+  { value: 'normal', label: '默认' },
+  { value: 'emphasized', label: '强调' },
+]
 const refreshDurationOptions = [
   { value: 5, label: '5 分钟' },
   { value: 10, label: '10 分钟' },
@@ -61,7 +71,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
   const [state, setState] = useState(data)
   const [viewedStatus, setViewedStatus] =
     useState<DemoRowProps['viewedStatus']>(undefined)
-  const { styles } = useTheme()
+  const { styles, colorScheme } = useTheme()
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
@@ -112,16 +122,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               )}
             </View>
 
-            <Pressable
-              className={classNames('pl-4', 'active:opacity-50')}
-              style={styles.layer1}
-              onPress={() => {
-                const next = state.feedLayout === 'normal' ? 'tide' : 'normal'
-                setState((prev) => ({
-                  ...prev,
-                  feedLayout: next,
-                }))
-              }}>
+            <View className={classNames('pl-4')} style={styles.layer1}>
               <View
                 className={classNames(
                   'min-h-[52px] flex flex-row items-center',
@@ -132,24 +133,28 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                     列表布局
                   </Text>
                 </View>
-                <View className="mr-4 px-2">
-                  <Text style={styles.text_desc}>
-                    {styleLabels[state.feedLayout]}
-                  </Text>
+                <View className="w-[140] mr-1 px-2">
+                  <SegmentedControl
+                    values={feedLayoutOptions.map((o) => o.label)}
+                    selectedIndex={feedLayoutOptions.findIndex(
+                      (o) => o.value === state.feedLayout,
+                    )}
+                    onChange={(event) => {
+                      const value =
+                        feedLayoutOptions[
+                          event.nativeEvent.selectedSegmentIndex
+                        ].value
+                      setState((prev) => ({
+                        ...prev,
+                        feedLayout: value,
+                      }))
+                    }}
+                    appearance={colorScheme}
+                  />
                 </View>
               </View>
-            </Pressable>
-            <Pressable
-              className={classNames('pl-4', 'active:opacity-50')}
-              style={styles.layer1}
-              onPress={() => {
-                const next =
-                  state.feedTitleStyle === 'normal' ? 'emphasized' : 'normal'
-                setState((prev) => ({
-                  ...prev,
-                  feedTitleStyle: next,
-                }))
-              }}>
+            </View>
+            <View className={classNames('pl-4')} style={styles.layer1}>
               <View
                 className={classNames(
                   'min-h-[52px] flex flex-row items-center',
@@ -160,13 +165,27 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                     标题样式
                   </Text>
                 </View>
-                <View className="mr-4 px-2">
-                  <Text style={styles.text_desc}>
-                    {titleStylesLabel[state.feedTitleStyle]}
-                  </Text>
+                <View className="w-[140] mr-1 px-2">
+                  <SegmentedControl
+                    values={titleStyleOptions.map((o) => o.label)}
+                    selectedIndex={titleStyleOptions.findIndex(
+                      (o) => o.value === state.feedTitleStyle,
+                    )}
+                    onChange={(event) => {
+                      const value =
+                        titleStyleOptions[
+                          event.nativeEvent.selectedSegmentIndex
+                        ].value
+                      setState((prev) => ({
+                        ...prev,
+                        feedTitleStyle: value,
+                      }))
+                    }}
+                    appearance={colorScheme}
+                  />
                 </View>
               </View>
-            </Pressable>
+            </View>
             <View className={classNames('pl-4')} style={styles.layer1}>
               <View
                 className={classNames(
@@ -372,41 +391,38 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
           </GroupWapper>
           <SectionHeader title="其他" />
           <GroupWapper>
-            <Pressable
-              className={classNames('pl-4', 'active:opacity-50')}
-              style={styles.layer1}
-              onPress={() => {
-                const index = searchProviderOptions.findIndex(
-                  (o) => o.value === state.searchProvider,
-                )
-                const nextIndex = (index + 1) % searchProviderOptions.length
-                const next = searchProviderOptions[nextIndex]
-
-                setState((prev) => ({
-                  ...prev,
-                  searchProvider: next.value,
-                }))
-              }}>
+            <View className={classNames('pl-4')} style={styles.layer1}>
               <View
                 className={classNames(
                   'min-h-[52px] flex flex-row items-center',
-                )}>
+                )}
+                style={styles.border_b}>
                 <View className="flex-1">
                   <Text className="text-base" style={styles.text}>
                     搜索服务
                   </Text>
                 </View>
-                <View className="mr-2 px-2">
-                  <Text style={styles.text_desc}>
-                    {
-                      searchProviderOptions.find(
-                        (item) => item.value === state.searchProvider,
-                      )?.label
-                    }
-                  </Text>
+                <View className="w-[140] mr-1 px-2">
+                  <SegmentedControl
+                    values={searchProviderOptions.map((o) => o.label)}
+                    selectedIndex={searchProviderOptions.findIndex(
+                      (o) => o.value === state.searchProvider,
+                    )}
+                    onChange={(event) => {
+                      const value =
+                        searchProviderOptions[
+                          event.nativeEvent.selectedSegmentIndex
+                        ].value
+                      setState((prev) => ({
+                        ...prev,
+                        searchProvider: value,
+                      }))
+                    }}
+                    appearance={colorScheme}
+                  />
                 </View>
               </View>
-            </Pressable>
+            </View>
             <Pressable
               className={classNames('pl-4', 'active:opacity-50')}
               style={styles.layer1}

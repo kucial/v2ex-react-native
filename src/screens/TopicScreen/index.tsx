@@ -518,7 +518,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             },
           )
         }}>
-        <EllipsisHorizontalIcon size={24} color={theme.colors.text_title} />
+        <EllipsisHorizontalIcon size={24} color={styles.text.color} />
       </Button>
     ),
     [id, topic?.blocked],

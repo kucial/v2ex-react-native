@@ -9,11 +9,11 @@ type AppSettings = {
   colorScheme?: 'light' | 'dark' | 'system'
   theme: string
   // themeColor: '',
-  feedLayout: 'normal' | 'tide'
+  feedLayout: FeedLayoutStyle
   feedShowAvatar: boolean
   feedShowLastReplyMember: boolean
   feedShowViewedHint: boolean
-  feedTitleStyle: 'normal' | 'emphasized'
+  feedTitleStyle: FeedTitleStyle
   autoRefresh: boolean
   autoRefreshDuration: number // minutes
   refreshHaptics?: boolean
@@ -34,3 +34,5 @@ type AppSettingsService = {
 }
 
 export type SearchProvider = 'google' | 'sov2ex'
+export type FeedTitleStyle = 'normal' | 'emphasized'
+export type FeedLayoutStyle = 'normal' | 'tide'
