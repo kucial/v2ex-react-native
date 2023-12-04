@@ -76,7 +76,7 @@ export default function MemberScreenHeader(props: {
 
   const data = memberSwr.data
   const avatar = data?.avatar_large || brief?.avatar_large
-  const { theme, styles } = useTheme()
+  const { theme, styles, colorScheme } = useTheme()
   const alert = useAlertService()
 
   const handleBlockToggle = useCallback(() => {
@@ -247,7 +247,10 @@ export default function MemberScreenHeader(props: {
         <BackButton
           tintColor={theme.colors.text}
           style={{
-            backgroundColor: 'rgba(0, 0, 0, .4)',
+            backgroundColor:
+              colorScheme == 'dark'
+                ? 'rgba(0, 0, 0, .4)'
+                : 'rgba(255, 255, 255, 0.4)',
             width: 36,
             height: 36,
           }}
@@ -326,7 +329,7 @@ export default function MemberScreenHeader(props: {
                     size="md"
                     variant="default"
                     onPress={handleBlockToggle}
-                    label={data.meta?.blocked ? '已屏蔽' : '屏蔽'}></Button>
+                    label={data.meta?.blocked ? '取消屏蔽' : '屏蔽'}></Button>
                 )}
                 {data && currentUser && username !== currentUser.username && (
                   <Button
@@ -334,7 +337,7 @@ export default function MemberScreenHeader(props: {
                     variant="default"
                     className="ml-3"
                     onPress={handleWatchToggle}
-                    label={data.meta?.watched ? '已关注' : '关注'}></Button>
+                    label={data.meta?.watched ? '取消关注' : '关注'}></Button>
                 )}
               </View>
             </View>

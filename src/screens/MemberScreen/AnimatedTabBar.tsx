@@ -55,6 +55,7 @@ export default function AnimatedTabBar(
           {...props}
           indicatorContainerStyle={styles.layer1}
           indicatorStyle={styles.btn_primary__bg}
+          labelStyle={styles.text}
         />
       </View>
     </Animated.View>
