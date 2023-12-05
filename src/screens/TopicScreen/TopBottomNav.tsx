@@ -31,7 +31,7 @@ export default function TopBottomNav(props: {
       style={[
         {
           position: 'absolute',
-          right: 12,
+          right: 11,
           bottom: 90,
           display: 'flex',
           flexDirection: 'row',
@@ -40,16 +40,15 @@ export default function TopBottomNav(props: {
       ]}>
       <Button
         variant="default"
-        size="sm"
+        style={{ width: 40, height: 40, marginRight: 6 }}
         onPress={() => {
           props.onNavTo(0)
-        }}
-        style={{ marginRight: 6 }}>
+        }}>
         <ChevronUpIcon size={20} color={styles.text_desc.color} />
       </Button>
       <Button
         variant="default"
-        size="sm"
+        style={{ width: 40, height: 40 }}
         onPress={() => {
           props.onNavTo(props.repliesCount)
         }}>

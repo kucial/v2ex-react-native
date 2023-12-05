@@ -276,7 +276,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const { composeAuthedNavigation, user: currentUser } = useAuthService()
 
-  const { theme, styles, colorScheme } = useTheme()
+  const { styles, colorScheme } = useTheme()
 
   const replyItems = useMemo(() => {
     if (!listSwr.data && !listSwr.error) {
@@ -523,7 +523,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         <EllipsisHorizontalIcon size={24} color={styles.text.color} />
       </Button>
     ),
-    [id, topic?.blocked],
+    [id, topic?.blocked, colorScheme],
   )
 
   const [replyContext, setReplyContext] = useState<ReplyContext>(null)
