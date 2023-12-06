@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ImageBackground, Platform, Text, View } from 'react-native'
 import Animated, {
   Extrapolation,
@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Constants from 'expo-constants'
 import { Image } from 'expo-image'
+import * as Sentry from 'sentry-expo'
 import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
@@ -18,6 +19,7 @@ import Button from '@/components/Button'
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { getImageLuminosity } from '@/utils/image'
 import { localTime } from '@/utils/time'
 import {
   blockMember,
@@ -78,6 +80,17 @@ export default function MemberScreenHeader(props: {
   const avatar = data?.avatar_large || brief?.avatar_large
   const { theme, styles, colorScheme } = useTheme()
   const alert = useAlertService()
+  const [avatarLuminosity, setAvatarLuminosity] = useState(0)
+
+  useEffect(() => {
+    if (avatar) {
+      getImageLuminosity(avatar)
+        .then(setAvatarLuminosity)
+        .catch((err) => {
+          Sentry.Native.captureException(err)
+        })
+    }
+  }, [avatar])
 
   const handleBlockToggle = useCallback(() => {
     const { data } = memberSwr
@@ -235,6 +248,8 @@ export default function MemberScreenHeader(props: {
     return { opacity }
   }, [headerHeight])
 
+  const headerContractColor = avatarLuminosity > 130 ? '#222222' : '#bbbbbb'
+
   return (
     <>
       <View
@@ -245,12 +260,8 @@ export default function MemberScreenHeader(props: {
           zIndex: 10,
         }}>
         <BackButton
-          tintColor={theme.colors.text}
+          tintColor={headerContractColor}
           style={{
-            backgroundColor:
-              colorScheme == 'dark'
-                ? 'rgba(0, 0, 0, .4)'
-                : 'rgba(255, 255, 255, 0.4)',
             width: 36,
             height: 36,
           }}
@@ -377,7 +388,14 @@ export default function MemberScreenHeader(props: {
           },
           headerTitleStyle,
         ]}>
-        <Text style={[styles.text, { fontSize: 17, fontWeight: '500' }]}>
+        <Text
+          style={[
+            {
+              fontSize: 17,
+              fontWeight: '500',
+              color: headerContractColor,
+            },
+          ]}>
           {username}
         </Text>
       </Animated.View>

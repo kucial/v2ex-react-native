@@ -1,7 +1,12 @@
 import 'react-native-url-polyfill/auto'
 
+import { Image, Platform } from 'react-native'
+import GetPixelColor from '@thebeka/react-native-get-pixel-color'
+import Color from 'color'
 import * as Crypto from 'expo-crypto'
 import * as FileSystem from 'expo-file-system'
+
+import PixelTally from './PixelTally'
 
 const imageDir = FileSystem.cacheDirectory + '.image_cache/'
 
@@ -78,4 +83,57 @@ export async function getImageContentUri(url: string) {
 
 export async function clearImageCache() {
   await FileSystem.deleteAsync(imageDir)
+}
+
+async function getImageSize(
+  fileUri: string,
+): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    Image.getSize(
+      fileUri,
+      (width, height) => {
+        resolve({
+          width,
+          height,
+        })
+      },
+      reject,
+    )
+  })
+}
+
+export async function getImageLuminosity(
+  url: string,
+  xStep = 5,
+  yStep = 5,
+  greyscaleDistance = 15,
+) {
+  const fileUri = await downloadImage(url)
+  const { width, height } = await getImageSize(fileUri)
+  const tally = new PixelTally({ greyscaleDistance })
+
+  if (Platform.OS == 'ios') {
+    await GetPixelColor.init(fileUri)
+  } else {
+    const base64 = await FileSystem.readAsStringAsync(fileUri, {
+      encoding: 'base64',
+    })
+    await GetPixelColor.init(base64)
+  }
+  const xInterval = width / 10
+  const yInterval = height / 10
+  for (let i = 0; i < xStep; i += 1) {
+    const x = Math.round(i * xInterval)
+    for (let j = 0; j < yStep; j += 1) {
+      const y = Math.round(j * yInterval)
+      const hex = await GetPixelColor.pickColorAt(x, y)
+      const color = new Color(hex)
+      tally.record({
+        red: color.red(),
+        blue: color.blue(),
+        green: color.green(),
+      })
+    }
+  }
+  return tally.getLuminosityAverage()
 }

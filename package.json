@@ -29,6 +29,7 @@
     "@sentry/react-native": "4.13.0",
     "@seznam/compose-react-refs": "^1.0.6",
     "@shopify/flash-list": "1.4.0",
+    "@thebeka/react-native-get-pixel-color": "^1.1.4",
     "axios": "^0.27.2",
     "cheerio": "^1.0.0-rc.12",
     "classnames": "^2.3.1",
