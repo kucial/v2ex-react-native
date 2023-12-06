@@ -67,7 +67,7 @@ export const isImgurResourceLink = (href: string) => {
 
 export const getImgurResourceImageLink = (href: string) => {
   return href.replace(
-    /^https?:\/\/(?:i\.)?imgur\.com\/([^/]+)$/,
+    /^https?:\/\/(?:i\.)?imgur\.com\/([^/.]+)?(\.[png|gif|jpeg])?$/,
     'https://i.imgur.com/$1.png',
   )
 }

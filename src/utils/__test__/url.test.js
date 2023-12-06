@@ -79,7 +79,7 @@ describe('url utils', () => {
   })
 
   describe('isImgurResourceLink', () => {
-    const links = ['https://imgur.com/OforKLX']
+    const links = ['https://imgur.com/OforKLX', 'https://i.imgur.com/OforKLX']
     for (const link of links) {
       it(link, () => {
         expect(isImgurResourceLink(link)).toBe(true)
@@ -96,6 +96,14 @@ describe('url utils', () => {
   describe('getImgurPostImageLink', () => {
     it('https://imgur.com/OforKLX', () => {
       const link = getImgurResourceImageLink('https://imgur.com/OforKLX')
+      expect(link).toEqual('https://i.imgur.com/OforKLX.png')
+    })
+    it('https://i.imgur.com/OforKLX', () => {
+      const link = getImgurResourceImageLink('https://i.imgur.com/OforKLX')
+      expect(link).toEqual('https://i.imgur.com/OforKLX.png')
+    })
+    it('https://i.imgur.com/OforKLX.png', () => {
+      const link = getImgurResourceImageLink('https://i.imgur.com/OforKLX.png')
       expect(link).toEqual('https://i.imgur.com/OforKLX.png')
     })
   })
