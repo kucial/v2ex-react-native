@@ -23,7 +23,7 @@ export default function TopBottomNav(props: {
     return { opacity: 1 }
   })
 
-  if (!repliesCount || repliesCount < 20) {
+  if (!repliesCount || repliesCount < 10) {
     return null
   }
   return (
