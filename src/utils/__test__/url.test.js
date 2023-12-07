@@ -16,6 +16,11 @@ describe('url utils', () => {
       expect(info.name).toBe('topic')
       expect(info.params.id).toBe('871066')
     })
+    it('[topic link] http://v2ex.com/t/871066', () => {
+      const info = getScreenInfo('http://v2ex.com/t/871066')
+      expect(info.name).toBe('topic')
+      expect(info.params.id).toBe('871066')
+    })
     it('[topic link] https://v2ex.com/t/871066?p=1', () => {
       const info = getScreenInfo('https://v2ex.com/t/871066')
       expect(info.name).toBe('topic')
@@ -69,6 +74,7 @@ describe('url utils', () => {
       'https://hk.v2ex.com/go/create',
       'https://www.v2ex.com/t/871066',
       'http://www.v2ex.com/t/871066',
+      'http://v2ex.com/t/961132',
       'https://www.v2ex.com/member/wanacry/replies',
     ]
     for (const link of links) {

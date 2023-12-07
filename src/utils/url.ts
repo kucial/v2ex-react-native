@@ -1,5 +1,5 @@
 const hrefMap = {
-  'https://(?:\\w+\\.)?v2ex.com/t/(\\d+)(?:\\?p=\\d+)?(#\\w+)?$': (
+  'https?://(?:\\w+\\.)?v2ex.com/t/(\\d+)(?:\\?p=\\d+)?(#\\w+)?$': (
     match: RegExpExecArray,
   ) => ({
     name: 'topic',
@@ -7,7 +7,7 @@ const hrefMap = {
       id: match[1],
     },
   }),
-  'https://(?:\\w+\\.)?v2ex\\.com/member/([^/]+)(?:/(topics|replies))?$': (
+  'https?://(?:\\w+\\.)?v2ex\\.com/member/([^/]+)(?:/(topics|replies))?$': (
     match: RegExpExecArray,
   ) => ({
     name: 'member',
@@ -16,7 +16,7 @@ const hrefMap = {
       tab: match[2],
     },
   }),
-  'https://(?:\\w+\\.)?v2ex.com/go/([\\w_]*)?$': (match: RegExpExecArray) => ({
+  'https?://(?:\\w+\\.)?v2ex.com/go/([\\w_]*)?$': (match: RegExpExecArray) => ({
     name: 'node',
     params: {
       name: match[1],
