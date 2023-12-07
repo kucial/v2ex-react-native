@@ -8,7 +8,6 @@ import { BarCodeScannerResult } from 'expo-barcode-scanner'
 import * as Clipboard from 'expo-clipboard'
 import * as WebBrowser from 'expo-web-browser'
 import { decode } from 'js-base64'
-import PropTypes from 'prop-types'
 import * as Sentry from 'sentry-expo'
 
 import { useAlertService } from '@/containers/AlertService'
@@ -277,11 +276,6 @@ function HtmlRender({
       </RenderContext.Provider>
     </ImageViewingServiceProvider>
   )
-}
-
-HtmlRender.propTypes = {
-  tagsStyles: PropTypes.object,
-  baseStyle: PropTypes.object,
 }
 
 HtmlRender.defaultProps = {

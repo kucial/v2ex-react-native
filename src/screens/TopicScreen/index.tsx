@@ -786,14 +786,15 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   })
 
   if (!topic) {
-    return <TopicSkeleton />
+    return (
+      <>
+        <AnimatedHeader scrollY={scrollY} />
+        <TopicSkeleton />
+      </>
+    )
   }
 
   const BarComponent = padLayout.active ? PadSidebar : BottomBar
-
-  const error = !topicSwr.data
-    ? topicSwr.error || listSwr.error
-    : topicSwr.error
 
   return (
     <>
@@ -810,10 +811,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         keyExtractor={keyExtractor}
         ListHeaderComponent={
           <TopicBaseInfo
-            isLoading={isLoading(topicSwr)}
+            isLoading={
+              isLoading(topicSwr) || (!topicSwr.data && isLoading(listSwr))
+            }
             data={topicSwr.data}
             hasReply={!!replyItems.length}
-            error={error}
             fallback={brief}
             navigation={navigation}
             onAppend={handleAppend}

@@ -1,9 +1,8 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Text, useWindowDimensions, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Image } from 'expo-image'
-import PropTypes from 'prop-types'
 import useSWR, { useSWRConfig } from 'swr'
 
 import AnimatedHeader from '@/components/AnimatedHeader'
@@ -193,17 +192,4 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
       <NodeTopicList header={header} name={name} isFocused scrollY={scrollY} />
     </View>
   )
-}
-
-NodeScreen.propTypes = {
-  route: PropTypes.shape({
-    params: PropTypes.shape({
-      name: PropTypes.string,
-      brief: PropTypes.object,
-    }),
-  }),
-  navigation: PropTypes.shape({
-    setOptions: PropTypes.func,
-    push: PropTypes.func,
-  }),
 }

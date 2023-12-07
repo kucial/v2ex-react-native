@@ -248,7 +248,7 @@ export default function MemberScreenHeader(props: {
     return { opacity }
   }, [headerHeight])
 
-  const headerContractColor = avatarLuminosity > 130 ? '#222222' : '#bbbbbb'
+  const headerContractColor = avatarLuminosity > 130 ? '#1C1C1E' : '#d4d4d4'
 
   return (
     <>
