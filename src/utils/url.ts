@@ -58,7 +58,7 @@ export const getScreenInfo = (href: string): ScreenInfo => {
 }
 
 export const isAppLink = (href: string) => {
-  return /^https?:\/\/(?:\w+\.)?v2ex.com/.test(href)
+  return /^https?:\/\/(?:\w+\.)?v2ex\.com/.test(href)
 }
 
 export const isImgurResourceLink = (href: string) => {

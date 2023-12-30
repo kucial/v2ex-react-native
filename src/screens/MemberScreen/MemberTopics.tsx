@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { SharedValue } from 'react-native-reanimated'
-import { FlashList, FlashListProps } from '@shopify/flash-list'
+import { FlashListProps } from '@shopify/flash-list'
 import useSWRInfinite from 'swr/infinite'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'

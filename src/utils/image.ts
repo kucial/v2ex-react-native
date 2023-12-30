@@ -102,13 +102,18 @@ async function getImageSize(
   })
 }
 
-export async function getImageLuminosity(
-  url: string,
-  xStep = 5,
-  yStep = 5,
-  greyscaleDistance = 15,
-) {
+type Options = {
+  xStepCount?: number
+  yStepCount?: number
+  greyscaleDistance?: number
+  start?: [number, number] // 0 - 100 [x, y]
+  end?: [number, number]
+}
+export async function getImageLuminosity(url: string, options: Options = {}) {
   const fileUri = await downloadImage(url)
+  const xStep = options.xStepCount || 5
+  const yStep = options.yStepCount || 5
+  const greyscaleDistance = options.greyscaleDistance || 15
   const { width, height } = await getImageSize(fileUri)
   const tally = new PixelTally({ greyscaleDistance })
 
@@ -120,12 +125,23 @@ export async function getImageLuminosity(
     })
     await GetPixelColor.init(base64)
   }
-  const xInterval = width / 10
-  const yInterval = height / 10
+
+  let xOffset = 0
+  let yOffset = 0
+  let xRange = width
+  let yRange = height
+  if (options.start && options.end) {
+    xOffset = (Math.min(options.start[0], options.end[0]) / 100) * width
+    yOffset = (Math.min(options.start[1], options.end[1]) / 100) * height
+    xRange = (Math.abs(options.start[0] - options.end[0]) / 100) * width
+    yRange = (Math.abs(options.start[1] - options.end[1]) / 100) * height
+  }
+  const xInterval = xRange / 10
+  const yInterval = yRange / 10
   for (let i = 0; i < xStep; i += 1) {
-    const x = Math.round(i * xInterval)
+    const x = xOffset + Math.round(i * xInterval)
     for (let j = 0; j < yStep; j += 1) {
-      const y = Math.round(j * yInterval)
+      const y = yOffset + Math.round(j * yInterval)
       const hex = await GetPixelColor.pickColorAt(x, y)
       const color = new Color(hex)
       tally.record({

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ImageBackground, Platform, Text, View } from 'react-native'
+import { Platform, Text, View } from 'react-native'
 import Animated, {
   Extrapolation,
   interpolate,
@@ -78,13 +78,16 @@ export default function MemberScreenHeader(props: {
 
   const data = memberSwr.data
   const avatar = data?.avatar_large || brief?.avatar_large
-  const { theme, styles, colorScheme } = useTheme()
+  const { theme, styles } = useTheme()
   const alert = useAlertService()
   const [avatarLuminosity, setAvatarLuminosity] = useState(0)
 
   useEffect(() => {
     if (avatar) {
-      getImageLuminosity(avatar)
+      getImageLuminosity(avatar, {
+        start: [0, 25],
+        end: [50, 75],
+      })
         .then(setAvatarLuminosity)
         .catch((err) => {
           Sentry.Native.captureException(err)
@@ -282,10 +285,10 @@ export default function MemberScreenHeader(props: {
           styles.layer1,
           layer1OffsetStyle,
         ]}>
-        <ImageBackground
+        <Image
           style={{ width: '100%', height: '100%', position: 'absolute' }}
           source={{ uri: avatar }}
-          resizeMode="cover"
+          contentFit="cover"
           blurRadius={10}
         />
       </Animated.View>

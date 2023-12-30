@@ -14,9 +14,9 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
     return null
   }
   return (
-    <View className="flex flex-row">
+    <View className="flex flex-row -ml-2">
       {data.location && (
-        <View className="flex flex-row items-center mr-3">
+        <View className="flex flex-row items-center mr-3 pl-2">
           <MapPinIcon
             size={18}
             style={{ marginRight: 4 }}

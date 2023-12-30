@@ -113,4 +113,11 @@ describe('url utils', () => {
       expect(link).toEqual('https://i.imgur.com/OforKLX.png')
     })
   })
+
+  it('capture v2exlink', () => {
+    const links = ['https://s.v2ex.com/t/1231']
+    links.forEach((link) => {
+      expect(/^https:\/\/([www|fast|s|hk]\.)?v2ex\.com/.test(link)).toBe(true)
+    })
+  })
 })

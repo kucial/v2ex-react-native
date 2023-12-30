@@ -19,7 +19,7 @@ const topicLinkCapture = `(function() {
   try {
     document.body.addEventListener('click', function(e) {
       const a = e.target.closest('a');
-      if (a && /^https:\\/\\/(www|fast|hk\\.)?v2ex\\.com/.test(a.href)) {
+      if (a && /^https:\\/\\/([www|fast|s|hk]\\.)?v2ex\\.com/.test(a.href)) {
         e.preventDefault();
         e.stopPropagation();
         window.ReactNativeWebView.postMessage(JSON.stringify({
