@@ -1,11 +1,11 @@
 import { useCallback, useRef } from 'react'
 import { Pressable, SafeAreaView, Text, View } from 'react-native'
-import { ShareIcon, StarIcon } from 'react-native-heroicons/outline'
-import { StarIcon as FilledStarIcon } from 'react-native-heroicons/solid'
+import { ShareIcon } from 'react-native-heroicons/outline'
 import LottieView from 'lottie-react-native'
 
 import HeartIcon from '@/components/HeartIcon'
 import NumberIcon from '@/components/NumberIcon'
+import StarIcon from '@/components/StarIcon'
 import ToBottomIcon from '@/components/ToBottomIcon'
 import { useTheme } from '@/containers/ThemeService'
 
@@ -16,8 +16,8 @@ export default function BottomBar(props: BarProps) {
   const { styles, theme } = useTheme()
 
   const iconColor = theme.colors.text_meta
-  const collectActiveColor = theme.colors.icon_collected_bg
   const heartIconRef = useRef<LottieView>(null)
+  const starIconRef = useRef<LottieView>(null)
 
   const handleThank = useCallback(() => {
     if (props.thanked) {
@@ -26,6 +26,15 @@ export default function BottomBar(props: BarProps) {
     heartIconRef.current?.play()
     props.onThankTopic()
   }, [props.onThankTopic, props.thanked])
+
+  const handleToggleCollect = useCallback(() => {
+    if (props.collected) {
+      starIconRef.current?.reset()
+    } else {
+      starIconRef.current?.play()
+    }
+    props.onToggleCollect()
+  }, [props.onToggleCollect, props.collected])
 
   return (
     <SafeAreaView style={[styles.overlay, styles.border_t_light]}>
@@ -77,13 +86,9 @@ export default function BottomBar(props: BarProps) {
         <View className="flex flex-row px-1">
           <Pressable
             className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-            onPress={props.onToggleCollect}>
+            onPress={handleToggleCollect}>
             <View className="my-1">
-              {props.collected ? (
-                <FilledStarIcon size={24} color={collectActiveColor} />
-              ) : (
-                <StarIcon size={24} color={iconColor} />
-              )}
+              <StarIcon ref={starIconRef} size={24} filled={props.collected} />
             </View>
             <Text className="text-[10px]" style={styles.text_meta}>
               收藏
