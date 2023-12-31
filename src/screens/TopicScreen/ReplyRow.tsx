@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useRef, useState } from 'react'
 import {
   Pressable,
   Text,
@@ -6,16 +6,15 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import {
-  ChatBubbleLeftRightIcon,
-  HeartIcon,
-} from 'react-native-heroicons/outline'
+import { ChatBubbleLeftRightIcon } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 import { Image } from 'expo-image'
+import LottieView from 'lottie-react-native'
 import { marked } from 'marked'
 
+import HeartIcon from '@/components/HeartIcon'
 import HtmlRender from '@/components/HtmlRender'
 import MarkdownFilledIcon from '@/components/MarkdownFilledIcon'
 import MarkdownIcon from '@/components/MarkdownIcon'
@@ -55,6 +54,8 @@ function ReplyRow(props: ReplyRowProps) {
   const [showMarkdown, setMarkdownVisible] = useState(false)
   const { theme, styles, colorScheme } = useTheme()
 
+  const heartIconRef = useRef<LottieView>()
+
   const iconColor = theme.colors.text_meta
   const likedActiveColor = theme.colors.icon_liked_bg
 
@@ -82,8 +83,12 @@ function ReplyRow(props: ReplyRowProps) {
   const handleThank = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
+        if (data?.thanked) {
+          return
+        }
+        heartIconRef.current?.play()
         props.onThank(data)
-      }, [data, props.onThank]),
+      }, [data, data?.thanked, props.onThank]),
     ),
     {
       message: '[ReplyRow] `thank` button press',
@@ -291,24 +296,29 @@ function ReplyRow(props: ReplyRowProps) {
                   </View>
                 </Pressable>
                 <View className="w-4"></View>
-                {data.thanked ? (
-                  <Text className="text-xs text-neutral-500">已感谢</Text>
-                ) : (
-                  <Pressable
-                    hitSlop={2}
-                    className={classNames(
-                      'h-[36px] px-2',
-                      '-m-2 flex flex-row items-center justify-center rounded-full',
-                      'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                      'relative z-10',
-                    )}
-                    onPress={handleThank}>
-                    <HeartIcon size={14} color={iconColor} />
-                    <View className="ml-1">
+                <Pressable
+                  hitSlop={2}
+                  className={classNames(
+                    'h-[36px] px-2',
+                    '-m-2 flex flex-row items-center justify-center rounded-full',
+                    'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
+                    'relative z-10',
+                  )}
+                  onPress={handleThank}>
+                  <HeartIcon
+                    size={14}
+                    liked={data.thanked}
+                    ref={heartIconRef}
+                  />
+                  <View className="ml-1">
+                    {data.thanked ? (
+                      <Text className="text-xs text-neutral-500">已感谢</Text>
+                    ) : (
                       <Text className="text-xs text-neutral-500">感谢</Text>
-                    </View>
-                  </Pressable>
-                )}
+                    )}
+                  </View>
+                </Pressable>
+
                 <View className="w-4"></View>
                 {props.hasConversation && (
                   <Pressable

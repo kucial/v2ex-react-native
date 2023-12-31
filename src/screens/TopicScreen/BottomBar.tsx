@@ -1,10 +1,10 @@
-import { Pressable, SafeAreaView, Share, Text, View } from 'react-native'
-import { HeartIcon, ShareIcon, StarIcon } from 'react-native-heroicons/outline'
-import {
-  HeartIcon as FilledHeartIcon,
-  StarIcon as FilledStarIcon,
-} from 'react-native-heroicons/solid'
+import { useCallback, useRef } from 'react'
+import { Pressable, SafeAreaView, Text, View } from 'react-native'
+import { ShareIcon, StarIcon } from 'react-native-heroicons/outline'
+import { StarIcon as FilledStarIcon } from 'react-native-heroicons/solid'
+import LottieView from 'lottie-react-native'
 
+import HeartIcon from '@/components/HeartIcon'
 import NumberIcon from '@/components/NumberIcon'
 import ToBottomIcon from '@/components/ToBottomIcon'
 import { useTheme } from '@/containers/ThemeService'
@@ -17,7 +17,15 @@ export default function BottomBar(props: BarProps) {
 
   const iconColor = theme.colors.text_meta
   const collectActiveColor = theme.colors.icon_collected_bg
-  const likedActiveColor = theme.colors.icon_liked_bg
+  const heartIconRef = useRef<LottieView>(null)
+
+  const handleThank = useCallback(() => {
+    if (props.thanked) {
+      return
+    }
+    heartIconRef.current?.play()
+    props.onThankTopic()
+  }, [props.onThankTopic, props.thanked])
 
   return (
     <SafeAreaView style={[styles.overlay, styles.border_t_light]}>
@@ -83,13 +91,9 @@ export default function BottomBar(props: BarProps) {
           </Pressable>
           <Pressable
             className="w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600"
-            onPress={props.onThankTopic}>
+            onPress={handleThank}>
             <View className="my-1">
-              {props.thanked ? (
-                <FilledHeartIcon size={24} color={likedActiveColor} />
-              ) : (
-                <HeartIcon size={24} color={iconColor} />
-              )}
+              <HeartIcon size={24} liked={props.thanked} ref={heartIconRef} />
             </View>
             <Text className="text-[10px]" style={styles.text_meta}>
               感谢
