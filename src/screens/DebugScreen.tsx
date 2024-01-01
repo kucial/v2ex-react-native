@@ -1,21 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react'
-import {
-  Dimensions,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native'
-import { SelectableText } from '@alentoma/react-native-selectable-text'
-import CookieManager from '@react-native-cookies/cookies'
+import { useEffect, useRef } from 'react'
+import { Dimensions, SafeAreaView, Text, View } from 'react-native'
 
-import ErrorNotice from '@/components/ErrorNotice'
+import Button from '@/components/Button'
+import HeartIcon from '@/components/HeartIcon'
 import HtmlRender from '@/components/HtmlRender'
+import Loader from '@/components/Loader'
+import StarIcon from '@/components/StarIcon'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
-import { getCurrentUser, getMyCollectedTopics } from '@/utils/v2ex-client'
+import { getCurrentUser } from '@/utils/v2ex-client'
 
 const fSize = 30
 const p = {
@@ -26,25 +19,13 @@ const p = {
   textAlign: 'left',
 }
 
-const classes = {
-  paddingLeft: fSize * 0.9,
-  paddingRight: fSize * 0.95,
-  backgroundColor: 'black',
-  minWidth: Dimensions.get('window').width,
-  minHeight: Dimensions.get('window').height,
-  maxWidth: '99%',
-  overflow: 'hidden',
-  flex: 1,
-}
-
-const INDICATOR_WIDTH = 64
-const INDICATOR_HEIGHT = 64
-
 export default function DebugScreen(props) {
   // ref
   const { theme, styles } = useTheme()
 
   const { user } = useAuthService()
+  const starIconRef = useRef()
+  const heartIconRef = useRef()
 
   useEffect(() => {
     getCurrentUser()
@@ -72,6 +53,23 @@ export default function DebugScreen(props) {
           }}
           navigation={props.navigation}
         />
+        <Loader />
+        <Button
+          size="md"
+          variant="icon"
+          onPress={() => {
+            starIconRef.current?.play()
+          }}>
+          <StarIcon ref={starIconRef} />
+        </Button>
+        <Button
+          size="md"
+          variant="icon"
+          onPress={() => {
+            heartIconRef.current?.play()
+          }}>
+          <HeartIcon ref={heartIconRef} />
+        </Button>
       </View>
     </SafeAreaView>
   )
