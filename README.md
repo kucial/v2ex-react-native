@@ -7,7 +7,7 @@
 ## 下载
 
 - [Apple Store](https://apps.apple.com/cn/app/r2v/id1645766550)
-- [Android, eas build](https://expo.dev/artifacts/eas/5XY3aPrTLfyE8kSP4EjAHB.apk)
+- [Android, 1.8.4, eas build](https://expo.dev/artifacts/eas/6ZoBxfjdYQToJWgFVVHm7K.apk)
 
 ## 截图
 
@@ -161,3 +161,10 @@ React Native + Tailwindcss + SWR
 ## ENV 参数
 
 - 本地开发，依赖 `module:react-native-dotenv` + `.env` 来进行设置。 修改 `.env` 后需要注意清理缓存： `expo start -c --dev-client`
+
+## AE & Lottie
+
+Resources Ref
+
+- [Twitter 'Like' Micro Interaction Tutorial using After Effects & Lottie](https://www.youtube.com/watch?v=0AE_BtrAcRI)
+- [AE Quick tip - Copy Illustrator path into after effects](https://www.youtube.com/watch?v=RQPYbE9ecg0&t=46s)
