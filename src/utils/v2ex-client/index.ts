@@ -202,16 +202,39 @@ instance.interceptors.response.use(
       }
       dispatch('unread_count', unread_count)
 
-      const balanceText = $('.balance_area').text()
+      let balanceText = $('.balance_area').html()
       if (balanceText) {
-        const els = [0, 0, 0]
-          .concat(balanceText.trim().split(/\s+/).map(Number))
-          .reverse()
         const balanceBrief = {} as BalanceBrief
-        balanceBrief.bronze = els[0]
-        balanceBrief.silver = els[1]
-        balanceBrief.gold = els[2]
-
+        const goldImg = $('.balance_area img[src*=gold]')
+        if (goldImg) {
+          balanceText = balanceText.replace(
+            '<img src="/static/img/gold@2x.png" height="16" alt="G" border="0">',
+            'gold',
+          )
+        }
+        const silverImg = $('.balance_area img[src*=silver]')
+        if (silverImg) {
+          balanceText = balanceText.replace(
+            '<img src="/static/img/silver@2x.png" height="16" alt="S" border="0">',
+            'silver',
+          )
+        }
+        const bronzeImg = $('.balance_area img[src*=bronze]')
+        if (bronzeImg) {
+          balanceText = balanceText.replace(
+            '<img src="/static/img/bronze@2x.png" height="16" alt="B" border="0">',
+            'bronze',
+          )
+        }
+        const match =
+          /(?:\s?(\d+)\sgold)?(?:\s?(\d+)\ssilver)?(?:\s(\d+)\sbronze)?/.exec(
+            balanceText,
+          )
+        if (match) {
+          balanceBrief.gold = Number(match[1])
+          balanceBrief.silver = Number(match[2])
+          balanceBrief.bronze = Number(match[3])
+        }
         dispatch('balance_brief', balanceBrief)
       }
     }
