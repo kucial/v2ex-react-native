@@ -13,6 +13,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import { USER_AGENT } from '@/constants'
+import { useTheme } from '@/containers/ThemeService'
 
 type BrowserScreenProps = NativeStackScreenProps<AppStackParamList, 'browser'>
 
@@ -22,6 +23,7 @@ export default function BrowserScreen({
 }: BrowserScreenProps) {
   const [loading, setLoading] = useState(false)
   const webviewRef = useRef<WebView>(null)
+  const { styles } = useTheme()
   const [historyState, setHistoryState] = useState({
     canGoBack: false,
     canGoForward: false,
@@ -62,11 +64,11 @@ export default function BrowserScreen({
         <NProgress backgroundColor="#333" height={3} enabled={loading} />
       </View>
       {(historyState.canGoBack || historyState.canGoForward) && (
-        <SafeAreaView className="bg-neutral-100">
+        <SafeAreaView style={styles.overlay}>
           <View className="h-[44px] flex flex-row items-center justify-center">
             <Pressable
               className={classNames(
-                'basis-1/2 h-[44px] items-center justify-center active:opacity-60 active:bg-white',
+                'basis-1/2 h-[44px] items-center justify-center active:opacity-50 active:bg-neutral-100 dark:active:bg-neutral-600',
                 {
                   'opacity-50': !historyState.canGoBack,
                 },
@@ -75,11 +77,11 @@ export default function BrowserScreen({
               onPress={() => {
                 webviewRef.current?.goBack()
               }}>
-              <ChevronLeftIcon color="#333" size={20} />
+              <ChevronLeftIcon color={styles.text_meta.color} size={22} />
             </Pressable>
             <Pressable
               className={classNames(
-                'basis-1/2 h-[44px] items-center justify-center active:opacity-60 active:bg-white',
+                'basis-1/2 h-[44px] items-center justify-center active:opacity-50 active:bg-neutral-100 dark:active:bg-neutral-600',
                 {
                   'opacity-50': !historyState.canGoForward,
                 },
@@ -88,7 +90,7 @@ export default function BrowserScreen({
               onPress={() => {
                 webviewRef.current?.goForward()
               }}>
-              <ChevronRightIcon color="#333" size={20} />
+              <ChevronRightIcon color={styles.text_meta.color} size={22} />
             </Pressable>
           </View>
         </SafeAreaView>
