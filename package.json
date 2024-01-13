@@ -1,6 +1,6 @@
 {
   "name": "v2ex-react-native",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "scripts": {
     "start": "expo start --dev-client -c",
     "android": "expo run:android",
@@ -75,7 +75,7 @@
     "react-native": "0.71.8",
     "react-native-date-picker": "^4.2.14",
     "react-native-dotenv": "^3.3.1",
-    "react-native-draggable-flatlist": "^3.1.2",
+    "react-native-draggable-flatlist": "^4.0.1",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-get-random-values": "^1.8.0",
     "react-native-heroicons": "^3.2.0",

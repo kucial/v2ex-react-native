@@ -16,9 +16,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import {
-  NestableDraggableFlatList,
-  NestableScrollContainer,
+import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist'
 import {
@@ -35,7 +33,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 
 import Button from '@/components/Button'
-import GroupWapper from '@/components/GroupWrapper'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import SectionHeader from '@/components/SectionHeader'
 import { useAlertService } from '@/containers/AlertService'
@@ -47,6 +44,7 @@ import AddTabPanelSheet from './AddTabPanelSheet'
 
 const LineItem = (props: {
   disabled?: boolean
+  isFirst: boolean
   isLast: boolean
   onLongPress?: (e: GestureResponderEvent) => void
   icon: ReactElement
@@ -58,7 +56,15 @@ const LineItem = (props: {
   return (
     <Pressable
       className={classNames('min-h-[50px] flex flex-row items-center pl-4')}
-      style={[styles.layer1, props.style]}
+      style={[
+        styles.layer1,
+        props.isFirst && { borderTopLeftRadius: 4, borderTopRightRadius: 4 },
+        props.isLast && {
+          borderBottomLeftRadius: 4,
+          borderBottomRightRadius: 4,
+        },
+        props.style,
+      ]}
       disabled={props.disabled}
       onLongPress={props.onLongPress}>
       <View
@@ -161,7 +167,7 @@ export default function HomeTabs(props: ScreenProps) {
   }, [tabs])
 
   const renderItem = useCallback(
-    ({ item, drag, isActive, index }) => {
+    ({ item, drag, isActive, getIndex }) => {
       let icon
       const tintColor = theme.colors.text
       if (item.type === 'node') {
@@ -171,32 +177,35 @@ export default function HomeTabs(props: ScreenProps) {
       }
       return (
         <ScaleDecorator>
-          <LineItem
-            onLongPress={drag}
-            disabled={isActive}
-            title={item.label}
-            icon={icon}
-            isLast={index === enabledTabs.length - 1}
-            style={{
-              opacity: isActive ? 0.8 : 1,
-            }}
-            extra={
-              <Pressable
-                className="px-2 py-2 rounded-md active:opacity-50 active:bg-red-100 dark:active:bg-rose-100"
-                onPress={() => {
-                  setTabs((prev) => {
-                    return [
-                      ...prev.filter(
-                        (t) => t.type !== item.type || t.value !== item.value,
-                      ),
-                      { ...item, disabled: true },
-                    ]
-                  })
-                }}>
-                <MinusCircleIcon color={theme.colors.danger} />
-              </Pressable>
-            }
-          />
+          <MaxWidthWrapper className="px-2">
+            <LineItem
+              onLongPress={drag}
+              disabled={isActive}
+              title={item.label}
+              icon={icon}
+              isFirst={getIndex() === 0}
+              isLast={getIndex() === enabledTabs.length - 1}
+              style={{
+                opacity: isActive ? 0.8 : 1,
+              }}
+              extra={
+                <Pressable
+                  className="px-2 py-2 rounded-md active:opacity-50 active:bg-red-100 dark:active:bg-rose-100"
+                  onPress={() => {
+                    setTabs((prev) => {
+                      return [
+                        ...prev.filter(
+                          (t) => t.type !== item.type || t.value !== item.value,
+                        ),
+                        { ...item, disabled: true },
+                      ]
+                    })
+                  }}>
+                  <MinusCircleIcon color={theme.colors.danger} />
+                </Pressable>
+              }
+            />
+          </MaxWidthWrapper>
         </ScaleDecorator>
       )
     },
@@ -204,7 +213,7 @@ export default function HomeTabs(props: ScreenProps) {
   )
 
   const renderDisabledItem = useCallback(
-    ({ item, index }) => {
+    (item, index) => {
       let icon
       const tintColor = theme.colors.text
       if (item.type === 'node') {
@@ -213,27 +222,30 @@ export default function HomeTabs(props: ScreenProps) {
         icon = <HomeModernIcon size={18} color={tintColor} />
       }
       return (
-        <LineItem
-          title={item.label}
-          icon={icon}
-          isLast={index === disabledTabs.length - 1}
-          extra={
-            <Pressable
-              className="px-2 py-2 rounded-md active:opacity-50 active:bg-green-100 dark:active:bg-emerald-100"
-              onPress={() => {
-                setTabs((prev) => {
-                  return [
-                    ...prev.filter(
-                      (t) => t.type !== item.type || t.value !== item.value,
-                    ),
-                    { ...item, disabled: false },
-                  ]
-                })
-              }}>
-              <PlusCircleIcon color={theme.colors.success} />
-            </Pressable>
-          }
-        />
+        <MaxWidthWrapper className="px-2">
+          <LineItem
+            title={item.label}
+            icon={icon}
+            isFirst={index === 0}
+            isLast={index === disabledTabs.length - 1}
+            extra={
+              <Pressable
+                className="px-2 py-2 rounded-md active:opacity-50 active:bg-green-100 dark:active:bg-emerald-100"
+                onPress={() => {
+                  setTabs((prev) => {
+                    return [
+                      ...prev.filter(
+                        (t) => t.type !== item.type || t.value !== item.value,
+                      ),
+                      { ...item, disabled: false },
+                    ]
+                  })
+                }}>
+                <PlusCircleIcon color={theme.colors.success} />
+              </Pressable>
+            }
+          />
+        </MaxWidthWrapper>
       )
     },
     [disabledTabs],
@@ -258,36 +270,38 @@ export default function HomeTabs(props: ScreenProps) {
 
   return (
     <>
-      <NestableScrollContainer>
-        <MaxWidthWrapper className="px-2">
-          <SectionHeader title="已启用" desc="长按拖放可调整顺序" />
-          <GroupWapper style={{ marginRight: 54 }}>
-            <NestableDraggableFlatList
-              data={enabledTabs}
-              onDragEnd={({ data }) => setTabs([...data, ...disabledTabs])}
-              keyExtractor={(item) => `${item.type}-${item.value}`}
-              renderItem={renderItem}
-              activationDistance={5}
-              scrollEnabled
-            />
-          </GroupWapper>
-          <SectionHeader title="已停用" />
-          <GroupWapper style={{ marginRight: 54 }}>
+      <DraggableFlatList
+        containerStyle={{ flex: 1 }}
+        activationDistance={10}
+        ListHeaderComponent={
+          <MaxWidthWrapper className="px-2">
+            <SectionHeader title="已启用" desc="长按拖放可调整顺序" />
+          </MaxWidthWrapper>
+        }
+        ListFooterComponent={
+          <>
+            <MaxWidthWrapper className="px-2">
+              <SectionHeader title="已停用" />
+            </MaxWidthWrapper>
             {disabledTabs.length ? (
-              <NestableDraggableFlatList
-                data={disabledTabs}
-                keyExtractor={(item) => `${item.type}-${item.value}`}
-                renderItem={renderDisabledItem}
-              />
+              <View>{disabledTabs.map(renderDisabledItem)}</View>
             ) : (
-              <View className="py-4 px-3" style={styles.layer1}>
-                <Text style={styles.text}>（空）</Text>
-              </View>
+              <MaxWidthWrapper className="px-2">
+                <View
+                  className="py-4 px-3"
+                  style={[styles.layer1, { borderRadius: 4 }]}>
+                  <Text style={styles.text}>（空）</Text>
+                </View>
+              </MaxWidthWrapper>
             )}
-          </GroupWapper>
-        </MaxWidthWrapper>
-        <View style={{ height: 200 }}></View>
-      </NestableScrollContainer>
+            <View style={{ height: 200 }}></View>
+          </>
+        }
+        data={enabledTabs}
+        onDragEnd={({ data }) => setTabs([...data, ...disabledTabs])}
+        keyExtractor={(item) => `${item.type}-${item.value}`}
+        renderItem={renderItem}
+      />
       <SafeAreaView
         className="absolute w-full bottom-0 flex flex-row justify-center"
         pointerEvents="box-none">
@@ -299,30 +313,12 @@ export default function HomeTabs(props: ScreenProps) {
           )}
           radius={31}
           onPress={() => {
-            sheetRef.current?.snapToIndex(1)
             sheetRef.current?.present()
           }}>
           <PlusIcon color={styles.btn_primary__text.color} size={24} />
         </Button>
       </SafeAreaView>
-      <AddTabPanelSheet
-        ref={sheetRef}
-        onSelect={(item) => {
-          setTabs((prev) => {
-            const relatedItemIndex = prev.findIndex(
-              (t) => t.type === item.type && t.value === item.value,
-            )
-            if (relatedItemIndex > -1) {
-              return [
-                item,
-                ...prev.slice(0, relatedItemIndex),
-                ...prev.slice(relatedItemIndex + 1),
-              ]
-            }
-            return [item, ...prev]
-          })
-        }}
-      />
+      <AddTabPanelSheet ref={sheetRef} selected={tabs} onChange={setTabs} />
     </>
   )
 }
