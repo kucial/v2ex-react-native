@@ -57,7 +57,7 @@ export default function ResultRow(props: { data: SearchHit }) {
             <HtmlRender
               navigation={navigation}
               source={{
-                html: data.highlight.content?.[0] || data._source.content,
+                html: data.highlight?.content?.[0] || data._source.content,
                 baseUrl: 'https://v2ex.com',
               }}
               contentWidth={CONTAINER_WIDTH - 24}
