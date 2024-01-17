@@ -177,7 +177,7 @@ instance.interceptors.response.use(
     }
     if (
       responseURL &&
-      responseURL.startsWith('/signin') &&
+      /\/signin\??/.test(responseURL) &&
       !res.config.url.startsWith('/signin')
     ) {
       const $ = cheerioDoc(res.data)
