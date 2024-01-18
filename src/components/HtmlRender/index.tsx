@@ -2,17 +2,17 @@ import { useCallback, useMemo, useRef } from 'react'
 import { Alert, Linking } from 'react-native'
 import BaseRender, { RenderHTMLProps } from 'react-native-render-html'
 import WebView from 'react-native-webview'
+import { useActionSheet } from '@expo/react-native-action-sheet'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { BarCodeScannerResult } from 'expo-barcode-scanner'
 import * as Clipboard from 'expo-clipboard'
 import * as WebBrowser from 'expo-web-browser'
-import { decode } from 'js-base64'
 import * as Sentry from 'sentry-expo'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
-import { getMaxLength } from '@/utils/content'
+import { extractBase64Decoded, getMaxLength } from '@/utils/content'
 import {
   getImgurResourceImageLink,
   getScreenInfo,
@@ -67,6 +67,7 @@ function HtmlRender({
   const { theme, colorScheme } = useTheme()
   const alert = useAlertService()
   const viewingRef = useRef<ImageViewingService>(null)
+  const { showActionSheetWithOptions } = useActionSheet()
 
   const styles = useMemo(() => {
     const baseFontSize = (baseStyle?.fontSize || 16) as number
@@ -199,7 +200,11 @@ function HtmlRender({
           case MENU_ITEM_COPY:
             try {
               await Clipboard.setStringAsync(content)
-              // alert.show({ type: 'success', message: '已复制到粘贴板 ' })
+              alert.show({
+                type: 'success',
+                message: '已复制到粘贴板',
+                duration: 500,
+              })
             } catch (err) {
               Sentry.Native.captureException(err)
             }
@@ -207,20 +212,55 @@ function HtmlRender({
           case `R_${MENU_ITEM_BASE64_DECODE}`:
           case MENU_ITEM_BASE64_DECODE:
             try {
-              const result = decode(content)
-              if (result) {
-                await Clipboard.setStringAsync(result)
+              const result = extractBase64Decoded(content)
+              const copyAndNotice = async (text) => {
+                await Clipboard.setStringAsync(text)
                 alert.show({
                   type: 'success',
-                  message: '已复制到粘贴板: ' + result,
+                  message: '已复制到粘贴板: ' + text,
                 })
+              }
+              if (result) {
+                if (result.length == 1) {
+                  const item = result[0]
+                  copyAndNotice(item[1])
+                } else {
+                  showActionSheetWithOptions(
+                    {
+                      title: '请选择需要复制的词条',
+                      options: [
+                        ...result.map(
+                          ([origin, decoded]) =>
+                            `[${getMaxLength(origin, 4)}] ${decoded}`,
+                        ),
+                        '取消',
+                      ],
+                      cancelButtonIndex: result.length,
+                    },
+                    async (selectedIndex) => {
+                      const item = result[selectedIndex]
+                      if (item) {
+                        copyAndNotice(item[1])
+                      }
+                    },
+                  )
+                }
               } else {
                 alert.show({
-                  type: 'error',
-                  message: '未识别到有效内容 ',
+                  type: 'info',
+                  message: '未找到 base64 字符串',
                 })
               }
             } catch (err) {
+              alert.show({
+                type: 'error',
+                message: '未识别到有效内容',
+              })
+              Sentry.Native.addBreadcrumb({
+                data: {
+                  text: content,
+                },
+              })
               Sentry.Native.captureException(err)
             }
             break
