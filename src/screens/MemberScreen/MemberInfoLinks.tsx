@@ -1,5 +1,7 @@
-import { Linking, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { MapPinIcon } from 'react-native-heroicons/outline'
+import * as WebBrowser from 'expo-web-browser'
+import * as Sentry from 'sentry-expo'
 
 import Button from '@/components/Button'
 import GithubIcon from '@/components/GithubIcon'
@@ -8,7 +10,7 @@ import { useTheme } from '@/containers/ThemeService'
 import { MemberDetail } from '@/utils/v2ex-client/types'
 
 export default function MemberInfoLinks(props: { data: MemberDetail }) {
-  const { styles } = useTheme()
+  const { styles, theme } = useTheme()
   const { data } = props
   if (!data) {
     return null
@@ -31,7 +33,15 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
           size="sm"
           className="flex flex-row items-center mr-2"
           onPress={() => {
-            Linking.openURL(`https://twitter.com/${data.twitter}`)
+            const url = `https://twitter.com/${data.twitter}`
+            WebBrowser.openBrowserAsync(url, {
+              controlsColor: theme.colors.primary,
+              dismissButtonStyle: 'close',
+              presentationStyle:
+                WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+            }).catch((err) => {
+              Sentry.Native.captureException(err)
+            })
           }}>
           <TwitterIcon size={18} style={{ marginRight: 4 }} />
           <Text style={styles.text}>{data.twitter}</Text>
@@ -43,7 +53,15 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
           size="sm"
           className="flex flex-row items-center mr-2"
           onPress={() => {
-            Linking.openURL(`https://github.com/${data.github}`)
+            const url = `https://github.com/${data.github}`
+            WebBrowser.openBrowserAsync(url, {
+              controlsColor: theme.colors.primary,
+              dismissButtonStyle: 'close',
+              presentationStyle:
+                WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+            }).catch((err) => {
+              Sentry.Native.captureException(err)
+            })
           }}>
           <GithubIcon
             size={18}
