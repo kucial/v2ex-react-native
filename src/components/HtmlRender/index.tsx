@@ -64,7 +64,7 @@ function HtmlRender({
   navigation: NativeStackNavigationProp<AppStackParamList>
   onOpenMemberInfo?: (data) => void
 }) {
-  const { theme, colorScheme } = useTheme()
+  const { theme, colorScheme, styles: themeStyles } = useTheme()
   const alert = useAlertService()
   const viewingRef = useRef<ImageViewingService>(null)
   const { showActionSheetWithOptions } = useActionSheet()
@@ -220,7 +220,7 @@ function HtmlRender({
                   message: '已复制到粘贴板: ' + text,
                 })
               }
-              if (result) {
+              if (result && result.length) {
                 if (result.length == 1) {
                   const item = result[0]
                   copyAndNotice(item[1])
@@ -236,6 +236,9 @@ function HtmlRender({
                         '取消',
                       ],
                       cancelButtonIndex: result.length,
+                      tintColor: theme.colors.primary,
+                      userInterfaceStyle: colorScheme,
+                      containerStyle: themeStyles.layer1,
                     },
                     async (selectedIndex) => {
                       const item = result[selectedIndex]
