@@ -1,3 +1,7 @@
+diff --git a/node_modules/@alentoma/react-native-selectable-text/.DS_Store b/node_modules/@alentoma/react-native-selectable-text/.DS_Store
+new file mode 100644
+index 0000000..4156d42
+Binary files /dev/null and b/node_modules/@alentoma/react-native-selectable-text/.DS_Store differ
 diff --git a/node_modules/@alentoma/react-native-selectable-text/demo/SelectableText.tsx b/node_modules/@alentoma/react-native-selectable-text/demo/SelectableText.tsx
 index a2f714a..4ce19d9 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/demo/SelectableText.tsx
@@ -270,6 +274,10 @@ index a2f714a..4ce19d9 100644
      </RNSelectableText>
    )
  }
+diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/.DS_Store b/node_modules/@alentoma/react-native-selectable-text/ios/.DS_Store
+new file mode 100644
+index 0000000..7e55fc5
+Binary files /dev/null and b/node_modules/@alentoma/react-native-selectable-text/ios/.DS_Store differ
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextManager.h b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextManager.h
 index fdef614..8bbdf97 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextManager.h
@@ -301,10 +309,10 @@ index bf58b0e..d98d410 100644
  #pragma mark - Multiline <TextInput> (aka TextView) specific properties
  
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.h b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.h
-index 5770684..65db09b 100644
+index 5770684..4433014 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.h
 +++ b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.h
-@@ -1,8 +1,8 @@
+@@ -1,17 +1,18 @@
 -#if __has_include(<RCTText/RCTBaseTextInputView.h>)
 -#import <RCTText/RCTBaseTextInputView.h>
 -#else
@@ -318,7 +326,10 @@ index 5770684..65db09b 100644
  
  NS_ASSUME_NONNULL_BEGIN
  
-@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
+-@interface RNSelectableTextView : RCTBaseTextInputView
++@interface RNSelectableTextView : RCTBaseTextInputView<UITextViewDelegate>
+ 
+ @property (nonnull, nonatomic, copy) NSString *value;
  @property (nonatomic, copy) RCTDirectEventBlock onSelection;
  @property (nullable, nonatomic, copy) NSArray<NSString *> *menuItems;
  @property (nonatomic, copy) RCTDirectEventBlock onHighlightPress;
@@ -327,7 +338,7 @@ index 5770684..65db09b 100644
  @end
  
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
-index eb5e69e..d28e2ab 100644
+index eb5e69e..5964aa2 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 +++ b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 @@ -1,23 +1,23 @@
@@ -371,16 +382,21 @@ index eb5e69e..d28e2ab 100644
  #import <React/RCTUtils.h>
  
  @implementation RNSelectableTextView
-@@ -25,7 +25,7 @@ @implementation RNSelectableTextView
+@@ -25,34 +25,49 @@ @implementation RNSelectableTextView
      RCTUITextView *_backedTextInputView;
  }
  
 -NSString *const CUSTOM_SELECTOR = @"_CUSTOM_SELECTOR_";
 +NSString *const S_CUSTOM_SELECTOR = @"_S_CUSTOM_SELECTOR_";
  
- UITextPosition *selectionStart;
+-UITextPosition *selectionStart;
++UITextPosition *initSelectionStart;
++UITextPosition *initSelectionEnd;
++NSInteger initStartLocation;
++NSInteger initEndLocation;
  UITextPosition* beginning;
-@@ -34,49 +34,59 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+ 
+ - (instancetype)initWithBridge:(RCTBridge *)bridge
  {
      if (self = [super initWithBridge:bridge]) {
          // `blurOnSubmit` defaults to `false` for <TextInput multiline={true}> by design.
@@ -391,6 +407,8 @@ index eb5e69e..d28e2ab 100644
          _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
          _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 +        _backedTextInputView.textInputDelegate = self;
++        // _backedTextInputView.delegate = self;
++        // _backedTextInputView.delegate 被 RCTBackedTextViewDelegateAdapter 控制.
 +
          _backedTextInputView.backgroundColor = [UIColor clearColor];
          _backedTextInputView.textColor = [UIColor blackColor];
@@ -407,7 +425,6 @@ index eb5e69e..d28e2ab 100644
          _backedTextInputView.selectable = YES;
 +        // 处理显示不全的情况
 +        _backedTextInputView.layoutManager.allowsNonContiguousLayout = NO;
-+        // TODO: may handle default context menu from js
          _backedTextInputView.contextMenuHidden = YES;
  
 +        // reset linkTextAttributes
@@ -415,47 +432,32 @@ index eb5e69e..d28e2ab 100644
 +
          beginning = _backedTextInputView.beginningOfDocument;
  
--        for (UIGestureRecognizer *gesture in [_backedTextInputView gestureRecognizers]) {
--            if (
--                [gesture isKindOfClass:[UIPanGestureRecognizer class]]
--            ) {
--                [_backedTextInputView setExclusiveTouch:NO];
--                gesture.enabled = YES;
--            } else {
--                gesture.enabled = NO;
--            }
--        }
-+        // for (UIGestureRecognizer *gesture in [_backedTextInputView gestureRecognizers]) {
-+        //     if (
-+        //         [gesture isKindOfClass:[UIPanGestureRecognizer class]]
-+        //     ) {
-+        //         [_backedTextInputView setExclusiveTouch:NO];
-+        //         gesture.enabled = YES;
-+        //     } else {
-+        //         gesture.enabled = NO;
-+        //     }
-+        // }
- 
-         [self addSubview:_backedTextInputView];
++
+         for (UIGestureRecognizer *gesture in [_backedTextInputView gestureRecognizers]) {
+             if (
+                 [gesture isKindOfClass:[UIPanGestureRecognizer class]]
+@@ -68,16 +83,14 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
  
          UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
  
- 
+-        
 -        UITapGestureRecognizer *tapGesture = [ [UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
 -        tapGesture.numberOfTapsRequired = 2;
+-        
+         UITapGestureRecognizer *singleTapGesture = [ [UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+-        singleTapGesture.numberOfTapsRequired = 1;
++
 +        UITapGestureRecognizer *doubleTapGesture = [ [UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
 +        doubleTapGesture.numberOfTapsRequired = 2;
  
-         UITapGestureRecognizer *singleTapGesture = [ [UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-         singleTapGesture.numberOfTapsRequired = 1;
- 
          [_backedTextInputView addGestureRecognizer:longPressGesture];
 -        [_backedTextInputView addGestureRecognizer:tapGesture];
-+        [_backedTextInputView addGestureRecognizer:doubleTapGesture];
          [_backedTextInputView addGestureRecognizer:singleTapGesture];
++        [_backedTextInputView addGestureRecognizer:doubleTapGesture];
  
          [self setUserInteractionEnabled:YES];
-@@ -85,7 +95,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
+     }
+@@ -85,7 +98,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
      return self;
  }
  
@@ -464,7 +466,7 @@ index eb5e69e..d28e2ab 100644
  {
      if (!_backedTextInputView.isFirstResponder) {
          [_backedTextInputView becomeFirstResponder];
-@@ -98,7 +108,7 @@ -(void) _handleGesture
+@@ -98,7 +111,7 @@ -(void) _handleGesture
      NSMutableArray *menuControllerItems = [NSMutableArray arrayWithCapacity:self.menuItems.count];
  
      for(NSString *menuItemName in self.menuItems) {
@@ -473,10 +475,12 @@ index eb5e69e..d28e2ab 100644
          UIMenuItem *item = [[UIMenuItem alloc] initWithTitle: menuItemName
                                                        action: NSSelectorFromString(sel)];
  
-@@ -112,24 +122,56 @@ -(void) _handleGesture
+@@ -110,77 +123,157 @@ -(void) _handleGesture
+     [menuController setMenuVisible:YES animated:YES];
+ }
  
- -(void) handleSingleTap: (UITapGestureRecognizer *) gesture
- {
+--(void) handleSingleTap: (UITapGestureRecognizer *) gesture
+-{
 -    CGPoint pos = [gesture locationInView:_backedTextInputView];
 -    pos.y += _backedTextInputView.contentOffset.y;
 -    
@@ -495,91 +499,162 @@ index eb5e69e..d28e2ab 100644
 -        @"clickedRangeStart": @(location),
 -        @"clickedRangeEnd": @(endLocation),
 -    });
-+    UITextView *textView = _backedTextInputView;
-+	CGPoint tapLocation = [gesture locationInView:textView];
-+
-+	// we need to get two positions since attributed links only apply to ranges with a length > 0
-+	UITextPosition *textPosition1 = [textView closestPositionToPoint:tapLocation];
-+	UITextPosition *textPosition2 = [textView positionFromPosition:textPosition1 offset:1];
-+
-+	// check if we're beyond the max length and go back by one
-+	if (!textPosition2) {
-+		textPosition1 = [textView positionFromPosition:textPosition1 offset:-1];
-+		textPosition2 = [textView positionFromPosition:textPosition1 offset:1];
-+	}
-+
-+	// abort if we still don't have a string that's long enough
-+	if (!textPosition2) {
-+		return;
-+	}
-+
-+	// get the offset range of the character we tapped on
-+	UITextRange *range = [textView textRangeFromPosition:textPosition1 toPosition:textPosition2];
-+	NSInteger startOffset = [textView offsetFromPosition:textView.beginningOfDocument toPosition:range.start];
-+	NSInteger endOffset = [textView offsetFromPosition:textView.beginningOfDocument toPosition:range.end];
-+	NSRange offsetRange = NSMakeRange(startOffset, endOffset - startOffset);
-+
-+	if (offsetRange.location == NSNotFound || offsetRange.length == 0) {
-+		return;
-+	}
-+
-+	if (NSMaxRange(offsetRange) > textView.attributedText.length) {
-+		return;
-+	}
-+
-+	// now grab the link from the string
-+	NSAttributedString *attributedSubstring = [textView.attributedText attributedSubstringFromRange:offsetRange];
-+	NSString *link = [attributedSubstring attribute:NSLinkAttributeName atIndex:0 effectiveRange:nil];
-+
-+	if (!link) {
-+		return;
-+	}
-+
-+	NSURL *URL = [NSURL URLWithString:link];
-+
-+	if (textView.delegate && [textView.delegate respondsToSelector:@selector(textView:shouldInteractWithURL:inRange:interaction:)]) {
-+		// abort if the delegate doesn't allow us to open this URL
-+		if (![textView.delegate textView:textView shouldInteractWithURL:URL inRange:offsetRange interaction:UITextItemInteractionInvokeDefaultAction]) {
-+			return;
-+		}
-+	}
-+
-+    [[UIApplication sharedApplication] openURL:URL];
- }
- 
+-}
+-
  -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
-@@ -150,7 +192,7 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
+ {
+ 
+     CGPoint pos = [gesture locationInView:_backedTextInputView];
+     pos.y += _backedTextInputView.contentOffset.y;
+ 
++    // NSLog(@"Gesture Location: %@", NSStringFromCGPoint(pos));
++
+     UITextPosition *tapPos = [_backedTextInputView closestPositionToPoint:pos];
+-    UITextRange *word = [_backedTextInputView.tokenizer rangeEnclosingPosition:tapPos withGranularity:(UITextGranularityWord) inDirection:UITextLayoutDirectionRight];
++    const NSInteger tapLocation = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument toPosition:tapPos];
+ 
++    if (tapLocation == NSNotFound) {
++        return;
++    }
+ 
++    UITextRange *wordRange ;
+     switch ([gesture state]) {
+         case UIGestureRecognizerStateBegan:
+-            selectionStart = word.start;
++            wordRange = [_backedTextInputView.tokenizer rangeEnclosingPosition:tapPos withGranularity:(UITextGranularityWord) inDirection:UITextLayoutDirectionRight];
++            initSelectionStart = wordRange.start;
++            initSelectionEnd = wordRange.end;
++            initStartLocation = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument toPosition:initSelectionStart];
++            initEndLocation = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument toPosition:initSelectionEnd];
++            // min selection length: 2;
++            if (initStartLocation == 0 && initEndLocation == 0) {
++                // NSLog(@"init with topLocation");
++                initStartLocation = MAX(0, tapLocation - 1);
++                initEndLocation = tapLocation + 1;
++            }
++            if (@available(iOS 10.0, *)) {
++                // Create a feedback generator
++                UIImpactFeedbackGenerator *feedbackGenerator = [[UIImpactFeedbackGenerator alloc] init];
++
++                // Trigger the haptic feedback
++                [feedbackGenerator impactOccurred];
++                [feedbackGenerator prepare];
++            } else {
++                // Fallback for devices that don't support haptic feedback
++                // You might implement a different feedback mechanism or simply ignore it
++                NSLog(@"Haptic feedback not supported on this device.");
++            }
+             break;
+         case UIGestureRecognizerStateChanged:
              break;
          case UIGestureRecognizerStateEnded:
-             selectionStart = nil;
+-            selectionStart = nil;
 -            [self _handleGesture];
++            initSelectionStart = nil;
++            initSelectionEnd = nil;
 +            [self _showMenu];
              return;
- 
+-            
          default:
-@@ -162,25 +204,32 @@ -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
-     const NSInteger location = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionStart];
-     const NSInteger endLocation = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionEnd];
+             break;
+     }
  
-+    NSLog(@"Loaction: [%d, %d]", location, endLocation);
-     if (location == 0 && endLocation == 0) return;
-+    if (endLocation == 0) return;
-+    const NSInteger start = MIN(location, endLocation);
-+    const NSInteger length = abs(endLocation - location);
-+    if (length < 0) return;
-+    NSLog(@"RANGE: [%d, %d]", start, length);
+-    UITextPosition *selectionEnd = word.end;
++    // NSLog(@"Start: %ld, End %ld, Tap %ld", (long)initStartLocation, (long)initEndLocation, (long) tapLocation);
++
++    NSInteger start = 0;
++    NSInteger end = 0;
++
++    if (tapLocation < initStartLocation) {
++        start = tapLocation;
++        end = initEndLocation;
++    } else if (tapLocation > initEndLocation) {
++        start = initStartLocation;
++        end = tapLocation;
++    } else {
++        start = initStartLocation;
++        end = initEndLocation;
++    }
++
++    NSInteger length = ABS(end - start);
  
-     [_backedTextInputView select:self];
+-    const NSInteger location = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionStart];
+-    const NSInteger endLocation = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionEnd];
++    // NSLog(@"RANGE: [%ld, %ld]", (long)start, (long)length);
+ 
+-    if (location == 0 && endLocation == 0) return;
++    [_backedTextInputView becomeFirstResponder];
++    NSRange selectedRange = NSMakeRange(start, length);
++    [_backedTextInputView setSelectedRange:selectedRange];
+ 
+-    [_backedTextInputView select:self];
 -    [_backedTextInputView setSelectedRange:NSMakeRange(location, endLocation - location)];
-+    [_backedTextInputView setSelectedRange:NSMakeRange(start, length)];
++}
  
++-(void) handleSingleTap: (UITapGestureRecognizer *) gesture
++{
++       UITextView *textView = _backedTextInputView;
++       CGPoint tapLocation = [gesture locationInView:textView];
++
++       // we need to get two positions since attributed links only apply to ranges with a length > 0
++       UITextPosition *textPosition1 = [textView closestPositionToPoint:tapLocation];
++       UITextPosition *textPosition2 = [textView positionFromPosition:textPosition1 offset:1];
++
++       // check if we're beyond the max length and go back by one
++       if (!textPosition2) {
++           textPosition1 = [textView positionFromPosition:textPosition1 offset:-1];
++           textPosition2 = [textView positionFromPosition:textPosition1 offset:1];
++       }
++
++       // abort if we still don't have a string that's long enough
++       if (!textPosition2) {
++           return;
++       }
++
++       // get the offset range of the character we tapped on
++       UITextRange *range = [textView textRangeFromPosition:textPosition1 toPosition:textPosition2];
++       NSInteger startOffset = [textView offsetFromPosition:_backedTextInputView.beginningOfDocument toPosition:range.start];
++       NSInteger endOffset = [textView offsetFromPosition:_backedTextInputView.beginningOfDocument toPosition:range.end];
++       NSRange offsetRange = NSMakeRange(startOffset, endOffset - startOffset);
++
++       if (offsetRange.location == NSNotFound || offsetRange.length == 0) {
++           return;
++       }
++
++       if (NSMaxRange(offsetRange) > textView.attributedText.length) {
++           return;
++       }
++
++       // now grab the link from the string
++       NSAttributedString *attributedSubstring = [textView.attributedText attributedSubstringFromRange:offsetRange];
++       NSString *link = [attributedSubstring attribute:NSLinkAttributeName atIndex:0 effectiveRange:nil];
++
++       if (!link) {
++           return;
++       }
++
++       NSURL *URL = [NSURL URLWithString:link];
++
++       if (textView.delegate && [textView.delegate respondsToSelector:@selector(textView:shouldInteractWithURL:inRange:interaction:)]) {
++           // abort if the delegate doesn't allow us to open this URL
++           if (![textView.delegate textView:textView shouldInteractWithURL:URL inRange:offsetRange interaction:UITextItemInteractionInvokeDefaultAction]) {
++               return;
++           }
++       }
++
++    // iOS 10 and later
++    if ([[UIApplication sharedApplication] respondsToSelector:@selector(openURL:options:completionHandler:)]) {
++        [[UIApplication sharedApplication] openURL:URL options:@{} completionHandler:nil];
++    } else {
++        // Fallback for versions earlier than iOS 10
++        [[UIApplication sharedApplication] openURL:URL];
++    }
  }
  
 --(void) handleTap: (UITapGestureRecognizer *) gesture
 +-(void) handleDoubleTap: (UITapGestureRecognizer *) gesture
  {
 -    [_backedTextInputView select:self];
-+    // [_backedTextInputView select:self];
      [_backedTextInputView selectAll:self];
 -    [self _handleGesture];
 +    [self _showMenu];
@@ -595,7 +670,7 @@ index eb5e69e..d28e2ab 100644
          [super setAttributedText:str];
      } else {
          [super setAttributedText:attributedText];
-@@ -220,7 +269,7 @@ - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
+@@ -220,7 +313,7 @@ - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
  - (void)forwardInvocation:(NSInvocation *)invocation
  {
      NSString *sel = NSStringFromSelector([invocation selector]);
@@ -604,21 +679,23 @@ index eb5e69e..d28e2ab 100644
      if (match.location == 0) {
          [self tappedMenuItem:[sel substringFromIndex:17]];
      } else {
-@@ -237,7 +286,7 @@ - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+@@ -235,9 +328,9 @@ - (BOOL)canBecomeFirstResponder
+ 
+ - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
  {
-     if(selectionStart != nil) {return NO;}
+-    if(selectionStart != nil) {return NO;}
++    if(initSelectionStart != nil) {return NO;}
      NSString *sel = NSStringFromSelector(action);
 -    NSRange match = [sel rangeOfString:CUSTOM_SELECTOR];
 +    NSRange match = [sel rangeOfString:S_CUSTOM_SELECTOR];
  
      if (match.location == 0) {
          return YES;
-@@ -272,4 +321,30 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+@@ -272,4 +365,29 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
      return [super hitTest:point withEvent:event];
  }
  
 +- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction {
-+
 +    NSString *action = @"";
 +    switch (interaction) {
 +        case UITextItemInteractionPreview:
