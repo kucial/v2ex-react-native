@@ -276,9 +276,9 @@ function PasswordSignin(props: PasswordSigninProps) {
 
                 <Button
                   className="mt-4"
-                  disabled={!formSwr.data}
                   size="md"
                   variant="primary"
+                  disabled={!formSwr.data || isSubmitting}
                   loading={isSubmitting}
                   onPress={(e) => {
                     if (isSubmitting) {

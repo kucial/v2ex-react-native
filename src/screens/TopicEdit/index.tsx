@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Formik, FormikProps } from 'formik'
@@ -105,6 +105,7 @@ export default function TopicEdit(props: ScreenProps) {
                   variant="primary"
                   label="更新"
                   loading={formikProps.isSubmitting}
+                  disabled={formikProps.isSubmitting}
                   onPress={() => {
                     formikProps.submitForm()
                   }}

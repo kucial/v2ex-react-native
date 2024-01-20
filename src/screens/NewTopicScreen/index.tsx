@@ -252,7 +252,7 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
                       variant="primary"
                       size="md"
                       label="发布"
-                      disabled={!isValid}
+                      disabled={!isValid || isSubmitting}
                       loading={isSubmitting}
                       onPress={handleSubmit}
                     />

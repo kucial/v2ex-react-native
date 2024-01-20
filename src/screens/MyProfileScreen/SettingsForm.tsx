@@ -121,6 +121,7 @@ export default function SettingsForm(props: {
                     size="md"
                     label="提交"
                     loading={formikProps.isSubmitting}
+                    disabled={formikProps.isSubmitting}
                     onPress={() => {
                       formikProps.handleSubmit()
                     }}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   KeyboardAvoidingView,
   Platform,
@@ -56,6 +56,7 @@ export default function ThemePreview(props: {
   const CONTAINER_WIDTH = Math.min(width, 600)
   const { styles, theme } = useTheme()
   const sheetRef = useRef<BottomSheetModal>()
+  const [loading, setLoading] = useState<boolean>(false)
   const alert = useAlertService()
   useEffect(() => {
     props.navigation.setOptions({
@@ -156,6 +157,14 @@ export default function ThemePreview(props: {
                 onPress={(e) => {
                   sheetRef.current?.present()
                 }}></Button>
+            </View>
+            <View className="px-2 pb-4">
+              <Button
+                size="md"
+                variant="secondary"
+                label="Secondary"
+                loading={loading}
+                onPress={() => setLoading((prev) => !prev)}></Button>
             </View>
             <MyBottomSheetModal snapPoints={['50%', '75%']} ref={sheetRef}>
               <View className="p-3">

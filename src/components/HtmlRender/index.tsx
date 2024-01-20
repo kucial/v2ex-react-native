@@ -10,6 +10,7 @@ import * as Clipboard from 'expo-clipboard'
 import * as WebBrowser from 'expo-web-browser'
 import * as Sentry from 'sentry-expo'
 
+import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { extractBase64Decoded, getMaxLength } from '@/utils/content'
@@ -45,12 +46,6 @@ const customHTMLElementModels = {
 
 const defaultTextProps = { selectable: false }
 
-const renderersProps = {
-  iframe: {
-    scalesPageToFit: true,
-  },
-}
-
 const MENU_ITEM_COPY = '复制'
 const MENU_ITEM_BASE64_DECODE = 'Base64 解码'
 
@@ -68,6 +63,22 @@ function HtmlRender({
   const alert = useAlertService()
   const viewingRef = useRef<ImageViewingService>(null)
   const { showActionSheetWithOptions } = useActionSheet()
+
+  const renderersProps = useMemo(
+    () => ({
+      iframe: {
+        scalesPageToFit: true,
+        webViewProps: {
+          style: themeStyles.layer1,
+          userAgent: USER_AGENT,
+        },
+      },
+      table: {
+        tableRenderers: true,
+      },
+    }),
+    [themeStyles],
+  )
 
   const styles = useMemo(() => {
     const baseFontSize = (baseStyle?.fontSize || 16) as number
@@ -144,6 +155,10 @@ function HtmlRender({
         paddingVertical: baseFontSize * 0.25,
         borderLeftWidth: 3,
         borderLeftColor: theme.colors.text,
+      },
+      th: {
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.text_meta,
       },
       ...(tagsStyles || {}),
     }

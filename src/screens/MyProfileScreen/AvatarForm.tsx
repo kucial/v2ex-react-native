@@ -144,6 +144,7 @@ const AvatarPicker = (props: {
             {avatar ? (
               <Button
                 loading={loading}
+                disabled={loading}
                 variant="primary"
                 size="md"
                 label="上传头像"

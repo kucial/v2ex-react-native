@@ -79,6 +79,7 @@ export default function TopicMovePanel(props: {
                 size="md"
                 label="确认"
                 loading={formikProps.isSubmitting}
+                disabled={formikProps.isSubmitting}
                 onPress={() => {
                   formikProps.handleSubmit()
                 }}

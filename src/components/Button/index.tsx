@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from 'react'
-import { Platform, PressableProps, Text } from 'react-native'
+import { Platform, PressableProps, Text, View } from 'react-native'
 import { PlatformPressable } from '@react-navigation/elements'
 import classNames from 'classnames'
 import { styled } from 'nativewind'
@@ -71,7 +71,7 @@ function Button(props: {
 
   return (
     <StyledPressable
-      disabled={props.loading || props.disabled}
+      disabled={props.disabled}
       className={classNames(
         'flex items-center justify-center',
         Platform.OS === 'ios' && 'active:opacity-60',

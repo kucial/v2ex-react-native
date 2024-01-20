@@ -30,6 +30,7 @@ const Loader = forwardRef<LottieView, LoaderProps>(
         style={[
           {
             height: size,
+            width: size,
           },
           style,
         ]}
