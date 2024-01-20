@@ -10,10 +10,10 @@ import Status from './Status'
 const CACHE_KEY = '$app$/fetch-ready'
 
 // 用于处理 v2ex.com CF 认证的问题
-type FetchStateTag = 'none' | 'ready' | 'reset'
+import { PrepareStatus } from './type'
 
 export default function FetchPrepare(props) {
-  const [tag, setTag] = useCachedState<FetchStateTag>(CACHE_KEY, 'none')
+  const [tag, setTag] = useCachedState<PrepareStatus>(CACHE_KEY, 'none')
   const alert = useAlertService()
   const [state, setState] = useState({
     status: tag,
@@ -23,10 +23,11 @@ export default function FetchPrepare(props) {
 
   useEffect(() => {
     const unsubscribe = v2exClient.subscribe('should_prepare_fetch', () => {
-      setTag('reset')
+      setTag('none')
       setState((prev) => ({
         ...prev,
-        status: 'reset',
+        error: null,
+        status: 'none',
       }))
     })
 
@@ -47,18 +48,24 @@ export default function FetchPrepare(props) {
       {state.status !== 'ready' && (
         <PrepareWebview
           key={state.count}
-          onError={(e) => {
-            setState((prev) => ({
-              ...prev,
-              error: e,
-            }))
-          }}
-          onReady={() => {
-            setTag('ready')
-            setState((prev) => ({
-              ...prev,
-              status: 'ready',
-            }))
+          onUpdate={(status, err) => {
+            switch (status) {
+              case 'error':
+                setState((prev) => ({
+                  ...prev,
+                  status: 'error',
+                  error: err,
+                }))
+                break
+              default:
+                setState((prev) => ({
+                  ...prev,
+                  status,
+                }))
+            }
+            if (status == 'ready') {
+              setTag('ready')
+            }
           }}
         />
       )}
@@ -68,9 +75,10 @@ export default function FetchPrepare(props) {
       ) : (
         <Status
           error={state.error}
+          status={state.status}
           onRetry={() => {
             setState((prev) => ({
-              ...prev,
+              status: 'none',
               error: null,
               count: prev.count + 1,
             }))
