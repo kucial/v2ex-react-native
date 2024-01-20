@@ -3,6 +3,7 @@ import {
   getScreenInfo,
   isAppLink,
   isImgurResourceLink,
+  tailingFix,
 } from '../url'
 describe('url utils', () => {
   describe('getScreenInfo', () => {
@@ -118,6 +119,17 @@ describe('url utils', () => {
     const links = ['https://s.v2ex.com/t/1231']
     links.forEach((link) => {
       expect(/^https:\/\/([www|fast|s|hk]\.)?v2ex\.com/.test(link)).toBe(true)
+    })
+  })
+
+  describe('tailingFixUrl', () => {
+    it('https://s.v2ex.com/t/1231', () => {
+      const url = 'https://s.v2ex.com/t/1231'
+      expect(tailingFix(url)).toEqual('https://s.v2ex.com/t/1231')
+    })
+    it('https://www.pingti.xyz/)。', () => {
+      const url = 'https://www.pingti.xyz/)。'
+      expect(tailingFix(url)).toEqual('https://www.pingti.xyz/')
     })
   })
 })

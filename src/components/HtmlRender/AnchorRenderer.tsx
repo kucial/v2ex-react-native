@@ -7,14 +7,18 @@ import {
   useNormalizedUrl,
 } from 'react-native-render-html'
 
-import { getImgurResourceImageLink, isImgurResourceLink } from '@/utils/url'
+import {
+  getImgurResourceImageLink,
+  isImgurResourceLink,
+  tailingFix,
+} from '@/utils/url'
 
 import { RenderContext } from './context'
 import { useImageViewing } from './ImageViewingService'
 
 const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
   const renderProps = getNativePropsForTNode(props)
-  const url = useNormalizedUrl(props.tnode.attributes.href)
+  const url = tailingFix(useNormalizedUrl(props.tnode.attributes.href))
   const { handleUrlPress } = useContext(RenderContext)
   const service = useImageViewing()
   useEffect(() => {
