@@ -114,7 +114,6 @@ function NodeSelect(props: NodeSelectProps) {
                 placeholderTextColor={theme.colors.text_placeholder}
                 placeholder={props.filterPlaceholder}
                 returnKeyType="search"
-                value={filter}
                 onChangeText={(text) => {
                   setFilter(text)
                 }}
