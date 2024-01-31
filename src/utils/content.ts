@@ -9,7 +9,7 @@ export function getMaxLength(str: string, maxLength = 50) {
 
 export function extractBase64Decoded(content: string) {
   const base64Regex =
-    /(?:^|\b|\s)(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?(?:\s|\b|$)/g
+    /(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})/g
 
   const result = content
     .match(base64Regex)

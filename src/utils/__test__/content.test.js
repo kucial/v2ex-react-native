@@ -26,5 +26,11 @@ describe('content utils', () => {
       const text = `普通文本段落`
       expect(extractBase64Decoded(text)).toBeFalsy()
     })
+    it('sample 05', () => {
+      const text = `想问问 “U3BvdGlmeUNhdA==” 这是啥社交软件的码？微信是了一下搜不到`
+      expect(extractBase64Decoded(text)).toEqual([
+        ['U3BvdGlmeUNhdA==', 'SpotifyCat'],
+      ])
+    })
   })
 })
