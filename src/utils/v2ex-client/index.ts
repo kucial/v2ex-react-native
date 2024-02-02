@@ -1,6 +1,10 @@
 import { clearCookies } from 'react-native/Libraries/Network/RCTNetworking'
 import CookieManager from '@react-native-cookies/cookies'
-import axios, { AxiosRequestHeaders } from 'axios'
+import axios, {
+  AxiosRequestConfig,
+  AxiosRequestHeaders,
+  AxiosResponse,
+} from 'axios'
 import { CheerioAPI } from 'cheerio'
 import { stringify } from 'qs'
 import * as Sentry from 'sentry-expo'
@@ -55,6 +59,9 @@ import {
   TopicId,
 } from './types'
 
+interface CustomAxiosResponse extends AxiosResponse {
+  $?: CheerioAPI
+}
 type EVENT =
   | 'unread_count'
   | 'current_user'
@@ -64,7 +71,7 @@ type EVENT =
   | 'warn_vpn_status'
 type UnreadCountValue = number
 
-type EventValue = UnreadCountValue | TFA_Error | BalanceBrief
+type EventValue = UnreadCountValue | TFA_Error | BalanceBrief | string
 type Callback = (data?: EventValue) => void
 const listeners: Record<EVENT, Set<Callback>> = {
   unread_count: new Set(),
@@ -122,18 +129,29 @@ const instance = axios.create({
 //   '/api/members/show.json': {},
 // }
 
+let n_403 = 0
+let cachedOnceToken
+
 instance.interceptors.request.use(async (config) => {
   // handle oncp
   if (config.params?.once === ONCP || config.data?.once === ONCP) {
-    const tokenRes = await fetchOnce({
-      Referer: `${BASE_URL}${config.url}`,
-      origin: BASE_URL,
-    })
+    let once
+    if (cachedOnceToken) {
+      once = cachedOnceToken
+      cachedOnceToken = undefined
+    } else {
+      const tokenRes = await fetchOnce({
+        Referer: `${BASE_URL}${config.url}`,
+        origin: BASE_URL,
+      })
+      once = tokenRes.data
+    }
+
     if (config.params?.once === ONCP) {
-      config.params.once = tokenRes.data
+      config.params.once = once
     }
     if (config.data?.once === ONCP) {
-      config.params.once = tokenRes.data
+      config.data.once = once
     }
   }
 
@@ -151,10 +169,8 @@ instance.interceptors.request.use(async (config) => {
   return config
 })
 
-let n_403 = 0
-
 instance.interceptors.response.use(
-  function (res) {
+  function (res: CustomAxiosResponse) {
     const responseURL: string = res.request?.responseURL
     if (responseURL) {
       Sentry.Native.addBreadcrumb({
@@ -162,8 +178,21 @@ instance.interceptors.response.use(
         message: `Response URL: ${responseURL}`,
       })
     }
+
+    const contentType = res.headers['content-type']
+    let $: CheerioAPI
+    if (contentType.includes('text/html')) {
+      $ = cheerioDoc(res.data)
+      res.$ = $
+      // once token
+      const link = $('a[href^="/settings/night/toggle?once="]')
+      const onceValue = link.attr('href').match(/once=(\d+)$/)[1]
+      if (onceValue) {
+        cachedOnceToken = onceValue
+      }
+    }
+
     if (responseURL === BASE_URL + '/2fa' && res.config.url !== '/2fa') {
-      const $ = cheerioDoc(res.data)
       const once = $('form[action="/2fa"] input[name=once]').attr('value')
       const error = new ApiError({
         code: '2FA_ENABLED',
@@ -180,7 +209,6 @@ instance.interceptors.response.use(
       /\/signin\??/.test(responseURL) &&
       !res.config.url.startsWith('/signin')
     ) {
-      const $ = cheerioDoc(res.data)
       const message = $('.message').text()
       const error = new ApiError({
         code: 'AUTH_REQUIRED',
@@ -189,9 +217,13 @@ instance.interceptors.response.use(
       throw error
     }
 
-    // side-effect
+    // hometab side-effect
     if (res.config?.url && /^\/(\?tab=\w+)?$/.test(res.config.url)) {
-      const $ = cheerioDoc(res.data)
+      // current_user
+      const username = $('#menu-entry img.avatar').attr('alt')
+      dispatch('current_user', username)
+
+      // notification
       const text = $('input.special.super.button').attr('value')
       let unread_count = 0
       if (text) {
@@ -264,7 +296,16 @@ const ajaxHeaders = {
   Accept: 'application/json',
 }
 
-export const request = instance.request
+export const request = async <T>(
+  config: AxiosRequestConfig,
+): Promise<CustomAxiosResponse> => {
+  try {
+    const response = await instance.request<CustomAxiosResponse>(config)
+    return response
+  } catch (error) {
+    throw error
+  }
+}
 
 export async function fetchOnce(
   headers: AxiosRequestHeaders = {
@@ -286,10 +327,10 @@ export async function fetchOnce(
 export async function getHomeTabs(): Promise<
   CollectionResponse<HomeTabOption>
 > {
-  const { data: html } = await request({
+  const res = await request({
     url: '/',
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const tabs = $('#Wrapper .content a[class^=tab]')
     .map(function (i, el) {
       return {
@@ -311,13 +352,13 @@ export async function getHomeFeeds({
 }: {
   tab: string
 }): Promise<PaginatedResponse<HomeTopicFeed>> {
-  const { data: html } = await request({
+  const res = await request({
     url: '/',
     params: {
       tab,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ ?? cheerioDoc(res.data)
   const data = $('#Wrapper .content .cell.item')
     .map(function (i, el) {
       const member = memberFromImage($(el).find('td:nth-child(1) img').first())
@@ -355,14 +396,14 @@ export async function getRecentFeeds({
 }: {
   p?: number
 }): Promise<PaginatedResponse<HomeTopicFeed>> {
-  const { data: html } = await request({
+  const res = await request({
     url: '/recent',
     params: {
       p,
       d: Date.now(),
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const data = $('#Wrapper .content .cell.item')
     .map(function (i, el) {
       const member = memberFromImage($(el).find('td:nth-child(1) img').first())
@@ -397,13 +438,13 @@ export async function getRecentFeeds({
 }
 
 export async function getHotTopics() {
-  const { data: html } = await request({
+  const res = await request({
     url: '/',
     headers: {
       'user-agent': USER_AGENT_DESKTOP,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const ids = $('#TopicsHot .cell')
     .map(function (i, el) {
       const $el = $(el)
@@ -455,10 +496,10 @@ export async function getTopicDetail({
     }
   }
 
-  const { data: html } = await request({
+  const res = await request({
     url: `/t/${id}`,
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   // if isHomePage
   if ($('#Wrapper .content a[class^=tab]').length) {
     throw new ApiError({
@@ -492,8 +533,8 @@ export async function collectTopic({
     },
   })
 
-  const { data: html } = await request({ url: `/t/${id}` })
-  const $ = cheerioDoc(html)
+  const res = await request({ url: `/t/${id}` })
+  const $ = res.$ || cheerioDoc(res.data)
 
   try {
     const topic = topicDetailFromPage($, id)
@@ -520,11 +561,10 @@ export async function uncollectTopic({
     },
   })
 
-  const { data: html } = await request({
+  const res = await request({
     url: `/t/${id}`,
   })
-
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   try {
     const topic = topicDetailFromPage($, id)
     return {
@@ -552,11 +592,11 @@ export async function thankTopic({
     headers: ajaxHeaders,
   })
 
-  const { data: html } = await request({
+  const res = await request({
     url: `/t/${id}`,
   })
 
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   try {
     return {
       success: json.success,
@@ -575,13 +615,13 @@ export async function blockTopic({
   id: TopicId
   once?: string
 }): Promise<StatusResponse<Pick<TopicDetail, 'blocked'>>> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/ignore/topic/${id}`,
     params: {
       once,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const message = $('#Wrapper .box .message').first()?.text()
   const success = message === `已完成对 ${id} 号主题的忽略`
   return {
@@ -599,13 +639,13 @@ export async function unblockTopic({
   id: TopicId
   once?: string
 }): Promise<StatusResponse<Pick<TopicDetail, 'blocked'>>> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/unignore/topic/${id}`,
     params: {
       once,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const message = $('#Wrapper .box .message').first()?.text()
   const success = message === `已撤销对 ${id} 号主题的忽略`
   return {
@@ -624,11 +664,11 @@ export async function reportTopic({
   id: TopicId
   once?: string
 }): Promise<StatusResponse<Pick<TopicDetail, 'reported'>>> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/report/topic/${id}`,
     params: { once },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const reported = $('span.fade')
     .get()
     .some(function (el) {
@@ -651,10 +691,6 @@ export async function createTopic(data: {
   syntax: 'default' | 'markdown'
   once?: string
 }) {
-  if (!data.once || data.once === ONCP) {
-    const onceRes = await fetchOnce()
-    data.once = onceRes.data
-  }
   const res = await request({
     url: `/write`,
     method: 'POST',
@@ -666,7 +702,7 @@ export async function createTopic(data: {
     },
   })
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
 
   if (res.request?.responseURL && /\/write/.test(res.request.responseURL)) {
     const messages = $('.problem ul li')
@@ -706,7 +742,7 @@ export async function fetchTopicEditForm(id: number) {
     method: 'GET',
   })
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
 
   if (!$('form').length) {
     throw new ApiError({
@@ -770,7 +806,7 @@ export async function editTopic(
       message: '你不能编辑这个主题',
     })
   }
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
   try {
     const topic = topicDetailFromPage($, id)
     return {
@@ -815,7 +851,7 @@ export async function moveTopic(
     })
   }
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
   try {
     const topic = topicDetailFromPage($, id)
     return {
@@ -836,20 +872,15 @@ export async function appendTopic({
   once?: string
   content: string
 }): Promise<StatusResponse<TopicDetail>> {
-  let postOnce = once
-  if (postOnce === ONCP) {
-    const onceRes = await fetchOnce()
-    postOnce = onceRes.data
-  }
-  const { data: html } = await request({
+  const res = await request({
     url: `/append/topic/${id}`,
     method: 'POST',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
     },
-    data: stringify({ content, once: postOnce }),
+    data: { content, once },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   try {
     return {
       success: true,
@@ -872,13 +903,13 @@ export async function getTopicReplies({
   id: number
   p?: number
 }): Promise<TopicRepliesResponse> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/t/${id}`,
     params: {
       p,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
 
   // if isHomePage
   if ($('#Wrapper .content a[class^=tab]').length) {
@@ -928,21 +959,15 @@ export async function postReply({
   content,
   once = ONCP,
 }: PostReplyPayload): Promise<StatusResponse<TopicReply>> {
-  let postOnce = once
-  if (postOnce === ONCP) {
-    const onceRes = await fetchOnce()
-    postOnce = onceRes.data
-  }
-
-  const { data: html } = await request({
+  const res = await request({
     url: `/t/${id}`,
     method: 'POST',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
     },
-    data: stringify({ content, once: postOnce }),
+    data: { content, once },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
 
   const problem = $('.problem ul li').text()
   if (problem) {
@@ -994,10 +1019,10 @@ export async function thankReply({
 
 // Nodes
 export async function getNodeGroups(): Promise<CollectionResponse<NodeGroup>> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/planes`,
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const groups = $('#Wrapper .content > .box')
     .map(function (i, el) {
       const name = $(el).find('.header .fr').text()?.replace(' • ', '')
@@ -1040,11 +1065,11 @@ export async function getNodeDetail({
 }: {
   name: string
 }): Promise<EntityResponse<NodeDetail>> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/go/${name}`,
   })
 
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
 
   return {
     data: nodeDetailFromPage($, name),
@@ -1063,11 +1088,11 @@ export async function collectNode({
     url: `/api/nodes/show.json`,
     params: { name },
   })
-  const { data: html } = await request({
+  const res = await request({
     url: `/favorite/node/${detail.id}`,
     params: { once },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const collected = !!$('a[href^="/unfavorite/node"]').length
   return {
     success: collected,
@@ -1088,11 +1113,11 @@ export async function uncollectNode({
     url: `/api/nodes/show.json`,
     params: { name },
   })
-  const { data: html } = await request({
+  const res = await request({
     url: `/unfavorite/node/${detail.id}`,
     params: { once },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const collected = !!$('a[href^="/unfavorite/node"]').length
   return {
     success: !collected,
@@ -1116,12 +1141,12 @@ export async function getNodeFeeds({
     }
   >
 > {
-  const { data: html } = await request({
+  const res = await request({
     url: `/go/${name}`,
     params: { p },
   })
 
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
 
   const data = $('#Wrapper .content > .box:nth-child(2) .cell')
     .map(function (i, el) {
@@ -1171,10 +1196,10 @@ export async function getMemberDetail({
     params: { username },
   })
 
-  const { data: html } = await request({
+  const res = await request({
     url: `/member/${username}`,
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   user.meta = userMetaForCurrentUser($)
   return {
     data: user,
@@ -1202,13 +1227,13 @@ export async function watchMember({
   if (!userId) {
     userId = await getMemberId(username)
   }
-  const { data: html } = await request({
+  const res = await request({
     url: `/follow/${userId}`,
     params: {
       once,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const meta = userMetaForCurrentUser($)
   return {
     success: meta.watched,
@@ -1260,13 +1285,13 @@ export async function blockMember({
   if (!userId) {
     userId = await getMemberId(username)
   }
-  const { data: html } = await request({
+  const res = await request({
     url: `/block/${userId}`,
     params: {
       once,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const meta = userMetaForCurrentUser($)
   return {
     success: meta.blocked,
@@ -1289,13 +1314,13 @@ export async function unblockMember({
   if (!userId) {
     userId = await getMemberId(username)
   }
-  const { data: html } = await request({
+  const res = await request({
     url: `/unblock/${userId}`,
     params: {
       once,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const meta = userMetaForCurrentUser($)
   return {
     success: !meta.blocked,
@@ -1313,12 +1338,12 @@ export async function getMemberTopics({
   username: string
   p: number
 }): Promise<PaginatedResponse<MemberTopicFeed>> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/member/${username}/topics`,
     params: { p },
   })
 
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   if (
     $('#Wrapper .content .box .cell').length == 1 &&
     $('#Wrapper .content .box .cell img').attr('src')?.indexOf('lock') > -1
@@ -1382,12 +1407,12 @@ export async function getMemberReplies({
   username: string
   p: number
 }): Promise<PaginatedResponse<RepliedTopicFeed>> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/member/${username}/replies`,
     params: { p },
   })
 
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
 
   const data = $('#Wrapper .content .box .dock_area')
     .map(function (i, el) {
@@ -1427,14 +1452,14 @@ export async function getMyNotifications({
 }: {
   p?: number
 }): Promise<PaginatedResponse<Notification>> {
-  const { data: html } = await request({
+  const res = await request({
     url: '/notifications',
     params: {
       p,
     },
   })
 
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const notifications = $('#notifications .cell')
     .map(function (i, el) {
       const $memberImage = $(el).find('img.avatar').first()
@@ -1482,12 +1507,12 @@ export async function getMyCollectedTopics({
 }: {
   p?: number
 }): Promise<PaginatedResponse<CollectedTopicFeed>> {
-  const { data: html } = await request({
+  const res = await request({
     url: '/my/topics',
     params: { p },
   })
 
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const data = $('#Wrapper .box .cell.item')
     .map(function (i, el) {
       const member = memberFromImage($(el).find('td:nth-child(1) img'))
@@ -1532,11 +1557,11 @@ export async function getMyCollectedTopics({
 export async function getMyCollectedNodes(): Promise<
   CollectionResponse<NodeExtra>
 > {
-  const { data: html } = await request({
+  const res = await request({
     url: '/my/nodes',
   })
 
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const data = $('#my-nodes .fav-node')
     .map(function (i, el) {
       const name = $(el).find('img').attr('alt')
@@ -1558,10 +1583,10 @@ export async function getMyCollectedNodes(): Promise<
 export async function getCurrentUser(): Promise<
   EntityResponse<MemberDetail, { unread_count: number }>
 > {
-  const { data: html } = await request({
+  const res = await request({
     url: '/about',
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const username = $('#menu-entry img.avatar').attr('alt')
   if (!username) {
     return {
@@ -1591,10 +1616,10 @@ export async function getCurrentUser(): Promise<
   }
 }
 export async function getNotificationCount(): Promise<StatusResponse<number>> {
-  const { data: html } = await request({
+  const res = await request({
     url: '/',
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
   const text = $('input.special.super.button').first().val()
   console.log('getNotificationCount=====', text)
   const match = text && /\d+/.exec(text as string)
@@ -1608,13 +1633,13 @@ export async function getNotificationCount(): Promise<StatusResponse<number>> {
 export async function dailySignin(
   data: { once?: string } = { once: ONCP },
 ): Promise<StatusResponse> {
-  const { data: html } = await request({
+  const res = await request({
     url: `/mission/daily/redeem`,
     params: {
       once: data.once,
     },
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
 
   const btnText = $('input.super.normal.button').attr('value')
   const error = !!$('.message').length
@@ -1650,7 +1675,7 @@ export async function fetchLoginForm() {
   const res = await request({
     url: '/signin',
   })
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
   if (
     res.request?.responseURL &&
     /\/signin\/cooldown/.test(res.request.responseURL)
@@ -1699,7 +1724,7 @@ export async function loginWithPassword(
     captcha: string
   },
 ): Promise<StatusResponse> {
-  const formData = {
+  const data = {
     [fieldHashMap.username]: values.username,
     [fieldHashMap.password]: values.password,
     [fieldHashMap.captcha]: values.captcha,
@@ -1708,7 +1733,7 @@ export async function loginWithPassword(
 
   const res = await request({
     url: '/signin',
-    data: stringify(formData),
+    data,
     method: 'POST',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
@@ -1717,7 +1742,7 @@ export async function loginWithPassword(
     },
   })
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
 
   const responseURL = res.request?.responseURL || ''
 
@@ -1753,7 +1778,7 @@ export async function loginWithPassword(
 export async function verify2faCode(data: { once: string; code: string }) {
   const res = await request({
     url: '/2fa',
-    data: stringify(data),
+    data: data,
     method: 'POST',
     headers: {
       'content-type': 'application/x-www-form-urlencoded',
@@ -1764,7 +1789,7 @@ export async function verify2faCode(data: { once: string; code: string }) {
 
   const responseURL = res.request?.responseURL || ''
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
   if (/\/2fa/.test(responseURL)) {
     const problems = $('.problem ul li')
       .map(function (_, el) {
@@ -1826,7 +1851,7 @@ export async function fetchSettingsForm() {
     url: '/settings',
   })
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
 
   return {
     data: _settingsForm($),
@@ -1845,7 +1870,7 @@ export async function updateSettings(data: MemberProfile & { once: string }) {
     },
   })
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
 
   return {
     data: _settingsForm($),
@@ -1860,7 +1885,7 @@ export async function fetchSocialForm() {
   const fields = []
   const values = {}
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
   $('form[action=/settings/social] input[type=text]').each((i, el) => {
     const name = $(el).attr('name')
     const label = $(el).prev().text()
@@ -1893,7 +1918,7 @@ export async function updateSocial(data) {
     },
   })
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
   const values = {}
   $('form[action=/settings/social] input[type=text]').each((i, el) => {
     const name = $(el).attr('name')
@@ -1909,7 +1934,7 @@ export async function fetchAvatarForm() {
   const res = await request({
     url: '/settings/avatar',
   })
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
   const avatars = $('.avatar-list img')
     .map(function (i, el) {
       return $(el).attr('src')
@@ -1945,7 +1970,7 @@ export async function uploadAvatar(data: {
     transformRequest: (data) => data,
   })
 
-  const $ = cheerioDoc(res.data)
+  const $ = res.$ || cheerioDoc(res.data)
 
   const avatars = $('.avatar-list img')
     .map(function (i, el) {
@@ -1963,11 +1988,11 @@ export async function uploadAvatar(data: {
 }
 
 export async function getBalanceDetail(params: { p?: number }) {
-  const { data: html } = await request({
+  const res = await request({
     url: '/balance',
     params,
   })
-  const $ = cheerioDoc(html)
+  const $ = res.$ || cheerioDoc(res.data)
 
   const detailTable = $('#Wrapper table').get(1)
 
