@@ -50,7 +50,7 @@ const getUTCDateString = () => {
 export const AuthServiceContext = createContext<AuthService>({
   composeAuthedNavigation: (callback) => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    return callback || function () {}
+    return function () {}
   },
 } as AuthService)
 export default function AuthServiceProvider(props: { children: ReactElement }) {
