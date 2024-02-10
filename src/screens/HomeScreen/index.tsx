@@ -56,12 +56,9 @@ export default function HomeScreen(props: HomeScreenProps) {
       .filter(Boolean)
   }, [homeTabs])
 
-  const [index, setIndex] = useCachedState<number>(CACHE_KEY, 0, (val) => {
-    if (!routes) {
-      return val
-    }
-    return val >= routes.length ? 0 : val
-  })
+  const [index, setIndex] = useCachedState<number>(CACHE_KEY, 0)
+
+  const normalizedIndex = Math.min(index, routes ? routes.length - 1 : 0)
 
   const currentListRef = useRef<RefreshableView>(null)
   const tabIdleForRefresh = useRef<string>(null)
@@ -77,7 +74,7 @@ export default function HomeScreen(props: HomeScreenProps) {
     return {
       renderScene: ({ route }) => {
         const { tab } = route
-        const isActive = isFocused && route.key === routes[index].key
+        const isActive = isFocused && route.key === routes[normalizedIndex].key
         switch (tab.type) {
           case 'node':
             return (
@@ -142,7 +139,7 @@ export default function HomeScreen(props: HomeScreenProps) {
               )
             }}
             onTabPress={({ route }) => {
-              const currentRoute = routes[index]
+              const currentRoute = routes[normalizedIndex]
               if (currentRoute.key === route.key) {
                 if (tabIdleForRefresh.current === route.key) {
                   clearTimeout(tabIdleResetTimer.current)
@@ -162,7 +159,7 @@ export default function HomeScreen(props: HomeScreenProps) {
         )
       },
     }
-  }, [routes, index, isFocused, theme])
+  }, [routes, normalizedIndex, isFocused, theme])
 
   useEffect(() => {
     if (!homeTabs) {
@@ -183,7 +180,7 @@ export default function HomeScreen(props: HomeScreenProps) {
           }
           tabIdleForRefresh.current = undefined
         } else {
-          tabIdleForRefresh.current = routes[index].key
+          tabIdleForRefresh.current = routes[normalizedIndex].key
           tabIdleResetTimer.current = setTimeout(() => {
             tabIdleForRefresh.current = undefined
           }, REFRESH_IDLE_RESET_TIMEOUT)
@@ -191,7 +188,7 @@ export default function HomeScreen(props: HomeScreenProps) {
       })
       return unsubscribe
     }
-  }, [navigation, routes, index, isFocused])
+  }, [navigation, routes, normalizedIndex, isFocused])
 
   if (error) {
     return (
@@ -220,7 +217,7 @@ export default function HomeScreen(props: HomeScreenProps) {
   return (
     <TabView
       key={routes.map((r) => r.key).join(',')}
-      navigationState={{ index, routes }}
+      navigationState={{ index: normalizedIndex, routes }}
       renderScene={renderScene}
       renderTabBar={renderTabBar}
       onIndexChange={setIndex}
