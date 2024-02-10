@@ -289,7 +289,7 @@ function PasswordSignin(props: PasswordSigninProps) {
                   label="登录"
                 />
 
-                {formSwr.error && (
+                {!formSwr.isLoading && formSwr.error && (
                   <View className="mt-4">
                     <Text style={styles.text_danger}>
                       {formSwr.error.message}
