@@ -216,6 +216,14 @@ instance.interceptors.response.use(
       })
       throw error
     }
+    // https://www.v2ex.com/restricted
+    if (responseURL && /\/restricted\??/.test(responseURL)) {
+      const error = new ApiError({
+        code: 'RESTRICTED',
+        message: '访问限制',
+      })
+      throw error
+    }
 
     // hometab side-effect
     if (res.config?.url && /^\/(\?tab=\w+)?$/.test(res.config.url)) {
