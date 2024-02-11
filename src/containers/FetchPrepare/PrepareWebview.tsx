@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { View } from 'react-native'
+import { View, ViewStyle } from 'react-native'
 import WebView from 'react-native-webview'
 import * as Sentry from 'sentry-expo'
 
@@ -9,6 +9,8 @@ import { PrepareStatus } from './type'
 
 export default function PrepareWebview(props: {
   onUpdate(status: PrepareStatus, err?: Error): void
+  visible?: boolean
+  containerStyle?: ViewStyle[] | ViewStyle
 }) {
   const timerRef = useRef<number>(Date.now())
   const timeoutRef = useRef(null)
@@ -35,7 +37,7 @@ export default function PrepareWebview(props: {
   }, [])
 
   return (
-    <View style={{ height: 0 }}>
+    <View style={props.visible ? props.containerStyle : { height: 0 }}>
       <WebView
         source={{
           uri: BASE_URL + '/about',
@@ -55,6 +57,9 @@ export default function PrepareWebview(props: {
           if (/__cf_chl_rt_tk/.test(e.nativeEvent.url)) {
             cfState.current = 'checking'
             props.onUpdate('checking')
+            timeoutRef.current = setTimeout(() => {
+              props.onUpdate('checking_timeout')
+            }, 15000)
             return
           }
           if (cfState.current === 'checking' || cfState.current === 'error') {

@@ -10,6 +10,7 @@ import Status from './Status'
 const CACHE_KEY = '$app$/fetch-ready'
 
 // 用于处理 v2ex.com CF 认证的问题
+import { useTheme } from '../ThemeService'
 import { PrepareStatus } from './type'
 
 export default function FetchPrepare(props) {
@@ -42,12 +43,27 @@ export default function FetchPrepare(props) {
     })
     return unsubscribe
   }, [])
+  const { styles } = useTheme()
 
   return (
     <>
       {state.status !== 'ready' && (
         <PrepareWebview
           key={state.count}
+          visible={state.status == 'checking_timeout'}
+          containerStyle={[
+            {
+              position: 'absolute',
+              left: 12,
+              right: 12,
+              top: 60,
+              bottom: 200,
+              padding: 6,
+              borderRadius: 6,
+              zIndex: 5,
+            },
+            styles.layer2,
+          ]}
           onUpdate={(status, err) => {
             switch (status) {
               case 'error':
