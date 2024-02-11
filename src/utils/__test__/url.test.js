@@ -131,5 +131,9 @@ describe('url utils', () => {
       const url = 'https://www.pingti.xyz/)。'
       expect(tailingFix(url)).toEqual('https://www.pingti.xyz/')
     })
+    it('http://127.0.0.1:8888/', () => {
+      const url = 'http://127.0.0.1:8888/;#搭建的论坛访问端口'
+      expect(tailingFix(url)).toEqual('http://127.0.0.1:8888/')
+    })
   })
 })
