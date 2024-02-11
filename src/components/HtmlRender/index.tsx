@@ -76,6 +76,12 @@ function HtmlRender({
       table: {
         tableRenderers: true,
       },
+      ul: {
+        markerBoxStyle: { paddingTop: 6 },
+      },
+      ol: {
+        markerBoxStyle: { paddingTop: 6 },
+      },
     }),
     [themeStyles],
   )
@@ -86,7 +92,7 @@ function HtmlRender({
       body: {
         color: theme.colors.text,
         fontSize: baseFontSize,
-        lineHeight: baseFontSize * 1.4,
+        lineHeight: baseFontSize * 1.5,
       },
       h1: {
         fontSize: (28 / 16) * baseFontSize,
@@ -138,9 +144,6 @@ function HtmlRender({
       ul: {
         paddingLeft: 12,
         marginTop: 0,
-      },
-      li: {
-        lineHeight: 1.5 * baseFontSize,
       },
       p: {
         marginTop: 0,
