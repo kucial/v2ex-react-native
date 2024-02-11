@@ -71,7 +71,7 @@ export default function Status(props: {
               )}
               {props.status === 'checked' && (
                 <Text style={styles.text} className="text-center">
-                  Cloudflare 检测即将完成
+                  Cloudflare 检测完成，完成最后初始化
                 </Text>
               )}
             </View>

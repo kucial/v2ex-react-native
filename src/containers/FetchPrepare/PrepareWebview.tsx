@@ -6,6 +6,26 @@ import * as Sentry from 'sentry-expo'
 import { BASE_URL, USER_AGENT } from '@/utils/v2ex-client/constants'
 
 import { PrepareStatus } from './type'
+/**
+ * 场景一： 不需要 CF 验证
+ *
+ * - /about
+ *
+ * 场景二： CF 验证，并自动通过
+ *
+ * - /about
+ * - /about?__cf_chl_rt_tk=xxx
+ * - /about checking
+ * - /about?__cf_chl_tk=xxx
+ *
+ * 场景三： CF 验证，并需要手动处理
+ *
+ * - /about
+ * - /about?__cf_chl_rt_tk=xxx
+ * - /about
+ * - /about (interation_required)
+ * - /about?__cf_chl_tk=xxx
+ */
 
 export default function PrepareWebview(props: {
   onUpdate(status: PrepareStatus, err?: Error): void
@@ -57,12 +77,18 @@ export default function PrepareWebview(props: {
           if (/__cf_chl_rt_tk/.test(e.nativeEvent.url)) {
             cfState.current = 'checking'
             props.onUpdate('checking')
-            timeoutRef.current = setTimeout(() => {
-              props.onUpdate('checking_timeout')
-            }, 15000)
             return
           }
-          if (cfState.current === 'checking' || cfState.current === 'error') {
+          if (cfState.current === 'checking') {
+            timeoutRef.current = setTimeout(() => {
+              props.onUpdate('interation_required')
+            }, 5000)
+            return
+          }
+          if (
+            cfState.current === 'interation_required' ||
+            cfState.current === 'error'
+          ) {
             return
           }
 

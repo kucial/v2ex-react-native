@@ -1,7 +1,7 @@
 export type PrepareStatus =
   | 'none'
   | 'checking'
-  | 'checking_timeout'
+  | 'interation_required'
   | 'checked'
   | 'ready'
   | 'error'

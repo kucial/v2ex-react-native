@@ -50,14 +50,14 @@ export default function FetchPrepare(props) {
       {state.status !== 'ready' && (
         <PrepareWebview
           key={state.count}
-          visible={state.status == 'checking_timeout'}
+          visible={state.status == 'interation_required'}
           containerStyle={[
             {
               position: 'absolute',
               left: 12,
               right: 12,
               top: 60,
-              bottom: 200,
+              bottom: 60,
               padding: 6,
               borderRadius: 6,
               zIndex: 5,
