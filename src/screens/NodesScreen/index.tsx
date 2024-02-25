@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from 'react'
-import { SectionList, Text, View } from 'react-native'
+import { Keyboard, SectionList, Text, View } from 'react-native'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { useFocusEffect } from '@react-navigation/native'
 import useSWR from 'swr'
@@ -106,6 +106,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
           onReset={() => {
             setFilter('')
           }}
+          onChangeText={setFilter}
         />
       </View>
       <SectionList
@@ -162,6 +163,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
             }}
           />
         }
+        onScroll={Keyboard.dismiss}
       />
     </View>
   )

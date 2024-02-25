@@ -16,6 +16,7 @@ type SearchInputProps = {
   initialValue: string
   showSearchBtn?: boolean
   onSubmit(value: string): void
+  onChangeText?(value: string): void
   onReset(): void
   style?: ViewStyle
 }
@@ -46,6 +47,10 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
       submit() {
         props.onSubmit?.(text)
       },
+      onChangeText(text) {
+        setText(text)
+        props.onChangeText?.(text)
+      },
     }),
     [text],
   )
@@ -66,12 +71,8 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
           placeholder={props.placeholder}
           returnKeyType="search"
           value={text}
-          onChangeText={(text) => {
-            setText(text)
-          }}
-          onSubmitEditing={() => {
-            service.submit()
-          }}
+          onChangeText={service.onChangeText}
+          onSubmitEditing={service.submit}
         />
         {!!text && (
           <View className="absolute right-0 top-2 h-full flex flex-row items-center justify-center">

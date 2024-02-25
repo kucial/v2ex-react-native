@@ -36,10 +36,12 @@ export default function CollectedNodes(props: { data: NodeExtra[] }) {
                   })
                 }}>
                 <Image
-                  className="w-[44px] h-[44px]"
+                  className="w-[40px] h-[40px]"
                   source={{ uri: node.avatar_large }}></Image>
-                <View className="ml-3 pt-1">
-                  <Text style={styles.text}>{node.title}</Text>
+                <View className="ml-3 pt-1 pr-1" style={{ flex: 1 }}>
+                  <Text numberOfLines={1} style={styles.text}>
+                    {node.title}
+                  </Text>
                   <View className="mt-1 flex flex-row items-center">
                     <View className="mr-1">
                       <DocumentIcon size={12} color={theme.colors.text_meta} />
