@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from 'react'
-import { Alert, Linking } from 'react-native'
+import { Alert, Linking, Platform } from 'react-native'
 import BaseRender, { RenderHTMLProps } from 'react-native-render-html'
 import WebView from 'react-native-webview'
 import { useActionSheet } from '@expo/react-native-action-sheet'
@@ -200,13 +200,20 @@ function HtmlRender({
           Linking.openURL(url)
           return
         }
-        WebBrowser.openBrowserAsync(url, {
-          controlsColor: theme.colors.primary,
-          dismissButtonStyle: 'close',
-          presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
-        }).catch((err) => {
-          Sentry.Native.captureException(err)
-        })
+        if (Platform.OS == 'ios') {
+          WebBrowser.openBrowserAsync(url, {
+            controlsColor: theme.colors.primary,
+            dismissButtonStyle: 'close',
+            presentationStyle:
+              WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+          }).catch((err) => {
+            Sentry.Native.captureException(err)
+          })
+        } else {
+          navigation.push('browser', {
+            url,
+          })
+        }
       },
       handleSelection: async (payload: {
         eventType: string
