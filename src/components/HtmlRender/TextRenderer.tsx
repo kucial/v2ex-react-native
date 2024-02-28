@@ -29,7 +29,7 @@ const SelectableTextRender: CustomTextualRenderer =
           selectable
           selectionColor={Platform.select({
             ios: theme.colors.primary,
-            android: Color(theme.colors.primary).alpha(0.5).toString(),
+            android: Color(theme.colors.primary).alpha(0.2).toString(),
           })}
           value={renderProps.children}
           style={[

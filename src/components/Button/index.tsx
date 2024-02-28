@@ -2,6 +2,7 @@ import { ReactNode, useMemo } from 'react'
 import { Platform, PressableProps, Text, View } from 'react-native'
 import { PlatformPressable } from '@react-navigation/elements'
 import classNames from 'classnames'
+import Color from 'color'
 import { styled } from 'nativewind'
 
 import Loader from '@/components/Loader'
@@ -61,7 +62,7 @@ function Button(props: {
 
   const android_ripple = useMemo(() => {
     return {
-      color: theme.colors.bg_layer3,
+      color: Color(theme.colors.primary).alpha(0.2).toString(),
       radius:
         typeof props.radius === 'string'
           ? radiusNum[props.radius]
