@@ -7,11 +7,13 @@ export const useColorScheme = () => {
   useEffect(() => {
     function handleColorSchemeChange() {
       const systemColorScheme = Appearance.getColorScheme()
-      console.log(systemColorScheme, AppState.currentState)
       if (
         AppState.currentState === 'active' &&
         colorScheme !== systemColorScheme
       ) {
+        console.log(
+          `change color scheme from ${colorScheme} to ${systemColorScheme}`,
+        )
         setColorScheme(systemColorScheme)
       }
     }

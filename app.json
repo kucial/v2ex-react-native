@@ -6,11 +6,6 @@
     "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
-    "splash": {
-      "image": "./src/assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "updates": {
       "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/5c24d369-c0ba-41e3-8679-8b8cee82fc13"
@@ -19,7 +14,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kucial.v2ex",
-      "runtimeVersion": "1.1.3",
+      "runtimeVersion": "1.1.4",
       "splash": {
         "image": "./src/assets/splash.png",
         "backgroundColor": "#ffffff",
@@ -33,6 +28,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "splash": {
+        "image": "./src/assets/splash.png",
+        "backgroundColor": "#ffffff",
+        "resizeMode": "contain",
+        "dark": {
+          "image": "./src/assets/splash-dark.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#111111"
+        }
       },
       "package": "com.kucial.v2ex"
     },
