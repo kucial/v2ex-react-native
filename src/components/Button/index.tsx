@@ -62,7 +62,7 @@ function Button(props: {
 
   const android_ripple = useMemo(() => {
     return {
-      color: Color(theme.colors.primary).alpha(0.2).toString(),
+      color: Color(theme.colors.text).alpha(0.08).toString(),
       radius:
         typeof props.radius === 'string'
           ? radiusNum[props.radius]

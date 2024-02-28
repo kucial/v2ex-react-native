@@ -116,6 +116,7 @@ export default function HomeScreen(props: HomeScreenProps) {
             tabStyle={{
               flexShrink: 0,
               width: 'auto',
+              minWidth: 56,
               height: 42,
               paddingTop: 4,
             }}
