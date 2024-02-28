@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import { clearCookies } from 'react-native/Libraries/Network/RCTNetworking'
 import CookieManager from '@react-native-cookies/cookies'
 import axios, {
@@ -33,8 +34,9 @@ import {
   BASE_URL,
   ONCP,
   REQUEST_TIMEOUT,
-  USER_AGENT,
+  USER_AGENT_ANDROID,
   USER_AGENT_DESKTOP,
+  USER_AGENT_IOS,
 } from './constants'
 import {
   base64File,
@@ -73,6 +75,13 @@ type UnreadCountValue = number
 
 type EventValue = UnreadCountValue | TFA_Error | BalanceBrief | string
 type Callback = (data?: EventValue) => void
+
+const USER_AGENT =
+  Platform.select({
+    ios: USER_AGENT_ANDROID,
+    android: USER_AGENT_IOS,
+  }) || USER_AGENT_IOS
+
 const listeners: Record<EVENT, Set<Callback>> = {
   unread_count: new Set(),
   current_user: new Set(),
