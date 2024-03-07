@@ -20,7 +20,7 @@ export default function TopBottomNav(props: {
     if (scrollDirection.value === 'down') {
       return { opacity: 0.5 }
     }
-    return { opacity: 1 }
+    return { opacity: 0.9 }
   })
 
   if (!repliesCount || repliesCount < 10) {
