@@ -182,9 +182,9 @@ export default function MemberScreenHeader(props: {
   }, [memberSwr.data, memberSwr.mutate])
 
   const topBannerHeight =
-    Platform.OS === 'android'
-      ? HEADER_CANVAS_HEIGHT + 6
-      : HEADER_CANVAS_HEIGHT + Constants.statusBarHeight
+    Platform.OS === 'ios'
+      ? HEADER_CANVAS_HEIGHT + Constants.statusBarHeight
+      : HEADER_CANVAS_HEIGHT + 6
 
   const topDelta = topBannerHeight - headerCollapsedHeight
 
@@ -259,7 +259,7 @@ export default function MemberScreenHeader(props: {
         style={{
           position: 'absolute',
           left: 12,
-          top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
+          top: Platform.OS === 'ios' ? Constants.statusBarHeight : 6,
           zIndex: 10,
         }}>
         <BackButton
@@ -383,7 +383,7 @@ export default function MemberScreenHeader(props: {
         style={[
           {
             position: 'absolute',
-            top: Constants.statusBarHeight,
+            top: Platform.OS == 'ios' ? Constants.statusBarHeight : 6,
             left: 64,
             zIndex: 6,
             height: 36,

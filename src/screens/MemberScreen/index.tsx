@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Dimensions, Platform, StatusBar, View } from 'react-native'
+import { Dimensions, Platform, View } from 'react-native'
 import {
   useAnimatedScrollHandler,
   useSharedValue,
@@ -16,7 +16,7 @@ import MemberTopics from './MemberTopics'
 type MemberScreenProps = NativeStackScreenProps<AppStackParamList, 'member'>
 
 const headerCollapsedHeight =
-  Platform.OS === 'android' ? 44 + 6 : 44 + Constants.statusBarHeight
+  Platform.OS === 'ios' ? 44 + Constants.statusBarHeight : 44 + 6
 
 export default function MemberScreen({ route }: MemberScreenProps) {
   const { username, tab } = route.params
@@ -119,9 +119,6 @@ export default function MemberScreen({ route }: MemberScreenProps) {
 
   return (
     <View className="flex-1">
-      {Platform.OS === 'ios' && (
-        <StatusBar translucent backgroundColor="transparent" />
-      )}
       <TabView
         onIndexChange={setIndex}
         navigationState={{ index: tabIndex, routes }}
