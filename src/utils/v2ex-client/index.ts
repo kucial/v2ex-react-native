@@ -1485,6 +1485,14 @@ export async function getMyNotifications({
       }
       const member = memberFromImage($memberImage)
       const $topicLink = $(el).find('a[href^="/t/"]').first()
+      if (!$topicLink) {
+        Sentry.Native.captureMessage('UNEXPECTED_NOTIFICATION', {
+          extra: {
+            body: $(el).html(),
+          },
+        })
+        return null
+      }
       const topic = topicFromLink($topicLink)
       const text = $(el).find('[valign=middle] .fade').text()
       let action: Notification['action'] = 'reply'
