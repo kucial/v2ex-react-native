@@ -94,5 +94,8 @@ export function isDeepLink(str) {
 }
 
 export function tailingFix(str: string) {
+  if (!str) {
+    return str
+  }
   return str.replace(/(?:[)\],;。，；]).*$/, '')
 }
