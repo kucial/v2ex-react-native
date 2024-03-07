@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useState } from 'react'
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import {
   EllipsisHorizontalIcon,
@@ -14,10 +14,12 @@ import classNames from 'classnames'
 
 import Button from '@/components/Button'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import SearchInput from '@/components/SearchInput'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 
+import Header from './Header'
 import TideViewedTopicRow from './TideViewedTopicRow'
 import ViewedTopicRow from './ViewedTopicRow'
 
@@ -46,13 +48,11 @@ const Actions = (props) => {
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'viewed-topics'>
 export default function ViewedTopicsScreen(props: ScreenProps) {
-  const { navigation } = props
   const { getItems, clear, removeItem } = useViewedTopics()
   const { showActionSheetWithOptions } = useActionSheet()
   const { data: settings } = useAppSettings()
   const { styles, theme, colorScheme } = useTheme()
   const [filter, setFilter] = useState('')
-  const { width } = useWindowDimensions()
 
   const data = useMemo(() => {
     const all = getItems()
@@ -104,70 +104,80 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
     [settings.feedLayout, settings.feedShowAvatar, data, removeItem],
   )
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: (props) => (
-        <Button
-          className="h-[44px] w-[44px] rounded-full"
-          variant="icon"
-          radius={22}
-          style={width < 750 ? { marginRight: -16 } : null}
-          onPress={() => {
-            // actionsheet
-            showActionSheetWithOptions(
-              {
-                options: ['取消', '清除缓存'],
-                cancelButtonIndex: 0,
-                destructiveButtonIndex: 1,
-                tintColor: theme.colors.primary,
-                userInterfaceStyle: colorScheme,
-                containerStyle: styles.layer1,
-              },
-              (buttonIndex) => {
-                if (buttonIndex === 1) {
-                  clear()
-                }
-              },
-            )
-          }}>
-          <EllipsisHorizontalIcon size={24} color={props.tintColor} />
-        </Button>
-      ),
-      headerSearchBarOptions: {
-        placeholder: '筛选',
-        tintColor: theme.colors.primary,
-        barTintColor: theme.colors.input_bg,
-        onSearchButtonPress(e) {
-          setFilter(e.nativeEvent.text)
-        },
-      },
-      headerBackground: null,
-    })
-  }, [theme])
+  const headerRight = useMemo(
+    () => (
+      <Button
+        className="h-[44px] w-[44px] rounded-full"
+        variant="icon"
+        radius={22}
+        onPress={() => {
+          // actionsheet
+          showActionSheetWithOptions(
+            {
+              options: ['取消', '清除缓存'],
+              cancelButtonIndex: 0,
+              destructiveButtonIndex: 1,
+              tintColor: theme.colors.primary,
+              userInterfaceStyle: colorScheme,
+              containerStyle: styles.layer1,
+            },
+            (buttonIndex) => {
+              if (buttonIndex === 1) {
+                clear()
+              }
+            },
+          )
+        }}>
+        <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
+      </Button>
+    ),
+    [theme.colors],
+  )
+
+  const submitFilter = useCallback(
+    (text) => {
+      setFilter(text.trim())
+    },
+    [setFilter],
+  )
+
+  const resetFilter = useCallback(() => {
+    setFilter('')
+  }, [setFilter])
 
   return (
-    <FlashList
-      contentInsetAdjustmentBehavior="automatic"
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      estimatedItemSize={110}
-      ListEmptyComponent={() => (
-        <View className="items-center py-9">
-          <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
-        </View>
-      )}
-      ListFooterComponent={() =>
-        !!data.length && (
-          <View
-            sentry-label="ListFooter"
-            className="min-h-[60px] py-4 flex flex-row items-center justify-center">
-            <View className="w-full flex flex-row justify-center py-4">
-              <Text style={styles.text_meta}>到达底部啦</Text>
-            </View>
+    <View className="flex-1">
+      <Header
+        title={'浏览的主题（缓存）'}
+        initialFilter={filter}
+        onChangeFilter={setFilter}
+        onResetFilter={resetFilter}
+        onSubmitFilter={submitFilter}
+        headerRight={headerRight}
+      />
+      <FlashList
+        contentInsetAdjustmentBehavior="automatic"
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        estimatedItemSize={110}
+        ListEmptyComponent={() => (
+          <View className="items-center py-9">
+            <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
           </View>
-        )
-      }
-    />
+        )}
+        ListFooterComponent={() =>
+          !!data.length && (
+            <View
+              sentry-label="ListFooter"
+              className="min-h-[60px] py-4 flex flex-row items-center justify-center">
+              <View className="w-full flex flex-row justify-center py-4">
+                <Text style={styles.text_meta}>到达底部啦</Text>
+              </View>
+            </View>
+          )
+        }
+      />
+    </View>
   )
 }

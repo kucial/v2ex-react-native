@@ -279,7 +279,9 @@ function AppStack() {
           name="viewed-topics"
           component={MyViewedTopicsScreen}
           options={{
-            title: '浏览的主题（缓存）',
+            headerShown: false,
+            headerTransparent: true,
+            headerBackground: transparentHeaderBackground,
           }}
         />
       </Stack.Group>

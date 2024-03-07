@@ -77,7 +77,7 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
         {!!text && (
           <View className="absolute right-0 top-2 h-full flex flex-row items-center justify-center">
             <Pressable
-              className="rounded-full w-[40px] h-[40px] active:bg-neutral-100 active:opacity-60 items-center justify-center"
+              className="rounded-full w-[40px] h-[40px] active:bg-neutral-100 active:opacity-30 items-center justify-center"
               onPress={() => {
                 service.reset()
               }}>
