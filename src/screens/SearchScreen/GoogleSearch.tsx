@@ -16,7 +16,11 @@ import { CACHE_KEY } from './constants'
 import { SearchParams } from './types'
 
 const topicLinkCapture = `(function() {
+  if (window._topic_link_capture_injected) {
+    return;
+  }
   try {
+    let i = 0;
     document.body.addEventListener('click', function(e) {
       const a = e.target.closest('a');
       if (a && /^https?:\\/\\/(?:.+\\.)?v2ex\\.com/.test(a.href)) {
@@ -24,6 +28,7 @@ const topicLinkCapture = `(function() {
         e.stopPropagation();
         window.ReactNativeWebView.postMessage(JSON.stringify({
           type: 'open-app-link',
+          i: i++,
           payload: {
             link: a.href,
           }
@@ -32,6 +37,7 @@ const topicLinkCapture = `(function() {
     }, {
         capture: true
     });
+    window._topic_link_capture_injected = 1;
   } catch (err) {
     window.ReactNativeWebView.postMessage(JSON.stringify({
       error: true,
@@ -148,6 +154,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               onceLoaded.current = true
             }}
             onMessage={(event) => {
+              console.log(event, 'onMessage')
               if (event.nativeEvent.data) {
                 const data = JSON.parse(event.nativeEvent.data)
                 if (data.type === 'open-app-link') {
