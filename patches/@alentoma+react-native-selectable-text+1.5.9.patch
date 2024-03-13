@@ -1,7 +1,3 @@
-diff --git a/node_modules/@alentoma/react-native-selectable-text/.DS_Store b/node_modules/@alentoma/react-native-selectable-text/.DS_Store
-new file mode 100644
-index 0000000..4156d42
-Binary files /dev/null and b/node_modules/@alentoma/react-native-selectable-text/.DS_Store differ
 diff --git a/node_modules/@alentoma/react-native-selectable-text/demo/SelectableText.tsx b/node_modules/@alentoma/react-native-selectable-text/demo/SelectableText.tsx
 index a2f714a..4ce19d9 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/demo/SelectableText.tsx
@@ -21,7 +17,7 @@ index a2f714a..4ce19d9 100644
 +} from 'react-native'
  import { v4 } from 'uuid'
  import memoize from 'fast-memoize'
- 
+
 -
  const RNSelectableText = requireNativeComponent('RNSelectableText')
  export interface IHighlights {
@@ -33,7 +29,7 @@ index a2f714a..4ce19d9 100644
 +  id: string
    color?: ColorValue
  }
- 
+
 -export interface NativeEvent {
 -  content: string,
 -  eventType: string,
@@ -86,7 +82,7 @@ index a2f714a..4ce19d9 100644
 +  textValueProp?: string
 +  textComponentProps?: TextProps | TextInputProps
  }
- 
+
  /**
 @@ -48,7 +63,7 @@ const combineHighlights = memoize((numbers: IHighlights[]) => {
        if (!combined.length || combined[combined.length - 1].end < next.start)
@@ -100,7 +96,7 @@ index a2f714a..4ce19d9 100644
 @@ -68,9 +83,19 @@ const combineHighlights = memoize((numbers: IHighlights[]) => {
  const mapHighlightsRanges = (value: string, highlights: IHighlights[]) => {
    const combinedHighlights = combineHighlights(highlights)
- 
+
 -  if (combinedHighlights.length === 0) return [{ isHighlight: false, text: value, id: undefined, color: undefined }]
 -
 -  const data = [{ isHighlight: false, text: value.slice(0, combinedHighlights[0].start), id: combinedHighlights[0].id, color: combinedHighlights[0].color }]
@@ -117,11 +113,11 @@ index a2f714a..4ce19d9 100644
 +      color: combinedHighlights[0].color
 +    }
 +  ]
- 
+
    combinedHighlights.forEach(({ start, end, id, color }, idx) => {
      data.push({
 @@ -92,12 +117,15 @@ const mapHighlightsRanges = (value: string, highlights: IHighlights[]) => {
- 
+
    data.push({
      isHighlight: false,
 -    text: value.slice(combinedHighlights[combinedHighlights.length - 1].end, value.length),
@@ -132,11 +128,11 @@ index a2f714a..4ce19d9 100644
      id: combinedHighlights[combinedHighlights.length - 1].id,
      color: combinedHighlights[combinedHighlights.length - 1].color
    })
- 
+
 -  return data.filter(x => x.text)
 +  return data.filter((x) => x.text)
  }
- 
+
  /**
 @@ -112,62 +140,97 @@ const mapHighlightsRanges = (value: string, highlights: IHighlights[]) => {
   * TextComponent: ReactNode
@@ -164,7 +160,7 @@ index a2f714a..4ce19d9 100644
 +    var nativeEvent = event.nativeEvent as NativeSelectionEvent
 +    onSelection && onSelection(nativeEvent)
    }
- 
+
    const onHighlightPressNative = onHighlightPress
      ? Platform.OS === 'ios'
 -      ? (
@@ -206,7 +202,7 @@ index a2f714a..4ce19d9 100644
 +        }
 +      : onUrlPress
 +    : () => {}
- 
+
    // highlights feature is only supported if `TextComponent == Text`
 -  let textValue = value as any;
 +  let textValue = value as any
@@ -252,12 +248,12 @@ index a2f714a..4ce19d9 100644
 -      textValue.push(props.appendToChildren);
 +      textValue.push(props.appendToChildren)
      }
- 
+
 -    if (prependToChild)
 -      textValue = [prependToChild, ...textValue];
 +    if (prependToChild) textValue = [prependToChild, ...textValue]
    }
- 
+
    return (
 -    <RNSelectableText {...props} onHighlightPress={onHighlightPressNative} selectable={true} onSelection={onSelectionNative} >
 -      <TX key={v4()} {...{ [textValueProp]: textValue, ...textComponentProps }} />
@@ -293,9 +289,9 @@ index fdef614..8bbdf97 100644
 +// #else
 +#import <React/RCTBaseTextInputViewManager.h>
 +// #endif
- 
+
  NS_ASSUME_NONNULL_BEGIN
- 
+
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextManager.m b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextManager.m
 index bf58b0e..d98d410 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextManager.m
@@ -305,9 +301,9 @@ index bf58b0e..d98d410 100644
  RCT_EXPORT_VIEW_PROPERTY(value, NSString);
  RCT_EXPORT_VIEW_PROPERTY(onHighlightPress, RCTDirectEventBlock)
 +RCT_EXPORT_VIEW_PROPERTY(onUrlPress, RCTDirectEventBlock)
- 
+
  #pragma mark - Multiline <TextInput> (aka TextView) specific properties
- 
+
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.h b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.h
 index 5770684..4433014 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.h
@@ -323,20 +319,20 @@ index 5770684..4433014 100644
 +// #else
 +#import <React/RCTBaseTextInputView.h>
 +// #endif
- 
+
  NS_ASSUME_NONNULL_BEGIN
- 
+
 -@interface RNSelectableTextView : RCTBaseTextInputView
 +@interface RNSelectableTextView : RCTBaseTextInputView<UITextViewDelegate>
- 
+
  @property (nonnull, nonatomic, copy) NSString *value;
  @property (nonatomic, copy) RCTDirectEventBlock onSelection;
  @property (nullable, nonatomic, copy) NSArray<NSString *> *menuItems;
  @property (nonatomic, copy) RCTDirectEventBlock onHighlightPress;
 +@property (nonatomic, copy) RCTDirectEventBlock onUrlPress;
- 
+
  @end
- 
+
 diff --git a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m b/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
 index eb5e69e..5964aa2 100644
 --- a/node_modules/@alentoma/react-native-selectable-text/ios/RNSelectableTextView.m
@@ -370,9 +366,9 @@ index eb5e69e..5964aa2 100644
 +// #else
 +#import <React/RCTTextAttributes.h>
 +// #endif
- 
+
  #import "RNSelectableTextView.h"
- 
+
 -#if __has_include(<RCTText/RCTTextAttributes.h>)
 -#import <RCTText/RCTTextAttributes.h>
 -#else
@@ -380,22 +376,22 @@ index eb5e69e..5964aa2 100644
 -#endif
 -
  #import <React/RCTUtils.h>
- 
+
  @implementation RNSelectableTextView
 @@ -25,34 +25,49 @@ @implementation RNSelectableTextView
      RCTUITextView *_backedTextInputView;
  }
- 
+
 -NSString *const CUSTOM_SELECTOR = @"_CUSTOM_SELECTOR_";
 +NSString *const S_CUSTOM_SELECTOR = @"_S_CUSTOM_SELECTOR_";
- 
+
 -UITextPosition *selectionStart;
 +UITextPosition *initSelectionStart;
 +UITextPosition *initSelectionEnd;
 +NSInteger initStartLocation;
 +NSInteger initEndLocation;
  UITextPosition* beginning;
- 
+
  - (instancetype)initWithBridge:(RCTBridge *)bridge
  {
      if (self = [super initWithBridge:bridge]) {
@@ -403,7 +399,7 @@ index eb5e69e..5964aa2 100644
 -        self.blurOnSubmit = NO;
 +        // NOTE: react-native 0.71 -- blurOnSubmit is replaced by submitBehavior
 +        // self.blurOnSubmit = NO;
- 
+
          _backedTextInputView = [[RCTUITextView alloc] initWithFrame:self.bounds];
          _backedTextInputView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 +        _backedTextInputView.textInputDelegate = self;
@@ -426,41 +422,41 @@ index eb5e69e..5964aa2 100644
 +        // 处理显示不全的情况
 +        _backedTextInputView.layoutManager.allowsNonContiguousLayout = NO;
          _backedTextInputView.contextMenuHidden = YES;
- 
+
 +        // reset linkTextAttributes
 +        _backedTextInputView.linkTextAttributes = [[NSDictionary alloc] init];
 +
          beginning = _backedTextInputView.beginningOfDocument;
- 
+
 +
          for (UIGestureRecognizer *gesture in [_backedTextInputView gestureRecognizers]) {
              if (
                  [gesture isKindOfClass:[UIPanGestureRecognizer class]]
 @@ -68,16 +83,14 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
- 
+
          UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
- 
--        
+
+-
 -        UITapGestureRecognizer *tapGesture = [ [UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
 -        tapGesture.numberOfTapsRequired = 2;
--        
+-
          UITapGestureRecognizer *singleTapGesture = [ [UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
 -        singleTapGesture.numberOfTapsRequired = 1;
 +
 +        UITapGestureRecognizer *doubleTapGesture = [ [UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
 +        doubleTapGesture.numberOfTapsRequired = 2;
- 
+
          [_backedTextInputView addGestureRecognizer:longPressGesture];
 -        [_backedTextInputView addGestureRecognizer:tapGesture];
          [_backedTextInputView addGestureRecognizer:singleTapGesture];
 +        [_backedTextInputView addGestureRecognizer:doubleTapGesture];
- 
+
          [self setUserInteractionEnabled:YES];
      }
 @@ -85,7 +98,7 @@ - (instancetype)initWithBridge:(RCTBridge *)bridge
      return self;
  }
- 
+
 --(void) _handleGesture
 +-(void) _showMenu
  {
@@ -468,33 +464,33 @@ index eb5e69e..5964aa2 100644
          [_backedTextInputView becomeFirstResponder];
 @@ -98,7 +111,7 @@ -(void) _handleGesture
      NSMutableArray *menuControllerItems = [NSMutableArray arrayWithCapacity:self.menuItems.count];
- 
+
      for(NSString *menuItemName in self.menuItems) {
 -        NSString *sel = [NSString stringWithFormat:@"%@%@", CUSTOM_SELECTOR, menuItemName];
 +        NSString *sel = [NSString stringWithFormat:@"%@%@", S_CUSTOM_SELECTOR, menuItemName];
          UIMenuItem *item = [[UIMenuItem alloc] initWithTitle: menuItemName
                                                        action: NSSelectorFromString(sel)];
- 
+
 @@ -110,77 +123,157 @@ -(void) _handleGesture
      [menuController setMenuVisible:YES animated:YES];
  }
- 
+
 --(void) handleSingleTap: (UITapGestureRecognizer *) gesture
 -{
 -    CGPoint pos = [gesture locationInView:_backedTextInputView];
 -    pos.y += _backedTextInputView.contentOffset.y;
--    
+-
 -    UITextPosition *tapPos = [_backedTextInputView closestPositionToPoint:pos];
 -    UITextRange *word = [_backedTextInputView.tokenizer rangeEnclosingPosition:tapPos withGranularity:(UITextGranularityWord) inDirection:UITextLayoutDirectionRight];
--    
+-
 -    UITextPosition* beginning = _backedTextInputView.beginningOfDocument;
--    
+-
 -    UITextPosition *selectionStart = word.start;
 -    UITextPosition *selectionEnd = word.end;
--    
+-
 -    const NSInteger location = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionStart];
 -    const NSInteger endLocation = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionEnd];
--    
+-
 -    self.onHighlightPress(@{
 -        @"clickedRangeStart": @(location),
 -        @"clickedRangeEnd": @(endLocation),
@@ -503,20 +499,20 @@ index eb5e69e..5964aa2 100644
 -
  -(void) handleLongPress: (UILongPressGestureRecognizer *) gesture
  {
- 
+
      CGPoint pos = [gesture locationInView:_backedTextInputView];
      pos.y += _backedTextInputView.contentOffset.y;
- 
+
 +    // NSLog(@"Gesture Location: %@", NSStringFromCGPoint(pos));
 +
      UITextPosition *tapPos = [_backedTextInputView closestPositionToPoint:pos];
 -    UITextRange *word = [_backedTextInputView.tokenizer rangeEnclosingPosition:tapPos withGranularity:(UITextGranularityWord) inDirection:UITextLayoutDirectionRight];
 +    const NSInteger tapLocation = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument toPosition:tapPos];
- 
+
 +    if (tapLocation == NSNotFound) {
 +        return;
 +    }
- 
+
 +    UITextRange *wordRange ;
      switch ([gesture state]) {
          case UIGestureRecognizerStateBegan:
@@ -554,11 +550,11 @@ index eb5e69e..5964aa2 100644
 +            initSelectionEnd = nil;
 +            [self _showMenu];
              return;
--            
+-
          default:
              break;
      }
- 
+
 -    UITextPosition *selectionEnd = word.end;
 +    // NSLog(@"Start: %ld, End %ld, Tap %ld", (long)initStartLocation, (long)initEndLocation, (long) tapLocation);
 +
@@ -577,20 +573,20 @@ index eb5e69e..5964aa2 100644
 +    }
 +
 +    NSInteger length = ABS(end - start);
- 
+
 -    const NSInteger location = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionStart];
 -    const NSInteger endLocation = [_backedTextInputView offsetFromPosition:beginning toPosition:selectionEnd];
 +    // NSLog(@"RANGE: [%ld, %ld]", (long)start, (long)length);
- 
+
 -    if (location == 0 && endLocation == 0) return;
 +    [_backedTextInputView becomeFirstResponder];
 +    NSRange selectedRange = NSMakeRange(start, length);
 +    [_backedTextInputView setSelectedRange:selectedRange];
- 
+
 -    [_backedTextInputView select:self];
 -    [_backedTextInputView setSelectedRange:NSMakeRange(location, endLocation - location)];
 +}
- 
+
 +-(void) handleSingleTap: (UITapGestureRecognizer *) gesture
 +{
 +       UITextView *textView = _backedTextInputView;
@@ -650,7 +646,7 @@ index eb5e69e..5964aa2 100644
 +        [[UIApplication sharedApplication] openURL:URL];
 +    }
  }
- 
+
 --(void) handleTap: (UITapGestureRecognizer *) gesture
 +-(void) handleDoubleTap: (UITapGestureRecognizer *) gesture
  {
@@ -659,13 +655,13 @@ index eb5e69e..5964aa2 100644
 -    [self _handleGesture];
 +    [self _showMenu];
  }
- 
+
  - (void)setAttributedText:(NSAttributedString *)attributedText
  {
 +
      if (self.value) {
          NSAttributedString *str = [[NSAttributedString alloc] initWithString:self.value attributes:self.textAttributes.effectiveTextAttributes];
--        
+-
 +        NSLog(@"[selectable] %@", str);
          [super setAttributedText:str];
      } else {
@@ -680,7 +676,7 @@ index eb5e69e..5964aa2 100644
          [self tappedMenuItem:[sel substringFromIndex:17]];
      } else {
 @@ -235,9 +328,9 @@ - (BOOL)canBecomeFirstResponder
- 
+
  - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
  {
 -    if(selectionStart != nil) {return NO;}
@@ -688,13 +684,13 @@ index eb5e69e..5964aa2 100644
      NSString *sel = NSStringFromSelector(action);
 -    NSRange match = [sel rangeOfString:CUSTOM_SELECTOR];
 +    NSRange match = [sel rangeOfString:S_CUSTOM_SELECTOR];
- 
+
      if (match.location == 0) {
          return YES;
 @@ -272,4 +365,29 @@ - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
      return [super hitTest:point withEvent:event];
  }
- 
+
 +- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange interaction:(UITextItemInteraction)interaction {
 +    NSString *action = @"";
 +    switch (interaction) {
