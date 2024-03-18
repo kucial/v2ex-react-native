@@ -6,6 +6,7 @@
     <item name="android:navigationBarColor">#262626</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="android:statusBarColor">#171717</item>
   </style>
   <style name="ResetEditText" parent="@android:style/Widget.EditText">
     <item name="android:padding">0dp</item>
@@ -16,5 +17,7 @@
     <item name="android:windowFullscreen">true</item>
     <item name="android:windowTranslucentNavigation">true</item>
     <item name="android:windowBackground">@drawable/splashscreen</item>
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:statusBarColor">#262626</item>
   </style>
 </resources>
