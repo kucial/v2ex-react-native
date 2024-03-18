@@ -696,11 +696,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   useEffect(() => {
     return () => {
-      if (currentIndexRef.current > 10) {
-        setLastIndex(currentIndexRef.current, true)
-      } else {
-        setLastIndex(undefined, true)
-      }
+      InteractionManager.runAfterInteractions(() => {
+        if (currentIndexRef.current > 10) {
+          setLastIndex(currentIndexRef.current, true)
+        } else {
+          setLastIndex(undefined, true)
+        }
+      })
     }
   }, [])
 
