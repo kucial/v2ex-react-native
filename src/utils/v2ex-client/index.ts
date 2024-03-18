@@ -190,7 +190,7 @@ instance.interceptors.response.use(
 
     const contentType = res.headers['content-type']
     let $: CheerioAPI
-    if (contentType.includes('text/html')) {
+    if (contentType.includes('text/html') && !/poll_once$/.test(responseURL)) {
       $ = cheerioDoc(res.data)
       res.$ = $
       // once token
