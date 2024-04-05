@@ -195,7 +195,7 @@ instance.interceptors.response.use(
       res.$ = $
       // once token
       const link = $('a[href^="/settings/night/toggle?once="]')
-      const onceValue = link.attr('href').match(/once=(\d+)$/)[1]
+      const onceValue = link.attr('href')?.match(/once=(\d+)$/)[1]
       if (onceValue) {
         cachedOnceToken = onceValue
       }
@@ -1485,7 +1485,7 @@ export async function getMyNotifications({
       }
       const member = memberFromImage($memberImage)
       const $topicLink = $(el).find('a[href^="/t/"]').first()
-      if (!$topicLink) {
+      if (!$topicLink.length) {
         Sentry.Native.captureMessage('UNEXPECTED_NOTIFICATION', {
           extra: {
             body: $(el).html(),
