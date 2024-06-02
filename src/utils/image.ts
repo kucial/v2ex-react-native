@@ -5,6 +5,7 @@ import GetPixelColor from '@thebeka/react-native-get-pixel-color'
 import Color from 'color'
 import * as Crypto from 'expo-crypto'
 import * as FileSystem from 'expo-file-system'
+import * as Sentry from 'sentry-expo'
 
 import PixelTally from './PixelTally'
 
@@ -40,6 +41,7 @@ export const getImagePath = async (link: string) => {
     const filename = getFilename(link)
     path = `${filename.replace(`.${ext}`, '')}_${hash.slice(0, 8)}.${ext}`
   } catch (err) {
+    Sentry.Native.captureException(err)
     const url = new URL(link)
     url.searchParams.delete('format')
     path = `${url.hostname.replace(/\./g, '_')}_${url.pathname
