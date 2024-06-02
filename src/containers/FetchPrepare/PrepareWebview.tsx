@@ -41,7 +41,9 @@ export default function PrepareWebview(props: {
       return
     }
     const error = new Error(e.nativeEvent.description)
-    Sentry.Native.captureException(error)
+    if (e.nativeEvent.description !== 'The request timed out.') {
+      Sentry.Native.captureException(error)
+    }
     cfState.current = 'error'
     props.onUpdate('error', error)
   }, [])

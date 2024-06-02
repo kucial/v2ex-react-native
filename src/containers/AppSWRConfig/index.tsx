@@ -57,6 +57,12 @@ function AppSWRConfig(props: PropsWithChildren) {
         },
         onError(err, key, config) {
           if (err instanceof Error && !(err instanceof ApiError)) {
+            if (
+              err.message == 'timeout of 10000ms exceeded' ||
+              err.message == 'Network Error'
+            ) {
+              return
+            }
             // err with custom code consider handled
             Sentry.Native.captureException(err, {
               extra: {
