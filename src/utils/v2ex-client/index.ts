@@ -78,8 +78,8 @@ type Callback = (data?: EventValue) => void
 
 const USER_AGENT =
   Platform.select({
-    ios: USER_AGENT_ANDROID,
-    android: USER_AGENT_IOS,
+    ios: USER_AGENT_IOS,
+    android: USER_AGENT_ANDROID,
   }) || USER_AGENT_IOS
 
 const listeners: Record<EVENT, Set<Callback>> = {
