@@ -112,14 +112,21 @@ export const cacheProvider = (cache: Cache) => {
       if (value.isValidating || value.isLoading) {
         return
       }
+      if (typeof key !== 'string') {
+        console.log(key)
+      }
+      // 不缓存后续页面.
+      if (/^\$inf\$/.test(key) && (value as any)._l > 1) {
+        if (value.data?.length == 1) {
+          const overrided = { ...value, _l: 1, _i: undefined }
+          storage.set(key, JSON.stringify(overrided))
+        }
+        return
+      }
       // 不缓存临时状态
       if (/\$tmp\$/.test(key)) {
         storage.delete(key)
         return
-      }
-
-      if (typeof key !== 'string') {
-        console.log(key)
       }
       if (typeof key === 'string' && value) {
         storage.set(key, JSON.stringify(value))
