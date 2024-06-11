@@ -10,6 +10,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import HomeTopicList from '@/components/HomeTopicList'
 import NodeTopicList from '@/components/NodeTopicList'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
+import XnaTopicList from '@/components/XnaTopicList'
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
@@ -93,6 +94,14 @@ export default function HomeScreen(props: HomeScreenProps) {
                 isFocused={isActive}
                 currentListRef={isActive && currentListRef}
                 tab={tab.value}
+              />
+            )
+          case 'xna':
+            return (
+              <XnaTopicList
+                key="xna"
+                isFocused={isActive}
+                currentListRef={isActive && currentListRef}
               />
             )
           default:

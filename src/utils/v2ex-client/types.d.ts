@@ -7,7 +7,7 @@ type UrlString = string
 export type HomeTabOption = {
   value: string
   label: string
-  type?: 'node' | 'user' | 'home'
+  type?: 'node' | 'user' | 'home' | 'xna'
   disabled?: boolean
 }
 
@@ -233,4 +233,15 @@ interface TFA_Error extends ApiError {
     problems?: string[]
     once: string
   }
+}
+
+type XnaFeed = {
+  title: string
+  member: MemberBasic
+  source: {
+    name: string
+    link: string
+  }
+  url: string
+  updated_at: string
 }

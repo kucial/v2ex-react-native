@@ -27,6 +27,7 @@ import {
   TFA_Error,
   TopicDetail,
   TopicReply,
+  XnaFeed,
 } from '@/utils/v2ex-client/types'
 
 import ApiError from './ApiError'
@@ -350,10 +351,11 @@ export async function getHomeTabs(): Promise<
   const $ = res.$ || cheerioDoc(res.data)
   const tabs = $('#Wrapper .content a[class^=tab]')
     .map(function (i, el) {
+      const tab = ($(el).attr('href') as string).replace(/\/(?:\?tab\=)?/, '')
       return {
         label: $(el).text().trim(),
-        value: ($(el).attr('href') as string).replace('/?tab=', ''),
-        type: 'home',
+        value: tab,
+        type: tab == 'xna' ? 'xna' : 'home',
       } as HomeTabOption
     })
     .get()
@@ -450,6 +452,58 @@ export async function getRecentFeeds({
   return {
     data,
     pagination,
+    fetchedAt: Date.now(),
+  }
+}
+
+export async function getXnaFeeds({
+  p = 1,
+}: {
+  p?: number
+}): Promise<PaginatedResponse<XnaFeed>> {
+  const res = await request({
+    url: '/xna',
+    params: {
+      p,
+      d: Date.now(),
+    },
+  })
+  const $ = res.$ || cheerioDoc(res.data)
+  const data = $('#Wrapper .content .cell.item')
+    .map(function (i, el) {
+      const url = $(el).find('.item_title a').attr('href')
+      const title = $(el).find('.item_title').text()
+      const member = memberFromImage($(el).find('td:nth-child(1) img').first())
+      const updated_at = $(el)
+        .find('td:nth-child(3) span:last-child')
+        .text()
+        ?.split('•')[0]
+        .trim()
+      return {
+        title,
+        member,
+        source: {
+          name: $(el).find('.node').text(),
+          link: $(el).find('.node').attr('href'),
+        },
+        url,
+        updated_at,
+      }
+    })
+    .get()
+  const total = Number(
+    $('#Wrapper .content .ps_container .page_normal').last().text(),
+  )
+  const current = Number(
+    $('#Wrapper .content .ps_container .page_current').text(),
+  )
+
+  return {
+    data,
+    pagination: {
+      total: Math.max(total, current),
+      current,
+    },
     fetchedAt: Date.now(),
   }
 }

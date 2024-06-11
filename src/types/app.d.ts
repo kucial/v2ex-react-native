@@ -1,3 +1,5 @@
+import { XnaFeed } from '@/utils/v2ex-client/types'
+
 import {
   CollectedTopicFeed,
   HomeTopicFeed,
@@ -30,6 +32,14 @@ declare global {
     showAvatar: boolean
     titleStyle: 'normal' | 'emphasized'
     isLast?: boolean
+  }
+  type XnaFeedRowProps = {
+    data: XnaFeed
+    isLast?: boolean
+    showAvatar: boolean
+    titleStyle: 'normal' | 'emphasized'
+    viewedStatus?: 'viewed' | 'has_update' | undefined
+    onView?: (url: string) => void
   }
 }
 

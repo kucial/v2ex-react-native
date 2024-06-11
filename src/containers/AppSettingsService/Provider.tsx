@@ -9,7 +9,7 @@ import { CACHE_KEY, DEFAULT_SETTINGS } from './constants'
 import { AppSettingsContext } from './context'
 import { AppSettings, AppSettingsService } from './types'
 
-const TODAY_HOT_TAB = {
+const TODAY_HOT_TAB: HomeTabOption = {
   value: 'today_hots',
   label: '今日热议',
   type: 'home',
@@ -53,12 +53,10 @@ export default function AppSettingsServiceProvider(props: {
             value: 'recent',
             label: '最近',
             type: 'home',
-          },
+          } as HomeTabOption,
           TODAY_HOT_TAB,
           ...data,
-        ]
-          .filter((item) => item.value !== 'nodes')
-          .map((item) => ({ ...item, type: 'home' }))
+        ].filter((item) => item.value !== 'nodes')
         setSettings((prev) => ({
           ...prev,
           homeTabs: mapped,
