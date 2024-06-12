@@ -1,11 +1,11 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Share } from 'react-native'
 import { InteractionManager } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated'
+import Share from 'react-native-share'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
@@ -463,19 +463,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
 
   const handleShare = useCallback(async () => {
     try {
-      const result = await Share.share({
-        message: topic.title || `https://v2ex.com/t/${topic.id}`,
-        url: `https://v2ex.com/t/${topic.id}`,
+      const url = `https://v2ex.com/t/${topic.id}`
+      const message = topic.title || url
+      await Share.open({
+        message,
+        url,
       })
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
     } catch (error) {
       console.log(error.message)
     }

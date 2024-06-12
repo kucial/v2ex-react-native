@@ -1,8 +1,9 @@
 import { forwardRef, ReactNode, useEffect, useImperativeHandle } from 'react'
 import { createContext, useContext, useMemo, useState } from 'react'
-import { Pressable, Share, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
 import ImageView from 'react-native-image-viewing'
+import Share from 'react-native-share'
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
 import colors from 'tailwindcss/colors'
 
@@ -73,15 +74,10 @@ const ImageViewingFooter = (props: {
               setSaveStatus('loading')
               const contentUri = await getImageContentUri(displayUri)
               setSaveStatus('')
-              const result = await Share.share({
+              await Share.open({
                 url: contentUri,
               })
-              if (result.action === 'dismissedAction') {
-                // no nothing
-              } else {
-                // NOTE: dropdown-alert does not work. for z-index info
-                setSaveStatus('success')
-              }
+              setSaveStatus('success')
             } catch (err) {
               console.log(err)
               setSaveStatus('')

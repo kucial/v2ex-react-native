@@ -5,7 +5,6 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
-  Share,
   Text,
   View,
 } from 'react-native'
@@ -14,6 +13,7 @@ import {
   ChatBubbleLeftEllipsisIcon,
   StarIcon,
 } from 'react-native-heroicons/outline'
+import Share from 'react-native-share'
 import * as StoreReview from 'react-native-store-review'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
@@ -97,19 +97,11 @@ export default function AboutScreen(props) {
                 <LineItem
                   onPress={async () => {
                     try {
-                      const result = await Share.share({
+                      await Share.open({
+                        title: 'R2V -- 第三方V2EX客户端',
                         message: 'R2V -- 第三方V2EX客户端',
                         url: 'https://apps.apple.com/cn/app/r2v/id1645766550',
                       })
-                      if (result.action === Share.sharedAction) {
-                        if (result.activityType) {
-                          // shared with activity type of result.activityType
-                        } else {
-                          // shared
-                        }
-                      } else if (result.action === Share.dismissedAction) {
-                        // dismissed
-                      }
                     } catch (error) {
                       console.log(error.message)
                     }
