@@ -141,7 +141,7 @@ function FeedTopicList(props: FeedTopicListProps) {
           <TideTopicRow
             data={item}
             isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item.url)}
+            viewedStatus={getViewedStatus(item?.url)}
             onView={setViewed}
             showAvatar={settings.feedShowAvatar}
             titleStyle={settings.feedTitleStyle}
@@ -150,7 +150,7 @@ function FeedTopicList(props: FeedTopicListProps) {
           <TopicRow
             data={item}
             isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item.url)}
+            viewedStatus={getViewedStatus(item?.url)}
             showAvatar={settings.feedShowAvatar}
             onView={setViewed}
             titleStyle={settings.feedTitleStyle}
