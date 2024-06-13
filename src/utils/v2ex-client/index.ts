@@ -471,7 +471,7 @@ export async function getXnaFeeds({
   const $ = res.$ || cheerioDoc(res.data)
   const data = $('#Wrapper .content .cell.item')
     .map(function (i, el) {
-      const url = $(el).find('.item_title a').attr('href')
+      let url = $(el).find('.item_title a').attr('href')
       const title = $(el).find('.item_title').text()
       const member = memberFromImage($(el).find('td:nth-child(1) img').first())
       const updated_at = $(el)
@@ -479,12 +479,18 @@ export async function getXnaFeeds({
         .text()
         ?.split('•')[0]
         .trim()
+      const source_link = $(el).find('.node').attr('href')
+      if (!/^https?:\/\//.test(url)) {
+        const sourceUrl = new URL(source_link)
+        sourceUrl.pathname = url
+        url = sourceUrl.toString()
+      }
       return {
         title,
         member,
         source: {
           name: $(el).find('.node').text(),
-          link: $(el).find('.node').attr('href'),
+          link: source_link,
         },
         url,
         updated_at,
