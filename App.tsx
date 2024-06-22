@@ -16,6 +16,7 @@ import ClipboardWatcher from './src/containers/ClipboardWatcher'
 import FetchPrepare from './src/containers/FetchPrepare'
 import ImgurService from './src/containers/ImgurService'
 import NavigationContainer from './src/containers/NavigationContainer'
+import NotificationService from './src/containers/NotificationService'
 import { getThemeService, ThemeProvider } from './src/containers/ThemeService'
 import ViewedTopicsService from './src/containers/ViewedTopicsService'
 import AppStack from './src/screens/AppStack'
@@ -47,10 +48,12 @@ function App() {
                               <ClipboardWatcher>
                                 <AuthService>
                                   <ViewedTopicsService>
-                                    <Layout>
-                                      <AppStack />
-                                      {/* <DebugScreen /> */}
-                                    </Layout>
+                                    <NotificationService>
+                                      <Layout>
+                                        <AppStack />
+                                        {/* <DebugScreen /> */}
+                                      </Layout>
+                                    </NotificationService>
                                   </ViewedTopicsService>
                                 </AuthService>
                               </ClipboardWatcher>

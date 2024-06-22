@@ -223,6 +223,10 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
           InteractionManager.runAfterInteractions(async () => {
             try {
               await dailySignIn(service.user)
+              // fetch index
+              v2exClient.getHomeFeeds({ tab: 'recent' }).catch((err) => {
+                // do nothing.
+              })
             } catch (err) {}
           })
         }, CHECK_STATUS_DELAY)
