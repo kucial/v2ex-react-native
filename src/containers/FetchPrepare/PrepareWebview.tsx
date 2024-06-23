@@ -1,11 +1,21 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { View, ViewStyle } from 'react-native'
+import { Platform, View, ViewStyle } from 'react-native'
 import WebView from 'react-native-webview'
 import * as Sentry from 'sentry-expo'
 
-import { BASE_URL, USER_AGENT } from '@/utils/v2ex-client/constants'
+import {
+  BASE_URL,
+  USER_AGENT_ANDROID,
+  USER_AGENT_IOS,
+} from '@/utils/v2ex-client/constants'
 
 import { PrepareStatus } from './type'
+
+const USER_AGENT =
+  Platform.select({
+    ios: USER_AGENT_IOS,
+    android: USER_AGENT_ANDROID,
+  }) || USER_AGENT_IOS
 /**
  * 场景一： 不需要 CF 验证
  *
