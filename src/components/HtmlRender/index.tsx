@@ -87,7 +87,8 @@ function HtmlRender({
   )
 
   const styles = useMemo(() => {
-    const baseFontSize = (baseStyle?.fontSize || 16) as number
+    const baseFontSize = (baseStyle?.fontSize ||
+      themeStyles.text_base.fontSize) as number
     return {
       body: {
         color: theme.colors.text,
@@ -165,7 +166,7 @@ function HtmlRender({
       },
       ...(tagsStyles || {}),
     }
-  }, [tagsStyles, baseStyle, theme])
+  }, [tagsStyles, baseStyle, themeStyles, theme])
 
   const renderContext = useMemo(
     () => ({
@@ -344,12 +345,6 @@ function HtmlRender({
       </RenderContext.Provider>
     </ImageViewingServiceProvider>
   )
-}
-
-HtmlRender.defaultProps = {
-  baseStyle: {
-    fontSize: 16,
-  },
 }
 
 export default HtmlRender

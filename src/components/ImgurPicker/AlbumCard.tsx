@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from 'react-native'
-import { Image } from 'expo-image'
 import { LockClosedIcon } from 'react-native-heroicons/outline'
+import { Image } from 'expo-image'
 
 import { getImageLink, useImgurService } from '@/containers/ImgurService'
 import { ImgurAlbum } from '@/containers/ImgurService/types'
@@ -41,15 +41,15 @@ export default function AlbumCard(props: {
         </View>
       </View>
       <Text
-        className="text-sm mt-1"
-        style={styles.text}
+        className="mt-1"
+        style={[styles.text, styles.text_sm]}
         numberOfLines={1}
         ellipsizeMode="tail">
         {data.title}
       </Text>
       <View className="flex flex-row items-center mt-[2px]">
         <View className="flex-1">
-          <Text className="text-xs ml-[2px]" style={styles.text_meta}>
+          <Text className="ml-[2px]" style={[styles.text_meta, styles.text_xs]}>
             {data.images_count}
           </Text>
         </View>

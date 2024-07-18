@@ -19,17 +19,19 @@ export default function NodeTopicRowSkeleton() {
       </View>
       <View className="flex-1 relative top-[-2px]">
         <BlockText
-          className="text-base font-medium mb-2 leading-none"
+          className="font-medium mb-2 leading-none"
+          style={styles.text_base}
           lines={[1, 3]}
         />
         <View className="flex flex-row space-x-1">
-          <InlineText className="text-xs" width={[58, 80]} />
+          <InlineText style={styles.text_xs} width={[58, 80]} />
         </View>
       </View>
 
       <View className="w-[80px] flex flex-row items-center justify-end pr-2">
         <InlineText
-          className="rounded-full text-xs px-2 bg-neutral-400"
+          className="rounded-full px-2 bg-neutral-400"
+          style={styles.text_xs}
           width={[18, 32]}
         />
       </View>

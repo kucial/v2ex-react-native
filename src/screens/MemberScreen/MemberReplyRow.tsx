@@ -25,7 +25,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
         <View style={!isLast && styles.border_b_light}>
           <View className="p-1">
             <View className="px-1 pb-1 pt-1 rounded-sm" style={styles.layer2}>
-              <InlineText className="text-xs" width="80%"></InlineText>
+              <InlineText style={styles.text_xs} width="80%"></InlineText>
               <BlockText lines={[1, 2]} />
             </View>
           </View>
@@ -44,12 +44,12 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
             <View className="flex flex-row">
               <View className="flex-1">
                 <Text
-                  className="text-xs"
-                  style={
-                    styles.text_meta
-                  }>{`回复了${data.member?.username} 创建的主题 › `}</Text>
+                  style={[
+                    styles.text_meta,
+                    styles.text_xs,
+                  ]}>{`回复了${data.member?.username} 创建的主题 › `}</Text>
               </View>
-              <Text className="text-xs" style={styles.text_meta}>
+              <Text style={[styles.text_meta, styles.text_xs]}>
                 {data.reply_time}
               </Text>
             </View>

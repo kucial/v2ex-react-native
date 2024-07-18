@@ -119,11 +119,11 @@ function ReplyRow(props: ReplyRowProps) {
               <View className="flex flex-row">
                 <View className="flex flex-row items-center flex-1">
                   <View className="">
-                    <InlineText className="text-xs" width={120}></InlineText>
+                    <InlineText style={styles.text_xs} width={120}></InlineText>
                   </View>
                 </View>
                 <View className="pr-2 space-x-2 justify-center">
-                  <InlineText className="text-xs" width={24}></InlineText>
+                  <InlineText style={styles.text_xs} width={24}></InlineText>
                 </View>
               </View>
               <View className="pr-2">
@@ -191,7 +191,9 @@ function ReplyRow(props: ReplyRowProps) {
                       })
                     }
                   }}>
-                  <Text className="font-bold text-xs" style={styles.text_desc}>
+                  <Text
+                    className="font-bold"
+                    style={[styles.text_desc, styles.text_xs]}>
                     {member.username}
                   </Text>
                 </Pressable>
@@ -230,12 +232,14 @@ function ReplyRow(props: ReplyRowProps) {
                   </View>
                 )}
                 <View className="ml-2">
-                  <Text className="text-xs" style={styles.text_meta}>
+                  <Text style={[styles.text_meta, styles.text_xs]}>
                     {data.reply_time}
                   </Text>
                 </View>
                 {data.reply_device && (
-                  <Text className="ml-2 text-xs" style={styles.text_meta}>
+                  <Text
+                    className="ml-2"
+                    style={[styles.text_meta, styles.text_xs]}>
                     {data.reply_device}
                   </Text>
                 )}
@@ -246,7 +250,9 @@ function ReplyRow(props: ReplyRowProps) {
                     </View>
                     <View className="flex flex-row items-center">
                       <FilledHeartIcon size={14} color={likedActiveColor} />
-                      <Text className="text-xs ml-1" style={styles.text_meta}>
+                      <Text
+                        className="ml-1"
+                        style={[styles.text_meta, styles.text_xs]}>
                         {data.thanks_count}
                       </Text>
                     </View>
@@ -255,7 +261,7 @@ function ReplyRow(props: ReplyRowProps) {
               </View>
               <View className="pr-1 justify-center">
                 <View className="px-[3px] rounded-full">
-                  <Text className="text-xs" style={styles.text_meta}>
+                  <Text style={[styles.text_meta, styles.text_xs]}>
                     #{data.num}
                   </Text>
                 </View>
@@ -292,7 +298,7 @@ function ReplyRow(props: ReplyRowProps) {
                   onPress={handleReply}>
                   <ReplyIcon size={14} color={iconColor} />
                   <View className="ml-1">
-                    <Text className="text-xs text-neutral-500">回复</Text>
+                    <Text style={[styles.text_meta, styles.text_xs]}>回复</Text>
                   </View>
                 </Pressable>
                 <View className="w-4"></View>
@@ -312,9 +318,13 @@ function ReplyRow(props: ReplyRowProps) {
                   />
                   <View className="ml-1">
                     {data.thanked ? (
-                      <Text className="text-xs text-neutral-500">已感谢</Text>
+                      <Text style={[styles.text_meta, styles.text_xs]}>
+                        已感谢
+                      </Text>
                     ) : (
-                      <Text className="text-xs text-neutral-500">感谢</Text>
+                      <Text style={[styles.text_meta, styles.text_xs]}>
+                        感谢
+                      </Text>
                     )}
                   </View>
                 </Pressable>
@@ -332,7 +342,9 @@ function ReplyRow(props: ReplyRowProps) {
                     onPress={handleConversation}>
                     <ChatBubbleLeftRightIcon size={14} color={iconColor} />
                     <View className="ml-1">
-                      <Text className="text-xs text-neutral-500">会话</Text>
+                      <Text style={[styles.text_meta, styles.text_xs]}>
+                        会话
+                      </Text>
                     </View>
                   </Pressable>
                 )}

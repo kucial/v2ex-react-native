@@ -84,9 +84,9 @@ function NodeSelect(props: NodeSelectProps) {
           selectRef.current?.present()
         }}>
         {props.value ? (
-          <Text className="text-[16px]">{props.renderLabel(props.value)}</Text>
+          <Text style={styles.text_base}>{props.renderLabel(props.value)}</Text>
         ) : (
-          <Text className="text-[16px]" style={props.placeholderStyle}>
+          <Text style={[styles.text_base, props.placeholderStyle]}>
             {props.placeholder}
           </Text>
         )}

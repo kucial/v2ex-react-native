@@ -16,7 +16,7 @@ export default function TopicSkeleton() {
               <InlineText className="font-medium" width={[60, 80]} />
             </View>
             <View className="ml-2">
-              <InlineText className="text-xs" width={[40, 60]} />
+              <InlineText style={styles.text_xs} width={[40, 60]} />
             </View>
           </View>
         </View>
@@ -27,7 +27,7 @@ export default function TopicSkeleton() {
         </View>
       </View>
       <View className="pb-2 mb-2" style={[styles.border_b_light]}>
-        <BlockText className="text-lg font-semibold" lines={[1, 3]} />
+        <BlockText style={styles.text_lg} lines={[1, 3]} />
       </View>
       <View className="mt-1">
         <BlockText lines={[5, 10]} />

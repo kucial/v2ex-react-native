@@ -101,8 +101,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               }),
             )}>
             <TextInput
-              className="rounded-lg flex-1 px-2 text-base"
-              style={[styles.input__bg, styles.text, { lineHeight: 20 }]}
+              className="rounded-lg flex-1 px-2"
+              style={[styles.input__bg, styles.text, styles.text_base]}
               selectionColor={theme.colors.primary}
               placeholderTextColor={theme.colors.text_placeholder}
               defaultValue={searchParams.q || ''}

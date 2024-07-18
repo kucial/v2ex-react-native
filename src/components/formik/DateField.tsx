@@ -52,15 +52,15 @@ function DateField({
       {label !== false && (
         <View className="flex flex-row">
           <Text
-            className={classNames('text-xs pl-2 pb-[2px]', {
+            className={classNames('pl-2 pb-[2px]', {
               'opacity-0': !field.value,
             })}
-            style={styles.text}>
+            style={[styles.text, styles.text_xs]}>
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className="text-xs ml-2" style={styles.text_danger}>
+            <Text className="ml-2" style={[styles.text_danger, styles.text_xs]}>
               {meta.error}
             </Text>
           )}
@@ -75,11 +75,11 @@ function DateField({
           }}>
           <View className="w-full">
             {field.value ? (
-              <Text className="text-[16px]" style={styles.text}>
+              <Text style={[styles.text, styles.text_base]}>
                 {formatDate(field.value, props.pickerMode)}
               </Text>
             ) : (
-              <Text className="text-[16px]" style={styles.text_placeholder}>
+              <Text style={[styles.text_placeholder, styles.text_base]}>
                 {props.placeholder}
               </Text>
             )}

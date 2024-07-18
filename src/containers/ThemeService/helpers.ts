@@ -6,7 +6,7 @@ import {
   ViewStyle,
 } from 'react-native'
 
-import { getActiveTheme } from '../AppSettingsService'
+import { getActiveFontScale, getActiveTheme } from '../AppSettingsService'
 import * as themes from './themes'
 import { SemanticType, ThemeService, ThemeStyles } from './types'
 
@@ -15,11 +15,13 @@ const themeServiceMap = {}
 export function getThemeService(
   themeName?: string,
   colorScheme?: ColorSchemeName,
+  fontScale?: number,
 ): ThemeService {
   const name = themeName || getActiveTheme()
+  const scale = fontScale || getActiveFontScale()
   const scheme = colorScheme || Appearance.getColorScheme()
 
-  const key = `${name}-${scheme}`
+  const key = `${name}-${scheme}-${scale}`
   if (!themeServiceMap[key]) {
     console.log('construct theme', name, scheme)
     const theme = (themes[name] || themes.r2v)[scheme]
@@ -28,8 +30,27 @@ export function getThemeService(
       : theme.colors.white
 
     const styles = StyleSheet.create<ThemeStyles>({
+      text_xs: {
+        fontSize: 12 * scale,
+        lineHeight: 16 * scale,
+      },
+      text_sm: {
+        fontSize: 14 * scale,
+        lineHeight: 20 * scale,
+      },
+      text_base: {
+        fontSize: 16 * scale,
+        lineHeight: 24 * scale,
+      },
+      text_lg: {
+        fontSize: 18 * scale,
+        lineHeight: 28 * scale,
+      },
       text: {
         color: theme.colors.text,
+      },
+      text_title: {
+        color: theme.colors.text_title,
       },
       text_desc: {
         color: theme.colors.text_desc,

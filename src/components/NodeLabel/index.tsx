@@ -5,7 +5,11 @@ import useSWR from 'swr'
 
 import { getNodes } from '@/utils/v2ex-client'
 
-function NodeLabel(props: { id?: number; name?: string; style: TextStyle }) {
+function NodeLabel(props: {
+  id?: number
+  name?: string
+  style: TextStyle | TextStyle[]
+}) {
   const nodesSwr = useSWR('/api/nodes/all.json', getNodes, {
     revalidateOnMount: false,
     revalidateOnFocus: false,

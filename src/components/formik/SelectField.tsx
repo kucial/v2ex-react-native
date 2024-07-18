@@ -19,8 +19,8 @@ function SelectField({
   name: string
   options: Array<{ label: string; value: string }>
 }) {
-  const { styles, theme, colorScheme } = useTheme()
-  const [field, meta, helpers] = useField(name)
+  const { styles, colorScheme } = useTheme()
+  const [field, helpers] = useField(name)
 
   const labels = useMemo(() => options.map((o) => o.label), [options])
 
@@ -29,8 +29,8 @@ function SelectField({
       {label && (
         <View className="flex-1">
           <Text
-            className={classNames('text-xs pl-2 pb-[2px]')}
-            style={styles.text}>
+            className={classNames('pl-2 pb-[2px]')}
+            style={[styles.text, styles.text_xs]}>
             {label}
           </Text>
         </View>

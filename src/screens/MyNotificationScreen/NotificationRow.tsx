@@ -177,7 +177,7 @@ const NotificationRow = (props: { data: Notification }) => {
               {data.topic.title}
             </Text>
             <Text>{' 里回复了你 '}</Text>
-            <Text className="text-sm">{data.time}</Text>
+            <Text style={styles.text_sm}>{data.time}</Text>
           </Text>
         </View>
       )

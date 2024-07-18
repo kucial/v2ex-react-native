@@ -73,10 +73,10 @@ export default function FeedbackScreen(props: ScreenProps) {
                 }) => (
                   <View className="py-4 px-4 w-full">
                     <Text
-                      className={classNames('text-xs pl-2 pb-[2px]', {
+                      className={classNames('pl-2 pb-[2px]', {
                         'opacity-0': !values.name,
                       })}
-                      style={styles.text}>
+                      style={[styles.text, styles.text_xs]}>
                       名称
                     </Text>
                     <TextInput
@@ -95,17 +95,17 @@ export default function FeedbackScreen(props: ScreenProps) {
                     />
                     <View className="flex flex-row">
                       <Text
-                        className={classNames('text-xs pl-2 pb-[2px]', {
+                        className={classNames('pl-2 pb-[2px]', {
                           'opacity-0': !values.email,
                         })}
-                        style={styles.text}>
+                        style={[styles.text, styles.text_xs]}>
                         邮箱
                       </Text>
 
                       {values.email && touched.email && (
                         <Text
-                          className="text-xs ml-2"
-                          style={styles.text_danger}>
+                          className="ml-2"
+                          style={[styles.text_danger, styles.text_xs]}>
                           {errors.email}
                         </Text>
                       )}
@@ -127,10 +127,10 @@ export default function FeedbackScreen(props: ScreenProps) {
                     />
 
                     <Text
-                      className={classNames('text-xs pl-2 pb-[2px]', {
+                      className={classNames('pl-2 pb-[2px]', {
                         'opacity-0': !values.comments,
                       })}
-                      style={styles.text}>
+                      style={[styles.text, styles.text_xs]}>
                       留言
                     </Text>
                     <TextInput
@@ -165,8 +165,7 @@ export default function FeedbackScreen(props: ScreenProps) {
                         />
                       ) : (
                         <Text
-                          className="text-base"
-                          style={styles.btn_primary__text}>
+                          style={[styles.btn_primary__text, styles.text_base]}>
                           提交
                         </Text>
                       )}

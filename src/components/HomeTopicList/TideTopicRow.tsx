@@ -32,17 +32,14 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
             <View className="pl-3"></View>
           )}
           <View className="flex-1 pt-1 pb-2">
-            <BlockText
-              randomWidth
-              lines={[1, 2]}
-              className="text-[16px] leading-[22px]"></BlockText>
+            <BlockText lines={[1, 2]} style={styles.text_base}></BlockText>
             <View className="mt-1">
-              <InlineText width={[80, 120]} className="text-xs"></InlineText>
+              <InlineText width={[80, 120]} style={styles.text_xs}></InlineText>
             </View>
           </View>
           <View className="flex flex-row justify-end pl-1 pr-2">
             <Box className="rounded-full px-2">
-              <InlineText width={8} className="text-xs" />
+              <InlineText width={8} style={styles.text_xs} />
             </Box>
           </View>
         </View>
@@ -91,10 +88,10 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
             props.viewedStatus === 'viewed' && 'opacity-70',
           )}>
           <Text
-            className={classNames('text-[16px] leading-[22px]', {
+            className={classNames({
               'font-[500]': props.titleStyle === 'emphasized',
             })}
-            style={styles.text}>
+            style={[styles.text, styles.text_base]}>
             {title}
           </Text>
           <View className="mt-1 flex flex-row flex-wrap items-center">
@@ -108,30 +105,30 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
                   brief: node,
                 })
               }}>
-              <Text className="text-xs" style={styles.text_desc}>
+              <Text style={[styles.text_desc, styles.text_xs]}>
                 {node.title}
               </Text>
             </FixedPressable>
             {!showLastReplyMember && data?.last_reply_time && (
               <View className="mr-1">
-                <Text className="text-xs" style={styles.text_meta}>
-                  最后回复
-                </Text>
+                <Text style={[styles.text_meta, styles.text_xs]}>最后回复</Text>
               </View>
             )}
-            <Text className="text-xs" style={styles.text_meta}>
+            <Text style={[styles.text_meta, styles.text_xs]}>
               {data?.last_reply_time}
             </Text>
             {data?.last_reply_time &&
               showLastReplyMember &&
               data?.last_reply_by && (
-                <Text className="text-xs px-1" style={styles.text_meta}>
+                <Text
+                  className="px-1"
+                  style={[styles.text_meta, styles.text_xs]}>
                   •
                 </Text>
               )}
             {showLastReplyMember && data?.last_reply_by && (
               <View className="flex flex-row items-center">
-                <Text className="text-xs" style={styles.text_meta}>
+                <Text style={[styles.text_meta, styles.text_xs]}>
                   最后回复来自
                 </Text>
                 <FixedPressable
@@ -143,7 +140,9 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
                       tab: 'replies',
                     })
                   }}>
-                  <Text className="text-xs font-[600]" style={styles.text_desc}>
+                  <Text
+                    className="font-[600]"
+                    style={[styles.text_desc, styles.text_xs]}>
                     {data.last_reply_by}
                   </Text>
                 </FixedPressable>
@@ -154,9 +153,7 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
         <View className="flex flex-row justify-end pl-1 pr-2">
           {!!replies && (
             <View className="rounded-full px-1" style={styles.tag__bg}>
-              <Text className="text-xs" style={styles.tag__text}>
-                {replies}
-              </Text>
+              <Text style={[styles.tag__text, styles.text_xs]}>{replies}</Text>
             </View>
           )}
         </View>

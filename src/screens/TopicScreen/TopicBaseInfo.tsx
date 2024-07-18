@@ -112,11 +112,13 @@ function TopicBaseInfo(props: {
 
             {!!topic.replies || !!topic.clicks ? (
               <View className="flex flex-row py-3 pl-1 mt-3">
-                <Text className="text-xs pr-4" style={styles.text_desc}>
+                <Text
+                  className="pr-4"
+                  style={[styles.text_desc, styles.text_xs]}>
                   {topic.replies} 条回复
                 </Text>
                 {topic.clicks && (
-                  <Text className="text-xs" style={styles.text_meta}>
+                  <Text style={[styles.text_meta, styles.text_xs]}>
                     {topic.clicks} 次点击
                   </Text>
                 )}

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Text, View, ViewStyle } from 'react-native'
+import { Text, TextStyle, View, ViewStyle } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -68,7 +68,7 @@ export function InlineText(props) {
 
 export function BlockText(props: {
   lines: number | number[]
-  style?: ViewStyle
+  style?: ViewStyle & TextStyle
 }) {
   const lines = useMemo(() => {
     if (Array.isArray(props.lines)) {

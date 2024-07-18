@@ -8,6 +8,11 @@ interface ThemeTextStyle {
   fontWeight?: TextStyle['fontWeight']
 }
 
+interface ThemeFontSizeStyle {
+  fontSize: number
+  lineHeight?: number
+}
+
 interface ThemeBackgroundStyle {
   backgroundColor?: string
 }
@@ -88,7 +93,12 @@ type ThemeColors = Theme['colors'] & {
   switch_thumb?: string
 }
 type ThemeStyles = {
+  text_xs: ThemeFontSizeStyle
+  text_sm: ThemeFontSizeStyle
+  text_base: ThemeFontSizeStyle
+  text_lg: ThemeFontSizeStyle
   text: ThemeTextStyle
+  text_title: ThemeTextStyle
   text_desc: ThemeTextStyle
   text_meta: TextStyle
   text_primary: TextStyle

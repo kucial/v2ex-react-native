@@ -384,8 +384,10 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.1):
     - React-Core
-  - react-native-selectable-text (1.5.9):
+  - react-native-selectable-text (1.6.0):
     - React
+  - react-native-slider (4.4.2):
+    - React-Core
   - react-native-webview (11.26.0):
     - React-Core
   - React-perflogger (0.71.14)
@@ -595,6 +597,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-selectable-text (from `../node_modules/@alentoma/react-native-selectable-text`)"
+  - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -755,6 +758,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-segmented-control/segmented-control"
   react-native-selectable-text:
     :path: "../node_modules/@alentoma/react-native-selectable-text"
+  react-native-slider:
+    :path: "../node_modules/@react-native-community/slider"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -870,7 +875,8 @@ SPEC CHECKSUMS:
   react-native-restart: 45c8dca02491980f2958595333cbccd6877cb57e
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-segmented-control: 0e4b5d93911e2234f110057df2b41738b326ab3e
-  react-native-selectable-text: 4210466b48818e1c6ea7aa87c536e4aa7fac5afe
+  react-native-selectable-text: 3181b75425b110c74be77667442a14d58f4a4868
+  react-native-slider: 33b8d190b59d4f67a541061bb91775d53d617d9d
   react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
   React-perflogger: 4987ad83731c23d11813c84263963b0d3028c966
   React-RCTActionSheet: 5ad952b2a9740d87a5bd77280c4bc23f6f89ea0c

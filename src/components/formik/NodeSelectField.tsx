@@ -33,16 +33,16 @@ function NodeSelectField({
         <View className="flex flex-row">
           <View className="flex-1">
             <Text
-              className={classNames('text-xs pl-2 pb-[2px]', {
+              className={classNames('pl-2 pb-[2px]', {
                 'opacity-0': !field.value,
               })}
-              style={styles.text}>
+              style={[styles.text, styles.text_xs]}>
               {label}
             </Text>
           </View>
 
           {meta.error && meta.touched && (
-            <Text className="text-xs ml-2" style={styles.text_danger}>
+            <Text className="ml-2" style={[styles.text_danger, styles.text_xs]}>
               {meta.error}
             </Text>
           )}

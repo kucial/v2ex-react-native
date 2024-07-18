@@ -15,27 +15,24 @@ export default function TopicRowSkeleton() {
           <Box className="w-[24px] h-[24px] rounded" />
           <View>
             <View className="py-[2px] rounded w-[50px]">
-              <InlineText className="text-xs"></InlineText>
+              <InlineText style={styles.text_xs}></InlineText>
             </View>
           </View>
           <Text style={styles.text_meta}>·</Text>
           <View className="relative">
-            <InlineText width={[56, 80]} className="text-xs"></InlineText>
+            <InlineText width={[56, 80]} style={styles.text_xs}></InlineText>
           </View>
         </View>
         <View className="pl-[34px]">
-          <BlockText
-            randomWidth
-            lines={[1, 3]}
-            className="text-base"></BlockText>
+          <BlockText lines={[1, 3]} style={styles.text_base}></BlockText>
           <View className="mt-2">
-            <InlineText width={[80, 120]} className="text-xs"></InlineText>
+            <InlineText width={[80, 120]} style={styles.text_xs}></InlineText>
           </View>
         </View>
       </View>
       <View className="w-[80px] flex flex-row justify-end pr-4">
         <Box className="rounded-full px-2">
-          <InlineText width={8} className="text-xs" />
+          <InlineText width={8} style={styles.text_xs} />
         </Box>
       </View>
     </View>

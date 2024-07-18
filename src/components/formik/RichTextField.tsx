@@ -41,15 +41,15 @@ function RichTextField({
       {label !== false && (
         <View className="flex flex-row">
           <Text
-            className={classNames('text-xs pl-2 pb-[2px]', {
+            className={classNames('pl-2 pb-[2px]', {
               'opacity-0': !field.value,
             })}
-            style={styles.text}>
+            style={[styles.text, styles.text_xs]}>
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className="text-xs ml-2" style={styles.text_danger}>
+            <Text className="ml-2" style={[styles.text_danger, styles.text_xs]}>
               {meta.error}
             </Text>
           )}

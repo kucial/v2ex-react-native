@@ -8,6 +8,7 @@ type AppSettings = {
   showHasNewReply: boolean
   colorScheme?: 'light' | 'dark' | 'system'
   theme: string
+  fontScale: number
   // themeColor: '',
   feedLayout: FeedLayoutStyle
   feedShowAvatar: boolean

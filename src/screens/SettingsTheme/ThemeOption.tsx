@@ -1,16 +1,15 @@
 import { Pressable, Text, View } from 'react-native'
 
 import CheckIcon from '@/components/CheckIcon'
-import { MyTheme, MyThemeDefinition } from '@/containers/ThemeService/types'
+import { MyThemeDefinition, ThemeStyles } from '@/containers/ThemeService/types'
 export default function ThemeOption(props: {
-  theme: MyTheme
+  styles: ThemeStyles
   data: MyThemeDefinition
   colorScheme: 'dark' | 'light'
   active: boolean
   onSelect(): void
 }) {
-  const { theme, data, colorScheme, active } = props
-  const contrastTextColor = theme.dark ? theme.colors.black : theme.colors.white
+  const { styles, data, colorScheme, active } = props
 
   return (
     <Pressable
@@ -31,9 +30,9 @@ export default function ThemeOption(props: {
           paddingRight: 1,
           paddingBottom: 1,
         }}>
-        {active && <CheckIcon color={contrastTextColor} />}
+        {active && <CheckIcon color={styles.btn_primary__text.color} />}
       </View>
-      <Text style={{ color: theme.colors.text }}>{data.title}</Text>
+      <Text style={[styles.text, styles.text_xs]}>{data.title}</Text>
     </Pressable>
   )
 }

@@ -19,7 +19,7 @@ export type ImagesGridProps = {
 }
 export default function ImagesGrid(props: ImagesGridProps) {
   const { imagesSwr } = props
-  const { theme } = useTheme()
+  const { styles } = useTheme()
 
   const [viewIndex, setViewIndex] = useState(-1)
 
@@ -59,9 +59,9 @@ export default function ImagesGrid(props: ImagesGridProps) {
                 </View>
                 <Text
                   className={classNames(
-                    'text-base',
                     selected ? 'text-emerald-400' : 'text-neutral-300',
-                  )}>
+                  )}
+                  style={styles.text_base}>
                   选择
                 </Text>
               </Pressable>
@@ -72,7 +72,7 @@ export default function ImagesGrid(props: ImagesGridProps) {
                 onPress={() => {
                   setViewIndex(-1)
                 }}>
-                <Text className="text-neutral-300 text-base">
+                <Text className="text-neutral-300" style={styles.text_base}>
                   {props.selected.length ? '完成' : '关闭'}
                 </Text>
               </Pressable>

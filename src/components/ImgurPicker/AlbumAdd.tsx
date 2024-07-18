@@ -40,8 +40,8 @@ export default function AlbumCard(props) {
         </View>
       </View>
       <Text
-        className="text-center text-sm mt-1"
-        style={styles.text}
+        className="text-center mt-1"
+        style={[styles.text, styles.text_sm]}
         numberOfLines={1}
         ellipsizeMode="tail">
         新建相册

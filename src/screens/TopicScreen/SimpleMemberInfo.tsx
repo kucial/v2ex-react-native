@@ -124,10 +124,12 @@ export default function SimpleMemberInfo(props: {
               )}
             </View>
             <View className="flex-1">
-              <Text className="text-lg font-bold" style={styles.text_primary}>
+              <Text
+                className="font-bold"
+                style={[styles.text_primary, styles.text_lg]}>
                 {username}
               </Text>
-              <Text className="text-sm" style={styles.text_meta}>
+              <Text style={[styles.text_meta, styles.text_sm]}>
                 <Text className="pl-2 mb-1">
                   {data?.created
                     ? `${localTime(data.created * 1000)} 加入`

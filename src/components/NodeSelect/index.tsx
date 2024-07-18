@@ -116,9 +116,9 @@ function NodeSelect(props: NodeSelectProps) {
           }}>
           <View className="w-full">
             {value ? (
-              <Text className="text-[16px]">{renderLabel(value)}</Text>
+              <Text style={styles.text_base}>{renderLabel(value)}</Text>
             ) : (
-              <Text className="text-[16px]" style={styles.text_placeholder}>
+              <Text style={[styles.text_placeholder, styles.text_base]}>
                 {props.placeholder}
               </Text>
             )}

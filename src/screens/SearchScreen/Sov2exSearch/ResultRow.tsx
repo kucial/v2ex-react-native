@@ -48,8 +48,8 @@ export default function ResultRow(props: { data: SearchHit }) {
         <View className={classNames('flex-1 py-2 pr-3')}>
           <View>
             <Text
-              className={classNames('text-base  leading-tight', 'font-[500]')}
-              style={styles.text}>
+              className={classNames('font-[500]')}
+              style={[styles.text, styles.text_base]}>
               {_source.title}
             </Text>
           </View>
@@ -69,13 +69,12 @@ export default function ResultRow(props: { data: SearchHit }) {
           <View className="flex flex-row items-center space-x-1 py-1">
             <View className="py-[2px] px-1 rounded" style={styles.layer2}>
               <NodeLabel
-                className="text-xs"
-                style={styles.text_desc}
+                style={[styles.text_desc, styles.text_xs]}
                 id={_source.node}
               />
             </View>
             <View>
-              <Text className="text-xs" style={styles.text_desc}>
+              <Text style={[styles.text_desc, styles.text_xs]}>
                 {localTime(_source.created)}
               </Text>
             </View>
@@ -89,14 +88,16 @@ export default function ResultRow(props: { data: SearchHit }) {
                     username: _source.member,
                   })
                 }}>
-                <Text className="font-[600] text-xs" style={styles.text_desc}>
+                <Text
+                  className="font-[600]"
+                  style={[styles.text_desc, styles.text_xs]}>
                   {_source.member}
                 </Text>
               </FixedPressable>
             </View>
             <Text style={styles.text_meta}>·</Text>
             <View>
-              <Text className="text-xs" style={styles.text_desc}>
+              <Text style={[styles.text_desc, styles.text_xs]}>
                 {_source.replies} 条回复
               </Text>
             </View>

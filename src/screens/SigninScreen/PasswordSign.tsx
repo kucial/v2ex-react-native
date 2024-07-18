@@ -147,10 +147,10 @@ function PasswordSignin(props: PasswordSigninProps) {
               className="flex-1 w-full items-center">
               <View className="py-4 px-8 w-full">
                 <Text
-                  className={classNames('text-xs pl-2 pb-[2px]', {
+                  className={classNames('pl-2 pb-[2px]', {
                     'opacity-0': !values.username,
                   })}
-                  style={styles.text}>
+                  style={[styles.text, styles.text_xs]}>
                   用户名
                 </Text>
                 <Controller
@@ -180,10 +180,10 @@ function PasswordSignin(props: PasswordSigninProps) {
                   rules={{ required: true }}
                 />
                 <Text
-                  className={classNames('text-xs pl-2 pb-[2px]', {
+                  className={classNames('pl-2 pb-[2px]', {
                     'opacity-0': !values.password,
                   })}
-                  style={styles.text}>
+                  style={[styles.text, styles.text_xs]}>
                   密码
                 </Text>
                 <Controller
@@ -237,10 +237,10 @@ function PasswordSignin(props: PasswordSigninProps) {
                   />
                 )}
                 <Text
-                  className={classNames('text-xs pl-2 pb-[2px]', {
+                  className={classNames('pl-2 pb-[2px]', {
                     'opacity-0': !values.captcha,
                   })}
-                  style={styles.text}>
+                  style={[styles.text, styles.text_xs]}>
                   验证码
                 </Text>
                 <Controller

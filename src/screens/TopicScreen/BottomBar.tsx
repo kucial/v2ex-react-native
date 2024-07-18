@@ -47,7 +47,7 @@ export default function BottomBar(props: BarProps) {
             onPress={() => {
               props.onInitReply()
             }}>
-            <Text className="text-sm" style={styles.text_placeholder}>
+            <Text style={[styles.text_placeholder, styles.text_sm]}>
               发表评论
             </Text>
           </Pressable>

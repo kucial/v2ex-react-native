@@ -29,27 +29,28 @@ export default function TopicRow(props: HomeFeedRowProps) {
               {showAvatar && <Box className="w-[24px] h-[24px] rounded" />}
               <View>
                 <View className="py-[2px] rounded w-[50px]">
-                  <InlineText className="text-xs"></InlineText>
+                  <InlineText style={styles.text_xs}></InlineText>
                 </View>
               </View>
               <Text style={styles.text_meta}>·</Text>
               <View className="relative">
-                <InlineText width={[56, 80]} className="text-xs"></InlineText>
+                <InlineText
+                  width={[56, 80]}
+                  style={styles.text_xs}></InlineText>
               </View>
             </View>
             <View className="pl-[34px]">
-              <BlockText
-                randomWidth
-                lines={[1, 3]}
-                className="text-base"></BlockText>
+              <BlockText lines={[1, 3]} style={styles.text_base}></BlockText>
               <View className="mt-2">
-                <InlineText width={[80, 120]} className="text-xs"></InlineText>
+                <InlineText
+                  width={[80, 120]}
+                  style={styles.text_xs}></InlineText>
               </View>
             </View>
           </View>
           <View className="w-[80px] flex flex-row justify-end pr-4">
             <Box className="rounded-full px-2">
-              <InlineText width={8} className="text-xs" />
+              <InlineText width={8} style={styles.text_xs} />
             </Box>
           </View>
         </View>
@@ -114,7 +115,7 @@ export default function TopicRow(props: HomeFeedRowProps) {
                     brief: node,
                   })
                 }}>
-                <Text className="text-xs" style={styles.text_desc}>
+                <Text style={[styles.text_desc, styles.text_xs]}>
                   {node.title}
                 </Text>
               </FixedPressable>
@@ -130,7 +131,9 @@ export default function TopicRow(props: HomeFeedRowProps) {
                     brief: member,
                   })
                 }}>
-                <Text className="font-[600] text-xs" style={styles.text_desc}>
+                <Text
+                  className="font-[600]"
+                  style={[styles.text_desc, styles.text_xs]}>
                   {member.username}
                 </Text>
               </FixedPressable>
@@ -138,26 +141,28 @@ export default function TopicRow(props: HomeFeedRowProps) {
           </View>
           <View>
             <Text
-              className={classNames('text-base', {
+              className={classNames({
                 'font-[500]': titleStyle === 'emphasized',
               })}
-              style={styles.text}>
+              style={[styles.text, styles.text_base]}>
               {title}
             </Text>
             <View className="mt-2 flex flex-row items-center">
-              <Text className="text-xs" style={styles.text_meta}>
+              <Text style={[styles.text_meta, styles.text_xs]}>
                 {data?.last_reply_time}
               </Text>
               {data?.last_reply_time &&
                 showLastReplyMember &&
                 data?.last_reply_by && (
-                  <Text className="text-xs px-2" style={styles.text_meta}>
+                  <Text
+                    className="px-2"
+                    style={[styles.text_meta, styles.text_xs]}>
                     •
                   </Text>
                 )}
               {showLastReplyMember && data?.last_reply_by && (
                 <View className="flex flex-row items-center">
-                  <Text className="text-xs" style={styles.text_meta}>
+                  <Text style={[styles.text_meta, styles.text_xs]}>
                     最后回复来自
                   </Text>
                   <FixedPressable
@@ -170,8 +175,8 @@ export default function TopicRow(props: HomeFeedRowProps) {
                       })
                     }}>
                     <Text
-                      className="text-xs font-[600]"
-                      style={styles.text_desc}>
+                      className="font-[600]"
+                      style={[styles.text_desc, styles.text_xs]}>
                       {data.last_reply_by}
                     </Text>
                   </FixedPressable>
@@ -183,9 +188,7 @@ export default function TopicRow(props: HomeFeedRowProps) {
         <View className="w-[80px] flex flex-row justify-end pr-4">
           <View className="relative">
             {!!replies && (
-              <View
-                className="rounded-full text-xs px-2"
-                style={styles.tag__bg}>
+              <View className="rounded-full px-2" style={styles.tag__bg}>
                 <Text style={styles.tag__text}>{replies}</Text>
               </View>
             )}

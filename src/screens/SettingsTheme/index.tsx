@@ -11,32 +11,36 @@ type ScreenProps = NativeStackScreenProps<AppStackParamList, 'theme-settings'>
 export default function SettingsTheme(props: ScreenProps) {
   const { navigation } = props
   const {
-    data: { theme },
+    data: { theme, fontScale },
     update,
   } = useAppSettings()
   const [preview, setPreview] = useState(theme)
+  const [scale, setScale] = useState(fontScale)
   const { colorScheme: currentScheme } = useColorScheme()
   const [colorScheme, setColorScheme] = useState(currentScheme)
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', () => {
-      if (preview !== theme) {
+      if (preview !== theme || scale !== fontScale) {
         update((prev) => ({
           ...prev,
           theme: preview,
+          fontScale: scale,
         }))
       }
     })
     return unsubscribe
-  }, [navigation, theme, preview])
+  }, [navigation, theme, preview, scale])
 
   return (
-    <ThemeProvider theme={preview} colorScheme={colorScheme}>
+    <ThemeProvider theme={preview} fontScale={scale} colorScheme={colorScheme}>
       <AlertService>
         <ThemePreview
           navigation={props.navigation}
           theme={preview}
+          fontScale={scale}
           setTheme={setPreview}
+          setFontScale={setScale}
           colorScheme={colorScheme}
           setColorScheme={setColorScheme}
         />

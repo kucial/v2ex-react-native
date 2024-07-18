@@ -82,10 +82,8 @@ export default function MainScreenHeader(
       <View className="flex-1">
         <View className="">
           <Text
-            className="font-bold text-[19px]"
-            style={{
-              color: theme.colors.text_title,
-            }}>
+            className="font-bold"
+            style={[styles.text_lg, styles.text_title]}>
             {title}
           </Text>
         </View>

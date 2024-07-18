@@ -59,13 +59,15 @@ function TopicInfo(props: {
                       username: member.username,
                     })
                   }}>
-                  <Text className="font-medium" style={styles.text_meta}>
+                  <Text
+                    className="font-medium"
+                    style={[styles.text_meta, styles.text_xs]}>
                     {member.username}
                   </Text>
                 </Pressable>
               </View>
               <View className="ml-2">
-                <Text className="text-xs" style={styles.text_meta}>
+                <Text style={[styles.text_meta, styles.text_xs]}>
                   {topic.created_time}
                 </Text>
               </View>
@@ -90,7 +92,10 @@ function TopicInfo(props: {
         </View>
       </View>
       <View className="pb-2 border-solid mb-2" style={[styles.border_b]}>
-        <Text selectable className="text-lg font-semibold" style={styles.text}>
+        <Text
+          selectable
+          className="font-semibold"
+          style={[styles.text, styles.text_lg]}>
           {topic.title}
         </Text>
       </View>
@@ -102,7 +107,7 @@ function TopicInfo(props: {
             padLayout.active ? CONTAINER_WIDTH : CONTAINER_WIDTH - 32
           }
           baseStyle={{
-            fontSize: 16,
+            fontSize: styles.text_base.fontSize,
           }}
           source={{
             html: topic.content_rendered,
@@ -119,14 +124,16 @@ function TopicInfo(props: {
               style={[styles.border_t_light, styles.highlight]}
               key={index}>
               <View className="mb-1">
-                <Text className="text-xs text-neutral-500">{subtle.meta}</Text>
+                <Text style={[styles.text_meta, styles.text_xs]}>
+                  {subtle.meta}
+                </Text>
               </View>
               <HtmlRender
                 key={subtle.content_rendered + colorScheme}
                 navigation={navigation}
                 contentWidth={CONTAINER_WIDTH - 32}
                 baseStyle={{
-                  fontSize: 16,
+                  fontSize: styles.text_base.fontSize,
                 }}
                 source={{
                   html: subtle.content_rendered,

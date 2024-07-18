@@ -27,7 +27,7 @@ export default function ErrorNoticeView(props: Props) {
               哎呦，出了点问题
             </Text>
           </View>
-          <Text className="leading-[23px] text-[16px] mb-8" style={styles.text}>
+          <Text className="mb-8" style={[styles.text, styles.text_base]}>
             应用程序遇到问题，无法继续。 {'\n'}我们道歉对于由此造成的任何不便！
             {'\n'}
             按下下方按钮即可 重新启动应用程序。{'\n'}
@@ -40,7 +40,7 @@ export default function ErrorNoticeView(props: Props) {
               )}
               style={styles.btn_primary__bg}
               onPress={props.onRestart}>
-              <Text className="text-base" style={styles.btn_primary__text}>
+              <Text style={[styles.btn_primary__text, styles.text_base]}>
                 重新启动APP
               </Text>
             </Pressable>
@@ -50,12 +50,14 @@ export default function ErrorNoticeView(props: Props) {
               )}
               style={styles.btn_danger__bg}
               onPress={props.onReset}>
-              <Text className="text-base" style={styles.btn_danger__text}>
+              <Text style={[styles.btn_danger__text, styles.text_base]}>
                 重置 APP
               </Text>
             </Pressable>
             <View className="mt-2">
-              <Text className="text-xs text-center" style={styles.text_meta}>
+              <Text
+                className="text-center"
+                style={[styles.text_meta, styles.text_xs]}>
                 （清理缓存）
               </Text>
             </View>

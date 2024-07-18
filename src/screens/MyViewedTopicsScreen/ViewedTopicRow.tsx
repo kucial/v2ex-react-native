@@ -61,7 +61,7 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
                     brief: node,
                   })
                 }}>
-                <Text className="text-xs" style={styles.text_desc}>
+                <Text style={[styles.text_desc, styles.text_xs]}>
                   {node.title}
                 </Text>
               </FixedPressable>
@@ -77,7 +77,9 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
                     brief: member,
                   })
                 }}>
-                <Text className="font-[600] text-xs" style={styles.text_desc}>
+                <Text
+                  className="font-[600]"
+                  style={[styles.text_desc, styles.text_xs]}>
                   {member.username}
                 </Text>
               </FixedPressable>
@@ -85,17 +87,17 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
           </View>
           <View>
             <Text
-              className={classNames('text-base', {
+              className={classNames({
                 'font-[500]': props.titleStyle === 'emphasized',
               })}
-              style={styles.text}>
+              style={[styles.text, styles.text_base]}>
               {title}
             </Text>
             <View className="mt-2 flex flex-row items-center">
-              <Text className="text-xs mr-2" style={styles.text_meta}>
+              <Text className="mr-2" style={[styles.text_meta, styles.text_xs]}>
                 上次查看
               </Text>
-              <Text className="text-xs" style={styles.text_meta}>
+              <Text style={[styles.text_meta, styles.text_xs]}>
                 <TimeAgo date={data.viewed_at} />
               </Text>
             </View>

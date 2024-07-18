@@ -60,14 +60,11 @@ export default function AboutScreen(props) {
                     <AppBrandIcon />
                   </View>
                 </View>
-                {/* <Text
-                  className="text-2xl font-bold text-center"
-                  style={styles.text}>
-                  R2V
-                </Text> */}
               </View>
               <View className="my-2">
-                <Text className="text-base text-center" style={styles.text}>
+                <Text
+                  className="text-center"
+                  style={[styles.text, styles.text_base]}>
                   V2EX 第三方客户端
                 </Text>
               </View>
@@ -78,7 +75,9 @@ export default function AboutScreen(props) {
               </View>
 
               <View className="mt-2">
-                <Text className="text-sm text-center" style={styles.text_meta}>
+                <Text
+                  className="text-center"
+                  style={[styles.text_meta, styles.text_sm]}>
                   {Constants.manifest?.extra.buildTag}
                 </Text>
               </View>

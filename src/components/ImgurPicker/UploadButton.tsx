@@ -97,9 +97,6 @@ export default function UploadButton(props) {
         }
       }}>
       <ArrowUpTrayIcon size={22} color={props.tintColor} />
-      {/* <Text className="text-neutral-900 font-medium text-base text-tracking-whider">
-        上传
-      </Text> */}
     </Pressable>
   )
 }

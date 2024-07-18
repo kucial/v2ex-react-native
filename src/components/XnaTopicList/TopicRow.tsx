@@ -29,27 +29,28 @@ export default function TopicRow(props: XnaFeedRowProps) {
               {showAvatar && <Box className="w-[24px] h-[24px] rounded" />}
               <View>
                 <View className="py-[2px] rounded w-[50px]">
-                  <InlineText className="text-xs"></InlineText>
+                  <InlineText style={styles.text_xs}></InlineText>
                 </View>
               </View>
               <Text style={styles.text_meta}>·</Text>
               <View className="relative">
-                <InlineText width={[56, 80]} className="text-xs"></InlineText>
+                <InlineText
+                  width={[56, 80]}
+                  style={styles.text_xs}></InlineText>
               </View>
             </View>
             <View className="pl-[34px]">
-              <BlockText
-                randomWidth
-                lines={[1, 3]}
-                className="text-base"></BlockText>
+              <BlockText lines={[1, 3]} style={styles.text_base}></BlockText>
               <View className="mt-2">
-                <InlineText width={[80, 120]} className="text-xs"></InlineText>
+                <InlineText
+                  width={[80, 120]}
+                  style={styles.text_xs}></InlineText>
               </View>
             </View>
           </View>
           <View className="w-[80px] flex flex-row justify-end pr-4">
             <Box className="rounded-full px-2">
-              <InlineText width={8} className="text-xs" />
+              <InlineText width={8} style={styles.text_xs} />
             </Box>
           </View>
         </View>
@@ -134,7 +135,7 @@ export default function TopicRow(props: XnaFeedRowProps) {
                     })
                   }
                 }}>
-                <Text className="text-xs" style={styles.text_desc}>
+                <Text style={[styles.text_desc, styles.text_xs]}>
                   {source.name}
                 </Text>
               </FixedPressable>
@@ -150,7 +151,9 @@ export default function TopicRow(props: XnaFeedRowProps) {
                     brief: member,
                   })
                 }}>
-                <Text className="font-[600] text-xs" style={styles.text_desc}>
+                <Text
+                  className="font-[600]"
+                  style={[styles.text_desc, styles.text_xs]}>
                   {member.username}
                 </Text>
               </FixedPressable>
@@ -158,14 +161,14 @@ export default function TopicRow(props: XnaFeedRowProps) {
           </View>
           <View>
             <Text
-              className={classNames('text-base', {
+              className={classNames({
                 'font-[500]': titleStyle === 'emphasized',
               })}
-              style={styles.text}>
+              style={[styles.text, styles.text_base]}>
               {title}
             </Text>
             <View className="mt-2 flex flex-row items-center">
-              <Text className="text-xs" style={styles.text_meta}>
+              <Text style={[styles.text_meta, styles.text_xs]}>
                 {data?.updated_at}
               </Text>
             </View>

@@ -79,8 +79,8 @@ export default function ImgurSettings(props: ScreenProps) {
                 <View>
                   <View>
                     <Text
-                      className={classNames('text-sm pl-2 pb-[2px]')}
-                      style={styles.text}>
+                      className={classNames('pl-2 pb-[2px]')}
+                      style={[styles.text, styles.text_sm]}>
                       Client ID
                     </Text>
                     <View
@@ -93,8 +93,8 @@ export default function ImgurSettings(props: ScreenProps) {
                   </View>
                   <View>
                     <Text
-                      className={classNames('text-sm pl-2 pb-[2px]')}
-                      style={styles.text}>
+                      className={classNames('pl-2 pb-[2px]')}
+                      style={[styles.text, styles.text_sm]}>
                       Account Username
                     </Text>
                     <View
@@ -107,8 +107,8 @@ export default function ImgurSettings(props: ScreenProps) {
                   </View>
                   <View>
                     <Text
-                      className={classNames('text-sm pl-2 pb-[2px]')}
-                      style={styles.text}>
+                      className={classNames('pl-2 pb-[2px]')}
+                      style={[styles.text, styles.text_sm]}>
                       Access Token
                     </Text>
                     <TextInput
@@ -127,7 +127,7 @@ export default function ImgurSettings(props: ScreenProps) {
                     onPress={() => {
                       imgurService.updateCredentials()
                     }}>
-                    <Text className="text-sm" style={styles.btn_primary__text}>
+                    <Text style={[styles.btn_primary__text, styles.text_sm]}>
                       重置
                     </Text>
                   </Pressable>
@@ -168,10 +168,10 @@ export default function ImgurSettings(props: ScreenProps) {
                   </View>
                   <View className="mt-2">
                     <Text
-                      className={classNames('text-sm pl-2 pb-[2px]', {
+                      className={classNames('pl-2 pb-[2px]', {
                         'opacity-0': !clientInfo.clientId,
                       })}
-                      style={styles.text}>
+                      style={[styles.text, styles.text_sm]}>
                       clientId
                     </Text>
                     <TextInput
@@ -205,7 +205,7 @@ export default function ImgurSettings(props: ScreenProps) {
                         `https://api.imgur.com/oauth2/authorize?client_id=${clientInfo.clientId}&response_type=token`,
                       )
                     }}>
-                    <Text className="text-sm" style={styles.btn_primary__text}>
+                    <Text style={[styles.btn_primary__text, styles.text_sm]}>
                       授权
                     </Text>
                   </Pressable>

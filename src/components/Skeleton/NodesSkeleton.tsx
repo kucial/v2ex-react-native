@@ -21,11 +21,11 @@ function NodeSection(props) {
           <InlineText className="font-medium" width={[56, 80]} />
         </View>
         <View className="flex flex-row">
-          <InlineText className="text-xs" width={[56, 80]} />
-          <Text className="px-1 text-xs" style={styles.text_meta}>
+          <InlineText style={styles.text_xs} width={[56, 80]} />
+          <Text className="px-1" style={[styles.text_meta, styles.text_xs]}>
             •
           </Text>
-          <InlineText className="text-xs" width={64} />
+          <InlineText style={styles.text_xs} width={64} />
         </View>
       </View>
       <View className="flex flex-row flex-wrap py-2 px-3">

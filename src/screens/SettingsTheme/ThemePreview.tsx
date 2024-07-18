@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native'
 import type { BottomSheetModal } from '@gorhom/bottom-sheet'
+import Slider from '@react-native-community/slider'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import classNames from 'classnames'
@@ -47,8 +48,10 @@ const options: Array<{
 
 export default function ThemePreview(props: {
   theme: string
+  fontScale: number
   navigation: NativeStackNavigationProp<AppStackParamList>
   setTheme(theme: string): void
+  setFontScale(scale: number): void
   colorScheme: 'dark' | 'light'
   setColorScheme(scheme: 'dark' | 'light'): void
 }) {
@@ -90,7 +93,9 @@ export default function ThemePreview(props: {
         <MaxWidthWrapper>
           <View className="flex flex-row px-3 py-3 items-center">
             <View className="flex-1">
-              <Text className="text-base font-medium" style={styles.text}>
+              <Text
+                className="font-medium"
+                style={[styles.text, styles.text_base]}>
                 外观预览
               </Text>
             </View>
@@ -114,7 +119,7 @@ export default function ThemePreview(props: {
             {Object.values(themes).map((item) => (
               <ThemeOption
                 data={item}
-                theme={theme}
+                styles={styles}
                 key={item.name}
                 colorScheme={props.colorScheme}
                 active={item.name === props.theme}
@@ -125,13 +130,47 @@ export default function ThemePreview(props: {
             ))}
           </View>
 
+          <View className="px-3 pt-3">
+            <View>
+              <Text
+                className="font-medium"
+                style={[styles.text, styles.text_base]}>
+                字体大小
+              </Text>
+            </View>
+            <View>
+              <Slider
+                style={{ width: width - 24, height: 40 }}
+                minimumValue={1}
+                maximumValue={1.2}
+                step={0.05}
+                minimumTrackTintColor={theme.colors.skeleton}
+                maximumTrackTintColor={theme.colors.skeleton}
+                thumbTintColor={theme.colors.switch_thumb}
+                tapToSeek
+                value={props.fontScale}
+                onValueChange={(value) =>
+                  props.setFontScale(Number(value.toFixed(2)))
+                }
+              />
+              <View className="flex flex-row justify-between items-center px-1">
+                <View>
+                  <Text style={[styles.text_desc, styles.text_xs]}>小</Text>
+                </View>
+                <View>
+                  <Text style={[styles.text_desc, styles.text_base]}>大</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
           <SectionHeader title="骨架图" />
           <GroupWapper className="mx-2" innerStyle={styles.layer1}>
             <View className="p-3">
               <View className="flex flex-row mb-1">
                 <Box className="w-[24] h-[24] rounded" />
                 <View className="flex-1 pl-1">
-                  <InlineText width={120} />
+                  <InlineText style={styles.text_xs} width={120} />
                 </View>
               </View>
               <BlockText lines={4} />
@@ -197,7 +236,7 @@ export default function ThemePreview(props: {
                   onPress={(e) => {
                     sheetRef.current?.dismiss()
                   }}>
-                  <Text className="text-base" style={styles.btn_primary__text}>
+                  <Text style={[styles.btn_primary__text, styles.text_base]}>
                     确认
                   </Text>
                 </StyledPressable>
@@ -274,7 +313,7 @@ export default function ThemePreview(props: {
             <View className="px-2">
               <HtmlRender
                 navigation={props.navigation}
-                key={props.theme + props.colorScheme}
+                key={`${props.theme}-${props.colorScheme}-${props.fontScale}`}
                 contentWidth={CONTAINER_WIDTH - 16}
                 source={{
                   html,

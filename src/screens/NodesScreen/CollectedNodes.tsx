@@ -46,7 +46,7 @@ export default function CollectedNodes(props: { data: NodeExtra[] }) {
                     <View className="mr-1">
                       <DocumentIcon size={12} color={theme.colors.text_meta} />
                     </View>
-                    <Text className="text-xs" style={styles.text_meta}>
+                    <Text style={[styles.text_meta, styles.text_xs]}>
                       {node.topics}
                     </Text>
                   </View>

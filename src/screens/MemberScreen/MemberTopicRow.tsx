@@ -44,7 +44,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
                       brief: data.node,
                     })
                   }}>
-                  <Text className="text-xs" style={styles.text_meta}>
+                  <Text style={[styles.text_meta, styles.text_xs]}>
                     {data.node.title}
                   </Text>
                 </Pressable>
@@ -58,18 +58,18 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
           <View className="">
             {data?.title ? (
               <Text
-                className={classNames('text-base', {
+                className={classNames({
                   'font-[500]': props.titleStyle === 'emphasized',
                 })}
-                style={styles.text}>
+                style={[styles.text, styles.text_base]}>
                 {data.title}
               </Text>
             ) : (
-              <BlockText className="text-base" lines={[1, 3]} />
+              <BlockText style={styles.text_base} lines={[1, 3]} />
             )}
 
             <View className="mt-2 flex flex-row">
-              <Text className="text-xs" style={styles.text_meta}>
+              <Text style={[styles.text_meta, styles.text_xs]}>
                 {data?.last_reply_time}
               </Text>
               {data?.last_reply_by && (
@@ -78,7 +78,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
                     •
                   </Text>
                   <View className="flex flex-row items-center">
-                    <Text className="text-xs" style={styles.text_meta}>
+                    <Text style={[styles.text_meta, styles.text_xs]}>
                       最后回复来自
                     </Text>
                     <Pressable
@@ -90,8 +90,8 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
                         })
                       }}>
                       <Text
-                        className="text-xs font-[600]"
-                        style={styles.text_meta}>
+                        className="font-[600]"
+                        style={[styles.text_meta, styles.text_xs]}>
                         {data.last_reply_by}
                       </Text>
                     </Pressable>
@@ -103,12 +103,16 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
         </View>
         <View className="w-[80px] flex flex-row justify-end pr-4">
           {data && !!data.replies && (
-            <View className="rounded-full text-xs px-2" style={styles.tag__bg}>
+            <View className="rounded-full px-2" style={[styles.tag__bg]}>
               <Text style={styles.tag__text}>{data.replies}</Text>
             </View>
           )}
           {!data && (
-            <InlineBox className="rounded-full text-xs px-2" width={[26, 36]} />
+            <InlineBox
+              className="rounded-full px-2"
+              style={styles.text_xs}
+              width={[26, 36]}
+            />
           )}
         </View>
         {props.viewedStatus === 'has_update' && (

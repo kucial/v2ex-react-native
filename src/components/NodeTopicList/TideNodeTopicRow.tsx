@@ -37,14 +37,14 @@ function NodeTopicRow(props: NodeFeedRowProps) {
             <BlockText
               randomWidth
               lines={[1, 2]}
-              className="text-[16px] leading-[22px]"></BlockText>
+              style={styles.text_base}></BlockText>
             <View className="mt-1">
-              <InlineText width={[80, 120]} className="text-xs"></InlineText>
+              <InlineText width={[80, 120]} style={styles.text_xs}></InlineText>
             </View>
           </View>
           <View className="flex flex-row justify-end pl-1 pr-2">
             <Box className="rounded-full px-2">
-              <InlineText width={8} className="text-xs" />
+              <InlineText width={8} style={styles.text_xs} />
             </Box>
           </View>
         </View>
@@ -95,32 +95,38 @@ function NodeTopicRow(props: NodeFeedRowProps) {
             props.viewedStatus === 'viewed' && 'opacity-70',
           )}>
           <Text
-            className={classNames('text-base leading-[22px]', {
+            className={classNames({
               'font-[600]': props.titleStyle === 'emphasized',
             })}
-            style={styles.text}>
+            style={[styles.text, styles.text_base]}>
             {data.title}
           </Text>
           <View className="mt-1 flex flex-row">
-            <Text className="text-xs font-[600]" style={styles.text_desc}>
+            <Text
+              className="font-[600]"
+              style={[styles.text_desc, styles.text_xs]}>
               {member.username}
             </Text>
             {!!data.characters && (
               <>
-                <Text className="text-xs px-1" style={styles.text_meta}>
+                <Text
+                  className="px-1"
+                  style={[styles.text_meta, styles.text_xs]}>
                   ·
                 </Text>
-                <Text className="text-xs" style={styles.text_meta}>
+                <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.characters} 字符
                 </Text>
               </>
             )}
             {!!data.clicks && (
               <>
-                <Text className="text-xs px-1" style={styles.text_meta}>
+                <Text
+                  className="px-1"
+                  style={[styles.text_meta, styles.text_xs]}>
                   ·
                 </Text>
-                <Text className="text-xs" style={styles.text_meta}>
+                <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.clicks} 次点击
                 </Text>
               </>
@@ -131,9 +137,7 @@ function NodeTopicRow(props: NodeFeedRowProps) {
         <View className="flex flex-row justify-end pl-1 pr-2">
           {!!replies && (
             <View className="rounded-full px-1" style={styles.tag__bg}>
-              <Text className="text-xs" style={styles.tag__text}>
-                {replies}
-              </Text>
+              <Text style={[styles.tag__text, styles.text_xs]}>{replies}</Text>
             </View>
           )}
         </View>

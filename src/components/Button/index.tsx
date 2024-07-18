@@ -53,11 +53,7 @@ function Button(props: {
     if (props.children) {
       return props.children
     }
-    return (
-      <Text className="text-base" style={textStyle}>
-        {props.label}
-      </Text>
-    )
+    return <Text style={[styles.text_base, textStyle]}>{props.label}</Text>
   }, [props.children, props.label, styles, variant])
 
   const android_ripple = useMemo(() => {

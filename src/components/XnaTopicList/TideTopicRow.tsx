@@ -32,17 +32,14 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
             <View className="pl-3"></View>
           )}
           <View className="flex-1 pt-1 pb-2">
-            <BlockText
-              randomWidth
-              lines={[1, 2]}
-              className="text-[16px] leading-[22px]"></BlockText>
+            <BlockText lines={[1, 2]} style={styles.text_base}></BlockText>
             <View className="mt-1">
-              <InlineText width={[80, 120]} className="text-xs"></InlineText>
+              <InlineText width={[80, 120]} style={styles.text_xs}></InlineText>
             </View>
           </View>
           <View className="flex flex-row justify-end pl-1 pr-2">
             <Box className="rounded-full px-2">
-              <InlineText width={8} className="text-xs" />
+              <InlineText width={8} style={styles.text_xs} />
             </Box>
           </View>
         </View>
@@ -101,10 +98,10 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
             props.viewedStatus === 'viewed' && 'opacity-70',
           )}>
           <Text
-            className={classNames('text-[16px] leading-[22px]', {
+            className={classNames({
               'font-[500]': props.titleStyle === 'emphasized',
             })}
-            style={styles.text}>
+            style={[styles.text, styles.text_base]}>
             {title}
           </Text>
           <View className="mt-1 flex flex-row flex-wrap items-center">
@@ -128,12 +125,12 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
                   })
                 }
               }}>
-              <Text className="text-xs" style={styles.text_desc}>
+              <Text style={styles.text_xs} style={styles.text_desc}>
                 {source.name}
               </Text>
             </FixedPressable>
 
-            <Text className="text-xs" style={styles.text_meta}>
+            <Text style={styles.text_xs} style={styles.text_meta}>
               {data?.updated_at}
             </Text>
           </View>

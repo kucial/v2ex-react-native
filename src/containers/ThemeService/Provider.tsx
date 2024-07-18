@@ -7,20 +7,22 @@ import { useColorScheme } from './hooks'
 
 export const ThemeProvider = (props: {
   theme?: string
+  fontScale?: number
   colorScheme?: 'light' | 'dark'
   children: ReactNode
 }) => {
   const { colorScheme } = useColorScheme()
   const {
-    data: { theme: themeName },
+    data: { theme: themeName, fontScale: defaultFontScale },
   } = useAppSettings()
 
   const activeTheme = props.theme ?? themeName
   const activeScheme = props.colorScheme || colorScheme
+  const fontScale = props.fontScale ?? defaultFontScale
 
   const service = useMemo(
-    () => getThemeService(activeTheme, activeScheme),
-    [activeScheme, activeTheme],
+    () => getThemeService(activeTheme, activeScheme, fontScale),
+    [activeScheme, activeTheme, fontScale],
   )
 
   return (

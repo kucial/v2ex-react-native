@@ -53,10 +53,10 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
         )}
         <View className={classNames('flex-1 pt-1 pb-2')}>
           <Text
-            className={classNames('text-base leading-[22px]', {
+            className={classNames({
               'font-[500]': props.titleStyle === 'emphasized',
             })}
-            style={styles.text}>
+            style={[styles.text, styles.text_base]}>
             {title}
           </Text>
           <View className="mt-1 flex flex-row flex-wrap items-center">
@@ -70,14 +70,14 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
                   brief: node,
                 })
               }}>
-              <Text className="text-xs" style={styles.text_desc}>
+              <Text style={[styles.text_desc, styles.text_xs]}>
                 {node.title}
               </Text>
             </FixedPressable>
-            <Text className="text-xs mr-2" style={styles.text_meta}>
+            <Text className="mr-2" style={[styles.text_meta, styles.text_xs]}>
               上次查看
             </Text>
-            <Text className="text-xs" style={styles.text_meta}>
+            <Text style={[styles.text_meta, styles.text_xs]}>
               <TimeAgo date={data.viewed_at} />
             </Text>
           </View>

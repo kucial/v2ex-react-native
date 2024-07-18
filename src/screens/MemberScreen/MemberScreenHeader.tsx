@@ -357,17 +357,19 @@ export default function MemberScreenHeader(props: {
             </View>
             <View className="px-3 pb-2">
               <View className="flex-1 pb-2">
-                <Text className="text-lg font-bold" style={styles.text_primary}>
+                <Text
+                  className="font-bold"
+                  style={[styles.text_primary, styles.text_lg]}>
                   {username}
                 </Text>
                 {data?.tagline && (
                   <View>
-                    <Text className="text-sm" style={styles.text}>
+                    <Text style={[styles.text, styles.text_sm]}>
                       {data.tagline}
                     </Text>
                   </View>
                 )}
-                <Text className="text-sm" style={styles.text_meta}>
+                <Text style={[styles.text_meta, styles.text_sm]}>
                   {data?.created
                     ? `${localTime(data.created * 1000)} 加入`
                     : ''}

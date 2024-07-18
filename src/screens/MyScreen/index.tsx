@@ -95,12 +95,12 @@ export default function MyScreen({ navigation }: ScreenProps) {
         />
         <View className="flex-1">
           <Text
-            className="text-base font-semibold mt-[-1px] mb-[1px]"
-            style={styles.text}>
+            className="font-semibold mt-[-1px] mb-[1px]"
+            style={[styles.text, styles.text_base]}>
             {currentUser.username}
           </Text>
           <View>
-            <Text className="text-xs" style={styles.text_meta}>
+            <Text style={[styles.text_meta, styles.text_xs]}>
               V2EX 第 {currentUser.id} 号会员
             </Text>
           </View>
@@ -134,7 +134,9 @@ export default function MyScreen({ navigation }: ScreenProps) {
         }}>
         <Box key={authStatus} className="w-[40px] h-[40px] mr-3" />
         <View className="flex-1">
-          <Text className="text-base font-semibold mb-1" style={styles.text}>
+          <Text
+            className="font-semibold mb-1"
+            style={[styles.text, styles.text_base]}>
             未登录
           </Text>
         </View>
@@ -146,10 +148,11 @@ export default function MyScreen({ navigation }: ScreenProps) {
         <Box className="w-[40px] h-[40px] mr-3" />
         <View className="flex-1">
           <InlineText
-            className="text-base font-semibold mb-1"
+            className="font-semibold mb-1"
+            style={styles.text_base}
             width={[120, 180]}></InlineText>
           <View>
-            <InlineText className="text-xs" width={[100, 140]}></InlineText>
+            <InlineText style={styles.text_xs} width={[100, 140]}></InlineText>
           </View>
         </View>
       </View>

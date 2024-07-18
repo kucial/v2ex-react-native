@@ -37,8 +37,8 @@ export default function Landing(props: LandingProps) {
             </View>
             <View className="flex-1 px-1">
               <Text
-                className="text-center font-medium text-base"
-                style={styles.text}
+                className="text-center font-medium"
+                style={[styles.text, styles.text_base]}
                 numberOfLines={1}
                 ellipsizeMode="tail">
                 Imgur 图床
@@ -46,15 +46,6 @@ export default function Landing(props: LandingProps) {
             </View>
             <View className="w-[56px] items-end">
               {tabIndex === 0 && <UploadButton tintColor={theme.colors.text} />}
-              {/* {!!props.selected.length && (
-                <Pressable
-                  className="h-[44px] items-center justify-center px-1 rounded-full active:bg-neutral-100"
-                  onPress={props.onSubmit}>
-                  <Text className="text-neutral-900 font-medium text-base text-tracking-whider">
-                    选择
-                  </Text>
-                </Pressable>
-              )} */}
             </View>
           </View>
           <View className="px-4 pt-1 pb-3 relative">

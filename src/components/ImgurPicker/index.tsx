@@ -63,7 +63,7 @@ export default function ImgurPicker(props: ImgurPickerProps) {
         className="flex flex-1 p-8 items-center justify-center w-full"
         style={props.style}>
         <View className="my-5">
-          <Text className="text-[16px]" style={styles.text}>
+          <Text style={[styles.text, styles.text_base]}>
             Imgur 服务还未设置
           </Text>
         </View>

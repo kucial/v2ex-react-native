@@ -26,14 +26,18 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
           </View>
           <View className="flex-1 pl-2">
             <View className="">
-              <BlockText className="text-base" lines={[1, 3]}></BlockText>
+              <BlockText style={styles.text_base} lines={[1, 3]}></BlockText>
               <View className="mt-2 flex flex-row flex-wrap items-center">
-                <BlockText className="text-xs" lines={2} />
+                <BlockText style={styles.text_xs} lines={2} />
               </View>
             </View>
           </View>
           <View className="w-[64px] flex flex-row justify-end pr-1">
-            <InlineBox className="rounded-full text-xs px-2" width={[26, 36]} />
+            <InlineBox
+              className="rounded-full px-2"
+              style={styles.text_xs}
+              width={[26, 36]}
+            />
           </View>
         </View>
       </MaxWidthWrapper>
@@ -75,10 +79,10 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
         <View className="flex-1 pl-2">
           <View className="">
             <Text
-              className={classNames('text-base', {
+              className={classNames({
                 'font-[500]': props.titleStyle === 'emphasized',
               })}
-              style={styles.text}>
+              style={[styles.text, styles.text_base]}>
               {data.title}
             </Text>
             <View className="mt-2 flex flex-row flex-wrap items-center">
@@ -92,7 +96,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                     brief: data.node,
                   })
                 }}>
-                <Text className="text-xs" style={styles.text_meta}>
+                <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.node.title}
                 </Text>
               </Pressable>
@@ -107,7 +111,9 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                     username: data.member.username,
                   })
                 }}>
-                <Text className="text-xs font-[600]" style={styles.text_desc}>
+                <Text
+                  className="font-[600]"
+                  style={[styles.text_desc, styles.text_xs]}>
                   {data.member.username}
                 </Text>
               </Pressable>
@@ -115,7 +121,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                 •
               </Text>
 
-              <Text className="text-xs" style={styles.text_meta}>
+              <Text style={[styles.text_meta, styles.text_xs]}>
                 {data?.last_reply_time}
               </Text>
               {data?.last_reply_by && (
@@ -124,7 +130,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                     •
                   </Text>
                   <View className="flex flex-row items-center">
-                    <Text className="text-xs" style={styles.text_meta}>
+                    <Text style={[styles.text_meta, styles.text_xs]}>
                       最后回复来自
                     </Text>
                     <Pressable
@@ -137,8 +143,8 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                         })
                       }}>
                       <Text
-                        className="text-xs font-[600]"
-                        style={styles.text_desc}>
+                        className="font-[600]"
+                        style={[styles.text_desc, styles.text_xs]}>
                         {data.last_reply_by}
                       </Text>
                     </Pressable>
@@ -150,8 +156,10 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
         </View>
         <View className="w-[64px] flex flex-row justify-end pr-1">
           {data && !!data.replies && (
-            <View className="rounded-full text-xs px-2" style={styles.tag__bg}>
-              <Text style={styles.tag__text}>{data.replies}</Text>
+            <View className="rounded-full px-2" style={styles.tag__bg}>
+              <Text style={[styles.tag__text, styles.text_xs]}>
+                {data.replies}
+              </Text>
             </View>
           )}
         </View>

@@ -37,36 +37,38 @@ const TideTopicRowDemo = (props: DemoRowProps) => {
         )}>
         <View>
           <Text
-            className={classNames('text-base leading-[22px]', {
+            className={classNames({
               'font-[500]': props.titleStyle === 'emphasized',
             })}
-            style={styles.text}>
+            style={[styles.text, styles.text_base]}>
             {title}
           </Text>
           <View className="mt-1 flex flex-row items-center">
             <View
               className="py-[2px] px-[6px] mr-2 rounded active:opacity-60"
               style={styles.layer2}>
-              <Text className="text-xs" style={styles.text_desc}>
+              <Text style={[styles.text_desc, styles.text_xs]}>
                 {node.title}
               </Text>
             </View>
-            <Text className="text-xs" style={styles.text_meta}>
+            <Text style={[styles.text_meta, styles.text_xs]}>
               {last_reply_time}
             </Text>
             {showLastReplyMember && (
               <>
-                <Text className="text-xs px-1" style={styles.text_meta}>
+                <Text
+                  className="px-1"
+                  style={[styles.text_meta, styles.text_xs]}>
                   •
                 </Text>
                 <View className="flex flex-row items-center">
-                  <Text className="text-xs" style={styles.text_meta}>
+                  <Text style={[styles.text_meta, styles.text_xs]}>
                     最后回复来自
                   </Text>
                   <View className="px-1 active:opacity-60">
                     <Text
-                      className="text-xs font-[600]"
-                      style={styles.text_desc}>
+                      className="font-[600]"
+                      style={[styles.text_desc, styles.text_xs]}>
                       {last_reply_by}
                     </Text>
                   </View>
@@ -78,9 +80,7 @@ const TideTopicRowDemo = (props: DemoRowProps) => {
       </View>
       <View className="flex flex-row justify-end pl-1 pr-2">
         <View className="rounded-full px-1" style={styles.tag__bg}>
-          <Text className="text-xs" style={styles.tag__text}>
-            {replies}
-          </Text>
+          <Text style={[styles.tag__text, styles.text_xs]}>{replies}</Text>
         </View>
       </View>
       {viewedStatus === 'has_update' && (

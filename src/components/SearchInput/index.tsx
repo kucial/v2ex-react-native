@@ -61,10 +61,10 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
     <View
       className="flex flex-row flex-1 px-2 items-center"
       style={props.style}>
-      <View className="relative flex-1 py-2">
+      <View className="relative flex-1 py-1">
         <TextInput
-          className="rounded-lg flex-1 px-2 h-[36px] text-[16px] leading-[20px]"
-          style={[styles.text, props.style || styles.layer2]}
+          className="rounded-lg flex-1 px-2 h-[36px]"
+          style={[styles.text, styles.text_base, props.style || styles.layer2]}
           selectionColor={theme.colors.primary}
           placeholderTextColor={theme.colors.text_placeholder}
           ref={searchInput}
@@ -97,7 +97,7 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
           onPress={() => {
             service.submit()
           }}>
-          <Text className="text-neutral-900 font-medium tracking-wide text-md">
+          <Text className="text-neutral-900 font-medium tracking-wide">
             搜索
           </Text>
         </Pressable>

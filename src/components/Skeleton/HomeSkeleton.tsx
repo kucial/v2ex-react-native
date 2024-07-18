@@ -13,19 +13,19 @@ export default function HomeSkeleton() {
         className="h-[46px] flex flex-row overflow-hidden"
         style={styles.layer1}>
         <View className="px-[12px] flex flex-row items-center justify-center">
-          <InlineText className="text-base" width={[48, 64]} />
+          <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
         <View className="px-[12px] flex flex-row items-center justify-center">
-          <InlineText className="text-base" width={[48, 64]} />
+          <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
         <View className="px-[12px] flex flex-row items-center justify-center">
-          <InlineText className="text-base" width={[48, 64]} />
+          <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
         <View className="px-[12px] flex flex-row items-center justify-center">
-          <InlineText className="text-base" width={[48, 64]} />
+          <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
         <View className="px-[12px] flex flex-row items-center justify-center">
-          <InlineText className="text-base" width={[48, 64]} />
+          <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
       </View>
       <View style={[styles.border_t_light]}>

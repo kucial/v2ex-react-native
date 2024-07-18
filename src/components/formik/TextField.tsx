@@ -44,15 +44,15 @@ function TextField({
       {label !== false && (
         <View className="flex flex-row">
           <Text
-            className={classNames('text-xs pl-2 pb-[2px]', {
+            className={classNames('pl-2 pb-[2px]', {
               'opacity-0': !field.value,
             })}
-            style={styles.text}>
+            style={[styles.text, styles.text_xs]}>
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className="text-xs ml-2" style={styles.text_danger}>
+            <Text className="ml-2" style={[styles.text_danger, styles.text_xs]}>
               {meta.error}
             </Text>
           )}
@@ -61,7 +61,7 @@ function TextField({
       <View className="relative">
         <Component
           className={classNames(
-            'px-2 rounded-md text-base',
+            'px-2 rounded-md',
             Platform.select({
               android: 'min-h-[44px] align-top py-2',
               ios: 'min-h-[44px] py-2',
@@ -69,6 +69,7 @@ function TextField({
           )}
           style={[
             styles.text,
+            styles.text_base,
             styles.input__bg,
             inputStyle,
             !props.multiline && {

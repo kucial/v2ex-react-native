@@ -129,9 +129,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 )}
                 style={[styles.border_b]}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
-                    列表布局
-                  </Text>
+                  <Text style={[styles.text, styles.text_base]}>列表布局</Text>
                 </View>
                 <View className="w-[140] mr-1 px-2">
                   <SegmentedControl
@@ -161,9 +159,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 )}
                 style={[styles.border_b]}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
-                    标题样式
-                  </Text>
+                  <Text style={[styles.text, styles.text_base]}>标题样式</Text>
                 </View>
                 <View className="w-[140] mr-1 px-2">
                   <SegmentedControl
@@ -193,9 +189,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 )}
                 style={styles.border_b}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
-                    显示头像
-                  </Text>
+                  <Text style={[styles.text, styles.text_base]}>显示头像</Text>
                 </View>
                 <View className="mr-2 px-2">
                   <MySwitch
@@ -217,7 +211,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 )}
                 style={styles.border_b}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
+                  <Text style={[styles.text, styles.text_base]}>
                     显示最后回复用户
                   </Text>
                 </View>
@@ -241,9 +235,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 )}
                 style={styles.border_b}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
-                    已读提示
-                  </Text>
+                  <Text style={[styles.text, styles.text_base]}>已读提示</Text>
                 </View>
                 <View className="mr-2 px-2">
                   <MySwitch
@@ -273,7 +265,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   'min-h-[52px] flex flex-row items-center',
                 )}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
+                  <Text style={[styles.text, styles.text_base]}>
                     帖子新回复提示
                   </Text>
                 </View>
@@ -312,9 +304,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 )}
                 style={styles.border_b}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
-                    自动刷新
-                  </Text>
+                  <Text style={[styles.text, styles.text_base]}>自动刷新</Text>
                 </View>
                 <View className="mr-2 px-2">
                   <MySwitch
@@ -351,9 +341,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 )}
                 style={styles.border_b}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
-                    刷新间隔
-                  </Text>
+                  <Text style={[styles.text, styles.text_base]}>刷新间隔</Text>
                 </View>
                 <View className="mr-2 px-2">
                   <Text style={styles.text_desc}>
@@ -371,9 +359,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   'min-h-[52px] flex flex-row items-center',
                 )}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
-                    震动反馈
-                  </Text>
+                  <Text style={[styles.text, styles.text_base]}>震动反馈</Text>
                 </View>
                 <View className="mr-2 px-2">
                   <MySwitch
@@ -398,9 +384,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 )}
                 style={styles.border_b}>
                 <View className="flex-1">
-                  <Text className="text-base" style={styles.text}>
-                    搜索服务
-                  </Text>
+                  <Text style={[styles.text, styles.text_base]}>搜索服务</Text>
                 </View>
                 <View className="w-[140] mr-1 px-2">
                   <SegmentedControl
@@ -442,11 +426,11 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   'min-h-[52px] flex flex-row items-center',
                 )}>
                 <View className="flex-1 flex flex-row items-center">
-                  <Text className="text-base" style={styles.text}>
+                  <Text style={[styles.text, styles.text_base]}>
                     本地历史保留
                   </Text>
                   <View className="ml-1 mt-1">
-                    <Text className="text-xs" style={styles.text_desc}>
+                    <Text style={[styles.text_desc, styles.text_xs]}>
                       自动清理过往记录
                     </Text>
                   </View>
@@ -475,11 +459,11 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   'min-h-[52px] flex flex-row items-center',
                 )}>
                 <View className="flex-1 flex flex-row items-center">
-                  <Text className="text-base" style={styles.text}>
+                  <Text style={[styles.text, styles.text_base]}>
                     启用平板布局
                   </Text>
                   <View className="ml-1 mt-1">
-                    <Text className="text-xs" style={styles.text_desc}>
+                    <Text style={[styles.text_desc, styles.text_xs]}>
                       窗口尺寸满足条件时生效
                     </Text>
                   </View>

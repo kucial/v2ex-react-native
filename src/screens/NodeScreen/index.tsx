@@ -60,10 +60,10 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
     return {
       source: { html: node.header, baseUrl: 'https://v2ex.com' },
       baseStyle: {
-        fontSize: 14,
+        fontSize: styles.text_sm.fontSize,
       },
     }
-  }, [node])
+  }, [node, styles])
 
   const handleCollectToggle = usePressBreadcrumb(
     composeAuthedNavigation(
@@ -135,17 +135,21 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
             <View className="flex-1">
               <View className="flex flex-row justify-between items-center mb-[6px]">
                 <View>
-                  <Text className="text-lg font-semibold" style={styles.text}>
+                  <Text
+                    className="font-semibold"
+                    style={[styles.text, styles.text_lg]}>
                     {node.title}
                   </Text>
                 </View>
                 <View className="flex flex-row pr-2">
-                  <Text className="text-sm mr-1" style={styles.text_meta}>
+                  <Text
+                    className="mr-1"
+                    style={[styles.text_meta, styles.text_sm]}>
                     主题总数
                   </Text>
                   <Text
-                    className="text-sm font-medium"
-                    style={styles.text_meta}>
+                    className="font-medium"
+                    style={[styles.text_meta, styles.text_sm]}>
                     {node.topics || '--'}
                   </Text>
                 </View>

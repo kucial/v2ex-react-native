@@ -27,8 +27,8 @@ export default function AlbumView(props) {
           </View>
           <View className="flex-1 px-1">
             <Text
-              className="text-center font-medium text-base"
-              style={styles.text}
+              className="text-center font-medium"
+              style={[styles.text, styles.text_base]}
               numberOfLines={1}
               ellipsizeMode="tail">
               {album.title}

@@ -7,6 +7,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showHasNewReply: true,
 
   theme: 'r2v',
+  fontScale: 1,
   // themeColor: '', // 主题强调色
   feedLayout: 'normal', // normal | tide
   feedShowAvatar: true,
