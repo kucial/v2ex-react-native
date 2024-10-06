@@ -1,6 +1,5 @@
 import { useContext, useEffect } from 'react'
-import React from 'react'
-import { Platform, Text } from 'react-native'
+import { Text } from 'react-native'
 import {
   CustomTextualRenderer,
   getNativePropsForTNode,
@@ -33,10 +32,6 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
     }
   }, [url])
 
-  if (Platform.OS == 'ios') {
-    return <Text {...renderProps} url={url} />
-  }
-
   return (
     <Text
       {...renderProps}
@@ -46,6 +41,7 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
           url,
         })
       }}
+      suppressHighlighting
     />
   )
 }

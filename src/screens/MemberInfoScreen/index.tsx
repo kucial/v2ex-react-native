@@ -1,8 +1,5 @@
 import { ScrollView, Text, View } from 'react-native'
-import { SelectableText } from '@alentoma/react-native-selectable-text'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import * as Clipboard from 'expo-clipboard'
-import * as Sentry from 'sentry-expo'
 import useSWR from 'swr'
 
 import { useAlertService } from '@/containers/AlertService'
@@ -60,36 +57,7 @@ function Field({ label, value }: { label: string; value: string }) {
         <Text style={styles.text}>{label}</Text>
       </View>
       <View className="py-2 pr-4 flex flex-row items-center flex-1">
-        <SelectableText
-          style={[
-            styles.text,
-            {
-              lineHeight: 22,
-              padding: 10,
-              margin: -10,
-            },
-          ]}
-          prependToChild={null}
-          menuItems={['复制']}
-          onUrlPress={() => {
-            // TODO....
-          }}
-          onSelection={async (payload) => {
-            const { eventType, content } = payload
-            switch (eventType) {
-              case `R_复制`:
-                try {
-                  await Clipboard.setStringAsync(content)
-                } catch (err) {
-                  Sentry.Native.captureException(err)
-                }
-                break
-              default:
-                console.log(payload)
-            }
-          }}
-          value={value}
-        />
+        <Text selectable>{value}</Text>
       </View>
     </View>
   )

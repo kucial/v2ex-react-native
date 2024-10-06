@@ -24,6 +24,9 @@
       "ios": {
         "distribution": "internal",
         "credentialsSource": "local"
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
@@ -38,9 +41,6 @@
       },
       "ios": {
         "image": "macos-ventura-13.6-xcode-15.1"
-      },
-      "android": {
-        "buildType": "apk"
       }
     }
   },

@@ -32,5 +32,9 @@ describe('content utils', () => {
         ['U3BvdGlmeUNhdA==', 'SpotifyCat'],
       ])
     })
+    it('sample 06', () => {
+      const text = '测试一下这个5oiR5piv6LCB，就看行不行'
+      expect(extractBase64Decoded(text)).toEqual([['5oiR5piv6LCB', '我是谁']])
+    })
   })
 })

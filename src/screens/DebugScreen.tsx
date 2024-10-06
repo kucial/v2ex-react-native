@@ -49,7 +49,7 @@ export default function DebugScreen(props) {
         <HtmlRender
           contentWidth={Dimensions.get('window').width}
           source={{
-            html: '<div><p>这是一段测试文本</p><img src="https://www.kongkx.com/sites/default/files/inline-images/Fantom.png" /></div>',
+            html: `<div><p>这是一段测试文本 <a href="https://www.kongkx.com">TEST LINK</a> Inline test</p><img src="https://www.kongkx.com/sites/default/files/inline-images/Fantom.png" /></div>`,
           }}
           navigation={props.navigation}
         />

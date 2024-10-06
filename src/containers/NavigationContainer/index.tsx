@@ -13,8 +13,8 @@ import {
   Route,
   useNavigationContainerRef,
 } from '@react-navigation/native'
+import * as Sentry from '@sentry/react-native'
 import * as Linking from 'expo-linking'
-import * as Sentry from 'sentry-expo'
 
 import { useTheme } from '../ThemeService'
 
@@ -26,7 +26,11 @@ const myGetStateFromPath = (path, options) => {
   return state
 }
 const linking: LinkingOptions<AppStackParamList> = {
-  prefixes: [Linking.createURL('/v2ex.com'), Linking.createURL('/*.v2ex.com')],
+  prefixes: [
+    Linking.createURL('/v2ex.com'),
+    Linking.createURL('/*.v2ex.com'),
+    'https://*.v2ex.com',
+  ],
   config: {
     initialRouteName: 'main',
     screens: {
@@ -61,7 +65,7 @@ export default function WrappedNavigationContainer(props: {
         prev: previousRoute,
         current: currentRoute,
       }
-      Sentry.Native.addBreadcrumb({
+      Sentry.addBreadcrumb({
         level: 'info',
         category: 'navigation',
         message: `[${previousRoute.name}] ==> [${currentRoute.name}]`,

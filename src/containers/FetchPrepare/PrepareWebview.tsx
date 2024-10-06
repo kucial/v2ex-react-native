@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { Platform, View, ViewStyle } from 'react-native'
 import WebView from 'react-native-webview'
-import * as Sentry from 'sentry-expo'
+import * as Sentry from '@sentry/react-native'
 
 import {
   BASE_URL,
@@ -52,7 +52,7 @@ export default function PrepareWebview(props: {
     }
     const error = new Error(e.nativeEvent.description)
     if (e.nativeEvent.description !== 'The request timed out.') {
-      Sentry.Native.captureException(error)
+      Sentry.captureException(error)
     }
     cfState.current = 'error'
     props.onUpdate('error', error)
@@ -105,7 +105,7 @@ export default function PrepareWebview(props: {
           }
 
           const duration = Date.now() - timerRef.current
-          Sentry.Native.addBreadcrumb({
+          Sentry.addBreadcrumb({
             level: 'info',
             category: 'fetch-prepare',
             message: 'fetch-prepare-webview load duration: ',

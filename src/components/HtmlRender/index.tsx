@@ -1,14 +1,30 @@
-import { useCallback, useMemo, useRef } from 'react'
-import { Alert, Linking, Platform } from 'react-native'
-import BaseRender, { RenderHTMLProps } from 'react-native-render-html'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import {
+  Alert,
+  Linking,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
+import BaseRender, {
+  HTMLSourceInline,
+  RenderHTMLProps,
+} from 'react-native-render-html'
 import WebView from 'react-native-webview'
 import { useActionSheet } from '@expo/react-native-action-sheet'
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import * as Sentry from '@sentry/react-native'
+import Color from 'color'
 import { BarCodeScannerResult } from 'expo-barcode-scanner'
 import * as Clipboard from 'expo-clipboard'
 import * as WebBrowser from 'expo-web-browser'
-import * as Sentry from 'sentry-expo'
+// import { convert as htmlToMarkdown } from 'react-native-html-to-markdown'
+import htmlToMarkdown from 'html-to-md'
+import * as ContextMenu from 'zeego/context-menu'
 
 import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
@@ -23,6 +39,7 @@ import {
   isURL,
 } from '@/utils/url'
 
+import MyBottomSheetModal from '../MyBottomSheetModal'
 import AnchorRenderer from './AnchorRenderer'
 import { RenderContext } from './context'
 import HorizontalScrollRenderer from './HorizontalScrollRenderer'
@@ -30,24 +47,20 @@ import ImageRenderer from './ImageRenderer'
 import type { ImageViewingService } from './ImageViewingService'
 import ImageViewingServiceProvider from './ImageViewingService'
 import { atomOne } from './styles'
-import TextRenderer from './TextRenderer'
 
 const renderers = {
   img: ImageRenderer,
   iframe: IframeRenderer,
-  _TEXT_: TextRenderer,
   a: AnchorRenderer,
   pre: HorizontalScrollRenderer,
 }
+const snapPoints = ['90%']
 
 const customHTMLElementModels = {
   iframe: iframeModel,
 }
 
 const defaultTextProps = { selectable: false }
-
-const MENU_ITEM_COPY = '复制'
-const MENU_ITEM_BASE64_DECODE = 'Base64 解码'
 
 function HtmlRender({
   tagsStyles,
@@ -57,12 +70,14 @@ function HtmlRender({
   ...props
 }: RenderHTMLProps & {
   navigation: NativeStackNavigationProp<AppStackParamList>
+  source: HTMLSourceInline
   onOpenMemberInfo?: (data) => void
 }) {
   const { theme, colorScheme, styles: themeStyles } = useTheme()
   const alert = useAlertService()
   const viewingRef = useRef<ImageViewingService>(null)
-  const { showActionSheetWithOptions } = useActionSheet()
+  const selectModalRef = useRef<BottomSheetModal>()
+  const base64ModalRef = useRef<BottomSheetModal>()
 
   const renderersProps = useMemo(
     () => ({
@@ -77,14 +92,17 @@ function HtmlRender({
         tableRenderers: true,
       },
       ul: {
-        markerBoxStyle: { paddingTop: 6 },
+        markerBoxStyle: { paddingRight: 4 },
       },
       ol: {
-        markerBoxStyle: { paddingTop: 6 },
+        markerBoxStyle: { paddingRight: 2 },
       },
     }),
     [themeStyles],
   )
+
+  const [textToSelect, setTextToSelect] = useState('')
+  const [base64Options, setBase64Options] = useState([])
 
   const styles = useMemo(() => {
     const baseFontSize = (baseStyle?.fontSize ||
@@ -143,7 +161,6 @@ function HtmlRender({
         fontSize: 14,
       },
       ul: {
-        paddingLeft: 12,
         marginTop: 0,
       },
       p: {
@@ -170,7 +187,6 @@ function HtmlRender({
 
   const renderContext = useMemo(
     () => ({
-      menuItems: [MENU_ITEM_COPY, MENU_ITEM_BASE64_DECODE],
       handleUrlPress: (payload: {
         interaction: 'default' | 'preview' | 'default'
         url: string
@@ -208,93 +224,12 @@ function HtmlRender({
             presentationStyle:
               WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
           }).catch((err) => {
-            Sentry.Native.captureException(err)
+            Sentry.captureException(err)
           })
         } else {
           navigation.push('browser', {
             url,
           })
-        }
-      },
-      handleSelection: async (payload: {
-        eventType: string
-        content: string
-      }) => {
-        const { eventType, content } = payload
-        switch (eventType) {
-          case `R_${MENU_ITEM_COPY}`:
-          case MENU_ITEM_COPY:
-            try {
-              await Clipboard.setStringAsync(content)
-              alert.show({
-                type: 'success',
-                message: '已复制到粘贴板',
-                duration: 500,
-              })
-            } catch (err) {
-              Sentry.Native.captureException(err)
-            }
-            break
-          case `R_${MENU_ITEM_BASE64_DECODE}`:
-          case MENU_ITEM_BASE64_DECODE:
-            try {
-              const result = extractBase64Decoded(content)
-              const copyAndNotice = async (text) => {
-                await Clipboard.setStringAsync(text)
-                alert.show({
-                  type: 'success',
-                  message: '已复制到粘贴板: ' + text,
-                })
-              }
-              if (result && result.length) {
-                if (result.length == 1) {
-                  const item = result[0]
-                  copyAndNotice(item[1])
-                } else {
-                  showActionSheetWithOptions(
-                    {
-                      title: '请选择需要复制的词条',
-                      options: [
-                        ...result.map(
-                          ([origin, decoded]) =>
-                            `[${getMaxLength(origin, 4)}] ${decoded}`,
-                        ),
-                        '取消',
-                      ],
-                      cancelButtonIndex: result.length,
-                      tintColor: theme.colors.primary,
-                      userInterfaceStyle: colorScheme,
-                      containerStyle: themeStyles.layer1,
-                    },
-                    async (selectedIndex) => {
-                      const item = result[selectedIndex]
-                      if (item) {
-                        copyAndNotice(item[1])
-                      }
-                    },
-                  )
-                }
-              } else {
-                alert.show({
-                  type: 'info',
-                  message: '未找到 base64 字符串',
-                })
-              }
-            } catch (err) {
-              alert.show({
-                type: 'error',
-                message: '未识别到有效内容',
-              })
-              Sentry.Native.addBreadcrumb({
-                data: {
-                  text: content,
-                },
-              })
-              Sentry.Native.captureException(err)
-            }
-            break
-          default:
-            console.log('TO HANDLE SELECTION', payload)
         }
       },
     }),
@@ -328,21 +263,203 @@ function HtmlRender({
     }
   }, [])
 
+  const handleCopy = useCallback(async () => {
+    try {
+      const content = htmlToMarkdown(props.source.html)
+      await Clipboard.setStringAsync(content)
+      alert.show({
+        type: 'success',
+        message: '已复制到粘贴板',
+        duration: 500,
+      })
+    } catch (err) {
+      Sentry.captureException(err)
+    }
+  }, [props.source.html])
+
+  const copyAndNotice = useCallback(async (text) => {
+    await Clipboard.setStringAsync(text)
+    alert.show({
+      type: 'success',
+      message: '已复制到粘贴板: ' + text,
+    })
+  }, [])
+
+  const handleBase64Decode = useCallback(() => {
+    try {
+      const content = htmlToMarkdown(props.source.html)
+      const result = extractBase64Decoded(content)
+      if (result && result.length) {
+        if (result.length == 1) {
+          const item = result[0]
+          copyAndNotice(item[1])
+        } else {
+          setBase64Options(result)
+          base64ModalRef.current?.present()
+        }
+      } else {
+        alert.show({
+          type: 'info',
+          message: '未找到 base64 字符串',
+        })
+      }
+    } catch (err) {
+      alert.show({
+        type: 'error',
+        message: '未识别到有效内容',
+      })
+      Sentry.addBreadcrumb({
+        data: {
+          text: props.source.html,
+        },
+      })
+      Sentry.captureException(err)
+    }
+  }, [props.source.html])
+
+  const handleSelect = useCallback(() => {
+    const content = htmlToMarkdown(props.source.html)
+    setTextToSelect(content)
+    selectModalRef.current.present()
+  }, [props.source.html])
+
   return (
     <ImageViewingServiceProvider ref={viewingRef} handleQrCode={handleQrCode}>
       <RenderContext.Provider value={renderContext}>
-        <BaseRender
-          WebView={WebView}
-          tagsStyles={styles}
-          renderers={renderers}
-          renderersProps={renderersProps}
-          defaultTextProps={defaultTextProps}
-          customHTMLElementModels={customHTMLElementModels}
-          bypassAnonymousTPhrasingNodes={false}
-          classesStyles={atomOne[colorScheme]}
-          {...props}
-        />
+        <View style={{ margin: -6 }}>
+          <ContextMenu.Root>
+            <ContextMenu.Trigger>
+              <View style={[{ padding: 6 }]}>
+                <BaseRender
+                  WebView={WebView}
+                  tagsStyles={styles}
+                  renderers={renderers}
+                  renderersProps={renderersProps}
+                  defaultTextProps={defaultTextProps}
+                  customHTMLElementModels={customHTMLElementModels}
+                  bypassAnonymousTPhrasingNodes={false}
+                  classesStyles={atomOne[colorScheme]}
+                  {...props}
+                />
+              </View>
+            </ContextMenu.Trigger>
+            <ContextMenu.Content>
+              <ContextMenu.Group>
+                <ContextMenu.Item key="copy" onSelect={handleCopy}>
+                  <ContextMenu.ItemTitle>复制</ContextMenu.ItemTitle>
+                  <ContextMenu.ItemIcon
+                    ios={{
+                      name: 'doc.on.doc',
+                    }}></ContextMenu.ItemIcon>
+                </ContextMenu.Item>
+                <ContextMenu.Item key="select-text" onSelect={handleSelect}>
+                  <ContextMenu.ItemTitle>选择文本</ContextMenu.ItemTitle>
+                  <ContextMenu.ItemIcon
+                    ios={{
+                      name: 'hand.point.up.left.and.text',
+                    }}></ContextMenu.ItemIcon>
+                </ContextMenu.Item>
+                <ContextMenu.Item
+                  key="base64-decode"
+                  onSelect={handleBase64Decode}>
+                  <ContextMenu.ItemTitle>Base64 提取</ContextMenu.ItemTitle>
+                  <ContextMenu.ItemIcon
+                    ios={{ name: 'text.viewfinder' }}></ContextMenu.ItemIcon>
+                </ContextMenu.Item>
+              </ContextMenu.Group>
+            </ContextMenu.Content>
+          </ContextMenu.Root>
+        </View>
       </RenderContext.Provider>
+      <MyBottomSheetModal
+        ref={selectModalRef}
+        index={0}
+        snapPoints={snapPoints}>
+        <BottomSheetScrollView
+          contentContainerStyle={{
+            paddingBottom: 44,
+            paddingTop: 16,
+            paddingHorizontal: 16,
+          }}>
+          {Platform.OS == 'ios' ? (
+            <TextInput
+              style={styles.body}
+              value={textToSelect}
+              readOnly
+              multiline
+              selectionColor={theme.colors.primary}
+            />
+          ) : (
+            <Text
+              style={styles.body}
+              selectable
+              selectionColor={Color(theme.colors.primary)
+                .alpha(0.15)
+                .toString()}>
+              {textToSelect}
+            </Text>
+          )}
+        </BottomSheetScrollView>
+      </MyBottomSheetModal>
+      <MyBottomSheetModal
+        ref={base64ModalRef}
+        index={0}
+        snapPoints={['50%', '90%']}>
+        <BottomSheetScrollView
+          contentContainerStyle={{
+            paddingBottom: 44,
+            paddingTop: 16,
+            paddingHorizontal: 16,
+          }}>
+          <View className="flex-row w-full">
+            <View className="flex-1 py-2" style={themeStyles.border_b}>
+              <Text
+                style={[
+                  themeStyles.text,
+                  themeStyles.text_base,
+                  { fontWeight: 'bold' },
+                ]}>
+                字符串
+              </Text>
+            </View>
+            <View className="flex-1 py-2" style={themeStyles.border_b}>
+              <Text
+                style={[
+                  themeStyles.text,
+                  themeStyles.text_base,
+                  { fontWeight: 'bold' },
+                ]}>
+                解码内容
+              </Text>
+            </View>
+          </View>
+          {base64Options.map((item) => (
+            <Pressable
+              key={item[0]}
+              className="flex-row w-full"
+              onPress={() => {
+                base64ModalRef.current?.dismiss()
+                copyAndNotice(item[1])
+              }}>
+              <View className="flex-1 py-2" style={themeStyles.border_b}>
+                <Text style={[themeStyles.text, themeStyles.text_base]}>
+                  {item[0]}
+                </Text>
+              </View>
+              <View className="flex-1 py-2" style={themeStyles.border_b}>
+                <Text style={[themeStyles.text, themeStyles.text_base]}>
+                  {item[1]}
+                </Text>
+              </View>
+            </Pressable>
+          ))}
+          <View className="mt-3">
+            <Text style={[themeStyles.text, themeStyles.text_sm]}>
+              点击选择复制
+            </Text>
+          </View>
+        </BottomSheetScrollView>
+      </MyBottomSheetModal>
     </ImageViewingServiceProvider>
   )
 }

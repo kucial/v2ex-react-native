@@ -2,8 +2,8 @@ import { useCallback } from 'react'
 import { Alert } from 'react-native'
 import { Pressable } from 'react-native'
 import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
+import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'expo-image-picker'
-import * as Sentry from 'sentry-expo'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useImgurService } from '@/containers/ImgurService'
@@ -91,7 +91,7 @@ export default function UploadButton(props) {
           alert.show({ type: 'success', message: '上传成功' })
         } catch (err) {
           alert.show({ type: 'error', message: err.message })
-          Sentry.Native.captureException(err)
+          Sentry.captureException(err)
         } finally {
           alert.hide(indicator)
         }

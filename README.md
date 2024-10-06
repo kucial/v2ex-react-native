@@ -156,7 +156,7 @@ React Native + Tailwindcss + SWR
 - @gorhom/bottom-sheet -- 底部弹出层
 - react-native-image-viewing -- imgur 图片预览
 - ~~react-native-dropdownalert~~ react-native-root-toast -- 信息提示
-- react-native-selectable-text -- 可选择文本
+- ~~react-native-selectable-text -- 可选择文本~~ 使用 context menu 替代
 
 ## ENV 参数
 

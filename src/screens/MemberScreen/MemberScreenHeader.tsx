@@ -9,9 +9,9 @@ import Animated, {
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import * as Sentry from '@sentry/react-native'
 import Constants from 'expo-constants'
 import { Image } from 'expo-image'
-import * as Sentry from 'sentry-expo'
 import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
@@ -90,7 +90,7 @@ export default function MemberScreenHeader(props: {
       })
         .then(setAvatarLuminosity)
         .catch((err) => {
-          Sentry.Native.captureException(err)
+          Sentry.captureException(err)
         })
     }
   }, [avatar])

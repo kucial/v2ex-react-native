@@ -1,22 +1,18 @@
-import { Image, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
+import { Image } from 'expo-image'
 
 import { useTheme } from '@/containers/ThemeService'
-import { staticAsset } from '@/utils/assets'
 import { BalanceBrief } from '@/utils/v2ex-client/types'
 
 export default function BalanceArea(props: { data: BalanceBrief }) {
   const { data } = props
   const { styles } = useTheme()
+
   return (
     <View className="flex flex-row items-center">
       {!!data.gold && (
         <View className="flex flex-row">
-          <Image
-            className="w-[16] h-[16]"
-            source={{
-              uri: staticAsset('gold-coin.png'),
-            }}
-          />
+          <Image className="w-[16] h-[16]" source="gold_coin" />
           <View className="mx-[6]">
             <Text style={styles.text}>{data.gold}</Text>
           </View>
@@ -24,12 +20,7 @@ export default function BalanceArea(props: { data: BalanceBrief }) {
       )}
       {!!data.silver && (
         <View className="flex flex-row">
-          <Image
-            className="w-[16] h-[16]"
-            source={{
-              uri: staticAsset('silver-coin.png'),
-            }}
-          />
+          <Image className="w-[16] h-[16]" source="silver_coin" />
           <View className="mx-[6]">
             <Text style={styles.text}>{data.silver}</Text>
           </View>
@@ -37,12 +28,7 @@ export default function BalanceArea(props: { data: BalanceBrief }) {
       )}
       {!!data.bronze && (
         <View className="flex flex-row">
-          <Image
-            className="w-[16] h-[16]"
-            source={{
-              uri: staticAsset('bronze-coin.png'),
-            }}
-          />
+          <Image className="w-[16] h-[16]" source="bronze_coin" />
           <View className="mx-[6]">
             <Text style={styles.text}>{data.bronze}</Text>
           </View>

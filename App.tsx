@@ -4,7 +4,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { SENTRY_DSN } from '@env'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import * as Sentry from 'sentry-expo'
+import * as Sentry from '@sentry/react-native'
+import Constants from 'expo-constants'
+import * as Device from 'expo-device'
+import * as Updates from 'expo-updates'
 
 import ErrorBoundary from './src/components/ErrorBoundary'
 import Layout from './src/components/Layout'
@@ -24,10 +27,27 @@ import AppStack from './src/screens/AppStack'
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  enableInExpoDevelopment: false,
+  enabled: !__DEV__,
   debug: false,
   tracesSampleRate: 1.0,
 })
+
+Sentry.setExtras({
+  manifest: Updates.manifest,
+  deviceYearClass: Device.deviceYearClass,
+  linkingUri: Constants.linkingUri,
+})
+
+Sentry.setTag('expoReleaseChannel', Updates.channel)
+Sentry.setTag('runtimeVersion', Updates.manifest.runtimeVersion)
+Sentry.setTag('appPublishedTime', Updates.manifest.publishedTime)
+Sentry.setTag('expoSdkVersion', Updates.manifest.sdkVersion)
+Sentry.setTag('deviceId', Constants.sessionId)
+Sentry.setTag('appOwnership', Constants.appOwnership || 'N/A')
+if (Constants.appOwnership === 'expo' && Constants.expoVersion) {
+  Sentry.setTag('expoAppVersion', Constants.expoVersion)
+}
+Sentry.setTag('expoChannel', Updates.channel)
 
 function App() {
   const { styles } = getThemeService()
@@ -73,4 +93,4 @@ function App() {
   )
 }
 
-export default App
+export default Sentry.wrap(App)

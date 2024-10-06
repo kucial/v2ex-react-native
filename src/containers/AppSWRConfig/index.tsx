@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react'
 import { AppState, AppStateStatus } from 'react-native'
 import NetInfo from '@react-native-community/netinfo'
-import * as Sentry from 'sentry-expo'
+import * as Sentry from '@sentry/react-native'
 import { SWRConfig } from 'swr'
 import { stableHash } from 'swr/_internal'
 
@@ -64,28 +64,28 @@ function AppSWRConfig(props: PropsWithChildren) {
               return
             }
             // err with custom code consider handled
-            Sentry.Native.captureException(err, {
+            Sentry.captureException(err, {
               extra: {
                 key,
                 config,
               },
             })
           } else if (!(err instanceof ApiError)) {
-            Sentry.Native.addBreadcrumb({
+            Sentry.addBreadcrumb({
               type: 'info',
               message: 'swr info',
               data: { swrKey: key, err },
             })
-            Sentry.Native.captureMessage('@_SWR_ERROR_@')
+            Sentry.captureMessage('@_SWR_ERROR_@')
           }
         },
         onLoadingSlow(key, config) {
-          Sentry.Native.addBreadcrumb({
+          Sentry.addBreadcrumb({
             type: 'info',
             message: 'swr info',
             data: { slowKey: key },
           })
-          Sentry.Native.captureMessage('@_LOADING_SLOW_@')
+          Sentry.captureMessage('@_LOADING_SLOW_@')
         },
         compare(a, b) {
           if (

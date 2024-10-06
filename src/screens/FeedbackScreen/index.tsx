@@ -2,12 +2,11 @@ import { useCallback } from 'react'
 import { Pressable, SafeAreaView, Text, TextInput, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import * as Sentry from '@sentry/react-native'
 import classNames from 'classnames'
 import { Formik, FormikHelpers } from 'formik'
-import * as Sentry from 'sentry-expo'
 import * as Yup from 'yup'
 
-import { TextField } from '@/components/formik'
 import GroupWapper from '@/components/GroupWrapper'
 import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -36,8 +35,8 @@ export default function FeedbackScreen(props: ScreenProps) {
 
   const submitFeedback = useCallback(
     async (values, helpers: FormikHelpers<FormValues>) => {
-      const sentryId = Sentry.Native.captureMessage('FEEDBACK')
-      Sentry.Native.captureUserFeedback({
+      const sentryId = Sentry.captureMessage('FEEDBACK')
+      Sentry.captureUserFeedback({
         event_id: sentryId,
         ...values,
       })

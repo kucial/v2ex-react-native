@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native'
 import { MapPinIcon } from 'react-native-heroicons/outline'
+import * as Sentry from '@sentry/react-native'
 import * as WebBrowser from 'expo-web-browser'
-import * as Sentry from 'sentry-expo'
 
 import Button from '@/components/Button'
 import GithubIcon from '@/components/GithubIcon'
@@ -40,7 +40,7 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
               presentationStyle:
                 WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
             }).catch((err) => {
-              Sentry.Native.captureException(err)
+              Sentry.captureException(err)
             })
           }}>
           <TwitterIcon size={18} style={{ marginRight: 4 }} />
@@ -60,7 +60,7 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
               presentationStyle:
                 WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
             }).catch((err) => {
-              Sentry.Native.captureException(err)
+              Sentry.captureException(err)
             })
           }}>
           <GithubIcon

@@ -1,6 +1,7 @@
 import { Platform } from 'react-native'
 import { clearCookies } from 'react-native/Libraries/Network/RCTNetworking'
 import CookieManager from '@react-native-cookies/cookies'
+import * as Sentry from '@sentry/react-native'
 import axios, {
   AxiosRequestConfig,
   AxiosRequestHeaders,
@@ -8,7 +9,6 @@ import axios, {
 } from 'axios'
 import { CheerioAPI } from 'cheerio'
 import { stringify } from 'qs'
-import * as Sentry from 'sentry-expo'
 
 import {
   CollectedTopicFeed,
@@ -104,13 +104,13 @@ const dispatch = (event: EVENT, value?: EventValue) => {
 }
 
 const captureParseError = (err: Error, $: CheerioAPI) => {
-  Sentry.Native.addBreadcrumb({
+  Sentry.addBreadcrumb({
     type: 'info',
     data: {
       body: $('body').html(),
     },
   })
-  Sentry.Native.captureException(err)
+  Sentry.captureException(err)
   throw new ApiError({
     code: 'UNEXPECTED_RESPONSE',
     message: '意想不到的返回结果',
@@ -183,7 +183,7 @@ instance.interceptors.response.use(
   function (res: CustomAxiosResponse) {
     const responseURL: string = res.request?.responseURL
     if (responseURL) {
-      Sentry.Native.addBreadcrumb({
+      Sentry.addBreadcrumb({
         type: 'info',
         message: `Response URL: ${responseURL}`,
       })
@@ -304,7 +304,7 @@ instance.interceptors.response.use(
     } else {
       n_403 = 0
     }
-    Sentry.Native.captureEvent(error)
+    Sentry.captureEvent(error)
     return Promise.reject(error)
   },
 )
@@ -1546,7 +1546,7 @@ export async function getMyNotifications({
       const member = memberFromImage($memberImage)
       const $topicLink = $(el).find('a[href^="/t/"]').first()
       if (!$topicLink.length) {
-        Sentry.Native.captureMessage('UNEXPECTED_NOTIFICATION', {
+        Sentry.captureMessage('UNEXPECTED_NOTIFICATION', {
           extra: {
             body: $(el).html(),
           },

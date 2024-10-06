@@ -1,6 +1,6 @@
 import { SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
+import * as Sentry from '@sentry/react-native'
 import { debounce } from 'lodash'
-import * as Sentry from 'sentry-expo'
 
 import { getJSON, setJSON } from './storage'
 
@@ -66,7 +66,7 @@ export const usePressBreadcrumb = (
 ) => {
   return useCallback(
     (...args: any[]) => {
-      Sentry.Native.addBreadcrumb({
+      Sentry.addBreadcrumb({
         type: 'info',
         category: 'ui.press',
         message: config.message,

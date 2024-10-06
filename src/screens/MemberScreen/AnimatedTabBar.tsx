@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { View } from 'react-native'
 import Animated, {
-  Extrapolate,
+  Extrapolation,
   interpolate,
   SharedValue,
   useAnimatedStyle,
@@ -27,8 +27,8 @@ export default function AnimatedTabBar(
       [0, headerHeight - headerCollapsedHeight],
       [headerHeight, headerCollapsedHeight],
       {
-        extrapolateLeft: Extrapolate.CLAMP,
-        extrapolateRight: Extrapolate.CLAMP,
+        extrapolateLeft: Extrapolation.CLAMP,
+        extrapolateRight: Extrapolation.CLAMP,
       },
     )
     return {

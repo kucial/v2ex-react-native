@@ -1,5 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
-import * as Sentry from 'sentry-expo'
+import * as Sentry from '@sentry/react-native'
 
 interface Props {
   children?: ReactNode
@@ -22,12 +22,12 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, context: ErrorInfo) {
-    Sentry.Native.addBreadcrumb({
+    Sentry.addBreadcrumb({
       type: 'info',
       message: 'React exception context',
       data: context,
     })
-    Sentry.Native.captureException(error)
+    Sentry.captureException(error)
   }
 
   render() {

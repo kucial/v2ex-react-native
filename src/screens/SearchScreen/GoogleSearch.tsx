@@ -91,18 +91,20 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
             }}
           />
         </View>
-        <View className="flex flex-row flex-1 pr-3 items-center">
+        <View
+          className={classNames(
+            'flex flex-row flex-1 pr-3 items-center',
+            Platform.select({
+              ios: 'py-[6]',
+              android: 'py-[8]',
+            }),
+          )}>
           <View
-            className={classNames(
-              'relative flex-1',
-              Platform.select({
-                ios: 'py-[6]',
-                android: 'py-[8]',
-              }),
-            )}>
+            className={classNames('flex flex-row rounded-lg')}
+            style={styles.input__bg}>
             <TextInput
-              className="rounded-lg flex-1 px-2"
-              style={[styles.input__bg, styles.text, styles.text_base]}
+              className="flex-1 px-2 py-1"
+              style={[styles.text, styles.text_base]}
               selectionColor={theme.colors.primary}
               placeholderTextColor={theme.colors.text_placeholder}
               defaultValue={searchParams.q || ''}
@@ -117,7 +119,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               }}
             />
             {!!searchParams.q && (
-              <View className="absolute right-0 top-[6px] h-full flex flex-row items-center justify-center">
+              <View className="h-full flex flex-row items-center justify-center">
                 <MyClearButton
                   onPress={() => {
                     updateSearchParams((prev) => ({

@@ -4,8 +4,8 @@ type RenderContextType = {
     interaction: 'default' | 'preview' | 'default'
     url: string
   }) => void
-  handleSelection: (args: { eventType: string; content: string }) => void
-  menuItems: string[]
+  // handleSelection: (args: { eventType: string; content: string }) => void
+  // menuItems: string[]
 }
 
 export const RenderContext = createContext<RenderContextType>(

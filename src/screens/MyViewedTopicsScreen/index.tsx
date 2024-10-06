@@ -1,5 +1,5 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import { useCallback, useMemo, useState } from 'react'
+import { Pressable, Text, View } from 'react-native'
 import {
   EllipsisHorizontalIcon,
   TrashIcon,
@@ -14,7 +14,6 @@ import classNames from 'classnames'
 
 import Button from '@/components/Button'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import SearchInput from '@/components/SearchInput'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -27,9 +26,7 @@ const Actions = (props) => {
   const params = useSwipeableItemParams()
   const { styles } = useTheme()
   return (
-    <View
-      className="h-full flex-row flex-row justify-end"
-      style={styles.btn_danger__bg}>
+    <View className="h-full flex-row justify-end" style={styles.btn_danger__bg}>
       <Pressable
         className={classNames(
           'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',

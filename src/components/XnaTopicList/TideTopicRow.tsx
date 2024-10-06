@@ -1,10 +1,10 @@
 import { Platform, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import * as Sentry from '@sentry/react-native'
 import classNames from 'classnames'
 import { Image } from 'expo-image'
 import * as WebBrowser from 'expo-web-browser'
-import * as Sentry from 'sentry-expo'
 
 import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
@@ -63,7 +63,7 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
               presentationStyle:
                 WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
             }).catch((err) => {
-              Sentry.Native.captureException(err)
+              Sentry.captureException(err)
             })
           } else {
             navigation.push('browser', {
@@ -117,7 +117,7 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
                     presentationStyle:
                       WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
                   }).catch((err) => {
-                    Sentry.Native.captureException(err)
+                    Sentry.captureException(err)
                   })
                 } else {
                   navigation.push('browser', {
