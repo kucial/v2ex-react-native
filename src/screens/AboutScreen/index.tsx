@@ -14,7 +14,7 @@ import {
   StarIcon,
 } from 'react-native-heroicons/outline'
 import Share from 'react-native-share'
-import * as StoreReview from 'react-native-store-review'
+import { IOS_APP_ID } from '@env'
 import classNames from 'classnames'
 import Constants from 'expo-constants'
 import { stringify } from 'qs'
@@ -70,7 +70,7 @@ export default function AboutScreen(props) {
               </View>
               <View>
                 <Text className="text-center" style={styles.text}>
-                  {Constants.manifest?.version}
+                  {Constants.expoConfig?.version}
                 </Text>
               </View>
 
@@ -78,7 +78,7 @@ export default function AboutScreen(props) {
                 <Text
                   className="text-center"
                   style={[styles.text_meta, styles.text_sm]}>
-                  {Constants.manifest?.extra.buildTag}
+                  {Constants.expoConfig?.extra.buildTag}
                 </Text>
               </View>
               <View className="ml-4 h-[20]" style={styles.border_b} />
@@ -91,7 +91,7 @@ export default function AboutScreen(props) {
               icon={<GithubIcon color={theme.colors.primary} />}
               title="Github"
             />
-            {Platform.OS == 'ios' && (
+            {Platform.OS == 'ios' && IOS_APP_ID && (
               <>
                 <LineItem
                   onPress={async () => {
@@ -99,7 +99,7 @@ export default function AboutScreen(props) {
                       await Share.open({
                         title: 'R2V -- 第三方V2EX客户端',
                         message: 'R2V -- 第三方V2EX客户端',
-                        url: 'https://apps.apple.com/cn/app/r2v/id1645766550',
+                        url: `https://apps.apple.com/us/app/r2v/id${IOS_APP_ID}`,
                       })
                     } catch (error) {
                       console.log(error.message)
@@ -110,7 +110,9 @@ export default function AboutScreen(props) {
                 />
                 <LineItem
                   onPress={() => {
-                    StoreReview.requestReview()
+                    Linking.openURL(
+                      `itms-apps://apps.apple.com/app/id${IOS_APP_ID}?action=write-review`,
+                    )
                   }}
                   icon={<StarIcon size={22} color={theme.colors.primary} />}
                   title="五星好评"
@@ -122,11 +124,8 @@ export default function AboutScreen(props) {
               onPress={async () => {
                 try {
                   const params = {
-                    subject: `R2V (${Constants.manifest.extra?.buildTag}) 意见反馈`,
+                    subject: `R2V (${Constants.expoConfig.extra?.buildTag}) 意见反馈`,
                   }
-                  console.log(
-                    `mailto:kongkx.yang@gmail.com?${stringify(params)}`,
-                  )
                   await Linking.openURL(
                     `mailto:kongkx.yang@gmail.com?${stringify(params)}`,
                   )
