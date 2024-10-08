@@ -77,26 +77,63 @@ export default function PrepareWebview(props: {
         userAgent={USER_AGENT}
         originWhitelist={['*']}
         sharedCookiesEnabled={true}
+        onLoadStart={(e) => {
+          if (Platform.OS == 'android') {
+            if (/__cf_chl_tk/.test(e.nativeEvent.url)) {
+              cfState.current = 'checked_loading'
+              props.onUpdate('checked_loading')
+              return
+            }
+            if (/__cf_chl_rt_tk/.test(e.nativeEvent.url)) {
+              cfState.current = 'checking'
+              props.onUpdate('checking')
+              return
+            }
+            if (cfState.current === 'checking') {
+              timeoutRef.current = setTimeout(() => {
+                props.onUpdate('interation_required')
+              }, 5000)
+              return
+            }
+          }
+        }}
         onLoad={(e) => {
           clearTimeout(timeoutRef.current)
-          console.log('PrepareWebview', e.nativeEvent.url, cfState.current)
-          // Next: check content instead of checking url
-          if (/__cf_chl_tk/.test(e.nativeEvent.url)) {
+          console.log(
+            'PrepareWebview onLoad',
+            e.nativeEvent.url,
+            e.nativeEvent.mainDocumentURL,
+            cfState.current,
+          )
+          if (Platform.OS == 'ios') {
+            // Next: check content instead of checking url
+            if (/__cf_chl_tk/.test(e.nativeEvent.url)) {
+              cfState.current = 'checked'
+              props.onUpdate('checked')
+              return
+            }
+            if (/__cf_chl_rt_tk/.test(e.nativeEvent.url)) {
+              cfState.current = 'checking'
+              props.onUpdate('checking')
+              return
+            }
+            if (cfState.current === 'checking') {
+              timeoutRef.current = setTimeout(() => {
+                props.onUpdate('interation_required')
+              }, 5000)
+              return
+            }
+          }
+
+          if (
+            Platform.OS == 'android' &&
+            cfState.current == 'checked_loading'
+          ) {
             cfState.current = 'checked'
             props.onUpdate('checked')
             return
           }
-          if (/__cf_chl_rt_tk/.test(e.nativeEvent.url)) {
-            cfState.current = 'checking'
-            props.onUpdate('checking')
-            return
-          }
-          if (cfState.current === 'checking') {
-            timeoutRef.current = setTimeout(() => {
-              props.onUpdate('interation_required')
-            }, 5000)
-            return
-          }
+
           if (
             cfState.current === 'interation_required' ||
             cfState.current === 'error'
