@@ -83,7 +83,7 @@ function GoogleSign(props: GoogleSigninProps) {
         <Pressable
           className="h-[44px] px-3 justify-center active:opacity-70"
           onPress={props.onSelectPasswordSignin}>
-          <Text>密码登录</Text>
+          <Text style={styles.text}>密码登录</Text>
         </Pressable>
       </View>
       <View className="flex-1 relative">

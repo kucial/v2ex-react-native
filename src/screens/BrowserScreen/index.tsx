@@ -49,6 +49,7 @@ export default function BrowserScreen({
         userAgent={USER_AGENT}
         ref={webviewRef}
         style={{ flex: 1 }}
+        originWhitelist={['*']}
         source={{ uri: route.params.url }}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}

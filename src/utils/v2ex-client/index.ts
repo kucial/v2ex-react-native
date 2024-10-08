@@ -1,5 +1,5 @@
 import { Platform } from 'react-native'
-import { clearCookies } from 'react-native/Libraries/Network/RCTNetworking'
+import Networking from 'react-native/Libraries/Network/RCTNetworking'
 import CookieManager from '@react-native-cookies/cookies'
 import * as Sentry from '@sentry/react-native'
 import axios, {
@@ -1899,7 +1899,7 @@ export async function verify2faCode(data: { once: string; code: string }) {
 
 export async function logout(): Promise<StatusResponse> {
   await Promise.all([
-    new Promise((resolve) => clearCookies(resolve)),
+    new Promise((resolve) => Networking.clearCookies(resolve)),
     CookieManager.clearAll(true),
   ])
 
