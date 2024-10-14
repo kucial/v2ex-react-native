@@ -1,4 +1,5 @@
-import { ReactNode, useContext, useMemo } from 'react'
+import { ReactNode, useContext, useEffect, useMemo } from 'react'
+import * as NavigationBar from 'expo-navigation-bar'
 
 import { useAppSettings } from '../AppSettingsService'
 import { ThemeContext } from './context'
@@ -24,6 +25,10 @@ export const ThemeProvider = (props: {
     () => getThemeService(activeTheme, activeScheme, fontScale),
     [activeScheme, activeTheme, fontScale],
   )
+
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync(service.theme.colors.bg_overlay)
+  }, [service])
 
   return (
     <ThemeContext.Provider value={service}>
