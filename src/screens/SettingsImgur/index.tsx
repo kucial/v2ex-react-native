@@ -36,7 +36,9 @@ export default function ImgurSettings(props: ScreenProps) {
     const subscription = Linking.addEventListener('url', function (event) {
       const parsed = Linking.parse(event.url)
       if (parsed.hostname === 'imgur-oauth') {
-        const { queryParams } = Linking.parse(`?${event.url.split('#')[1]}`)
+        const { queryParams } = Linking.parse(
+          `r2v://callback?${event.url.split('#')[1]}`,
+        )
         if (queryParams) {
           imgurService.updateCredentials({
             client_id: clientInfo.clientId,
