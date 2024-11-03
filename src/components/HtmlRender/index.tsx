@@ -13,7 +13,6 @@ import BaseRender, {
   RenderHTMLProps,
 } from 'react-native-render-html'
 import WebView from 'react-native-webview'
-import { useActionSheet } from '@expo/react-native-action-sheet'
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'

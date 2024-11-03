@@ -20,7 +20,7 @@ function SelectField({
   options: Array<{ label: string; value: string }>
 }) {
   const { styles, colorScheme } = useTheme()
-  const [field, helpers] = useField(name)
+  const [field, meta, helpers] = useField(name)
 
   const labels = useMemo(() => options.map((o) => o.label), [options])
 
