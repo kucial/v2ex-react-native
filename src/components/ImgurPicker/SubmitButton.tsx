@@ -1,5 +1,4 @@
-import { View } from 'react-native'
-import { Pressable } from 'react-native'
+import { Pressable, View } from 'react-native'
 import classNames from 'classnames'
 
 import CheckIcon from '@/components/CheckIcon'
@@ -11,15 +10,17 @@ export default function SubmitButton(props: {
 }) {
   const { styles } = useTheme()
   return (
-    <View className="absolute bottom-[56px] right-[24px]">
+    <View
+      className="absolute bottom-[56px] w-full flex justify-center items-center"
+      pointerEvents={props.disabled ? 'none' : 'box-none'}>
       <Pressable
         className={classNames(
-          'w-[62px] h-[62px] items-center justify-center rounded-full shadow-sm active:opacity-60',
+          'w-[120px] h-[56px] items-center justify-center rounded-full shadow-sm active:opacity-60',
         )}
-        style={[styles.btn_primary__bg, props.disabled && { opacity: 0.5 }]}
+        style={[styles.btn_success__bg, props.disabled && { opacity: 0.5 }]}
         onPress={props.onPress}
         disabled={props.disabled}>
-        <CheckIcon color={styles.btn_primary__text.color} size={22} />
+        <CheckIcon color={styles.btn_success__text.color} size={26} />
       </Pressable>
     </View>
   )

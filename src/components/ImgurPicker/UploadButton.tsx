@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
-import { Alert } from 'react-native'
-import { Pressable } from 'react-native'
+import { Alert, Pressable, Text, View } from 'react-native'
 import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'expo-image-picker'
@@ -43,7 +42,7 @@ export default function UploadButton(props) {
   }
   return (
     <Pressable
-      className="h-[44px] w-[44px] items-center justify-center rounded-full active:bg-neutral-100 dark:active:bg-neutral-600"
+      className="h-[44px] pl-2 pr-1 flex-row items-center justify-center rounded-full active:bg-neutral-100 dark:active:bg-neutral-600"
       onPress={async () => {
         const permissionRes =
           await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -97,6 +96,11 @@ export default function UploadButton(props) {
         }
       }}>
       <ArrowUpTrayIcon size={22} color={props.tintColor} />
+      <View className='ml-1 w-[60px]'>
+      <Text style={{ color: props.tintColor, fontSize: 10 }}>
+        从系统相册中选择图片
+      </Text>
+      </View>
     </Pressable>
   )
 }

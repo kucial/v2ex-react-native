@@ -27,7 +27,7 @@ export default function Landing(props: LandingProps) {
       <SafeAreaView>
         <View className="pt-1" style={styles.border_b}>
           <View className="flex flex-row items-center min-h-[44px] px-1">
-            <View className="w-[56px]">
+            <View className="w-[100px]">
               {props.onCancel && (
                 <BackButton
                   tintColor={theme.colors.text}
@@ -44,7 +44,7 @@ export default function Landing(props: LandingProps) {
                 Imgur 图床
               </Text>
             </View>
-            <View className="w-[56px] items-end">
+            <View className="w-[100px] items-end">
               {tabIndex === 0 && <UploadButton tintColor={theme.colors.text} />}
             </View>
           </View>
