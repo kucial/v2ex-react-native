@@ -125,6 +125,7 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
         content,
         node_name: values.node.name,
         syntax: 'markdown',
+        once: '000000',
       })
 
       mutate([`/page/t/:id/topic.json`, newTopic.id], newTopic, {
