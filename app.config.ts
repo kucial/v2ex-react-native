@@ -1,11 +1,40 @@
 import { ConfigContext, ExpoConfig } from 'expo/config'
 
+const themes = [
+  'r2v',
+  'gin_blue',
+  'gin_dark_purple',
+  'gin_purple',
+  'gin_green',
+  'gin_teal',
+  'gin_red',
+  'gin_orange',
+  'gin_yellow',
+  'gin_pink',
+]
+
+const icons = {}
+
+themes.forEach((theme) => {
+
+  icons[`${theme}_light`] = {
+    image: `./src/assets/icons/icon-${theme}-light.png`, // icon path
+    prerendered: true, // for ios UIPrerenderedIcon option
+    platforms: ['ios'],
+  }
+  icons[`${theme}_dark`] = {
+    image: `./src/assets/icons/icon-${theme}-dark.png`, // icon path
+    prerendered: true, // for ios UIPrerenderedIcon option
+    platforms: ['ios'],
+  }
+})
+
 export default ({ config }: ConfigContext): ExpoConfig => {
   const merged = {
     ...config,
     name: 'R2V',
     slug: 'v2ex-react-native',
-    icon: './src/assets/icon.png',
+    icon: './src/assets/icons/icon-r2v-light.png',
     userInterfaceStyle: 'automatic',
     jsEngine: 'hermes',
     updates: {
@@ -46,9 +75,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
       package: 'com.kucial.v2ex',
     },
-    web: {
-      favicon: './src/assets/favicon.png',
-    },
     extra: {
       eas: {
         projectId: '5c24d369-c0ba-41e3-8679-8b8cee82fc13',
@@ -58,23 +84,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       [
         'expo-asset',
         {
-          assets: ['./src/assets/images'],
+          assets: ['./src/assets/images', './src/assets/brand_icons'],
         },
       ],
-      [
-        'expo-dynamic-app-icon',
-        {
-          light: {
-            // icon name
-            image: './src/assets/icon.png', // icon path
-            prerendered: true, // for ios UIPrerenderedIcon option
-          },
-          dark: {
-            image: './src/assets/icon-dark.png',
-            prerendered: true,
-          },
-        },
-      ],
+      ['expo-dynamic-app-icon', icons],
       '@sentry/react-native/expo',
       'expo-image-picker',
       [

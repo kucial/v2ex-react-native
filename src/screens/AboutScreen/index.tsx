@@ -49,39 +49,42 @@ export default function AboutScreen(props) {
         <MaxWidthWrapper className="px-2">
           <GroupWapper>
             <Pressable
-              className="pt-3 active:opacity-80"
+              className="pt-6 active:opacity-80"
               style={styles.layer1}
               onPress={() => {
                 setCount((prev) => prev + 1)
               }}>
-              <View className="my-5">
+              <View className="mb-3">
                 <View className="flex-1 flex flex-row justify-center">
-                  <View className="ml-3">
-                    <AppBrandIcon />
+                  <View className="">
+                    <AppBrandIcon width={72} />
                   </View>
                 </View>
               </View>
-              <View className="my-2">
-                <Text
-                  className="text-center"
-                  style={[styles.text, styles.text_base]}>
-                  V2EX 第三方客户端
-                </Text>
+              <View className="mb-2">
+                <View>
+                  <Text
+                    className="font-medium text-center"
+                    style={[styles.text, styles.text_base]}>
+                    R2V
+                  </Text>
+                </View>
+                <View>
+                  <Text
+                    className="text-center"
+                    style={[styles.text, styles.text_xs]}>
+                    V2EX 第三方客户端 ({Constants.expoConfig?.version})
+                  </Text>
+                </View>
+                <View className='mt-1'>
+                  <Text
+                    className="text-center"
+                    style={[styles.text_meta, styles.text_xs]}>
+                    {Constants.expoConfig?.extra.buildTag}
+                  </Text>
+                </View>
               </View>
-              <View>
-                <Text className="text-center" style={styles.text}>
-                  {Constants.expoConfig?.version}
-                </Text>
-              </View>
-
-              <View className="mt-2">
-                <Text
-                  className="text-center"
-                  style={[styles.text_meta, styles.text_sm]}>
-                  {Constants.expoConfig?.extra.buildTag}
-                </Text>
-              </View>
-              <View className="ml-4 h-[20]" style={styles.border_b} />
+              <View className="ml-4 h-2" style={styles.border_b} />
             </Pressable>
 
             <LineItem

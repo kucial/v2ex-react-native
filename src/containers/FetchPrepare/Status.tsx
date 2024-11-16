@@ -7,6 +7,9 @@ import Loader from '@/components/Loader'
 import { useTheme } from '../ThemeService'
 import { PrepareStatus } from './type'
 
+// Splash Screen 原始设计稿， Icon 宽度.
+const INITIAL_LOGO_WIDTH = 333
+
 export default function Status(props: {
   status: PrepareStatus
   error?: Error
@@ -15,7 +18,7 @@ export default function Status(props: {
   const { colorScheme, styles } = useTheme()
   const { width, height } = useWindowDimensions()
   const ratio = Math.min(width / 1284, height / 2779)
-  const imageWidth = ratio * 542
+  const imageWidth = ratio * INITIAL_LOGO_WIDTH
 
   return (
     <View
@@ -25,8 +28,7 @@ export default function Status(props: {
       }}>
       <View
         style={{
-          marginTop: -50 * ratio,
-          marginLeft: 54 * ratio,
+          marginTop: -20 * ratio,
         }}>
         <AppBrandIcon width={imageWidth} />
       </View>

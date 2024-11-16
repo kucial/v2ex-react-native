@@ -1,4 +1,4 @@
-import { clearCookies } from 'react-native/Libraries/Network/RCTNetworking'
+import Networking from 'react-native/Libraries/Network/RCTNetworking'
 import RNRestart from 'react-native-restart'
 import CookieManager from '@react-native-cookies/cookies'
 
@@ -21,6 +21,6 @@ export const clearCache = async () => {
 export const reset = async () => {
   storage.clearAll()
   await CookieManager.clearAll()
-  await new Promise((resolve) => clearCookies(resolve))
+  await new Promise((resolve) => Networking.clearCookies(resolve))
   RNRestart.Restart()
 }

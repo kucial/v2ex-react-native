@@ -37,7 +37,7 @@
     "color": "^4.2.3",
     "cookie": "^0.5.0",
     "deepmerge": "^4.2.2",
-    "expo": "^51.0.36",
+    "expo": "~51.0.39",
     "expo-application": "~5.9.1",
     "expo-asset": "~10.0.10",
     "expo-barcode-scanner": "~13.0.1",
@@ -55,10 +55,10 @@
     "expo-linking": "~6.3.1",
     "expo-navigation-bar": "~3.0.7",
     "expo-screen-orientation": "~7.0.5",
-    "expo-splash-screen": "~0.27.6",
+    "expo-splash-screen": "~0.27.7",
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.7",
-    "expo-updates": "~0.25.26",
+    "expo-updates": "~0.25.27",
     "expo-web-browser": "~13.0.3",
     "formik": "^2.2.9",
     "highlight.js": "^11.7.0",
@@ -110,7 +110,7 @@
     "zeego": "^2.0.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3",
+    "@babel/core": "^7.24.0",
     "@testing-library/jest-native": "^4.0.11",
     "@testing-library/react-native": "^11.0.0",
     "@tsconfig/react-native": "^2.0.3",
@@ -118,7 +118,7 @@
     "@types/jest": "^29.2.4",
     "@types/lodash": "^4.14.191",
     "@types/marked": "^4.0.8",
-    "@types/react": "~18.0.24",
+    "@types/react": "~18.2.79",
     "@types/react-native": "~0.70.6",
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
@@ -139,7 +139,7 @@
     "prettier-config-standard": "^5.0.0",
     "prettier-eslint": "^15.0.1",
     "tailwindcss": "^3.1.6",
-    "typescript": "^4.9.4"
+    "typescript": "~5.3.3"
   },
   "jest": {
     "preset": "jest-expo",
@@ -147,5 +147,6 @@
       "<rootDir>/packages"
     ]
   },
-  "private": true
+  "private": true,
+  "packageManager": "yarn@4.5.1+sha512.341db9396b6e289fecc30cd7ab3af65060e05ebff4b3b47547b278b9e67b08f485ecd8c79006b405446262142c7a38154445ef7f17c1d5d1de7d90bf9ce7054d"
 }

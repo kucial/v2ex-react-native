@@ -154,6 +154,7 @@ type MyThemeDefinition = {
 }
 
 type ThemeService = {
+  name: string
   theme: MyTheme
   styles: ThemeStyles
   colorScheme: 'light' | 'dark'
