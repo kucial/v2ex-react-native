@@ -61,6 +61,20 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           assets: ['./src/assets/images'],
         },
       ],
+      [
+        'expo-dynamic-app-icon',
+        {
+          light: {
+            // icon name
+            image: './src/assets/icon.png', // icon path
+            prerendered: true, // for ios UIPrerenderedIcon option
+          },
+          dark: {
+            image: './src/assets/icon-dark.png',
+            prerendered: true,
+          },
+        },
+      ],
       '@sentry/react-native/expo',
       'expo-image-picker',
       [

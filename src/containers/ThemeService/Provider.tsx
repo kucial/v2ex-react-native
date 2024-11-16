@@ -1,4 +1,5 @@
 import { ReactNode, useContext, useEffect, useMemo } from 'react'
+import { setAppIcon } from 'expo-dynamic-app-icon'
 import * as NavigationBar from 'expo-navigation-bar'
 
 import { useAppSettings } from '../AppSettingsService'
@@ -28,6 +29,11 @@ export const ThemeProvider = (props: {
 
   useEffect(() => {
     NavigationBar.setBackgroundColorAsync(service.theme.colors.bg_overlay)
+    if (service.colorScheme == 'dark') {
+      setAppIcon('dark')
+    } else {
+      setAppIcon('light')
+    }
   }, [service])
 
   return (

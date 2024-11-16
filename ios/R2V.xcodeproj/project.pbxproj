@@ -12,9 +12,13 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		41E6C51395DA30DD264C6394 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 79B1615E88D327D39410B0A6 /* PrivacyInfo.xcprivacy */; };
+		610E1F56358A475B98726813 /* light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6E9FF84F0A8E43ADA3F8AD50 /* light-Icon-60x60@3x.png */; };
 		96905EF65AED1B983A6B3ABC /* libPods-R2V.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-R2V.a */; };
+		A37570FC0FF64F8CAE6D0B7E /* dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7015FBC8EDBB473EA257515F /* dark-Icon-60x60@2x.png */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		CB1BFFE8F4E845A6A6D45875 /* dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CFB58E810E964374AEF433A3 /* dark-Icon-60x60@3x.png */; };
+		E0F47CE08AAF4A7B9A1F14E0 /* light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8681E1C905FA49B2A42F1A02 /* light-Icon-60x60@2x.png */; };
 		EE3A9AF0DD6C483B86C8E568 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2180393A314C14AB6F0F81 /* noop-file.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,10 +32,14 @@
 		42FEAB568ED64976982AFC3F /* R2V-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "R2V-Bridging-Header.h"; path = "R2V/R2V-Bridging-Header.h"; sourceTree = "<group>"; };
 		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-R2V.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-R2V.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C2E3173556A471DD304B334 /* Pods-R2V.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-R2V.debug.xcconfig"; path = "Target Support Files/Pods-R2V/Pods-R2V.debug.xcconfig"; sourceTree = "<group>"; };
+		6E9FF84F0A8E43ADA3F8AD50 /* light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		7015FBC8EDBB473EA257515F /* dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
 		79B1615E88D327D39410B0A6 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = R2V/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-R2V.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-R2V.release.xcconfig"; path = "Target Support Files/Pods-R2V/Pods-R2V.release.xcconfig"; sourceTree = "<group>"; };
+		8681E1C905FA49B2A42F1A02 /* light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = R2V/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		CFB58E810E964374AEF433A3 /* dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
 		DD2180393A314C14AB6F0F81 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "R2V/noop-file.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-R2V/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -62,6 +70,7 @@
 				DD2180393A314C14AB6F0F81 /* noop-file.swift */,
 				42FEAB568ED64976982AFC3F /* R2V-Bridging-Header.h */,
 				79B1615E88D327D39410B0A6 /* PrivacyInfo.xcprivacy */,
+				7F93B32460EC4FBEB098FA44 /* DynamicAppIcons */,
 			);
 			name = R2V;
 			sourceTree = "<group>";
@@ -73,6 +82,18 @@
 				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-R2V.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7F93B32460EC4FBEB098FA44 /* DynamicAppIcons */ = {
+			isa = PBXGroup;
+			children = (
+				8681E1C905FA49B2A42F1A02 /* light-Icon-60x60@2x.png */,
+				6E9FF84F0A8E43ADA3F8AD50 /* light-Icon-60x60@3x.png */,
+				7015FBC8EDBB473EA257515F /* dark-Icon-60x60@2x.png */,
+				CFB58E810E964374AEF433A3 /* dark-Icon-60x60@3x.png */,
+			);
+			name = DynamicAppIcons;
+			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -214,6 +235,10 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				41E6C51395DA30DD264C6394 /* PrivacyInfo.xcprivacy in Resources */,
+				E0F47CE08AAF4A7B9A1F14E0 /* light-Icon-60x60@2x.png in Resources */,
+				610E1F56358A475B98726813 /* light-Icon-60x60@3x.png in Resources */,
+				A37570FC0FF64F8CAE6D0B7E /* dark-Icon-60x60@2x.png in Resources */,
+				CB1BFFE8F4E845A6A6D45875 /* dark-Icon-60x60@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,7 +416,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kucial.v2ex;
-				PRODUCT_NAME = "R2V";
+				PRODUCT_NAME = R2V;
 				SWIFT_OBJC_BRIDGING_HEADER = "R2V/R2V-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -419,7 +444,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.kucial.v2ex;
-				PRODUCT_NAME = "R2V";
+				PRODUCT_NAME = R2V;
 				SWIFT_OBJC_BRIDGING_HEADER = "R2V/R2V-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
