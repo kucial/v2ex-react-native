@@ -61,13 +61,13 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
     <View
       className="flex flex-row flex-1 px-2 items-center"
       style={props.style}>
-      <View className="relative flex-1 py-1">
+      <View className="relative flex-1 pt-1 pb-2">
         <View
           className="flex flex-row rounded-lg"
           style={props.style || styles.layer2}>
           <TextInput
-            className="flex-1 px-2 py-2"
-            style={[styles.text, styles.text_base]}
+            className="flex-1 px-2 min-h-[40px]"
+            style={[styles.text, { fontSize: styles.text_base.fontSize }]}
             selectionColor={theme.colors.primary}
             placeholderTextColor={theme.colors.text_placeholder}
             ref={searchInput}
