@@ -109,24 +109,34 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               }),
             )}>
             {/* Base */}
-            <View className="flex-row h-[44px]">
+            <View className="flex-row items-center">
               <View className={classNames('relative flex-1')}>
-                <TextInput
-                  className="rounded-lg flex-1 px-2"
-                  style={[styles.input__bg, styles.text, styles.text_base]}
-                  selectionColor={theme.colors.primary}
-                  placeholderTextColor={theme.colors.text_placeholder}
-                  defaultValue={searchParams.q || ''}
-                  ref={searchInput}
-                  placeholder="输入关键词"
-                  returnKeyType="search"
-                  onSubmitEditing={({ nativeEvent }) => {
-                    updateSearchParams((prev) => ({
-                      ...prev,
-                      q: nativeEvent.text,
-                    }))
-                  }}
-                />
+                <View
+                  className={classNames(
+                    'flex flex-row items-center rounded-lg min-h-[36px]',
+                  )}
+                  style={styles.input__bg}>
+                  <TextInput
+                    className="flex-1 px-2"
+                    style={[
+                      styles.input__bg,
+                      styles.text,
+                      { fontSize: styles.text_base.fontSize },
+                    ]}
+                    selectionColor={theme.colors.primary}
+                    placeholderTextColor={theme.colors.text_placeholder}
+                    defaultValue={searchParams.q || ''}
+                    ref={searchInput}
+                    placeholder="输入关键词"
+                    returnKeyType="search"
+                    onSubmitEditing={({ nativeEvent }) => {
+                      updateSearchParams((prev) => ({
+                        ...prev,
+                        q: nativeEvent.text,
+                      }))
+                    }}
+                  />
+                </View>
                 {!!searchParams.q && (
                   <View className="absolute right-0 h-full flex flex-row items-center justify-center">
                     <MyClearButton

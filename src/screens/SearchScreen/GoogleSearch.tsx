@@ -100,11 +100,13 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
             }),
           )}>
           <View
-            className={classNames('flex flex-row rounded-lg')}
+            className={classNames(
+              'flex flex-row items-center rounded-lg min-h-[36px]',
+            )}
             style={styles.input__bg}>
             <TextInput
-              className="flex-1 px-2 py-1"
-              style={[styles.text, styles.text_base]}
+              className="flex-1 px-2"
+              style={[styles.text, { fontSize: styles.text_base.fontSize }]}
               selectionColor={theme.colors.primary}
               placeholderTextColor={theme.colors.text_placeholder}
               defaultValue={searchParams.q || ''}
