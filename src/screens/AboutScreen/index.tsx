@@ -127,7 +127,7 @@ export default function AboutScreen(props) {
               onPress={async () => {
                 try {
                   const params = {
-                    subject: `R2V (${Constants.expoConfig.extra?.buildTag}) 意见反馈`,
+                    subject: `R2V (${Constants.expoConfig.extra?.buildTag}) ${Platform.OS} 意见反馈`,
                   }
                   await Linking.openURL(
                     `mailto:kongkx.yang@gmail.com?${stringify(params)}`,
