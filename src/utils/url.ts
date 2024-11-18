@@ -99,3 +99,13 @@ export function tailingFix(str: string) {
   }
   return str.replace(/(?:[)\],;。，；]).*$/, '')
 }
+
+export function getAbsoluteUrl(url: string) {
+  if (url.startsWith('http')) {
+    return url
+  }
+  if (url.startsWith('/')) {
+    return `https://v2ex.com${url}`
+  }
+  return url
+}

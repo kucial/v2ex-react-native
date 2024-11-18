@@ -7,6 +7,7 @@ import { Image } from 'expo-image'
 
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useTheme } from '@/containers/ThemeService'
+import { getAbsoluteUrl } from '@/utils/url'
 import { NodeExtra } from '@/utils/v2ex-client/types'
 
 export default function CollectedNodes(props: { data: NodeExtra[] }) {
@@ -37,7 +38,7 @@ export default function CollectedNodes(props: { data: NodeExtra[] }) {
                 }}>
                 <Image
                   className="w-[40px] h-[40px]"
-                  source={{ uri: node.avatar_large }}></Image>
+                  source={{ uri: getAbsoluteUrl(node.avatar_large) }}></Image>
                 <View className="ml-3 pt-1 pr-1" style={{ flex: 1 }}>
                   <Text numberOfLines={1} style={styles.text}>
                     {node.title}

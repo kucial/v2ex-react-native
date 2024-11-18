@@ -1649,7 +1649,8 @@ export async function getMyCollectedNodes(): Promise<
   const $ = res.$ || cheerioDoc(res.data)
   const data = $('#my-nodes .fav-node')
     .map(function (i, el) {
-      const name = $(el).find('img').attr('alt')
+      const href = $(el).attr('href')
+      const name = href.replace('/go/', '')
       const avatar_large = $(el).find('img').attr('src')
       const title = $(el).find('.fav-node-name').text()
       const topics = Number($(el).find('.fade').text()) || 0

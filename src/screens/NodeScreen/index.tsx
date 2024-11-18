@@ -17,6 +17,7 @@ import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 import * as v2exClient from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
+import { getAbsoluteUrl } from '@/utils/url'
 
 type NodeBrief = {
   name: string
@@ -124,7 +125,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
               <Image
                 className="w-[60px] h-[60px] mr-3"
                 source={{
-                  uri: node.avatar_large,
+                  uri: getAbsoluteUrl(node.avatar_large),
                 }}></Image>
             ) : (
               <View
