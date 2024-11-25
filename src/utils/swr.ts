@@ -115,8 +115,8 @@ export const cacheProvider = (cache: Cache) => {
       if (typeof key !== 'string') {
         console.log(key)
       }
-      // 不缓存后续页面.
-      if (/^\$inf\$/.test(key) && (value as any)._l > 1) {
+      // Home Feed 只缓存一页.
+      if (key.startsWith('$inf$@"/page/home/feed"') && (value as any)._l > 1) {
         if (value.data?.length == 1) {
           const overrided = { ...value, _l: 1, _i: undefined }
           storage.set(key, JSON.stringify(overrided))
