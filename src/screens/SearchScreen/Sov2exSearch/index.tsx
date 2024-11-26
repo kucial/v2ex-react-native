@@ -113,13 +113,12 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               <View className={classNames('relative flex-1')}>
                 <View
                   className={classNames(
-                    'flex flex-row items-center rounded-lg min-h-[36px]',
+                    'flex flex-row items-center rounded-lg min-h-[40px]',
                   )}
                   style={styles.input__bg}>
                   <TextInput
                     className="flex-1 px-2"
                     style={[
-                      styles.input__bg,
                       styles.text,
                       { fontSize: styles.text_base.fontSize },
                     ]}
@@ -136,9 +135,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                       }))
                     }}
                   />
-                </View>
-                {!!searchParams.q && (
-                  <View className="absolute right-0 h-full flex flex-row items-center justify-center">
+                  {!!searchParams.q && (
+                  <View className="h-full flex flex-row items-center justify-center">
                     <MyClearButton
                       onPress={() => {
                         updateSearchParams((prev) => ({
@@ -151,6 +149,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     />
                   </View>
                 )}
+                </View>
               </View>
               <View className="px-1 -mr-3">
                 <Button

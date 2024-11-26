@@ -101,7 +101,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
           )}>
           <View
             className={classNames(
-              'flex flex-row items-center rounded-lg min-h-[36px]',
+              'flex flex-row items-center rounded-lg min-h-[40px]',
             )}
             style={styles.input__bg}>
             <TextInput
