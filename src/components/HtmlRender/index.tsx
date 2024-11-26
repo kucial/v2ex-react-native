@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native'
+import ContextMenu from 'react-native-context-menu-view'
 import BaseRender, {
   HTMLSourceInline,
   RenderHTMLProps,
@@ -23,7 +24,6 @@ import * as Clipboard from 'expo-clipboard'
 import * as WebBrowser from 'expo-web-browser'
 // import { convert as htmlToMarkdown } from 'react-native-html-to-markdown'
 import htmlToMarkdown from 'html-to-md'
-import * as ContextMenu from 'zeego/context-menu'
 
 import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
@@ -326,48 +326,38 @@ function HtmlRender({
     <ImageViewingServiceProvider ref={viewingRef} handleQrCode={handleQrCode}>
       <RenderContext.Provider value={renderContext}>
         <View style={{ margin: -6 }}>
-          <ContextMenu.Root>
-            <ContextMenu.Trigger>
-              <View style={[{ padding: 6 }]}>
-                <BaseRender
-                  WebView={WebView}
-                  tagsStyles={styles}
-                  renderers={renderers}
-                  renderersProps={renderersProps}
-                  defaultTextProps={defaultTextProps}
-                  customHTMLElementModels={customHTMLElementModels}
-                  bypassAnonymousTPhrasingNodes={false}
-                  classesStyles={atomOne[colorScheme]}
-                  {...props}
-                />
-              </View>
-            </ContextMenu.Trigger>
-            <ContextMenu.Content>
-              <ContextMenu.Group>
-                <ContextMenu.Item key="copy" onSelect={handleCopy}>
-                  <ContextMenu.ItemTitle>复制</ContextMenu.ItemTitle>
-                  <ContextMenu.ItemIcon
-                    ios={{
-                      name: 'doc.on.doc',
-                    }}></ContextMenu.ItemIcon>
-                </ContextMenu.Item>
-                <ContextMenu.Item key="select-text" onSelect={handleSelect}>
-                  <ContextMenu.ItemTitle>选择文本</ContextMenu.ItemTitle>
-                  <ContextMenu.ItemIcon
-                    ios={{
-                      name: 'hand.point.up.left.and.text',
-                    }}></ContextMenu.ItemIcon>
-                </ContextMenu.Item>
-                <ContextMenu.Item
-                  key="base64-decode"
-                  onSelect={handleBase64Decode}>
-                  <ContextMenu.ItemTitle>Base64 提取</ContextMenu.ItemTitle>
-                  <ContextMenu.ItemIcon
-                    ios={{ name: 'text.viewfinder' }}></ContextMenu.ItemIcon>
-                </ContextMenu.Item>
-              </ContextMenu.Group>
-            </ContextMenu.Content>
-          </ContextMenu.Root>
+          <ContextMenu
+            actions={[
+              { title: '复制', systemIcon: 'doc.on.doc'  },
+              { title: '选择文本', systemIcon: 'hand.point.up.left.and.text' },
+              { title: 'base64 提取', systemIcon: 'text.viewfinder' },
+            ]}
+            onPress={({ nativeEvent }) => {
+              switch (nativeEvent.index) {
+                case 0:
+                  return handleCopy();
+                case 1:
+                  return handleSelect();
+                case 2:
+                  return handleBase64Decode();
+              }
+            }}
+            previewBackgroundColor={themeStyles.layer1.backgroundColor}
+            >
+            <View style={[{ padding: 6, borderRadius: 8 }]}>
+              <BaseRender
+                WebView={WebView}
+                tagsStyles={styles}
+                renderers={renderers}
+                renderersProps={renderersProps}
+                defaultTextProps={defaultTextProps}
+                customHTMLElementModels={customHTMLElementModels}
+                bypassAnonymousTPhrasingNodes={false}
+                classesStyles={atomOne[colorScheme]}
+                {...props}
+              />
+            </View>
+          </ContextMenu>
         </View>
       </RenderContext.Provider>
       <MyBottomSheetModal
