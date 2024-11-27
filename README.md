@@ -91,7 +91,7 @@ React Native + Tailwindcss + SWR
   - [x] 用户登录
     - [x] 账号密码登录
     - [x] 2FA 支持
-    - [x] Google 登录（隐藏）
+    - [x] Google 登录（隐藏， 进入关于，点击应用图标 3 下可启用）
   - [x] 创建主题
     - [x] 富文本编辑
     - [x] 插入图片
@@ -105,9 +105,9 @@ React Native + Tailwindcss + SWR
   - [x] 上传图片
   - [ ] 删除图片
 - [x] Url Scheme, `r2v`
-  - [x] Topic: `r2v://t/:id`
-  - [x] Node: `r2v://node/:name`
-  - [x] Member: `r2v://member/:username`
+  - [x] Topic: `r2v://v2ex.com/t/:id`
+  - [x] Node: `r2v://v2ex.com/go/:name`
+  - [x] Member: `r2v://v2ex.com/member/:username`
 - [ ] 设置
   - [x] Imgur 图床连接
   - [ ] 偏好设置
