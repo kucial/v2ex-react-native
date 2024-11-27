@@ -6,7 +6,7 @@ export const r2v: MyThemeDefinition = {
     dark: false,
     colors: {
       primary: '#171717', // neutral[900]
-      background: '#F2F2F2',
+      background: '#F9F9FA',
       card: '#ffffff',
       text: '#1C1C1E',
       border: '#cccccc',
