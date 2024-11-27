@@ -137,7 +137,11 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
       alert.show({ type: 'success', message: '主题创建成功' })
     } catch (err) {
       setIsSubmitting(false)
-      alert.show({ type: 'error', message: err.message })
+      if (err.code == 'PROBLEMS') {
+        alert.show({ type: 'error', message: err.message + err.data.map((line, i) => `${i+1}. ${line}`).join('; ') });
+      } else {
+        alert.show({ type: 'error', message: err.message })
+      }
     }
   }, [values, navigation])
 
