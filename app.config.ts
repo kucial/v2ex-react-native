@@ -45,7 +45,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.kucial.v2ex',
-      runtimeVersion: '1.2',
+      runtimeVersion: '1.9',
       splash: {
         image: './src/assets/splash.png',
         backgroundColor: '#ffffff',
