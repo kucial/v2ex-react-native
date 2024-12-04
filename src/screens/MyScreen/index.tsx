@@ -257,9 +257,8 @@ export default function MyScreen({ navigation }: ScreenProps) {
             isLast
           />
         </LineItemGroup>
-
-        {currentUser && (
-          <View className="mx-2 py-7 mb-4 mt-8 flex-1 justify-end">
+        <View className="mx-2 py-7 mb-4 mt-8 flex-1 justify-end">
+          {currentUser && (
             <Pressable
               className={classNames(
                 'flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60',
@@ -279,8 +278,8 @@ export default function MyScreen({ navigation }: ScreenProps) {
               }}>
               <Text style={styles.text_danger}>退出登录</Text>
             </Pressable>
-          </View>
-        )}
+          )}
+        </View>
       </MaxWidthWrapper>
     </ScrollView>
   )

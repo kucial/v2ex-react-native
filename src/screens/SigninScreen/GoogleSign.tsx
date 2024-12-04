@@ -1,5 +1,5 @@
 import { memo, useCallback, useRef, useState } from 'react'
-import { Alert, Pressable, Text, View } from 'react-native'
+import { Alert, Platform, Pressable, Text, View } from 'react-native'
 import WebView from 'react-native-webview'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import useSWR from 'swr'
@@ -93,8 +93,14 @@ function GoogleSign(props: GoogleSigninProps) {
             userAgent={USER_AGENT}
             originWhitelist={['*']}
             sharedCookiesEnabled={true}
+            decelerationRate="normal"
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            startInLoadingState={true}
+            scalesPageToFit={true}
             source={{
               uri: `https://www.v2ex.com/auth/google?once=${onceSwr.data.data}`,
+              // uri: Platform.OS == 'android' ?  `https://www.v2ex.com/signin` : `https://www.v2ex.com/auth/google?once=${onceSwr.data.data}`,
             }}
             onLoad={() => {
               const toInject = scriptsToInject.current.shift()

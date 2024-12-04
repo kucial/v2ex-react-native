@@ -335,6 +335,8 @@ export async function fetchOnce(
     url: '/poll_once',
     headers,
   })
+  // reset cachedOnceToken
+  cachedOnceToken = undefined
   return {
     success: true,
     message: 'Once code',
