@@ -2,6 +2,7 @@ import { ReactNode, useContext, useEffect, useMemo } from 'react'
 import { Platform } from 'react-native'
 import { getAppIcon, setAppIcon } from 'expo-dynamic-app-icon'
 import * as NavigationBar from 'expo-navigation-bar'
+import * as SystemUI from 'expo-system-ui';
 
 import { useAppSettings } from '../AppSettingsService'
 import { ThemeContext } from './context'
@@ -32,6 +33,7 @@ export const ThemeProvider = (props: {
     if (Platform.OS == 'android') {
       NavigationBar.setBackgroundColorAsync(service.theme.colors.bg_overlay)
       NavigationBar.setButtonStyleAsync(service.theme.dark ? 'light' : 'dark')
+      SystemUI.setBackgroundColorAsync(service.theme.colors.bg_overlay)
     }
     if (Platform.OS == 'ios') {
       const iconName = `${themeName}_${service.colorScheme}`
