@@ -1,3 +1,5 @@
 <resources>
   <color name="splashscreen_background">#111111</color>
+  <color name="bg_overlay">#262626</color>
+  <color name="text">#d4d4d4</color>
 </resources>

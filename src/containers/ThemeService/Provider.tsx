@@ -31,6 +31,7 @@ export const ThemeProvider = (props: {
   useEffect(() => {
     if (Platform.OS == 'android') {
       NavigationBar.setBackgroundColorAsync(service.theme.colors.bg_overlay)
+      NavigationBar.setButtonStyleAsync(service.theme.dark ? 'light' : 'dark')
     }
     if (Platform.OS == 'ios') {
       const iconName = `${themeName}_${service.colorScheme}`
