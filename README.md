@@ -145,7 +145,7 @@ React Native + Tailwindcss + SWR
 - nativewind + custom theme provider -- 样式主题系统
 - sentry-expo -- 错误跟踪
 - MMKV -- 存储
-- swr -- 请求管理
+- ~~swr -- 请求管理~~ react-query
   - fetcher -- V2EX V1 API + 自定义 webview 封装接口
   - cacheProvider -- MMKV storage
 - react-native-render-html -- 内容渲染

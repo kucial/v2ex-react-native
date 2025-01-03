@@ -6,7 +6,7 @@ import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import classNames from 'classnames'
 import { styled } from 'nativewind'
-import useSWR from 'swr'
+import { useQuery } from '@tanstack/react-query'
 
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import { useTheme } from '@/containers/ThemeService'
@@ -32,7 +32,10 @@ type NodeSelectProps = {
 }
 
 function NodeSelect(props: NodeSelectProps) {
-  const nodesSwr = useSWR('/api/nodes/all.json', getNodes)
+  const nodesQuery = useQuery({
+    queryKey: ['/api/nodes/all.json'],
+    queryFn: getNodes,
+  })
   const { theme, styles } = useTheme()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
@@ -41,18 +44,18 @@ function NodeSelect(props: NodeSelectProps) {
   const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
 
   const filtered = useMemo(() => {
-    if (!nodesSwr.data) {
+    if (!nodesQuery.data) {
       return null
     }
     if (!filter) {
-      return nodesSwr.data.data
+      return nodesQuery.data.data
     }
-    return nodesSwr.data.data.filter((n) =>
+    return nodesQuery.data.data.filter((n) =>
       ['name', 'title', 'title_alternative'].some(
         (key) => n[key].indexOf(filter) > -1,
       ),
     )
-  }, [nodesSwr.data, filter])
+  }, [nodesQuery.data, filter])
 
   const value = useMemo(() => {
     if (!props.value) {
@@ -61,11 +64,11 @@ function NodeSelect(props: NodeSelectProps) {
     if (typeof props.value === 'object') {
       return props.value
     }
-    if (!nodesSwr.data) {
+    if (!nodesQuery.data) {
       return { name: props.value } as NodeDetail
     }
-    return nodesSwr.data.data.find((item) => item.name === props.value)
-  }, [props.value, nodesSwr.data])
+    return nodesQuery.data.data.find((item) => item.name === props.value)
+  }, [props.value, nodesQuery.data])
 
   const renderLabel = useCallback(
     (n: NodeDetail) => {

@@ -4,7 +4,6 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { useImgurService } from '@/containers/ImgurService'
 import { ImgurAlbum } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
-import { isRefreshing } from '@/utils/swr'
 
 import AlbumAdd from './AlbumAdd'
 import AlbumCard from './AlbumCard'
@@ -14,22 +13,19 @@ type AlbumsProps = {
 }
 export default function Albums(props: AlbumsProps) {
   const imgur = useImgurService()
-  const albumsSwr = imgur.useAlbums()
+  const albumsQuery = imgur.useAlbums()
   const { theme } = useTheme()
   return (
     <ScrollView
       refreshControl={
         <MyRefreshControl
-          tintColor={theme.colors.primary}
-          refreshing={isRefreshing(albumsSwr)}
-          onRefresh={() => {
-            albumsSwr.mutate()
-          }}
+          refreshing={albumsQuery.isRefetching}
+          onRefresh={albumsQuery.refetch}
         />
       }>
       <View className="py-2 px-[2px]">
         <View className="flex flex-row flex-wrap">
-          {albumsSwr.data?.map((album) => (
+          {albumsQuery.data?.map((album) => (
             <View className="basis-1/3 p-[2px] mb-2" key={album.id}>
               <AlbumCard
                 data={album}

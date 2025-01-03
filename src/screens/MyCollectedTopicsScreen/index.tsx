@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from 'react'
 import { FlashList } from '@shopify/flash-list'
-import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { isRefreshing, shouldLoadMore } from '@/utils/react-query'
 import { getMyCollectedTopics } from '@/utils/v2ex-client'
 
 import CollectedTopicRow from './CollectedTopicRow'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 export default function CollectedTopicsScreen() {
   const { data: settings } = useAppSettings()
@@ -16,23 +16,36 @@ export default function CollectedTopicsScreen() {
     return ['/page/my/topics.json', index + 1]
   }, [])
 
-  const listSwr = useSWRInfinite(getKey, ([_, page]) =>
-    getMyCollectedTopics({ p: page }),
-  )
+
+  const fetchItems = useCallback(async ({ pageParam }) => {
+    return getMyCollectedTopics({ p: pageParam })
+  }, [])
+
+  const listQuery = useInfiniteQuery({
+    queryKey: ['/page/my/topics.json'],
+    queryFn: fetchItems,
+    initialPageParam: 1,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+        return lastPage.pagination.current +1
+      }
+      return undefined
+    },
+  })
 
   const listItems = useMemo(() => {
-    if (!listSwr.data && !listSwr.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(10)
     }
-    const items = (listSwr.data || []).reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
     }, [])
     return items
-  }, [listSwr])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
@@ -60,23 +73,18 @@ export default function CollectedTopicsScreen() {
       onEndReachedThreshold={0.4}
       estimatedItemSize={110}
       onEndReached={() => {
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize(listSwr.size + 1)
+        if (shouldLoadMore(listQuery)) {
+          listQuery.fetchNextPage()
         }
       }}
       refreshControl={
         <MyRefreshControl
-          onRefresh={() => {
-            if (listSwr.isValidating) {
-              return
-            }
-            listSwr.mutate()
-          }}
-          refreshing={isRefreshing(listSwr)}
+          refreshing={listQuery.isRefetching}
+          onRefresh={listQuery.refetch}
         />
       }
       ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
+        return <CommonListFooter data={listQuery} />
       }}
     />
   )

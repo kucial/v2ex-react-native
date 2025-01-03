@@ -2,7 +2,6 @@ import { useCallback } from 'react'
 import { Text, View } from 'react-native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Image } from 'expo-image'
-import useSWR from 'swr'
 
 import Button from '@/components/Button'
 import { Box } from '@/components/Skeleton/Elements'
@@ -15,6 +14,7 @@ import {
   unblockMember,
 } from '@/utils/v2ex-client'
 import { MemberDetail, StatusResponse } from '@/utils/v2ex-client/types'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const AVATAR_SIZE = 48
 
@@ -25,24 +25,20 @@ export default function SimpleMemberInfo(props: {
 }) {
   const { username, navigation, currentUser } = props
   const { styles } = useTheme()
-  const memberSwr = useSWR(
-    [`/page/member/:username/info.json`, username],
-    async ([_, username]) => {
-      const { data } = await getMemberDetail({ username })
-      return data
-    },
-    {
-      onErrorRetry(err) {
-        if (err.response?.status === 404) {
-          return
-        }
-      },
-    },
-  )
+  const fetchMemberDetail = useCallback(async () => {
+    const { data } = await getMemberDetail({ username })
+    return data
+  }, [username])
+
+  const queryClient = useQueryClient();
+  const memberQuery = useQuery({
+    queryKey: [`/page/member/:username/info.json`, username],
+    queryFn: fetchMemberDetail,
+  })
   const alert = useAlertService()
 
   const handleBlockToggle = useCallback(() => {
-    const { data } = memberSwr
+    const { data } = memberQuery
     if (!data) {
       return
     }
@@ -68,13 +64,10 @@ export default function SimpleMemberInfo(props: {
           type: 'success',
           message: successMsg,
         })
-        memberSwr.mutate(
-          (prev) => ({
-            ...prev,
-            meta: patch.meta,
-          }),
-          false,
-        )
+        queryClient.setQueryData([`/page/member/:username/info.json`, username], {
+          ...memberQuery.data,
+          meta: patch.meta,
+        })
       })
       .catch((err) => {
         alert.show({ type: 'error', message: err.message })
@@ -82,9 +75,9 @@ export default function SimpleMemberInfo(props: {
       .finally(() => {
         alert.hide(indicator)
       })
-  }, [memberSwr.data, memberSwr.mutate])
+  }, [memberQuery.data])
 
-  const { data } = memberSwr
+  const { data } = memberQuery
 
   return (
     <View className="px-2 pt-1 pb-3" style={styles.border_b_light}>

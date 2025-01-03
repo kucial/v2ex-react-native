@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { SharedValue } from 'react-native-reanimated'
 import { FlashListProps } from '@shopify/flash-list'
-import useSWRInfinite from 'swr/infinite'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
@@ -9,10 +8,11 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { isRefreshing, shouldLoadMore } from '@/utils/react-query'
 import { getMemberTopics } from '@/utils/v2ex-client'
 
 import UserTopicRow from './MemberTopicRow'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 export default function MemberTopics(
   props: {
@@ -25,46 +25,49 @@ export default function MemberTopics(
   const alert = useAlertService()
   const { getViewedStatus } = useViewedTopics()
   const { data: settings } = useAppSettings()
-  const getKey = useCallback(
-    (index: number): [string, string, number] => {
-      return ['/page/member/:username/topics.json', props.username, index + 1]
-    },
-    [props.username],
-  )
 
-  const listSwr = useSWRInfinite(
-    getKey,
-    ([_, username, page]) => getMemberTopics({ username, p: page }),
-    {
-      onError(err) {
+  const fetchItems = useCallback(
+    async({ pageParam }) => {
+      try {
+        return getMemberTopics({ username: props.username, p: pageParam })
+      } catch (err) {
         if (!err.code) {
           alert.show({
             type: 'error',
             message: err.message || '请求资源失败',
           })
         }
-      },
-      onErrorRetry(err) {
-        if (err.code === 'member_locked') {
-          return
-        }
-      },
+        throw err
+      }
     },
+    [props.username],
   )
 
+  const listQuery = useInfiniteQuery({
+    queryKey: ['/page/member/:username/topics.json', props.username],
+    queryFn: fetchItems,
+    initialPageParam: 1,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+        return lastPage.pagination.current +1
+      }
+      return undefined
+    }
+  })
+
   const listItems = useMemo(() => {
-    if (!listSwr.data && !listSwr.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(10)
     }
-    const items = (listSwr.data || []).reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
     }, [])
     return items
-  }, [listSwr])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
@@ -95,27 +98,22 @@ export default function MemberTopics(
       estimatedItemSize={110}
       scrollEventThrottle={16}
       onEndReached={() => {
-        if (listSwr.error?.code === 'member_locked') {
+        if (listQuery.error?.code === 'MEMBER_LOCKED') {
           return
         }
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize(listSwr.size + 1)
+        if (shouldLoadMore(listQuery)) {
+          listQuery.fetchNextPage()
         }
       }}
       refreshControl={
         <MyRefreshControl
-          onRefresh={() => {
-            if (listSwr.isValidating) {
-              return
-            }
-            listSwr.mutate()
-          }}
-          refreshing={isRefreshing(listSwr)}
+          refreshing={listQuery.isRefetching}
+          onRefresh={listQuery.refetch}
           progressViewOffset={props.contentContainerStyle.paddingTop as number}
         />
       }
       ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
+        return <CommonListFooter data={listQuery} />
       }}
       onScroll={props.onScroll}
       onScrollEndDrag={props.onScrollEndDrag}

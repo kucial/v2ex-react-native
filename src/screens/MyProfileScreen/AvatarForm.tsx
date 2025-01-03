@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Image, Pressable, ScrollView, View } from 'react-native'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as ImagePicker from 'expo-image-picker'
-import useSWR from 'swr'
 
 import Button from '@/components/Button'
 import GroupWapper from '@/components/GroupWrapper'
@@ -12,6 +11,7 @@ import SectionHeader from '@/components/SectionHeader'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchAvatarForm, uploadAvatar } from '@/utils/v2ex-client'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const AvatarPicker = (props: {
   username: string
@@ -20,22 +20,24 @@ const AvatarPicker = (props: {
 }) => {
   const { styles, theme } = useTheme()
   const alert = useAlertService()
+  const queryClient = useQueryClient()
 
-  const avatarSwr = useSWR(
-    props.isActive ? `/member/${props.username}/avatar.json` : null,
-    async () => {
-      const res = await fetchAvatarForm()
-      return res.data
-    },
+  const fetchForm = useCallback(async () => {
+    const res = await fetchAvatarForm()
+    return res.data
+  }, [props.username])
+
+  const avatarFormQuery = useQuery(
     {
-      revalidateOnMount: true,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    },
+      queryKey: ['/menber/:username/avatar.json', props.username],
+      queryFn: fetchForm,
+      refetchOnMount: true,
+      enabled: props.isActive,
+      staleTime: 0,
+    }
   )
 
-  const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   // selected
   const [avatar, setAvatar] = useState(null)
 
@@ -53,7 +55,7 @@ const AvatarPicker = (props: {
   }
 
   const handleUpload = async () => {
-    setLoading(true)
+    setUploading(true)
     try {
       const manipResult = await ImageManipulator.manipulateAsync(
         avatar.uri,
@@ -66,50 +68,53 @@ const AvatarPicker = (props: {
           name: avatar.fileName || 'avatar.png',
           type: avatar.type,
         },
-        once: avatarSwr.data.once,
+        once: avatarFormQuery.data.once,
       })
-      avatarSwr.mutate(updateRes.data, { revalidate: false })
+      queryClient.setQueryData(['/menber/:username/avatar.json', props.username], updateRes.data);
       setAvatar(null)
       alert.show({ type: 'success', message: '头像已更新' })
       props.onUpdated?.()
     } catch (err) {
       alert.show({ type: 'error', message: err.message })
     } finally {
-      setLoading(false)
+      setUploading(false)
     }
   }
+
+  const handleFormRefetch = useCallback(() => {
+    if (uploading) {
+      return ;
+    }
+    avatarFormQuery.refetch()
+  }, [uploading]);
 
   return (
     <ScrollView
       refreshControl={
         <MyRefreshControl
-          refreshing={avatarSwr.isValidating}
-          onRefresh={() => {
-            if (!avatarSwr.isValidating && !loading) {
-              avatarSwr.mutate()
-            }
-          }}
+          refreshing={avatarFormQuery.isRefetching}
+          onRefresh={handleFormRefetch}
         />
       }>
       <MaxWidthWrapper className="py-4 px-2">
         <GroupWapper
           innerStyle={styles.layer1}
-          style={avatarSwr.isValidating && { opacity: 0.4 }}
-          pointerEvents={avatarSwr.isValidating ? 'none' : 'auto'}>
+          style={avatarFormQuery.isRefetching && { opacity: 0.4 }}
+          pointerEvents={avatarFormQuery.isRefetching ? 'none' : 'auto'}>
           <SectionHeader title="当前头像" />
           <View className="flex flex-row items-end px-1 py-2">
             <Image
-              source={{ uri: avatarSwr.data?.avatars[0] }}
+              source={{ uri: avatarFormQuery.data?.avatars[0] }}
               style={{ backgroundColor: theme.colors.skeleton }}
               className="w-[73] h-[73] rounded mx-2"
             />
             <Image
-              source={{ uri: avatarSwr.data?.avatars[1] }}
+              source={{ uri: avatarFormQuery.data?.avatars[1] }}
               style={{ backgroundColor: theme.colors.skeleton }}
               className="w-[48] h-[48] rounded mx-2"
             />
             <Image
-              source={{ uri: avatarSwr.data?.avatars[2] }}
+              source={{ uri: avatarFormQuery.data?.avatars[2] }}
               style={{ backgroundColor: theme.colors.skeleton }}
               className="w-[24] h-[24] rounded mx-2"
             />
@@ -143,8 +148,8 @@ const AvatarPicker = (props: {
           <View className="p-3 flex flex-row mb-2">
             {avatar ? (
               <Button
-                loading={loading}
-                disabled={loading}
+                loading={uploading}
+                disabled={uploading}
                 variant="primary"
                 size="md"
                 label="上传头像"

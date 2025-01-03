@@ -516,7 +516,7 @@ export async function getXnaFeeds({
   }
 }
 
-export async function getHotTopics() {
+export async function getHotTopics(): Promise<PaginatedResponse<HomeTopicFeed>> {
   const res = await request({
     url: '/',
     headers: {
@@ -1005,7 +1005,15 @@ export async function getTopicReplies({
     .get()
 
   const pagination = { current: 1, total: 1 }
+
+  const $page = $('.page_current').parent().children().get(0)
   const $total = $('.page_current').parent().children().get(1)
+  if ($page) {
+    const pageText = $($page).text()
+    if (pageText && /第 \d+ 页/.test(pageText)) {
+      pagination.current = Number(pageText.replace(/第 (\d+) 页/, '$1'))
+    }
+  }
 
   if ($total) {
     const totalText = $($total).text()
@@ -1170,16 +1178,27 @@ export async function collectNode({
   const res = await request({
     url: `/favorite/node/${detail.id}`,
     params: { once },
+    headers: {
+      referer: `${BASE_URL}/go/${name}`
+    }
   })
   const $ = res.$ || cheerioDoc(res.data)
-  const collected = !!$('a[href^="/unfavorite/node"]').length
-  return {
-    success: collected,
-    message: collected ? '操作成功' : '操作失败',
-    data: {
-      collected,
-    },
+  const success = !!$('a[href^="/unfavorite/node"]').length
+  if (!success) {
+    throw new ApiError({
+      code: 'OPERATION_FAILED',
+      message: '操作失败'
+    })
   }
+
+  return {
+    success: true,
+    message: '操作成功',
+    data: {
+      collected: true
+    }
+  }
+
 }
 export async function uncollectNode({
   name,
@@ -1195,15 +1214,26 @@ export async function uncollectNode({
   const res = await request({
     url: `/unfavorite/node/${detail.id}`,
     params: { once },
+    headers: {
+      referer: `${BASE_URL}/go/${name}`
+    }
   })
   const $ = res.$ || cheerioDoc(res.data)
-  const collected = !!$('a[href^="/unfavorite/node"]').length
+  const success = !!$('a[href^="/favorite/node"]').length
+
+  if (!success) {
+    throw new ApiError({
+      code: 'OPERATION_FAILED',
+      message: '操作失败'
+    })
+  }
+
   return {
-    success: !collected,
-    message: !collected ? '操作成功' : '操作失败',
+    success: true,
+    message: '操作成功',
     data: {
-      collected,
-    },
+      collected: false
+    }
   }
 }
 export async function getNodeFeeds({
@@ -1270,18 +1300,28 @@ export async function getMemberDetail({
 }: {
   username: string
 }): Promise<EntityResponse<MemberDetail>> {
-  const { data: user } = await request({
-    url: '/api/members/show.json',
-    params: { username },
-  })
+  try {
+    const { data: user } = await request({
+      url: '/api/members/show.json',
+      params: { username },
+    })
 
-  const res = await request({
-    url: `/member/${username}`,
-  })
-  const $ = res.$ || cheerioDoc(res.data)
-  user.meta = userMetaForCurrentUser($)
-  return {
-    data: user,
+    const res = await request({
+      url: `/member/${username}`,
+    })
+    const $ = res.$ || cheerioDoc(res.data)
+    user.meta = userMetaForCurrentUser($)
+    return {
+      data: user,
+    }
+  } catch (err) {
+    if (err.response.status == 404) {
+      throw new ApiError({
+        code: 'NOT_FOUND',
+        message: err.message,
+      })
+    }
+    throw err
   }
 }
 
@@ -1428,7 +1468,7 @@ export async function getMemberTopics({
     $('#Wrapper .content .box .cell img').attr('src')?.indexOf('lock') > -1
   ) {
     throw new ApiError({
-      code: 'member_locked',
+      code: 'MEMBER_LOCKED',
       message: $('#Wrapper .content .box .cell').first().text().trim(),
     })
   }
@@ -1923,7 +1963,7 @@ const _settingsForm = ($) => {
   // checkbox
   $(`form[action="/settings"] input[type=checkbox]`).each((i, el) => {
     const $el = $(el)
-    data[$el.attr('name')] = !!$el.attr('checked')
+    data[$el.attr('name')] = !!$el.is(':checked');
   })
   // select
   $(`form[action="/settings"] select`).each((i, el) => {

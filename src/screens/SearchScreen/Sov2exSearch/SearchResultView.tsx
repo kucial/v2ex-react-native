@@ -2,18 +2,18 @@ import { useCallback, useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { stringify } from 'qs'
-import useSWRInfinite, { SWRInfiniteResponse } from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import Loader from '@/components/Loader'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useTheme } from '@/containers/ThemeService'
-import { isRefreshing } from '@/utils/swr'
+import { isRefreshing } from '@/utils/react-query'
 import * as v2exClient from '@/utils/v2ex-client'
 import { SearchHit } from '@/utils/v2ex-client/types'
 
 import { SearchParams } from '../types'
 import ResultRow from './ResultRow'
+import { useInfiniteQuery, UseInfiniteQueryResult } from '@tanstack/react-query'
 
 const SIZE = 20
 
@@ -21,18 +21,6 @@ const isEmpty = (data: any) => {
   return data.hits?.length === 0
 }
 
-// 完全加载
-const hasReachEnd = (listSwr: SWRInfiniteResponse) => {
-  if (!listSwr.data?.length) {
-    return false
-  }
-  if (listSwr.isValidating) {
-    return false
-  }
-  const total = listSwr.data[0]?.total
-  const loaded = listSwr.data.reduce((prev, page) => prev + page.hits.length, 0)
-  return loaded >= total
-}
 
 export default function SearchResultView(props: { params: SearchParams }) {
   const { styles } = useTheme()
@@ -47,46 +35,48 @@ export default function SearchResultView(props: { params: SearchParams }) {
     }
   }, [props.params])
 
-  const listSwr = useSWRInfinite(
-    (index) => ['sove2x-search', stringify(props.params), index],
-    ([_, id, index]) => {
-      return v2exClient.search({
-        ...props.params,
-        size: SIZE,
-        from: index * SIZE,
-      })
+  const fetchItems = useCallback(async ({ pageParam }) => {
+    return v2exClient.search({
+      ...props.params,
+      size: SIZE,
+      from: pageParam,
+    })
+  }, [props.params]);
+
+  const listQuery = useInfiniteQuery({
+    queryKey: ['sove2x-search', stringify(props.params)],
+    queryFn: fetchItems,
+    initialPageParam: 0,
+    getNextPageParam(lastPage, _, lastPageParam) {
+      if (lastPageParam + SIZE < lastPage.total) {
+        return lastPageParam + SIZE
+      }
+      return undefined
     },
-    {
-      // initialSize: Math.max(1, Math.ceil((topic?.replies || 0) / 100)),
-      revalidateOnMount: true,
-      revalidateOnFocus: false,
-      onErrorRetry(err) {
-        if (err.code === 'RESOURCE_ERROR') {
-          return
-        }
-      },
-    },
-  )
+    refetchOnMount: true,
+  })
+
+
 
   const items = useMemo(() => {
-    if (!listSwr.data) {
+    if (!listQuery.data) {
       return []
     }
-    return listSwr.data.reduce(
+    return listQuery.data?.pages.reduce(
       (prev, page) => [...prev, ...page.hits],
       [] as SearchHit[],
     )
-  }, [listSwr.data])
+  }, [listQuery.data])
 
-  const total = listSwr.data?.[0].total
+  const total = listQuery.data?.pages?.[0].total
   const handleReachEnd = useCallback(() => {
-    if (!listSwr.data) {
+    if (!listQuery.data) {
       return
     }
-    if (!listSwr.isValidating && items.length < total) {
-      listSwr.setSize(listSwr.size + 1)
+    if (!listQuery.isFetching && items.length < total) {
+      listQuery.fetchNextPage();
     }
-  }, [listSwr, items, total])
+  }, [listQuery, items, total])
 
   return (
     <FlashList
@@ -117,21 +107,16 @@ export default function SearchResultView(props: { params: SearchParams }) {
       ListFooterComponent={() => {
         return (
           <CommonListFooter
-            data={listSwr}
+            data={listQuery}
             isEmpty={isEmpty}
-            hasReachEnd={hasReachEnd(listSwr)}
+            hasReachEnd={!listQuery.hasNextPage}
           />
         )
       }}
       refreshControl={
         <MyRefreshControl
-          onRefresh={() => {
-            if (listSwr.isValidating) {
-              return
-            }
-            listSwr.mutate()
-          }}
-          refreshing={isRefreshing(listSwr)}
+          refreshing={listQuery.isRefetching}
+          onRefresh={listQuery.refetch}
         />
       }
       scrollEventThrottle={16}

@@ -2,29 +2,28 @@ import { useMemo, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import ImageView from 'react-native-image-viewing'
 import classNames from 'classnames'
-import { SWRResponse } from 'swr'
 
 import CheckIcon from '@/components/CheckIcon'
 import { ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
-import { isRefreshing } from '@/utils/swr'
 
 import MyRefreshControl from '../MyRefreshControl'
 import ImageCard from './ImageCard'
+import { UseQueryResult } from '@tanstack/react-query'
 
 export type ImagesGridProps = {
-  imagesSwr: SWRResponse<ImgurImage[], Error>
+  imagesQuery: UseQueryResult<ImgurImage[], Error>
   selected: ImgurImage[]
   onToggleSelect(image: ImgurImage): void
 }
 export default function ImagesGrid(props: ImagesGridProps) {
-  const { imagesSwr } = props
+  const { imagesQuery } = props
   const { styles } = useTheme()
 
   const [viewIndex, setViewIndex] = useState(-1)
 
   const imageViewingProps = useMemo(() => {
-    const imageItems = imagesSwr.data
+    const imageItems = imagesQuery.data
     return {
       images: imageItems?.map((item) => ({
         uri: item.link,
@@ -81,18 +80,16 @@ export default function ImagesGrid(props: ImagesGridProps) {
         )
       },
     }
-  }, [imagesSwr.data, props.selected])
+  }, [imagesQuery.data, props.selected])
 
-  const imageItems = imagesSwr.data
+  const imageItems = imagesQuery.data
 
   return (
     <ScrollView
       refreshControl={
         <MyRefreshControl
-          refreshing={isRefreshing(imagesSwr)}
-          onRefresh={() => {
-            imagesSwr.mutate()
-          }}
+          refreshing={imagesQuery.isRefetching}
+          onRefresh={imagesQuery.refetch}
         />
       }>
       <View className="py-2 px-[1px]">

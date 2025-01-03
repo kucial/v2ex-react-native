@@ -86,7 +86,6 @@ export default function UploadButton(props) {
           } else {
             imgur.refreshImages()
           }
-          // mutate album cache
           alert.show({ type: 'success', message: '上传成功' })
         } catch (err) {
           alert.show({ type: 'error', message: err.message })

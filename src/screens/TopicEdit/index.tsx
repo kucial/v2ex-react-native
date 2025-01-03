@@ -2,7 +2,6 @@ import { useCallback, useRef } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Formik, FormikProps } from 'formik'
-import useSWR, { mutate } from 'swr'
 
 import Button from '@/components/Button'
 import { SelectField, TextField } from '@/components/formik'
@@ -11,6 +10,8 @@ import Loader from '@/components/Loader'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { editTopic, fetchTopicEditForm } from '@/utils/v2ex-client'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import ApiError from '@/utils/v2ex-client/ApiError'
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'edit-topic'>
 export default function TopicEdit(props: ScreenProps) {
@@ -18,23 +19,28 @@ export default function TopicEdit(props: ScreenProps) {
   const { styles } = useTheme()
   const scrollViewRef = useRef<ScrollView>()
   const alert = useAlertService()
+  const queryClient = useQueryClient();
 
-  const formSwr = useSWR(
-    ['/t/:id/edit', route.params?.id],
-    async ([, id]) => {
-      const res = await fetchTopicEditForm(id)
+  const fetchFormData = useCallback(async () => {
+    try {
+      const res = await fetchTopicEditForm(route.params.id)
       return res.data
-    },
-    {
-      revalidateOnMount: true,
-      onErrorRetry(err) {
-        if (err.code === 'NOT_ALLOWED') {
-          return
-        }
-      },
-    },
-  )
-  type FormValues = typeof formSwr.data.values
+    } catch (err) {
+      if (err.code == 'NOT_ALLOWED') {
+
+      }
+      throw err
+    }
+  }, [route.params.id])
+
+  const formQuery = useQuery({
+    queryKey: ['/t/:id/edit', route.params?.id],
+    queryFn: fetchFormData,
+    refetchOnMount: true,
+    gcTime: 0,
+    staleTime: 0,
+  })
+  type FormValues = typeof formQuery.data.values
 
   const handleSubmit = useCallback(
     async (values: FormValues, formikProps: FormikProps<FormValues>) => {
@@ -42,25 +48,25 @@ export default function TopicEdit(props: ScreenProps) {
         formikProps.setSubmitting(true)
         const res = await editTopic(route.params.id, values)
         alert.show({ type: 'success', message: '主题更新成功' })
-        mutate([`/page/t/:id/topic.json`, route.params.id], res.data)
-        formSwr.mutate(null, { revalidate: false })
         navigation.goBack()
+        queryClient.setQueryData([`/page/t/:id/topic.json`, route.params.id], res.data)
+        queryClient.setQueryData(['/t/:id/edit', route.params?.id], undefined)
       } catch (err) {
         alert.show({ type: 'error', message: err.message })
       }
     },
-    [],
+    [route.params.id],
   )
 
-  if (formSwr.error) {
+  if (formQuery.error) {
     return (
       <View className="flex flex-row justify-center py-8">
-        <Text style={styles.text}>{formSwr.error.message}</Text>
+        <Text style={styles.text}>{formQuery.error.message}</Text>
       </View>
     )
   }
 
-  if (!formSwr.data) {
+  if (!formQuery.data) {
     return (
       <View className="flex flex-row justify-center py-8">
         <Loader />
@@ -76,7 +82,7 @@ export default function TopicEdit(props: ScreenProps) {
           height: '100%',
         }}>
         <Formik
-          initialValues={formSwr.data.values}
+          initialValues={formQuery.data.values}
           onSubmit={handleSubmit}
           enableReinitialize>
           {(formikProps) => (
@@ -90,7 +96,7 @@ export default function TopicEdit(props: ScreenProps) {
                 <SelectField
                   name="syntax"
                   label="内容类型"
-                  options={formSwr.data.schema.syntaxOptions}
+                  options={formQuery.data.schema.syntaxOptions}
                 />
                 <TextField
                   name="content"

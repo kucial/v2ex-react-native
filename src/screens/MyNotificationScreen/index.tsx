@@ -1,16 +1,15 @@
 import { useCallback, useMemo } from 'react'
 import { FlashList } from '@shopify/flash-list'
-import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAuthService } from '@/containers/AuthService'
-import { isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { isRefreshing, shouldLoadMore } from '@/utils/react-query'
 import { getMyNotifications } from '@/utils/v2ex-client'
 
 import NotificationRow from './NotificationRow'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
-const fetcher = ([_, page]) => getMyNotifications({ p: page })
 export default function NotificationScreen() {
   const { updateMeta, user } = useAuthService()
   const getKey = useCallback(
@@ -19,27 +18,41 @@ export default function NotificationScreen() {
     },
     [user.username],
   )
-  const listSwr = useSWRInfinite(getKey, fetcher, {
-    revalidateOnMount: true,
-    onSuccess: () => {
-      updateMeta({
-        unread_count: 0,
-      })
+
+  const fetchItems = useCallback(async ({ pageParam }) => {
+    const res = await  getMyNotifications({ p: pageParam })
+    updateMeta({
+      unread_count: 0,
+    })
+    return res
+  }, [user.username])
+
+
+  const listQuery = useInfiniteQuery({
+    queryKey: ['/member/:username/notifications.json', user.username],
+    queryFn: fetchItems,
+    initialPageParam: 1,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+        return lastPage.pagination.current +1
+      }
+      return undefined
     },
+    refetchOnMount: true,
   })
   const listItems = useMemo(() => {
-    if (!listSwr.data && !listSwr.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(10)
     }
-    const items = (listSwr.data || []).reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
     }, [])
     return items
-  }, [listSwr])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
@@ -61,23 +74,18 @@ export default function NotificationScreen() {
       onEndReachedThreshold={0.4}
       estimatedItemSize={80}
       onEndReached={() => {
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize(listSwr.size + 1)
+        if (shouldLoadMore(listQuery)) {
+          listQuery.fetchNextPage()
         }
       }}
       refreshControl={
         <MyRefreshControl
-          onRefresh={() => {
-            if (listSwr.isValidating) {
-              return
-            }
-            listSwr.mutate()
-          }}
-          refreshing={isRefreshing(listSwr)}
+          refreshing={listQuery.isRefetching}
+          onRefresh={listQuery.refetch}
         />
       }
       ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
+        return <CommonListFooter data={listQuery} />
       }}
     />
   )

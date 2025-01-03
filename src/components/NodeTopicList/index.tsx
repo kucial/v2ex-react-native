@@ -10,8 +10,6 @@ import { AppState } from 'react-native'
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
 import { FlashList } from '@shopify/flash-list'
 import * as Haptics from 'expo-haptics'
-import { SWRResponse } from 'swr'
-import useSWRInfinite from 'swr/infinite'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
@@ -19,19 +17,21 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/swr'
+import { shouldFetch } from '@/utils/react-query'
 import { getNodeFeeds } from '@/utils/v2ex-client'
 import { NodeTopicFeed } from '@/utils/v2ex-client/types'
 
 import NodeTopicRow from './NodeTopicRow'
 import TideNodeTopicRow from './TideNodeTopicRow'
+import { useInfiniteQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query'
+import { PAGE_RESET_LIMIT } from '@/constants'
 
 type NodeTopicListProps = {
   name: string
   isFocused: boolean
   currentListRef?: MutableRefObject<any>
   header?: ReactElement
-  nodeSwr?: SWRResponse
+  nodeQuery?: UseQueryResult
   scrollY: SharedValue<number>
 }
 
@@ -40,6 +40,8 @@ export default function NodeTopicList(props: NodeTopicListProps) {
   const { getViewedStatus } = useViewedTopics()
   const alert = useAlertService()
   const { data: settings } = useAppSettings()
+  const queryclient  = useQueryClient();
+
   const listViewRef = useRef<FlashList<NodeTopicFeed>>()
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
@@ -47,53 +49,65 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     },
   })
 
-  const getKey = useCallback(
-    (index: number): [string, string, number] => {
-      return ['/page/go/:name/feed.json', name, index + 1]
+  const fetchItems = useCallback(
+    async ({ pageParam }) => {
+      try {
+        return getNodeFeeds({ name, p: pageParam })
+      } catch (err) {
+        if (err.code !== '2FA_ENABLED') {
+          alert.show({
+            type: 'error',
+            message: err.message || '请求资源失败',
+          })
+        }
+        throw err
+      }
     },
     [name],
   )
 
-  const listSwr = useSWRInfinite(
-    getKey,
-    ([_, name, page]) => getNodeFeeds({ name, p: page }),
-    {
-      revalidateOnMount: false,
-      revalidateOnReconnect: false,
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-      onError(err) {
-        if (err.code === '2FA_ENABLED') {
-          return
-        }
-        alert.show({
-          type: 'error',
-          message: err.message || '请求资源失败',
-        })
-      },
+  const listQuery = useInfiniteQuery({
+    queryKey: ['/page/go/:name/feed.json', name],
+    initialPageParam: 1,
+    queryFn: fetchItems,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current)  {
+        return lastPage.pagination.current + 1
+      }
+      return undefined
     },
-  )
+  })
+
+  const handleRefresh = useCallback(() => {
+    if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
+      queryclient.resetQueries({
+        queryKey: ['/page/go/:name/feed.json', name],
+        exact: true
+      })
+    }
+    listQuery.refetch()
+  }, [listQuery.data, name, queryclient]);
 
   const scrollToRefresh = useCallback(() => {
-    if (listSwr.isValidating) {
+    if (listQuery.isRefetching) {
       return
     }
     if (settings.refreshHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     }
-    if (listSwr.data) {
+    if (listQuery.data) {
       listViewRef.current.scrollToOffset({
         offset: scrollY.value > 0 ? 0 : -60,
         animated: true,
       })
     }
-    listSwr.mutate()
-  }, [listSwr, settings.refreshHaptics])
+    handleRefresh()
+  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
 
   useEffect(() => {
     if (
       isFocused &&
-      shouldFetch(listSwr, settings.autoRefresh && settings.autoRefreshDuration)
+      shouldFetch(listQuery, settings.autoRefresh && settings.autoRefreshDuration)
     ) {
       scrollToRefresh()
     }
@@ -108,7 +122,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
             nextAppState === 'active' &&
             Date.now() - toBackDate > 60 * 1000 &&
             shouldFetch(
-              listSwr,
+              listQuery,
               settings.autoRefresh && settings.autoRefreshDuration,
             )
           ) {
@@ -134,18 +148,18 @@ export default function NodeTopicList(props: NodeTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (!listSwr.data && !listSwr.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(20)
     }
-    const items = listSwr.data?.reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
     }, [])
     return items || []
-  }, [listSwr])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
@@ -187,23 +201,19 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       onEndReachedThreshold={0.4}
       estimatedItemSize={settings.feedLayout === 'tide' ? 65 : 80}
       onEndReached={() => {
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize(listSwr.size + 1)
+        if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
+          listQuery.fetchNextPage()
         }
       }}
       refreshControl={
         <MyRefreshControl
-          refreshing={isRefreshing(listSwr)}
-          onRefresh={() => {
-            if (!listSwr.isValidating) {
-              listSwr.mutate()
-            }
-          }}
+          refreshing={listQuery.isRefetching}
+          onRefresh={handleRefresh}
         />
       }
       ListHeaderComponent={header}
       ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
+        return <CommonListFooter data={listQuery} />
       }}
       onScroll={scrollHandler}
     />

@@ -12,7 +12,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import * as Sentry from '@sentry/react-native'
 import Constants from 'expo-constants'
 import { Image } from 'expo-image'
-import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
@@ -32,6 +31,7 @@ import { MemberBasic, MemberDetail } from '@/utils/v2ex-client/types'
 import { StatusResponse } from '@/utils/v2ex-client/types'
 
 import MemberInfoLinks from './MemberInfoLinks'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
@@ -60,23 +60,19 @@ export default function MemberScreenHeader(props: {
   } = props
 
   const { user: currentUser } = useAuthService()
+  const fetchMember = useCallback(async () => {
+    const { data } = await getMemberDetail({ username })
+    return data
+  }, [username]);
 
-  const memberSwr = useSWR(
-    [`/page/member/:username/info.json`, username],
-    async ([_, username]) => {
-      const { data } = await getMemberDetail({ username })
-      return data
-    },
-    {
-      onErrorRetry(err) {
-        if (err.response?.status === 404) {
-          return
-        }
-      },
-    },
-  )
+  const memberQuery = useQuery({
+    queryKey: [`/page/member/:username/info.json`, username],
+    queryFn: fetchMember
+  })
 
-  const data = memberSwr.data
+  const queryClient = useQueryClient();
+
+  const data = memberQuery.data
   const avatar = data?.avatar_large || brief?.avatar_large
   const { theme, styles } = useTheme()
   const alert = useAlertService()
@@ -96,7 +92,7 @@ export default function MemberScreenHeader(props: {
   }, [avatar])
 
   const handleBlockToggle = useCallback(() => {
-    const { data } = memberSwr
+    const { data } = memberQuery
     if (!data) {
       return
     }
@@ -122,13 +118,10 @@ export default function MemberScreenHeader(props: {
           type: 'success',
           message: successMsg,
         })
-        memberSwr.mutate(
-          (prev) => ({
-            ...prev,
-            meta: patch.meta,
-          }),
-          false,
-        )
+        queryClient.setQueryData([`/page/member/:username/info.json`, username], {
+          ...memberQuery.data,
+          meta: patch.meta,
+        })
       })
       .catch((err) => {
         alert.show({ type: 'error', message: err.message })
@@ -136,10 +129,10 @@ export default function MemberScreenHeader(props: {
       .finally(() => {
         alert.hide(indicator)
       })
-  }, [memberSwr.data, memberSwr.mutate])
+  }, [memberQuery.data, username])
 
   const handleWatchToggle = useCallback(() => {
-    const { data } = memberSwr
+    const { data } = memberQuery
     if (!data) {
       return
     }
@@ -165,13 +158,10 @@ export default function MemberScreenHeader(props: {
           type: 'success',
           message: successMsg,
         })
-        memberSwr.mutate(
-          (prev) => ({
-            ...prev,
-            meta: patch.meta,
-          }),
-          false,
-        )
+        queryClient.setQueryData([`/page/member/:username/info.json`, username], {
+          ...memberQuery.data,
+          meta: patch.meta,
+        })
       })
       .catch((err) => {
         alert.show({ type: 'error', message: err.message })
@@ -179,7 +169,7 @@ export default function MemberScreenHeader(props: {
       .finally(() => {
         alert.hide(indicator)
       })
-  }, [memberSwr.data, memberSwr.mutate])
+  }, [memberQuery.data, username])
 
   const topBannerHeight =
     Platform.OS === 'ios'
@@ -375,7 +365,7 @@ export default function MemberScreenHeader(props: {
                     : ''}
                 </Text>
               </View>
-              <MemberInfoLinks data={memberSwr.data} />
+              <MemberInfoLinks data={memberQuery.data} />
             </View>
           </View>
         </View>

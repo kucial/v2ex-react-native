@@ -13,7 +13,6 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
 import { Image } from 'expo-image'
-import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
@@ -24,6 +23,7 @@ import { useAppSettings } from '@/containers/AppSettingsService'
 import prompt2faInput from '@/containers/AuthService/prompt2FaInput'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchLoginForm, loginWithPassword } from '@/utils/v2ex-client'
+import { useQuery } from '@tanstack/react-query'
 
 type PasswordSigninProps = NativeStackScreenProps<
   AppStackParamList,
@@ -37,14 +37,13 @@ function PasswordSignin(props: PasswordSigninProps) {
   const { navigation } = props
   const { theme, styles } = useTheme()
 
-  const formSwr = useSWR(
-    '$tmp$/password-login',
-    async () => {
+  const formQuery = useQuery({
+    queryKey: ['$tmp$/password-login'],
+    queryFn: async () => {
       const { data } = await fetchLoginForm()
       return data
-    },
-    {},
-  )
+    }
+  })
 
   const handle2Fa = useCallback(
     async (context) => {
@@ -85,9 +84,9 @@ function PasswordSignin(props: PasswordSigninProps) {
         await loginWithPassword(
           {
             ...data,
-            once: formSwr.data.once,
+            once: formQuery.data.once,
           },
-          formSwr.data.hashMap,
+          formQuery.data.hashMap,
         )
         props.onSuccess()
       } catch (err) {
@@ -98,22 +97,22 @@ function PasswordSignin(props: PasswordSigninProps) {
             break
           case 'LOGIN_ERROR':
             setError(err.data)
-            formSwr.mutate()
+            formQuery.refetch()
             break
           default:
             setError([err.message])
-            formSwr.mutate()
+            formQuery.refetch()
         }
       } finally {
         setIsSubmitting(false)
       }
     },
-    [formSwr],
+    [formQuery],
   )
 
   const refreshCaptcha = useCallback(async () => {
-    await formSwr.mutate()
-  }, [formSwr])
+    await formQuery.refetch()
+  }, [formQuery])
 
   useEffect(() => {
     nameInput.current?.focus()
@@ -211,7 +210,7 @@ function PasswordSignin(props: PasswordSigninProps) {
                   name="password"
                   rules={{ required: true }}
                 />
-                {formSwr.data?.captcha ? (
+                {formQuery.data?.captcha ? (
                   <Pressable
                     onPress={refreshCaptcha}
                     className="active:opacity-60 mb-2 mt-1"
@@ -219,14 +218,14 @@ function PasswordSignin(props: PasswordSigninProps) {
                       width: 320,
                       height: 80,
                     }}
-                    disabled={formSwr.isLoading}>
+                    disabled={formQuery.isLoading}>
                     <Image
-                      source={{ uri: formSwr.data.captcha }}
+                      source={{ uri: formQuery.data.captcha }}
                       className="rounded-md"
                       style={{
                         width: 320,
                         height: 80,
-                        opacity: formSwr.isLoading ? 0.5 : 1,
+                        opacity: formQuery.isLoading ? 0.5 : 1,
                       }}
                     />
                   </Pressable>
@@ -278,7 +277,7 @@ function PasswordSignin(props: PasswordSigninProps) {
                   className="mt-4"
                   size="md"
                   variant="primary"
-                  disabled={!formSwr.data || isSubmitting}
+                  disabled={!formQuery.data || isSubmitting}
                   loading={isSubmitting}
                   onPress={(e) => {
                     if (isSubmitting) {
@@ -289,10 +288,10 @@ function PasswordSignin(props: PasswordSigninProps) {
                   label="登录"
                 />
 
-                {!formSwr.isLoading && formSwr.error && (
+                {!formQuery.isLoading && formQuery.error && (
                   <View className="mt-4">
                     <Text style={styles.text_danger}>
-                      {formSwr.error.message}
+                      {formQuery.error.message}
                     </Text>
                   </View>
                 )}

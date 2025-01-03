@@ -2,7 +2,6 @@ import { useCallback, useMemo, useRef } from 'react'
 import { Keyboard, SectionList, Text, View } from 'react-native'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { useFocusEffect } from '@react-navigation/native'
-import useSWR from 'swr'
 
 import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -11,11 +10,12 @@ import SearchInput from '@/components/SearchInput'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
-import { isRefreshing } from '@/utils/swr'
+import { isRefreshing } from '@/utils/react-query'
 import { getMyCollectedNodes, getNodeGroups } from '@/utils/v2ex-client'
 
 import CollectedNodes from './CollectedNodes'
 import PubliicNodeItem from './PubliicNodeItem'
+import { useQuery } from '@tanstack/react-query'
 
 const CACHE_KEY = '$app$/nodes-filter'
 
@@ -29,11 +29,15 @@ export default function NodesScreen({ navigation }: ScreenProps) {
   const [filter, setFilter] = useCachedState<string>(CACHE_KEY, '')
 
   const hasAuthed = status === 'authed'
-  const collectedNodesSwr = useSWR(
-    hasAuthed ? '/page/my/nodes.json' : null,
-    getMyCollectedNodes,
-  )
-  const commonNodesSwr = useSWR('/page/planes/node-groups.json', getNodeGroups)
+  const collectedNodesQuery = useQuery({
+    queryKey: ['/page/my/nodes.json'],
+    queryFn: getMyCollectedNodes,
+    enabled: hasAuthed
+  })
+  const commonNodesQuery = useQuery({
+    queryKey: ['/page/planes/node-groups.json'],
+    queryFn: getNodeGroups
+  })
 
   const filterInput = useRef()
   const listRef = useRef<SectionList>()
@@ -41,18 +45,18 @@ export default function NodesScreen({ navigation }: ScreenProps) {
   const { sections, renderItem } = useMemo(() => {
     return {
       sections: [
-        collectedNodesSwr.data?.data
+        hasAuthed && collectedNodesQuery.data?.data
           ? {
               title: '收藏的节点',
               data: [
                 {
                   type: 'favorite',
-                  nodes: collectedNodesSwr.data.data,
+                  nodes: collectedNodesQuery.data.data,
                 },
               ],
             }
           : null,
-        commonNodesSwr.data?.data.map((group) => ({
+        commonNodesQuery.data?.data.map((group) => ({
           title: group.title,
           data: filter
             ? group.nodes.filter(
@@ -74,7 +78,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
         }
       },
     }
-  }, [commonNodesSwr.data, collectedNodesSwr.data, filter, styles.layer1])
+  }, [commonNodesQuery.data, collectedNodesQuery.data,  hasAuthed, filter, styles.layer1])
 
   useFocusEffect(
     useCallback(() => {
@@ -115,7 +119,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
         ListHeaderComponent={() => {
           if (
             !sections.length &&
-            (collectedNodesSwr.isLoading || commonNodesSwr.isLoading)
+            (collectedNodesQuery.isLoading || commonNodesQuery.isLoading)
           ) {
             return (
               <View className="flex flex-row items-center justify-center py-4">
@@ -152,14 +156,14 @@ export default function NodesScreen({ navigation }: ScreenProps) {
         refreshControl={
           <MyRefreshControl
             refreshing={
-              isRefreshing(commonNodesSwr) ||
-              (hasAuthed && isRefreshing(collectedNodesSwr))
+              isRefreshing(commonNodesQuery) ||
+              (hasAuthed && isRefreshing(collectedNodesQuery))
             }
             onRefresh={() => {
               if (hasAuthed) {
-                collectedNodesSwr?.mutate()
+                collectedNodesQuery?.refetch()
               }
-              commonNodesSwr?.mutate()
+              commonNodesQuery?.refetch()
             }}
           />
         }

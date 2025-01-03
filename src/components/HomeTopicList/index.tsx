@@ -10,19 +10,19 @@ import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
-import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
-import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/swr'
+import { shouldFetch } from '@/utils/react-query'
 import { getHomeFeeds, getHotTopics, getRecentFeeds } from '@/utils/v2ex-client'
 import { HomeTopicFeed } from '@/utils/v2ex-client/types'
 
 import TideTopicRow from './TideTopicRow'
 import TopicRow from './TopicRow'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { PAGE_RESET_LIMIT } from '@/constants'
 
 type FeedTopicListProps = {
   tab: string
@@ -32,67 +32,67 @@ type FeedTopicListProps = {
 
 function FeedTopicList(props: FeedTopicListProps) {
   const { tab, isFocused, currentListRef } = props
-  const alert = useAlertService()
   const listViewRef = useRef<FlashList<HomeTopicFeed>>()
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const { getViewedStatus } = useViewedTopics()
-  const getKey = useCallback(
-    (index: number): [string, string, number] => {
-      return ['/page/home/feed', tab, index + 1]
-    },
-    [tab],
-  )
-  const listSwr = useSWRInfinite(
-    getKey,
-    async ([_, tab, page]) => {
-      if (tab === 'recent') {
-        return getRecentFeeds({ p: page })
+  const queryclient  = useQueryClient();
+
+  const fetchItems = useCallback(({ pageParam }) => {
+    if (tab === 'recent') {
+      return getRecentFeeds({ p: pageParam })
+    }
+    if (tab == 'today_hots') {
+      return getHotTopics()
+    }
+    return getHomeFeeds({ tab })
+  }, [tab]);
+
+  const listQuery = useInfiniteQuery({
+    queryKey: ['/page/home/feed', tab],
+    queryFn: fetchItems,
+    initialPageParam: 1,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+        return lastPage.pagination.current + 1;
       }
-      if (tab === 'today_hots') {
-        return getHotTopics()
-      }
-      return getHomeFeeds({ tab })
+      return undefined
     },
-    {
-      revalidateOnMount: false,
-      revalidateOnReconnect: false,
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-      parallel: true,
-      onError(err) {
-        if (err.code === '2FA_ENABLED') {
-          return
-        }
-        alert.show({
-          type: 'error',
-          message: err.message || '请求资源失败',
-        })
-      },
-    },
-  )
+  })
+
+  const handleRefresh = useCallback(() => {
+    if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
+      queryclient.resetQueries({
+        queryKey: ['/page/home/feed', tab],
+        exact: true
+      })
+    }
+    listQuery.refetch()
+  }, [listQuery.data, tab, queryclient]);
 
   const scrollToRefresh = useCallback(() => {
-    if (listSwr.isValidating) {
+    if (listQuery.isRefetching) {
       return
     }
     if (settings.refreshHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     }
 
-    if (listSwr.data) {
+    if (listQuery.data) {
+      // console.log(scrollY.current)
       listViewRef.current.scrollToOffset({
-        offset: scrollY.current > 0 ? 0 : -60,
+        // offset: scrollY.current > 0 ? 0 : -60,
+        offset: 0,
         animated: true,
       })
     }
-    listSwr.mutate()
-  }, [listSwr, settings.refreshHaptics])
+    handleRefresh()
+  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
 
   useEffect(() => {
     if (
       isFocused &&
-      shouldFetch(listSwr, settings.autoRefresh && settings.autoRefreshDuration)
+      shouldFetch(listQuery, settings.autoRefresh && settings.autoRefreshDuration)
     ) {
       scrollToRefresh()
     }
@@ -107,7 +107,7 @@ function FeedTopicList(props: FeedTopicListProps) {
             nextAppState === 'active' &&
             Date.now() - toBackgroundDate > 60 * 1000 &&
             shouldFetch(
-              listSwr,
+              listQuery,
               settings.autoRefresh && settings.autoRefreshDuration,
             )
           ) {
@@ -131,18 +131,18 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (!listSwr.data && !listSwr.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(20)
     }
-    const items = listSwr.data?.reduce((combined, page) => {
+    const items = listQuery.data?.pages?.reduce((combined, page) => {
       if (page.data) {
         return uniqBy([...combined, ...page.data], 'id')
       }
       return combined
     }, [])
     return items || []
-  }, [listSwr])
+  }, [listQuery.data, getViewedStatus])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
@@ -182,22 +182,18 @@ function FeedTopicList(props: FeedTopicListProps) {
       estimatedItemSize={settings.feedLayout === 'tide' ? 80 : 120}
       onEndReachedThreshold={0.4}
       onEndReached={() => {
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize((size) => size + 1)
+        if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
+          listQuery.fetchNextPage()
         }
       }}
       refreshControl={
         <MyRefreshControl
-          refreshing={isRefreshing(listSwr) || false}
-          onRefresh={() => {
-            if (!listSwr.isValidating) {
-              listSwr.mutate()
-            }
-          }}
+          refreshing={listQuery.isRefetching}
+          onRefresh={handleRefresh}
         />
       }
       ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
+        return <CommonListFooter data={listQuery} />
       }}
       onScroll={(e) => {
         scrollY.current = e.nativeEvent.contentOffset.y

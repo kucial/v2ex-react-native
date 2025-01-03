@@ -1,15 +1,15 @@
 import { useCallback, useMemo } from 'react'
 import { SharedValue } from 'react-native-reanimated'
 import { FlashListProps } from '@shopify/flash-list'
-import useSWRInfinite from 'swr/infinite'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
-import { isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { shouldLoadMore } from '@/utils/react-query'
 import { getMemberReplies } from '@/utils/v2ex-client'
 
 import MemberReplyRow from './MemberReplyRow'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 export default function MemberReplies(
   props: {
@@ -19,34 +19,41 @@ export default function MemberReplies(
     onGetRef: (ref: any) => void
   } & Omit<FlashListProps<any>, 'data' | 'renderItem' | 'estimatedItemSize'>,
 ) {
-  const getKey = useCallback(
-    (index: number): [string, string, number] => {
-      return ['/page/member/:username/replies.json', props.username, index + 1]
+  const fetchItems = useCallback(
+    async ({ pageParam }) => {
+      return getMemberReplies({
+        username: props.username, p: pageParam,
+      })
     },
     [props.username],
   )
 
-  const listSwr = useSWRInfinite(
-    getKey,
-    ([_, username, page]) => getMemberReplies({ username, p: page }),
-    {
-      shouldRetryOnError: false,
-    },
-  )
+  const listQuery = useInfiniteQuery({
+    queryKey: ['/page/member/:username/replies.json', props.username],
+    queryFn: fetchItems,
+    initialPageParam: 1,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+        return lastPage.pagination.current +1
+      }
+      return undefined
+    }
+  })
+
 
   const listItems = useMemo(() => {
-    if (!listSwr.data && !listSwr.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(10)
     }
-    const items = (listSwr.data || []).reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
     }, [])
     return items
-  }, [listSwr])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
@@ -71,24 +78,19 @@ export default function MemberReplies(
       estimatedItemSize={124}
       scrollEventThrottle={16}
       onEndReached={() => {
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize(listSwr.size + 1)
+        if (shouldLoadMore(listQuery)) {
+          listQuery.fetchNextPage()
         }
       }}
       refreshControl={
         <MyRefreshControl
-          refreshing={isRefreshing(listSwr)}
-          onRefresh={() => {
-            if (listSwr.isValidating) {
-              return
-            }
-            listSwr.mutate()
-          }}
+          refreshing={listQuery.isRefetching}
+          onRefresh={listQuery.refetch}
           progressViewOffset={props.contentContainerStyle.paddingTop as number}
         />
       }
       ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
+        return <CommonListFooter data={listQuery} />
       }}
       onScroll={props.onScroll}
       onScrollEndDrag={props.onScrollEndDrag}

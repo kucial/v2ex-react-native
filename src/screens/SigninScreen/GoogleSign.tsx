@@ -2,7 +2,6 @@ import { memo, useCallback, useRef, useState } from 'react'
 import { Alert, Platform, Pressable, Text, View } from 'react-native'
 import WebView from 'react-native-webview'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import useSWR from 'swr'
 
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
@@ -12,6 +11,7 @@ import { useTheme } from '@/containers/ThemeService'
 import { fetchOnce } from '@/utils/v2ex-client'
 
 import { checkAuthStatus, get2FASubmitCode } from './scripts'
+import { useQuery } from '@tanstack/react-query'
 
 type GoogleSigninProps = NativeStackScreenProps<AppStackParamList, 'signin'> & {
   onSelectPasswordSignin(): void
@@ -23,15 +23,14 @@ function GoogleSign(props: GoogleSigninProps) {
   const { theme, styles } = useTheme()
   const webviewRef = useRef<WebView>()
   const [loading, setLoading] = useState(false)
-  const onceSwr = useSWR(
-    '$tmp$/once-token.json',
-    async () => {
+  const onceQuery = useQuery({
+    queryKey: ['$tmp$/once-token.json'],
+    queryFn: () => {
       return fetchOnce()
     },
-    {
-      revalidateOnMount: true,
-    },
-  )
+    staleTime: 0,
+    refetchOnMount: true,
+  })
   const scriptsToInject = useRef([])
   const alert = useAlertService()
 
@@ -87,7 +86,7 @@ function GoogleSign(props: GoogleSigninProps) {
         </Pressable>
       </View>
       <View className="flex-1 relative">
-        {onceSwr.data && (
+        {onceQuery.data && (
           <WebView
             ref={webviewRef}
             userAgent={USER_AGENT}
@@ -99,8 +98,8 @@ function GoogleSign(props: GoogleSigninProps) {
             startInLoadingState={true}
             scalesPageToFit={true}
             source={{
-              uri: `https://www.v2ex.com/auth/google?once=${onceSwr.data.data}`,
-              // uri: Platform.OS == 'android' ?  `https://www.v2ex.com/signin` : `https://www.v2ex.com/auth/google?once=${onceSwr.data.data}`,
+              uri: `https://www.v2ex.com/auth/google?once=${onceQuery.data.data}`,
+              // uri: Platform.OS == 'android' ?  `https://www.v2ex.com/signin` : `https://www.v2ex.com/auth/google?once=${onceQuery.data.data}`,
             }}
             onLoad={() => {
               const toInject = scriptsToInject.current.shift()

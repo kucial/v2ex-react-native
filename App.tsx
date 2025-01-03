@@ -13,11 +13,11 @@ import ErrorBoundary from './src/components/ErrorBoundary'
 import Layout from './src/components/Layout'
 import AlertService from './src/containers/AlertService'
 import AppSettingsService from './src/containers/AppSettingsService'
-import AppSWRConfig from './src/containers/AppSWRConfig'
 import AuthService from './src/containers/AuthService'
 import ClipboardWatcher from './src/containers/ClipboardWatcher'
 import FetchPrepare from './src/containers/FetchPrepare'
 import ImgurService from './src/containers/ImgurService'
+import QueryClientProvider from './src/containers/QueryClientProvider'
 import NavigationContainer from './src/containers/NavigationContainer'
 import NotificationService from './src/containers/NotificationService'
 import { getThemeService, ThemeProvider } from './src/containers/ThemeService'
@@ -55,38 +55,38 @@ function App() {
     <SafeAreaProvider style={styles.layer1}>
       <RootSiblingParent>
         <AppSettingsService>
-          <ThemeProvider>
-            <ErrorBoundary>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <AlertService>
-                  <FetchPrepare>
-                    <AppSWRConfig>
-                      <ActionSheetProvider>
-                        <NavigationContainer>
-                          <ImgurService>
-                            <BottomSheetModalProvider>
-                              <ClipboardWatcher>
-                                <AuthService>
-                                  <ViewedTopicsService>
-                                    <NotificationService>
-                                      <Layout>
-                                        <AppStack />
-                                        {/* <DebugScreen /> */}
-                                      </Layout>
-                                    </NotificationService>
-                                  </ViewedTopicsService>
-                                </AuthService>
-                              </ClipboardWatcher>
-                            </BottomSheetModalProvider>
-                          </ImgurService>
-                        </NavigationContainer>
-                      </ActionSheetProvider>
-                    </AppSWRConfig>
-                  </FetchPrepare>
-                </AlertService>
-              </GestureHandlerRootView>
-            </ErrorBoundary>
-          </ThemeProvider>
+            <ThemeProvider>
+              <ErrorBoundary>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <AlertService>
+                    <FetchPrepare>
+                      <QueryClientProvider>
+                        <ActionSheetProvider>
+                          <NavigationContainer>
+                            <ImgurService>
+                              <BottomSheetModalProvider>
+                                <ClipboardWatcher>
+                                  <AuthService>
+                                    <ViewedTopicsService>
+                                      <NotificationService>
+                                        <Layout>
+                                          <AppStack />
+                                          {/* <DebugScreen /> */}
+                                        </Layout>
+                                      </NotificationService>
+                                    </ViewedTopicsService>
+                                  </AuthService>
+                                </ClipboardWatcher>
+                              </BottomSheetModalProvider>
+                            </ImgurService>
+                          </NavigationContainer>
+                        </ActionSheetProvider>
+                      </QueryClientProvider>
+                    </FetchPrepare>
+                  </AlertService>
+                </GestureHandlerRootView>
+              </ErrorBoundary>
+            </ThemeProvider>
         </AppSettingsService>
       </RootSiblingParent>
     </SafeAreaProvider>

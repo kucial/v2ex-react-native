@@ -1,7 +1,6 @@
-import { useCallback, useRef } from 'react'
+import { useCallback } from 'react'
 import { ScrollView, View } from 'react-native'
 import { Formik, FormikHelpers } from 'formik'
-import useSWR from 'swr'
 
 import Button from '@/components/Button'
 import { TextField } from '@/components/formik'
@@ -11,6 +10,7 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchSettingsForm, updateSettings } from '@/utils/v2ex-client'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function SettingsForm(props: {
   username: string
@@ -19,26 +19,28 @@ export default function SettingsForm(props: {
   const { styles } = useTheme()
   const alert = useAlertService()
 
-  const settingsSwr = useSWR(
-    props.isActive ? `/member/${props.username}/settings.json` : null,
-    async () => {
-      const res = await fetchSettingsForm()
-      return res.data
-    },
-    {
-      revalidateOnMount: true,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-    },
-  )
+  const fetchSettings = useCallback(async () => {
+    const res = await fetchSettingsForm()
+    return res.data
+  }, [])
+
+  const settingsQuery = useQuery({
+    queryKey: [`/member/${props.username}/settings.json`],
+    queryFn: fetchSettings,
+    enabled: props.isActive,
+    refetchOnMount: true,
+    staleTime: 0
+  })
+
+  const queryClient = useQueryClient();
+
 
   const handleSubmit = useCallback(
     async (values, formikProps: FormikHelpers<any>) => {
       formikProps.setSubmitting(true)
       try {
         const res = await updateSettings(values)
-        settingsSwr.mutate(res.data, { revalidate: false })
+        queryClient.setQueryData([`/member/${props.username}/settings.json`], res.data)
         alert.show({ type: 'success', message: '用户信息已更新' })
       } catch (err) {
         alert.show({ type: 'error', message: err.message })
@@ -46,22 +48,22 @@ export default function SettingsForm(props: {
         formikProps.setSubmitting(false)
       }
     },
-    [settingsSwr],
+    [settingsQuery.data],
   )
 
   return (
     <Formik
-      initialValues={settingsSwr.data || {}}
+      initialValues={settingsQuery.data || {}}
       onSubmit={handleSubmit}
       enableReinitialize>
       {(formikProps) => (
         <ScrollView
           refreshControl={
             <MyRefreshControl
-              refreshing={settingsSwr.isValidating}
+              refreshing={settingsQuery.isRefetching}
               onRefresh={() => {
-                if (!settingsSwr.isValidating && !formikProps.isSubmitting) {
-                  settingsSwr.mutate()
+                if (!settingsQuery.isRefetching && !formikProps.isSubmitting) {
+                  settingsQuery.refetch()
                 }
               }}
             />
@@ -69,8 +71,8 @@ export default function SettingsForm(props: {
           <MaxWidthWrapper className="py-4 px-2">
             <GroupWapper
               innerStyle={styles.layer1}
-              style={settingsSwr.isValidating && { opacity: 0.4 }}
-              pointerEvents={settingsSwr.isValidating ? 'none' : 'auto'}>
+              style={settingsQuery.isRefetching && { opacity: 0.4 }}
+              pointerEvents={settingsQuery.isRefetching ? 'none' : 'auto'}>
               <View className="p-3">
                 <TextField
                   className="mb-2"

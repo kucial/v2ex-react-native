@@ -45,6 +45,20 @@ if (isDebuggingRemotelyActive()) {
   // }
 }
 
+export const stateStorage = {
+  setItem: (name: string, value: string) => {
+    storage.set(name, value)
+  },
+  getItem: (name: string) => {
+    const value = storage.getString(name)
+    return value === undefined ? null : value
+  },
+  removeItem: (name: string) => {
+    storage.delete(name)
+  },
+}
+
+
 export default storage
 
 export const getJSON = (key: string, fallback?: any) => {

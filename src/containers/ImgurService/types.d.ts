@@ -1,4 +1,5 @@
-import { SWRResponse } from 'swr'
+import { UseQueryResult } from '@tanstack/react-query'
+
 
 export type ImgurCredentials = {
   access_token: string
@@ -87,10 +88,10 @@ export type ImgurCreateAlbumPayload = {
 export interface ImgurService {
   credentials: ImgurCredentials
   updateCredentials: (data?: ImgurCredentials) => void
-  useAlbums: () => SWRResponse<ImgurAlbum[], Error>
-  useImages: () => SWRResponse<ImgurImage[], Error>
-  useImage: (hashid: string) => SWRResponse<ImgurImage, Error>
-  useAlbumImages: (album: string) => SWRResponse<ImgurImage[], Error>
+  useAlbums: () => UseQueryResult<ImgurAlbum[], Error>
+  useImages: () => UseQueryResult<ImgurImage[], Error>
+  useImage: (hashid: string) => UseQueryResult<ImgurImage, Error>
+  useAlbumImages: (album: string) => UseQueryResult<ImgurImage[], Error>
   createAlbum: (data: ImgurCreateAlbumPayload) => Promise<void>
   uploadImage: (data: ImgurUploadImagePayload) => Promise<ImgurUploadResponse>
   refreshImages: () => void

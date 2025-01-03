@@ -7,7 +7,6 @@ import {
 } from '@gorhom/bottom-sheet'
 import composeRefs from '@seznam/compose-react-refs'
 import classNames from 'classnames'
-import useSWR from 'swr'
 
 import CheckIcon from '@/components/CheckIcon'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
@@ -16,6 +15,7 @@ import { getNodes } from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import TypeIcon from './TypeIcon'
+import { useQuery } from '@tanstack/react-query'
 
 const pickerSnapPoints = ['50%']
 
@@ -26,7 +26,10 @@ type Props = {
 
 const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
   const { selected = [], onChange } = props
-  const nodesSwr = useSWR('/api/nodes/all.json', getNodes)
+  const nodesQuery = useQuery({
+    queryKey: ['/api/nodes/all.json'],
+    queryFn: getNodes,
+  })
   const { theme, styles } = useTheme()
   const sheetRef = useRef<BottomSheetModal>(null)
 
@@ -41,18 +44,18 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
 
   const [filter, setFilter] = useState('')
   const filtered = useMemo(() => {
-    if (!nodesSwr.data) {
+    if (!nodesQuery.data) {
       return null
     }
     if (!filter) {
-      return nodesSwr.data.data
+      return nodesQuery.data.data
     }
-    return nodesSwr.data.data.filter((n) =>
+    return nodesQuery.data.data.filter((n) =>
       ['name', 'title', 'title_alternative'].some(
         (key) => n[key].indexOf(filter) > -1,
       ),
     )
-  }, [nodesSwr.data, filter])
+  }, [nodesQuery.data, filter])
 
   const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
   const renderItem = useCallback(

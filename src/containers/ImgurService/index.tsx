@@ -1,6 +1,5 @@
 import { useContext, useMemo, useState } from 'react'
 import { createContext } from 'react'
-import useSWR, { useSWRConfig } from 'swr'
 
 import {
   ImgurCredentials,
@@ -20,12 +19,13 @@ const SERVICE_KEY = '$app$/services/imgur'
 import { useCachedState } from '@/utils/hooks'
 
 import client from './ImgurClient'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function ImgurServiceProvider(props) {
   const [credentials, setCredentials] = useCachedState<
     ImgurCredentials | undefined
   >(SERVICE_KEY, undefined)
-  const { mutate } = useSWRConfig()
+  const queryClient = useQueryClient()
 
   const service: ImgurService = useMemo(() => {
     client.setCredentials(credentials)
@@ -35,51 +35,41 @@ export default function ImgurServiceProvider(props) {
       },
       credentials,
       useAlbums() {
-        return useSWR(
-          credentials ? `/imgur/albums` : null,
-          async () => {
+        return useQuery({
+          queryKey: ['/imgur/albums'],
+          queryFn: async () => {
             const res = await client.getAlbums('me')
             return res.data
           },
-          {
-            revalidateIfStale: false,
-          },
-        )
+          enabled: !!credentials
+        })
       },
       useImages() {
-        return useSWR(
-          `/imgur/images`,
-          async () => {
+        return useQuery({
+          queryKey: [`/imgur/images`],
+          queryFn: async () => {
             const res = await client.getImages()
             return res.data
-          },
-          {
-            revalidateIfStale: false,
-          },
-        )
+          }
+        })
       },
       useImage(hashid: string) {
-        return useSWR(
-          hashid ? `/imgur/image/${hashid}` : null,
-          async () => {
+        return useQuery({
+          queryKey: [`/imgur/image/:hashid`, hashid],
+          queryFn: async () => {
             const res = await client.getImage(hashid)
             return res.data
           },
-          {
-            revalidateIfStale: false,
-          },
-        )
+        })
       },
       useAlbumImages(album) {
-        return useSWR(
-          `/imgur/album/${album}/images`,
-          async () => {
+        return useQuery({
+          queryKey: [`/imgur/album/:id/images`, album],
+          queryFn: async () => {
             const res = await client.getAlbumImages(album)
             return res.data
           },
-          {
-            revalidateIfStale: false,
-          },
+        }
         )
       },
       getAlbums() {
@@ -87,22 +77,42 @@ export default function ImgurServiceProvider(props) {
       },
       async createAlbum(data) {
         await client.createAlbum(data)
-        mutate(`/imgur/albums`)
+        queryClient.invalidateQueries({
+          queryKey: ['/imgur/albums'],
+          exact: true,
+          refetchType: 'active'
+        });
       },
       async uploadImage(payload) {
         const res = await client.upload(payload)
         if (payload.album) {
-          mutate(`/imgur/album/${payload.album}/images`)
+          queryClient.invalidateQueries({
+            queryKey: ['/imgur/album/:id/images', payload.album],
+            exact: true,
+            refetchType: 'active'
+          });
         } else {
-          mutate(`/imgur/images`)
+          queryClient.invalidateQueries({
+            queryKey: ['/imgur/images'],
+            exact: true,
+            refetchType: 'active'
+          });
         }
         return res.data
       },
       refreshImages() {
-        mutate('/imgur/images')
+        queryClient.invalidateQueries({
+          queryKey: ['/imgur/images'],
+          exact: true,
+          refetchType: 'active'
+        });
       },
       refreshAlbumImages(album) {
-        mutate(`/imgur/album/${album}/images`)
+        queryClient.invalidateQueries({
+          queryKey: ['/imgur/album/:id/images', album],
+          exact: true,
+          refetchType: 'active'
+        });
       },
     }
   }, [credentials])

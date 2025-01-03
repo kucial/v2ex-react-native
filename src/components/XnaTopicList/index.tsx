@@ -8,81 +8,97 @@ import {
 } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
+<<<<<<< Updated upstream
+=======
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+>>>>>>> Stashed changes
 import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
-import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/swr'
+import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/react-query'
 import { getXnaFeeds } from '@/utils/v2ex-client'
 import { XnaFeed } from '@/utils/v2ex-client/types'
 
 import { useViewedLinks } from './hooks'
 import TideTopicRow from './TideTopicRow'
 import TopicRow from './TopicRow'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
-type FeedTopicListProps = {
+type XnaTopicListProps = {
   isFocused: boolean
   currentListRef: MutableRefObject<any>
 }
 
-function FeedTopicList(props: FeedTopicListProps) {
+function XnaTopicList(props: XnaTopicListProps) {
   const { isFocused, currentListRef } = props
   const alert = useAlertService()
   const listViewRef = useRef<FlashList<XnaFeed>>()
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const { setViewed, getViewedStatus } = useViewedLinks()
-  const getKey = useCallback((index: number): [string, number] => {
-    return ['/page/home/xna', index + 1]
-  }, [])
-  const listSwr = useSWRInfinite(
-    getKey,
-    async ([_, page]) => {
-      return getXnaFeeds({ p: page })
-    },
-    {
-      revalidateOnMount: false,
-      revalidateOnReconnect: false,
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-      parallel: true,
-      onError(err) {
-        if (err.code === '2FA_ENABLED') {
-          return
-        }
+  const queryclient = useQueryClient()
+
+  const fetchItems = useCallback(async ({ pageParam }) => {
+    try {
+      return getXnaFeeds({ p: pageParam });
+    } catch (err) {
+      if (err.code !== '2FA_ENABLED') {
         alert.show({
           type: 'error',
           message: err.message || '请求资源失败',
         })
-      },
-    },
-  )
+      }
+      throw err
+    }
+  }, [])
+  const listQuery = useInfiniteQuery({
+    queryKey: ['/page/home/xna'],
+    queryFn: fetchItems,
+    initialPageParam: 1,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+        return lastPage.pagination.current + 1
+      }
+      return undefined
+    }
+  })
+
+  const handleRefresh = useCallback(() => {
+    if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
+      queryclient.resetQueries({
+        queryKey: ['/page/home/xna'],
+        exact: true,
+      })
+    }
+    listQuery.refetch()
+  }, [listQuery.data, queryclient])
 
   const scrollToRefresh = useCallback(() => {
-    if (listSwr.isValidating) {
+    if (listQuery.isRefetching) {
       return
     }
     if (settings.refreshHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     }
 
-    if (listSwr.data) {
+    if (listQuery.data) {
       listViewRef.current.scrollToOffset({
-        offset: scrollY.current > 0 ? 0 : -60,
+        offset: 0,
         animated: true,
       })
     }
-    listSwr.mutate()
-  }, [listSwr, settings.refreshHaptics])
+    listQuery.refetch()
+  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
 
   useEffect(() => {
     if (
       isFocused &&
-      shouldFetch(listSwr, settings.autoRefresh && settings.autoRefreshDuration)
+      shouldFetch(listQuery, settings.autoRefresh && settings.autoRefreshDuration)
     ) {
       scrollToRefresh()
     }
@@ -97,7 +113,7 @@ function FeedTopicList(props: FeedTopicListProps) {
             nextAppState === 'active' &&
             Date.now() - toBackgroundDate > 60 * 1000 &&
             shouldFetch(
-              listSwr,
+              listQuery,
               settings.autoRefresh && settings.autoRefreshDuration,
             )
           ) {
@@ -121,18 +137,18 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (!listSwr.data && !listSwr.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(20)
     }
-    const items = listSwr.data?.reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
         return uniqBy([...combined, ...page.data], 'url')
       }
       return combined
     }, [])
     return items || []
-  }, [listSwr])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
@@ -172,22 +188,18 @@ function FeedTopicList(props: FeedTopicListProps) {
       estimatedItemSize={settings.feedLayout === 'tide' ? 80 : 120}
       onEndReachedThreshold={0.4}
       onEndReached={() => {
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize((size) => size + 1)
+        if (shouldLoadMore(listQuery)) {
+          listQuery.fetchNextPage()
         }
       }}
       refreshControl={
         <MyRefreshControl
-          refreshing={isRefreshing(listSwr) || false}
-          onRefresh={() => {
-            if (!listSwr.isValidating) {
-              listSwr.mutate()
-            }
-          }}
+          refreshing={listQuery.isRefetching}
+          onRefresh={handleRefresh}
         />
       }
       ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
+        return <CommonListFooter data={listQuery} />
       }}
       onScroll={(e) => {
         scrollY.current = e.nativeEvent.contentOffset.y
@@ -195,4 +207,4 @@ function FeedTopicList(props: FeedTopicListProps) {
     />
   )
 }
-export default memo(FeedTopicList)
+export default memo(XnaTopicList)

@@ -3,7 +3,6 @@ import { Text, useWindowDimensions, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Image } from 'expo-image'
-import useSWR, { useSWRConfig } from 'swr'
 
 import AnimatedHeader from '@/components/AnimatedHeader'
 import Button from '@/components/Button'
@@ -15,20 +14,21 @@ import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
-import * as v2exClient from '@/utils/v2ex-client'
+import { getNodeDetail, uncollectNode, collectNode } from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
 import { getAbsoluteUrl } from '@/utils/url'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 type NodeBrief = {
   name: string
 } & Partial<NodeDetail>
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'node'>
+
 export default function NodeScreen({ route, navigation }: ScreenProps) {
   const { name, brief } = route.params
   const { styles, colorScheme } = useTheme()
   const [collecting, setCollecting] = useState(false)
-  const { mutate } = useSWRConfig()
 
   const { width } = useWindowDimensions()
   const {
@@ -37,25 +37,29 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
   const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
   const alert = useAlertService()
   const { composeAuthedNavigation } = useAuthService()
+  const queryClient = useQueryClient()
 
-  const nodeSwr = useSWR(
-    [`/page/go/:name/node.json`, name],
-    ([_, name]) => v2exClient.getNodeDetail({ name }),
-    {
-      shouldRetryOnError: false,
-      onError(err) {
-        if (err.code === '2FA_ENABLED') {
-          return
-        }
+
+  const fetchNode  = useCallback(async () => {
+    try {
+      const res = await getNodeDetail({ name })
+      return res.data
+    } catch (err) {
+      if (err.code !== '2FA_ENABLED') {
         alert.show({
           type: 'error',
           message: err.message || '请求资源失败',
         })
-      },
-    },
-  )
+      }
+    }
+  }, [name])
 
-  const node = nodeSwr.data?.data || (brief as NodeBrief) || ({} as NodeBrief)
+  const nodeQuery = useQuery({
+    queryKey: [`/page/go/:name/node.json`, name],
+    queryFn: fetchNode,
+  })
+
+  const node = nodeQuery.data || (brief as NodeBrief) || ({} as NodeBrief)
 
   const htmlProps = useMemo(() => {
     return {
@@ -70,8 +74,8 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
     composeAuthedNavigation(
       useCallback(() => {
         const request = node.collected
-          ? v2exClient.uncollectNode
-          : v2exClient.collectNode
+          ? uncollectNode
+          : collectNode
         const indicator = alert.show({
           type: 'default',
           message: '处理中',
@@ -82,14 +86,20 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
         request({
           name,
         })
-          .then(({ data: patch }) => {
-            nodeSwr.mutate((data) => ({
-              ...data,
+          .then(({ data: patch, message }) => {
+            queryClient.setQueryData([`/page/go/:name/node.json`, name], {
+              ...node,
               ...patch,
-            }))
-            mutate('/page/my/nodes.json')
+            })
+            queryClient.invalidateQueries({
+              queryKey: ['/page/my/nodes.json'],
+            })
+            alert.show({ type: 'success', message  })
           })
           .catch((err) => {
+            if (err.code == 'OPERATION_FAILED') {
+              nodeQuery.refetch()
+            }
             alert.show({ type: 'error', message: err.message })
           })
           .finally(() => {
@@ -177,7 +187,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                 <Button
                   variant="default"
                   size="sm"
-                  disabled={!nodeSwr.data}
+                  disabled={!nodeQuery.data}
                   onPress={handleCreateNewTopic}
                   label="创建新主题"
                 />

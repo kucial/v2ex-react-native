@@ -10,7 +10,7 @@ import UploadButton from './UploadButton'
 export default function AlbumView(props) {
   const { album } = props
   const imgur = useImgurService()
-  const imagesSwr = imgur.useAlbumImages(album.id)
+  const imagesQuery = imgur.useAlbumImages(album.id)
   const { theme, styles } = useTheme()
 
   return (
@@ -36,14 +36,14 @@ export default function AlbumView(props) {
           </View>
           <View className="w-[56px] items-end">
             <UploadButton
-              onUploaded={imagesSwr.mutate}
+              onUploaded={imagesQuery.refetch}
               tintColor={theme.colors.text}
             />
           </View>
         </View>
       </SafeAreaView>
       <ImagesGrid
-        imagesSwr={imagesSwr}
+        imagesQuery={imagesQuery}
         selected={props.selected}
         onToggleSelect={props.onToggleSelect}
       />

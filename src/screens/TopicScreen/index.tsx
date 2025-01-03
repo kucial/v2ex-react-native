@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
@@ -12,9 +12,6 @@ import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useIsFocused } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
-import deepmerge from 'deepmerge'
-import useSWR from 'swr'
-import useSWRInfinite from 'swr/infinite'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import AnimatedHeader from '@/components/AnimatedHeader'
@@ -32,7 +29,7 @@ import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { useCachedState } from '@/utils/hooks'
 import { isBouncingBottom, isBouncingTop } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
-import { isLoading, isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { isLoading, shouldLoadMore } from '@/utils/react-query'
 import * as v2exClient from '@/utils/v2ex-client'
 import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
 
@@ -48,6 +45,7 @@ import TopicBaseInfo from './TopicBaseInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
 import { ConversationContext, UserInfoContext } from './types'
+import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
@@ -190,21 +188,17 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   } = route
 
   const alert = useAlertService()
-  const topicSwr = useSWR(
-    [`/page/t/:id/topic.json`, id],
-    async ([_, id]) => {
+  const queryClient = useQueryClient()
+  const topicQuery = useQuery({
+    queryKey: [`/page/t/:id/topic.json`, id],
+    queryFn: async () => {
       const { data } = await v2exClient.getTopicDetail({ id })
       return data
     },
-    {
-      revalidateIfStale: false,
-      revalidateOnMount: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
-  )
+    refetchOnMount: false,
+  })
 
-  const topic = topicSwr.data || (brief as TopicDetail)
+  const topic = topicQuery.data || (brief as TopicDetail)
 
   const { touchViewed } = useViewedTopics()
   const [lastIndex, setLastIndex] = useCachedState(
@@ -214,50 +208,42 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const [showScrollToLastPosition, setShowScrollToLastPosition] =
     useState(false)
 
-  const listSwr = useSWRInfinite(
-    useCallback(
-      (index): [string, number, number] => {
-        return [`/page/t/:id/replies.json`, id, index + 1]
-      },
-      [id],
-    ),
-    async ([_, id, page]) => {
-      const data = await v2exClient.getTopicReplies({ id, p: page })
-      if (data.meta?.topic) {
-        topicSwr.mutate(
-          (prev) =>
-            deepmerge(prev, data.meta.topic, {
-              arrayMerge: (a, b) => b,
-            }),
-          false,
-        )
+  const fetchReplies = useCallback(async ({ pageParam }) => {
+    const data = await v2exClient.getTopicReplies({ id, p: pageParam })
+    // side effects...
+    if (data.meta?.topic) {
+      queryClient.setQueryData([`/page/t/:id/topic.json`, id], data.meta.topic);
+    }
+    return data
+  }, [id]);
+
+  const repliesQuery = useInfiniteQuery({
+    queryKey: [`/page/t/:id/replies.json`, id],
+    queryFn: fetchReplies,
+    initialPageParam: 1,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+        return lastPage.pagination.current +1
       }
-      return data
+      return undefined
     },
-    {
-      // initialSize: Math.max(1, Math.ceil((topic?.replies || 0) / 100)),
-      revalidateOnMount: true,
-      revalidateOnFocus: false,
-      onSuccess: (data) => {
-        const topic = data[data.length - 1]?.meta?.topic
-        if (topic) {
-          setTimeout(() => {
-            touchViewed(topic)
-          }, 500)
-        }
-        if (lastIndex && !showScrollToLastPosition) {
-          setShowScrollToLastPosition(true)
-        }
-      },
-      onErrorRetry(err) {
-        if (err.code === 'RESOURCE_ERROR') {
-          return
-        }
-      },
-    },
-  )
+    refetchOnMount: true,
+  })
 
   const { showActionSheetWithOptions } = useActionSheet()
+  useEffect(() => {
+    if (topicQuery.data) {
+      // trigger once.
+      if (lastIndex && !showScrollToLastPosition) {
+        setShowScrollToLastPosition(true)
+      }
+      if (topicQuery.data) {
+        setTimeout(() => {
+            touchViewed(topicQuery.data)
+        }, 500)
+      }
+    }
+  }, [topicQuery.data])
 
   const [conversationContext, setConversationContext] =
     useState<ConversationContext>(null)
@@ -273,24 +259,27 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const changeNodeModalRef = useRef<BottomSheetModal>()
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
+  const [myReplies, setMyReplies] = useCachedState<TopicReply[]>(`my-topic-replies:${id}`, []);
 
   const { composeAuthedNavigation, user: currentUser } = useAuthService()
 
   const { styles, colorScheme } = useTheme()
 
   const replyItems = useMemo(() => {
-    if (!listSwr.data && !listSwr.error) {
+    if (repliesQuery.isLoading && !repliesQuery.error) {
       // initial loading
       return new Array(10)
     }
-    const items = (listSwr.data || []).reduce((combined, page) => {
+    const items = repliesQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
-    }, [])
+    }, myReplies)
+
+    items.sort((a, b) => a.num - b.num)
     return items
-  }, [listSwr])
+  }, [repliesQuery, myReplies])
 
   const handleToggleBlock = composeAuthedNavigation(
     useCallback(() => {
@@ -308,11 +297,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         id,
       })
         .then(({ data }) => {
-          topicSwr.data &&
-            topicSwr.mutate((prev) => ({
-              ...prev,
+          topicQuery.data &&
+            queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+              ...topicQuery.data,
               ...data,
-            }))
+            })
           alert.show({
             type: 'success',
             message: data.blocked ? '已忽略主题' : '已撤销主题忽略',
@@ -338,11 +327,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       v2exClient
         .reportTopic({ id })
         .then(({ data }) => {
-          topicSwr.data &&
-            topicSwr.mutate((prev) => ({
-              ...prev,
+          topicQuery.data &&
+            queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+              ...topicQuery.data,
               ...data,
-            }))
+            })
           if (data.reported) {
             alert.show({ type: 'success', message: '已举报主题' })
           } else {
@@ -365,13 +354,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const handleToggleCollect = composeAuthedNavigation(
     useCallback(() => {
       if (topic.collected) {
-        topicSwr.mutate(
-          (prev) => ({
-            ...prev,
-            collected: false,
-          }),
-          false,
-        )
+        queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+          ...topic,
+          collected: false,
+        })
         v2exClient
           .uncollectTopic({
             id,
@@ -383,23 +369,17 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             })
           })
           .catch((err) => {
-            topicSwr.mutate(
-              (prev) => ({
-                ...prev,
-                collected: true,
-              }),
-              false,
-            )
+            queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+              ...topic,
+              collected: true,
+            })
             alert.show({ type: 'error', message: err.message })
           })
       } else {
-        topicSwr.mutate(
-          (prev) => ({
-            ...prev,
-            collected: true,
-          }),
-          false,
-        )
+        queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+          ...topic,
+          collected: true,
+        })
         v2exClient
           .collectTopic({
             id,
@@ -411,13 +391,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             })
           })
           .catch((err) => {
-            topicSwr.mutate(
-              (prev) => ({
-                ...prev,
-                collected: false,
-              }),
-              false,
-            )
+            queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+              ...topic,
+              collected: false,
+            })
             alert.show({ type: 'error', message: err.message })
           })
       }
@@ -430,14 +407,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         alert.show({ type: 'info', message: '已感谢过主题' })
         return
       }
-      topicSwr.mutate(
-        (prev) => ({
-          ...prev,
-          thanked: true,
-        }),
-        false,
-      )
-
+      queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+        ...topic,
+        thanked: true,
+      })
       v2exClient
         .thankTopic({
           id,
@@ -449,13 +422,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           })
         })
         .catch((err) => {
-          topicSwr.mutate(
-            (prev) => ({
-              ...prev,
-              thanked: false,
-            }),
-            false,
-          )
+          queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+            ...topic,
+            thanked: false,
+          })
           alert.show({ type: 'error', message: err.message })
         })
     }, [id, topic?.thanked]),
@@ -550,16 +520,18 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           } else {
             alert.show({ type: 'error', message: message })
           }
-          listSwr.mutate(
+
+          queryClient.setQueryData([`/page/t/:id/replies.json`, id],
             (currentData) => {
+              const pages = currentData.pages;
               const currentPageIndex = p - 1
-              const currentPageData = currentData[currentPageIndex]
-              const targetIndex = currentData[p - 1].data.findIndex(
+              const currentPageData = pages[currentPageIndex]
+              const targetIndex = pages[p - 1].data.findIndex(
                 (item: TopicReply) => item.id === reply.id,
               )
-              const currentReply = currentData[p - 1].data[targetIndex]
+              const currentReply = pages[p - 1].data[targetIndex]
 
-              const newCurrentPageData = {
+              const newPageData = {
                 ...currentPageData,
                 data: [
                   ...currentPageData.data.slice(0, targetIndex),
@@ -568,14 +540,14 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                 ],
               }
 
-              return [
-                ...currentData.slice(0, currentPageIndex),
-                newCurrentPageData,
-                ...currentData.slice(currentPageIndex + 1),
-              ]
-            },
-            {
-              revalidate: false,
+              return {
+                pages: [
+                  ...pages.slice(0, currentPageIndex),
+                  newPageData,
+                  ...pages.slice(currentPageIndex + 1),
+                ],
+                pageParams: currentData.pageParams,
+              }
             },
           )
         })
@@ -607,19 +579,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                 id,
                 content: values.content,
               })
-              const p = getPageNum(reply.num)
-              listSwr.mutate(
-                (currentData) => {
-                  const pageData = currentData[p - 1]
-                  if (pageData?.data.length === 100 || !pageData) {
-                    listSwr.setSize(p)
-                  } else {
-                    pageData.data.push(reply)
-                  }
-                  return currentData
-                },
-                // , false
-              )
+              setMyReplies((prev) => ([
+                ...prev,
+                reply
+              ]));
+              // clear cached for reply form.
               const cacheKey = getReplyFormCacheKey(replyContext)
               setJSON(cacheKey, undefined)
               alert.show({ type: 'success', message: '回复成功' })
@@ -633,7 +597,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                 id,
                 content: values.content,
               })
-              topicSwr.mutate(topic, false)
+              queryClient.setQueryData([`/page/t/:id/topic.json`, id], topic)
               const cacheKey = getReplyFormCacheKey(replyContext)
               setJSON(cacheKey, undefined)
               alert.show({ type: 'success', message: '附言成功' })
@@ -666,7 +630,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   }, [])
 
   const handleRefetch = useCallback(() => {
-    topicSwr.mutate()
+    topicQuery.refetch()
   }, [])
 
   const showConversation = useCallback((context: ConversationContext) => {
@@ -688,16 +652,15 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   }, [navigation])
 
   useEffect(() => {
-    return () => {
-      InteractionManager.runAfterInteractions(() => {
-        if (currentIndexRef.current > 10) {
-          setLastIndex(currentIndexRef.current, true)
-        } else {
-          setLastIndex(undefined, true)
-        }
-      })
-    }
-  }, [])
+    const unsubscribe = navigation.addListener('beforeRemove', function() {
+      if (currentIndexRef.current > 10) {
+        setLastIndex(currentIndexRef.current, true)
+      } else {
+        setLastIndex(undefined, true)
+      }
+    })
+    return unsubscribe;
+  }, [navigation, topicQuery.data])
 
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
@@ -724,10 +687,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   }, [id, replyItems])
 
   const handleReachEnd = useCallback(() => {
-    if (shouldLoadMore(listSwr)) {
-      listSwr.setSize(listSwr.size + 1)
+    if (shouldLoadMore(repliesQuery)) {
+      repliesQuery.fetchNextPage()
     }
-  }, [listSwr, topicSwr])
+  }, [repliesQuery, topicQuery])
 
   const handleNavTo = useCallback(
     (target: number) => {
@@ -807,9 +770,9 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         ListHeaderComponent={
           <TopicBaseInfo
             isLoading={
-              isLoading(topicSwr) || (!topicSwr.data && isLoading(listSwr))
+              isLoading(topicQuery) || (!topicQuery.data && isLoading(repliesQuery))
             }
-            data={topicSwr.data}
+            data={topicQuery.data}
             hasReply={!!replyItems.length}
             fallback={brief}
             navigation={navigation}
@@ -820,7 +783,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           />
         }
         ListFooterComponent={
-          <CommonListFooter data={listSwr} emptyMessage="目前尚无回复" />
+          <CommonListFooter data={repliesQuery} emptyMessage="目前尚无回复" />
         }
         estimatedItemSize={140}
         onEndReachedThreshold={0.4}
@@ -831,13 +794,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         }}
         refreshControl={
           <MyRefreshControl
-            onRefresh={() => {
-              if (listSwr.isValidating) {
-                return
-              }
-              listSwr.mutate()
-            }}
-            refreshing={isRefreshing(listSwr)}
+            refreshing={repliesQuery.isRefetching}
+            onRefresh={repliesQuery.refetch}
           />
         }
         onScroll={handleScroll}
@@ -940,19 +898,19 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           />
         )}
       </MyBottomSheetModal>
-      {topicSwr.data?.canMove && (
+      {topicQuery.data?.canMove && (
         <MyBottomSheetModal
           ref={changeNodeModalRef}
           index={0}
           snapPoints={moveModalSnapPoints}>
           <TopicMovePanel
-            topicId={topicSwr.data.id}
-            node={topicSwr.data.node}
+            topicId={topicQuery.data.id}
+            node={topicQuery.data.node}
             onExit={() => {
               changeNodeModalRef.current?.dismiss()
             }}
             onUpdated={(topic) => {
-              topicSwr.mutate(topic, { revalidate: false })
+              queryClient.setQueryData([`/page/t/:id/topic.json`, id], topic)
             }}
           />
         </MyBottomSheetModal>

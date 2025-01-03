@@ -3,52 +3,56 @@ import { Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
-import useSWRInfinite from 'swr/infinite'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useTheme } from '@/containers/ThemeService'
-import { isRefreshing, shouldLoadMore } from '@/utils/swr'
+import { isRefreshing, shouldLoadMore } from '@/utils/react-query'
 import { getBalanceDetail } from '@/utils/v2ex-client'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 export default function Balance(props: { username: string }) {
   const { theme, styles } = useTheme()
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
-  const getKey = useCallback(
-    (index: number): [string, number] => {
-      return [`/member/${props.username}/balance`, index + 1]
+
+   const fetchItems = useCallback(
+      async ({ pageParam }) => {
+        return getBalanceDetail({
+          p: pageParam,
+        })
+      },
+      [props.username],
+    )
+
+  const listQuery = useInfiniteQuery({
+    queryKey: ['/member/:username/balance', props.username],
+    queryFn: fetchItems,
+    initialPageParam: 1,
+    getNextPageParam(lastPage) {
+      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+        return lastPage.pagination.current +1
+      }
+      return undefined
     },
-    [props.username],
-  )
-  const listSwr = useSWRInfinite(
-    getKey,
-    async ([_, page]) => {
-      return getBalanceDetail({ p: page })
-    },
-    {
-      revalidateOnMount: true,
-      revalidateOnReconnect: false,
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-    },
-  )
+    refetchOnMount: true,
+  })
 
   const listItems = useMemo(() => {
-    if (!listSwr.data) {
+    if (listQuery.isLoading) {
       // initial loading
       return new Array(10)
     }
-    const items = listSwr.data?.reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
         return [...combined, ...page.data]
       }
       return combined
     }, [])
     return items || []
-  }, [listSwr])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
@@ -156,25 +160,20 @@ export default function Balance(props: { username: string }) {
       onEndReachedThreshold={0.4}
       estimatedItemSize={58}
       onEndReached={() => {
-        if (shouldLoadMore(listSwr)) {
-          listSwr.setSize((size) => size + 1)
+        if (shouldLoadMore(listQuery)) {
+          listQuery.fetchNextPage()
         }
       }}
       refreshControl={
         <MyRefreshControl
-          refreshing={isRefreshing(listSwr) || false}
-          onRefresh={() => {
-            if (!listSwr.isValidating) {
-              listSwr.setSize(1)
-              listSwr.mutate()
-            }
-          }}
+          refreshing={listQuery.isRefetching}
+          onRefresh={listQuery.refetch}
         />
       }
       ListHeaderComponent={() => <View className="h-[16]"></View>}
       // TODO: 在头部显示显示余额信息
       ListFooterComponent={() => {
-        return <CommonListFooter data={listSwr} />
+        return <CommonListFooter data={listQuery} />
       }}
     />
   )
