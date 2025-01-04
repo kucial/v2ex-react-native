@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import classNames from 'classnames'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
@@ -7,7 +8,6 @@ import { useTheme } from '@/containers/ThemeService'
 
 import AppSidebar from '../AppSidebar'
 import { AppLayoutContext } from './context'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const ANIMATE_DURATION = 300
 const OFFSET_X = -60
@@ -20,7 +20,7 @@ export default function Layout(props: { children: ReactNode }) {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const translateXAnim = useRef(new Animated.Value(OFFSET_X)).current
   const translateYAnim = useRef(new Animated.Value(OFFSET_Y)).current
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets()
 
   useEffect(() => {
     if (!!nav) {
@@ -95,9 +95,8 @@ export default function Layout(props: { children: ReactNode }) {
               paddingLeft: padLayout.active ? 0 : insets.left,
               paddingRight: insets.right,
             },
-            styles.layer1
-          ]}
-          >
+            styles.layer1,
+          ]}>
           {props.children}
         </View>
         {padLayout.active && (

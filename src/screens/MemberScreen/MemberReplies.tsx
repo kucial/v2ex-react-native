@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { SharedValue } from 'react-native-reanimated'
 import { FlashListProps } from '@shopify/flash-list'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
@@ -9,7 +10,6 @@ import { shouldLoadMore } from '@/utils/react-query'
 import { getMemberReplies } from '@/utils/v2ex-client'
 
 import MemberReplyRow from './MemberReplyRow'
-import { useInfiniteQuery } from '@tanstack/react-query'
 
 export default function MemberReplies(
   props: {
@@ -22,7 +22,8 @@ export default function MemberReplies(
   const fetchItems = useCallback(
     async ({ pageParam }) => {
       return getMemberReplies({
-        username: props.username, p: pageParam,
+        username: props.username,
+        p: pageParam,
       })
     },
     [props.username],
@@ -33,13 +34,15 @@ export default function MemberReplies(
     queryFn: fetchItems,
     initialPageParam: 1,
     getNextPageParam(lastPage) {
-      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
-        return lastPage.pagination.current +1
+      if (
+        lastPage.pagination &&
+        lastPage.pagination.total > lastPage.pagination.current
+      ) {
+        return lastPage.pagination.current + 1
       }
       return undefined
-    }
+    },
   })
-
 
   const listItems = useMemo(() => {
     if (listQuery.isLoading && !listQuery.error) {

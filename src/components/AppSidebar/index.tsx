@@ -1,6 +1,5 @@
 import { ReactNode, useCallback, useMemo } from 'react'
 import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
 import {
   ClockIcon,
   DocumentPlusIcon,
@@ -24,16 +23,6 @@ import { usePressBreadcrumb } from '@/utils/hooks'
 
 import AppSidebarButton from './AppSidebarButton'
 import { LayoutStyleContext } from './context'
-
-interface BarStyles {
-  container: {
-    common: ViewStyle
-    vertical: ViewStyle
-  }
-  button: {
-    layut: ViewStyle
-  }
-}
 
 export default function AppSidebar(props: {
   dynamic: ReactNode

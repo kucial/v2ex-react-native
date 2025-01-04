@@ -1,10 +1,4 @@
-import {
-  Platform,
-  SafeAreaView,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native'
+import { Platform, Text, useWindowDimensions, View } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { headerLeft } from '@/components/BackButton'
@@ -103,14 +97,14 @@ function AppStack() {
       // initialRouteName={'theme-settings'}
     >
       <Stack.Screen
-          name="main"
-          component={MainTab}
-          options={{
-            headerShown: false,
-            headerTransparent: true,
-            headerBackground: transparentHeaderBackground,
-          }}
-        />
+        name="main"
+        component={MainTab}
+        options={{
+          headerShown: false,
+          headerTransparent: true,
+          headerBackground: transparentHeaderBackground,
+        }}
+      />
       <Stack.Group>
         <Stack.Screen
           name="search"

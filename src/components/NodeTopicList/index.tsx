@@ -9,11 +9,17 @@ import {
 import { AppState } from 'react-native'
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
 import { FlashList } from '@shopify/flash-list'
+import {
+  useInfiniteQuery,
+  useQueryClient,
+  UseQueryResult,
+} from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -23,8 +29,6 @@ import { NodeTopicFeed } from '@/utils/v2ex-client/types'
 
 import NodeTopicRow from './NodeTopicRow'
 import TideNodeTopicRow from './TideNodeTopicRow'
-import { useInfiniteQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query'
-import { PAGE_RESET_LIMIT } from '@/constants'
 
 type NodeTopicListProps = {
   name: string
@@ -40,7 +44,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
   const { getViewedStatus } = useViewedTopics()
   const alert = useAlertService()
   const { data: settings } = useAppSettings()
-  const queryclient  = useQueryClient();
+  const queryclient = useQueryClient()
 
   const listViewRef = useRef<FlashList<NodeTopicFeed>>()
   const scrollHandler = useAnimatedScrollHandler({
@@ -71,7 +75,10 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     initialPageParam: 1,
     queryFn: fetchItems,
     getNextPageParam(lastPage) {
-      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current)  {
+      if (
+        lastPage.pagination &&
+        lastPage.pagination.total > lastPage.pagination.current
+      ) {
         return lastPage.pagination.current + 1
       }
       return undefined
@@ -82,11 +89,11 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
       queryclient.resetQueries({
         queryKey: ['/page/go/:name/feed.json', name],
-        exact: true
+        exact: true,
       })
     }
     listQuery.refetch()
-  }, [listQuery.data, name, queryclient]);
+  }, [listQuery.data, name, queryclient])
 
   const scrollToRefresh = useCallback(() => {
     if (listQuery.isRefetching) {
@@ -107,7 +114,10 @@ export default function NodeTopicList(props: NodeTopicListProps) {
   useEffect(() => {
     if (
       isFocused &&
-      shouldFetch(listQuery, settings.autoRefresh && settings.autoRefreshDuration)
+      shouldFetch(
+        listQuery,
+        settings.autoRefresh && settings.autoRefreshDuration,
+      )
     ) {
       scrollToRefresh()
     }

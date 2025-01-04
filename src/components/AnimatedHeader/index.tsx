@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { Platform, Text, View } from 'react-native'
 import Animate, {
   Extrapolation,
@@ -6,11 +6,11 @@ import Animate, {
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 
 import BackButton from '@/components/BackButton'
 import { useTheme } from '@/containers/ThemeService'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 function AnimatedHeader(props: {
   title?: string
@@ -39,8 +39,7 @@ function AnimatedHeader(props: {
       className="w-full flex-row items-center"
       style={[
         {
-          height:
-            Platform.OS === 'android' ? 48 : 48 + insets.top,
+          height: Platform.OS === 'android' ? 48 : 48 + insets.top,
           paddingTop: Platform.OS === 'android' ? 0 : insets.top,
         },
         styles.layer1,

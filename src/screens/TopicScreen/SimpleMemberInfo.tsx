@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { Text, View } from 'react-native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 
 import Button from '@/components/Button'
@@ -14,7 +15,6 @@ import {
   unblockMember,
 } from '@/utils/v2ex-client'
 import { MemberDetail, StatusResponse } from '@/utils/v2ex-client/types'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const AVATAR_SIZE = 48
 
@@ -30,7 +30,7 @@ export default function SimpleMemberInfo(props: {
     return data
   }, [username])
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
   const memberQuery = useQuery({
     queryKey: [`/page/member/:username/info.json`, username],
     queryFn: fetchMemberDetail,
@@ -64,10 +64,13 @@ export default function SimpleMemberInfo(props: {
           type: 'success',
           message: successMsg,
         })
-        queryClient.setQueryData([`/page/member/:username/info.json`, username], {
-          ...memberQuery.data,
-          meta: patch.meta,
-        })
+        queryClient.setQueryData(
+          [`/page/member/:username/info.json`, username],
+          {
+            ...memberQuery.data,
+            meta: patch.meta,
+          },
+        )
       })
       .catch((err) => {
         alert.show({ type: 'error', message: err.message })

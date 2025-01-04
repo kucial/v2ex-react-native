@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { SafeAreaView, Text, View } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 

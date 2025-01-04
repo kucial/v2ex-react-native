@@ -8,11 +8,13 @@ import {
 } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
 import { shouldFetch } from '@/utils/react-query'
@@ -21,8 +23,6 @@ import { HomeTopicFeed } from '@/utils/v2ex-client/types'
 
 import TideTopicRow from './TideTopicRow'
 import TopicRow from './TopicRow'
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
-import { PAGE_RESET_LIMIT } from '@/constants'
 
 type FeedTopicListProps = {
   tab: string
@@ -36,25 +36,31 @@ function FeedTopicList(props: FeedTopicListProps) {
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const { getViewedStatus } = useViewedTopics()
-  const queryclient  = useQueryClient();
+  const queryclient = useQueryClient()
 
-  const fetchItems = useCallback(({ pageParam }) => {
-    if (tab === 'recent') {
-      return getRecentFeeds({ p: pageParam })
-    }
-    if (tab == 'today_hots') {
-      return getHotTopics()
-    }
-    return getHomeFeeds({ tab })
-  }, [tab]);
+  const fetchItems = useCallback(
+    ({ pageParam }) => {
+      if (tab === 'recent') {
+        return getRecentFeeds({ p: pageParam })
+      }
+      if (tab == 'today_hots') {
+        return getHotTopics()
+      }
+      return getHomeFeeds({ tab })
+    },
+    [tab],
+  )
 
   const listQuery = useInfiniteQuery({
     queryKey: ['/page/home/feed', tab],
     queryFn: fetchItems,
     initialPageParam: 1,
     getNextPageParam(lastPage) {
-      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
-        return lastPage.pagination.current + 1;
+      if (
+        lastPage.pagination &&
+        lastPage.pagination.total > lastPage.pagination.current
+      ) {
+        return lastPage.pagination.current + 1
       }
       return undefined
     },
@@ -64,11 +70,11 @@ function FeedTopicList(props: FeedTopicListProps) {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
       queryclient.resetQueries({
         queryKey: ['/page/home/feed', tab],
-        exact: true
+        exact: true,
       })
     }
     listQuery.refetch()
-  }, [listQuery.data, tab, queryclient]);
+  }, [listQuery.data, tab, queryclient])
 
   const scrollToRefresh = useCallback(() => {
     if (listQuery.isRefetching) {
@@ -92,7 +98,10 @@ function FeedTopicList(props: FeedTopicListProps) {
   useEffect(() => {
     if (
       isFocused &&
-      shouldFetch(listQuery, settings.autoRefresh && settings.autoRefreshDuration)
+      shouldFetch(
+        listQuery,
+        settings.autoRefresh && settings.autoRefreshDuration,
+      )
     ) {
       scrollToRefresh()
     }

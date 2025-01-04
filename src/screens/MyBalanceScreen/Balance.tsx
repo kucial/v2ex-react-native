@@ -3,37 +3,40 @@ import { Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useTheme } from '@/containers/ThemeService'
-import { isRefreshing, shouldLoadMore } from '@/utils/react-query'
+import { shouldLoadMore } from '@/utils/react-query'
 import { getBalanceDetail } from '@/utils/v2ex-client'
-import { useInfiniteQuery } from '@tanstack/react-query'
 
 export default function Balance(props: { username: string }) {
   const { theme, styles } = useTheme()
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
 
-   const fetchItems = useCallback(
-      async ({ pageParam }) => {
-        return getBalanceDetail({
-          p: pageParam,
-        })
-      },
-      [props.username],
-    )
+  const fetchItems = useCallback(
+    async ({ pageParam }) => {
+      return getBalanceDetail({
+        p: pageParam,
+      })
+    },
+    [props.username],
+  )
 
   const listQuery = useInfiniteQuery({
     queryKey: ['/member/:username/balance', props.username],
     queryFn: fetchItems,
     initialPageParam: 1,
     getNextPageParam(lastPage) {
-      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
-        return lastPage.pagination.current +1
+      if (
+        lastPage.pagination &&
+        lastPage.pagination.total > lastPage.pagination.current
+      ) {
+        return lastPage.pagination.current + 1
       }
       return undefined
     },

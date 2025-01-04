@@ -328,22 +328,21 @@ function HtmlRender({
         <View style={{ margin: -6 }}>
           <ContextMenu
             actions={[
-              { title: '复制', systemIcon: 'doc.on.doc'  },
+              { title: '复制', systemIcon: 'doc.on.doc' },
               { title: '选择文本', systemIcon: 'hand.point.up.left.and.text' },
               { title: 'base64 提取', systemIcon: 'text.viewfinder' },
             ]}
             onPress={({ nativeEvent }) => {
               switch (nativeEvent.index) {
                 case 0:
-                  return handleCopy();
+                  return handleCopy()
                 case 1:
-                  return handleSelect();
+                  return handleSelect()
                 case 2:
-                  return handleBase64Decode();
+                  return handleBase64Decode()
               }
             }}
-            previewBackgroundColor={themeStyles.layer1.backgroundColor}
-            >
+            previewBackgroundColor={themeStyles.layer1.backgroundColor}>
             <View style={[{ padding: 6, borderRadius: 8 }]}>
               <BaseRender
                 WebView={WebView}

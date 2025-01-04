@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Platform, Pressable, Text, View } from 'react-native'
+import { Platform, Text, View } from 'react-native'
 import {
   ClockIcon,
   DocumentPlusIcon,

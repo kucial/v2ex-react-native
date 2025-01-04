@@ -1,5 +1,6 @@
 import { Pressable, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { UseInfiniteQueryResult } from '@tanstack/react-query'
 
 import { useTheme } from '@/containers/ThemeService'
 import {
@@ -8,10 +9,9 @@ import {
   isLoadingMore,
   shouldShowError,
 } from '@/utils/react-query'
+import ApiError from '@/utils/v2ex-client/ApiError'
 
 import Loader from '../Loader'
-import { UseInfiniteQueryResult } from '@tanstack/react-query'
-import ApiError from '@/utils/v2ex-client/ApiError'
 
 type CommonListFooterProps = {
   data: UseInfiniteQueryResult
@@ -38,7 +38,9 @@ export default function CommonListFooter(props: CommonListFooterProps) {
           <View className="my-4">
             <Text style={styles.text}>{listQuery.error.message}</Text>
           </View>
-          {!['MEMBER_LOCKED', 'RESOURCE_ERROR'].includes((listQuery.error as ApiError).code) && (
+          {!['MEMBER_LOCKED', 'RESOURCE_ERROR'].includes(
+            (listQuery.error as ApiError).code,
+          ) && (
             <View className="flex flex-row justify-center mb-4">
               <Pressable
                 className="px-4 h-[44px] w-[120px] rounded-full items-center justify-center active:opacity-60"

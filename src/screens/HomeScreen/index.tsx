@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { useWindowDimensions } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabBar, TabView } from 'react-native-tab-view'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { CompositeScreenProps, useIsFocused } from '@react-navigation/native'
@@ -15,7 +16,6 @@ import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'
@@ -69,9 +69,10 @@ export default function HomeScreen(props: HomeScreenProps) {
   const isFocused = useIsFocused()
   const scrollY = useSharedValue(0)
 
-  const viewWidth = padLayout.active && padLayout.orientation === 'PORTRAIT'
-  ? width - APP_SIDEBAR_SIZE - insets.left - insets.right
-  : width - insets.left - insets.right
+  const viewWidth =
+    padLayout.active && padLayout.orientation === 'PORTRAIT'
+      ? width - APP_SIDEBAR_SIZE - insets.left - insets.right
+      : width - insets.left - insets.right
 
   const { renderScene, renderTabBar } = useMemo(() => {
     if (!homeTabs) {
@@ -149,19 +150,21 @@ export default function HomeScreen(props: HomeScreenProps) {
                       color: theme.colors.primary,
                       fontWeight: '600',
                       fontSize: 13,
-                      opacity: props.focused ? 1 : 0
+                      opacity: props.focused ? 1 : 0,
                     }}>
                     {props.route.title}
                   </Text>
-                  <View style={{
-                      position: 'absolute', opacity: props.focused ? 0 : 1,
+                  <View
+                    style={{
+                      position: 'absolute',
+                      opacity: props.focused ? 0 : 1,
                       left: 0,
                       bottom: 0,
                       width: '100%',
                       height: '100%',
                       justifyContent: 'center',
-                      alignItems: 'center'
-                      }}>
+                      alignItems: 'center',
+                    }}>
                     <Text
                       style={{
                         color: theme.colors.text,
@@ -258,8 +261,7 @@ export default function HomeScreen(props: HomeScreenProps) {
       renderTabBar={renderTabBar}
       onIndexChange={setIndex}
       initialLayout={{
-        width:
-          viewWidth,
+        width: viewWidth,
         height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
       }}
     />

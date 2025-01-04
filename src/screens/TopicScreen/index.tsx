@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { InteractionManager } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
@@ -12,6 +12,11 @@ import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useIsFocused } from '@react-navigation/native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import AnimatedHeader from '@/components/AnimatedHeader'
@@ -26,10 +31,11 @@ import { usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { getRelatedReplies } from '@/utils/content'
 import { useCachedState } from '@/utils/hooks'
+import { isLoading, shouldLoadMore } from '@/utils/react-query'
 import { isBouncingBottom, isBouncingTop } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
-import { isLoading, shouldLoadMore } from '@/utils/react-query'
 import * as v2exClient from '@/utils/v2ex-client'
 import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
 
@@ -45,7 +51,6 @@ import TopicBaseInfo from './TopicBaseInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
 import { ConversationContext, UserInfoContext } from './types'
-import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
@@ -64,111 +69,6 @@ const hasRelatedMessages = (reply, replyList) => {
     !!reply.members_mentioned.length ||
     replyList.some((r) => r.members_mentioned.includes(memberName))
   )
-}
-const isIntersected = (arrA, arrB) =>
-  new Set([...arrA, ...arrB]).size < new Set(arrA).size + new Set(arrB).size
-
-const getRelatedReplies = (pivot: TopicReply, replyList: TopicReply[]) => {
-  const list = [pivot]
-  const beforePivotReplies = replyList.slice(0, pivot.num - 1)
-  const afterPivotReplies = replyList.slice(pivot.num)
-
-  const conversationUsers = new Set(pivot.members_mentioned)
-  conversationUsers.add(pivot.member.username)
-
-  /**
-   * Pivot 之前的回复
-   * 沿路查查中 被 mention 相关的回复，如果被 mention 的回复为 `root` 回复，则继续查找 回复作者的其他 `root` 回复
-   */
-  const beforeMetionInWay = new Set(pivot.members_mentioned)
-  const rootReplyUsers = new Set()
-  const repliedToNums = new Set(pivot.replied_to)
-  if (!pivot.members_mentioned.length) {
-    rootReplyUsers.add(pivot.member.username)
-  }
-
-  beforePivotReplies.reverse().forEach((r) => {
-    if (repliedToNums.size) {
-      if (r.num > Math.max(...repliedToNums)) {
-        return
-      } else if (repliedToNums.has(r.num)) {
-        repliedToNums.delete(r.num)
-        if (r.replied_to) {
-          r.replied_to.forEach((num) => {
-            repliedToNums.add(num)
-          })
-        } else if (r.members_mentioned.length) {
-          r.members_mentioned.forEach((username) => {
-            beforeMetionInWay.add(username)
-            conversationUsers.add(username)
-          })
-        } else {
-          rootReplyUsers.add(r.member.username)
-        }
-        list.unshift(r)
-        return
-      }
-    }
-    // 根评论用户发表的其他根评论
-    if (rootReplyUsers.has(r.member.username) && !r.members_mentioned.length) {
-      list.unshift(r)
-      return
-    }
-
-    if (beforeMetionInWay.has(r.member.username)) {
-      beforeMetionInWay.delete(r.member.username)
-      if (r.members_mentioned.length) {
-        r.members_mentioned.forEach((username) => {
-          beforeMetionInWay.add(username)
-          conversationUsers.add(username)
-        })
-      } else {
-        rootReplyUsers.add(r.member.username)
-      }
-      list.unshift(r)
-      return
-    }
-  })
-
-  // Pivot 之后的回复
-  // 1. pivot 有 members_mentioned 用户， 则只包含 pivot member 与 members_mentioned 之间回复
-  // 2. pivot 没有 members_mentioned 用户，则包含后续 向 pivot member 进行的回复
-  const afterMentionInWay = new Set(pivot.members_mentioned)
-  const pivotIsRootReply = !pivot.members_mentioned.length
-  afterPivotReplies.forEach((r) => {
-    // pivot 是根评论， r 也是来自同一用户的根评论
-    if (
-      pivotIsRootReply &&
-      !r.members_mentioned.length &&
-      r.member.username === pivot.member.username
-    ) {
-      list.push(r)
-      return
-    }
-
-    // pivot 是根评论，其他用户回复这个 pivot 用户
-    if (
-      pivotIsRootReply &&
-      r.members_mentioned.includes(pivot.member.username)
-    ) {
-      afterMentionInWay.add(r.member.username)
-      list.push(r)
-      return
-    }
-
-    if (
-      // pivot member replied to others
-      (r.member.username === pivot.member.username &&
-        isIntersected(r.members_mentioned, afterMentionInWay)) ||
-      // others replied to pivot member
-      (afterMentionInWay.has(r.member.username) &&
-        r.members_mentioned.includes(pivot.member.username))
-    ) {
-      list.push(r)
-    }
-  })
-
-  return list
 }
 
 const getMemberReplies = (pivot: string, replyList: TopicReply[]) => {
@@ -208,22 +108,31 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const [showScrollToLastPosition, setShowScrollToLastPosition] =
     useState(false)
 
-  const fetchReplies = useCallback(async ({ pageParam }) => {
-    const data = await v2exClient.getTopicReplies({ id, p: pageParam })
-    // side effects...
-    if (data.meta?.topic) {
-      queryClient.setQueryData([`/page/t/:id/topic.json`, id], data.meta.topic);
-    }
-    return data
-  }, [id]);
+  const fetchReplies = useCallback(
+    async ({ pageParam }) => {
+      const data = await v2exClient.getTopicReplies({ id, p: pageParam })
+      // side effects...
+      if (data.meta?.topic) {
+        queryClient.setQueryData(
+          [`/page/t/:id/topic.json`, id],
+          data.meta.topic,
+        )
+      }
+      return data
+    },
+    [id],
+  )
 
   const repliesQuery = useInfiniteQuery({
     queryKey: [`/page/t/:id/replies.json`, id],
     queryFn: fetchReplies,
     initialPageParam: 1,
     getNextPageParam(lastPage) {
-      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
-        return lastPage.pagination.current +1
+      if (
+        lastPage.pagination &&
+        lastPage.pagination.total > lastPage.pagination.current
+      ) {
+        return lastPage.pagination.current + 1
       }
       return undefined
     },
@@ -239,7 +148,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       }
       if (topicQuery.data) {
         setTimeout(() => {
-            touchViewed(topicQuery.data)
+          touchViewed(topicQuery.data)
         }, 500)
       }
     }
@@ -259,7 +168,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const changeNodeModalRef = useRef<BottomSheetModal>()
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
-  const [myReplies, setMyReplies] = useCachedState<TopicReply[]>(`my-topic-replies:${id}`, []);
+  const [myReplies, setMyReplies] = useCachedState<TopicReply[]>(
+    `my-topic-replies:${id}`,
+    [],
+  )
 
   const { composeAuthedNavigation, user: currentUser } = useAuthService()
 
@@ -521,9 +433,10 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             alert.show({ type: 'error', message: message })
           }
 
-          queryClient.setQueryData([`/page/t/:id/replies.json`, id],
+          queryClient.setQueryData(
+            [`/page/t/:id/replies.json`, id],
             (currentData) => {
-              const pages = currentData.pages;
+              const pages = currentData.pages
               const currentPageIndex = p - 1
               const currentPageData = pages[currentPageIndex]
               const targetIndex = pages[p - 1].data.findIndex(
@@ -579,10 +492,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
                 id,
                 content: values.content,
               })
-              setMyReplies((prev) => ([
-                ...prev,
-                reply
-              ]));
+              setMyReplies((prev) => [...prev, reply])
               // clear cached for reply form.
               const cacheKey = getReplyFormCacheKey(replyContext)
               setJSON(cacheKey, undefined)
@@ -652,14 +562,14 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   }, [navigation])
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', function() {
+    const unsubscribe = navigation.addListener('beforeRemove', function () {
       if (currentIndexRef.current > 10) {
         setLastIndex(currentIndexRef.current, true)
       } else {
         setLastIndex(undefined, true)
       }
     })
-    return unsubscribe;
+    return unsubscribe
   }, [navigation, topicQuery.data])
 
   const { renderReply, keyExtractor } = useMemo(() => {
@@ -770,7 +680,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         ListHeaderComponent={
           <TopicBaseInfo
             isLoading={
-              isLoading(topicQuery) || (!topicQuery.data && isLoading(repliesQuery))
+              isLoading(topicQuery) ||
+              (!topicQuery.data && isLoading(repliesQuery))
             }
             data={topicQuery.data}
             hasReply={!!replyItems.length}

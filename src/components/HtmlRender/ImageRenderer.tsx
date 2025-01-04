@@ -5,6 +5,7 @@ import {
   CustomBlockRenderer,
   useInternalRenderer,
 } from 'react-native-render-html'
+import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -12,7 +13,6 @@ import { downloadImage } from '@/utils/image'
 
 import { Box } from '../Skeleton/Elements'
 import { useImageViewing } from './ImageViewingService'
-import { useQuery } from '@tanstack/react-query'
 
 async function loadImage(
   uri: string,
@@ -39,7 +39,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
     queryKey: ['image-cache', rendererProps.source.uri],
     queryFn: () => loadImage(rendererProps.source.uri),
     refetchOnMount: 'always',
-    staleTime: 0
+    staleTime: 0,
   })
   const [containerWidth, setContainerWidth] = useState(Infinity)
   const containerWidthRef = useRef(0)

@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Formik, FormikProps } from 'formik'
 
 import Button from '@/components/Button'
@@ -10,8 +11,6 @@ import Loader from '@/components/Loader'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { editTopic, fetchTopicEditForm } from '@/utils/v2ex-client'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import ApiError from '@/utils/v2ex-client/ApiError'
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'edit-topic'>
 export default function TopicEdit(props: ScreenProps) {
@@ -19,7 +18,7 @@ export default function TopicEdit(props: ScreenProps) {
   const { styles } = useTheme()
   const scrollViewRef = useRef<ScrollView>()
   const alert = useAlertService()
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const fetchFormData = useCallback(async () => {
     try {
@@ -27,7 +26,6 @@ export default function TopicEdit(props: ScreenProps) {
       return res.data
     } catch (err) {
       if (err.code == 'NOT_ALLOWED') {
-
       }
       throw err
     }
@@ -49,7 +47,10 @@ export default function TopicEdit(props: ScreenProps) {
         const res = await editTopic(route.params.id, values)
         alert.show({ type: 'success', message: '主题更新成功' })
         navigation.goBack()
-        queryClient.setQueryData([`/page/t/:id/topic.json`, route.params.id], res.data)
+        queryClient.setQueryData(
+          [`/page/t/:id/topic.json`, route.params.id],
+          res.data,
+        )
         queryClient.setQueryData(['/t/:id/edit', route.params?.id], undefined)
       } catch (err) {
         alert.show({ type: 'error', message: err.message })

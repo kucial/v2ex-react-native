@@ -1,14 +1,14 @@
 import { useCallback, useMemo } from 'react'
 import { FlashList } from '@shopify/flash-list'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAuthService } from '@/containers/AuthService'
-import { isRefreshing, shouldLoadMore } from '@/utils/react-query'
+import { shouldLoadMore } from '@/utils/react-query'
 import { getMyNotifications } from '@/utils/v2ex-client'
 
 import NotificationRow from './NotificationRow'
-import { useInfiniteQuery } from '@tanstack/react-query'
 
 export default function NotificationScreen() {
   const { updateMeta, user } = useAuthService()
@@ -19,22 +19,27 @@ export default function NotificationScreen() {
     [user.username],
   )
 
-  const fetchItems = useCallback(async ({ pageParam }) => {
-    const res = await  getMyNotifications({ p: pageParam })
-    updateMeta({
-      unread_count: 0,
-    })
-    return res
-  }, [user.username])
-
+  const fetchItems = useCallback(
+    async ({ pageParam }) => {
+      const res = await getMyNotifications({ p: pageParam })
+      updateMeta({
+        unread_count: 0,
+      })
+      return res
+    },
+    [user.username],
+  )
 
   const listQuery = useInfiniteQuery({
     queryKey: ['/member/:username/notifications.json', user.username],
     queryFn: fetchItems,
     initialPageParam: 1,
     getNextPageParam(lastPage) {
-      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
-        return lastPage.pagination.current +1
+      if (
+        lastPage.pagination &&
+        lastPage.pagination.total > lastPage.pagination.current
+      ) {
+        return lastPage.pagination.current + 1
       }
       return undefined
     },

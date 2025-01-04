@@ -125,12 +125,12 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
                   })
                 }
               }}>
-              <Text style={styles.text_xs} style={styles.text_desc}>
+              <Text style={[styles.text_xs, styles.text_desc]}>
                 {source.name}
               </Text>
             </FixedPressable>
 
-            <Text style={styles.text_xs} style={styles.text_meta}>
+            <Text style={[styles.text_xs, styles.text_desc]}>
               {data?.updated_at}
             </Text>
           </View>

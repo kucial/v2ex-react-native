@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { ScrollView, View } from 'react-native'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Formik, FormikHelpers } from 'formik'
 
 import Button from '@/components/Button'
@@ -10,7 +11,6 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchSettingsForm, updateSettings } from '@/utils/v2ex-client'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function SettingsForm(props: {
   username: string
@@ -29,18 +29,20 @@ export default function SettingsForm(props: {
     queryFn: fetchSettings,
     enabled: props.isActive,
     refetchOnMount: true,
-    staleTime: 0
+    staleTime: 0,
   })
 
-  const queryClient = useQueryClient();
-
+  const queryClient = useQueryClient()
 
   const handleSubmit = useCallback(
     async (values, formikProps: FormikHelpers<any>) => {
       formikProps.setSubmitting(true)
       try {
         const res = await updateSettings(values)
-        queryClient.setQueryData([`/member/${props.username}/settings.json`], res.data)
+        queryClient.setQueryData(
+          [`/member/${props.username}/settings.json`],
+          res.data,
+        )
         alert.show({ type: 'success', message: '用户信息已更新' })
       } catch (err) {
         alert.show({ type: 'error', message: err.message })

@@ -11,19 +11,18 @@ import {
   View,
 } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { Image } from 'expo-image'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import GoogleIcon from '@/components/GoogleIcon'
-import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import prompt2faInput from '@/containers/AuthService/prompt2FaInput'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchLoginForm, loginWithPassword } from '@/utils/v2ex-client'
-import { useQuery } from '@tanstack/react-query'
 
 type PasswordSigninProps = NativeStackScreenProps<
   AppStackParamList,
@@ -42,7 +41,7 @@ function PasswordSignin(props: PasswordSigninProps) {
     queryFn: async () => {
       const { data } = await fetchLoginForm()
       return data
-    }
+    },
   })
 
   const handle2Fa = useCallback(

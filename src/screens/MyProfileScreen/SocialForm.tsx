@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
-import { SafeAreaView, ScrollView, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { Formik, FormikHelpers } from 'formik'
 
@@ -11,7 +12,6 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchSocialForm, updateSocial } from '@/utils/v2ex-client'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 type FormValues = {
   member_dribbble: string
@@ -45,14 +45,14 @@ export default function SocialForm(props: {
     return res.data
   }, [])
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const socialQuery = useQuery({
     queryKey: [`/member/${props.username}/social.json`],
     queryFn: fetchSocialSetting,
     refetchOnMount: true,
     enabled: props.isActive,
-    staleTime: 0
+    staleTime: 0,
   })
 
   const handleSubmit = useCallback(
@@ -60,7 +60,10 @@ export default function SocialForm(props: {
       formikProps.setSubmitting(true)
       try {
         const res = await updateSocial(values)
-        queryClient.setQueryData([`/member/${props.username}/social.json`], res.data)
+        queryClient.setQueryData(
+          [`/member/${props.username}/social.json`],
+          res.data,
+        )
         alert.show({ type: 'success', message: '社交帐号已更新' })
       } catch (err) {
         alert.show({ type: 'error', message: err.message })

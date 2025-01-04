@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Image, Pressable, ScrollView, View } from 'react-native'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as ImagePicker from 'expo-image-picker'
 
@@ -11,7 +12,6 @@ import SectionHeader from '@/components/SectionHeader'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchAvatarForm, uploadAvatar } from '@/utils/v2ex-client'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const AvatarPicker = (props: {
   username: string
@@ -27,15 +27,13 @@ const AvatarPicker = (props: {
     return res.data
   }, [props.username])
 
-  const avatarFormQuery = useQuery(
-    {
-      queryKey: ['/menber/:username/avatar.json', props.username],
-      queryFn: fetchForm,
-      refetchOnMount: true,
-      enabled: props.isActive,
-      staleTime: 0,
-    }
-  )
+  const avatarFormQuery = useQuery({
+    queryKey: ['/menber/:username/avatar.json', props.username],
+    queryFn: fetchForm,
+    refetchOnMount: true,
+    enabled: props.isActive,
+    staleTime: 0,
+  })
 
   const [uploading, setUploading] = useState(false)
   // selected
@@ -70,7 +68,10 @@ const AvatarPicker = (props: {
         },
         once: avatarFormQuery.data.once,
       })
-      queryClient.setQueryData(['/menber/:username/avatar.json', props.username], updateRes.data);
+      queryClient.setQueryData(
+        ['/menber/:username/avatar.json', props.username],
+        updateRes.data,
+      )
       setAvatar(null)
       alert.show({ type: 'success', message: '头像已更新' })
       props.onUpdated?.()
@@ -83,10 +84,10 @@ const AvatarPicker = (props: {
 
   const handleFormRefetch = useCallback(() => {
     if (uploading) {
-      return ;
+      return
     }
     avatarFormQuery.refetch()
-  }, [uploading]);
+  }, [uploading])
 
   return (
     <ScrollView

@@ -11,6 +11,7 @@ import {
 import { ScrollView } from 'react-native-gesture-handler'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
+import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { styled } from 'nativewind'
 
@@ -18,7 +19,6 @@ import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import { useTheme } from '@/containers/ThemeService'
 import { getNodes } from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
-import { useQuery } from '@tanstack/react-query'
 
 const pickerSnapPoints = ['50%']
 

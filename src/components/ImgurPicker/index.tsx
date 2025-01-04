@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Pressable, Text, View, ViewStyle } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
 import classNames from 'classnames'
 
 import { useImgurService } from '@/containers/ImgurService'

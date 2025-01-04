@@ -1,5 +1,5 @@
 import { CSSProperties, useEffect, useState } from 'react'
-import { LayoutChangeEvent, Pressable, View } from 'react-native'
+import { LayoutChangeEvent, Pressable } from 'react-native'
 import WebView from 'react-native-webview'
 import { useAssets } from 'expo-asset'
 import * as FileSystem from 'expo-file-system'

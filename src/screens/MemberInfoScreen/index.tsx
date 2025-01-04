@@ -1,11 +1,11 @@
+import { useCallback } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useQuery } from '@tanstack/react-query'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { getMemberDetail } from '@/utils/v2ex-client'
-import { useQuery } from '@tanstack/react-query'
-import { useCallback } from 'react'
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'member-info'>
 export default function MemberInfoScreen(props: ScreenProps) {

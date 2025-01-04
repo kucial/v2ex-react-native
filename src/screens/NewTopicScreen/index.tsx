@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import type { BottomSheetModal } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useQueryClient } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
 
@@ -31,7 +32,6 @@ import { useTheme } from '@/containers/ThemeService'
 import { createTopic } from '@/utils/v2ex-client'
 
 import NodeSelect from './NodeSelect'
-import { useQueryClient } from '@tanstack/react-query'
 
 // toolbar + extra...
 const VISIBLE_BOTTOM_OFFSET = 85
@@ -116,7 +116,7 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
     [],
   )
 
-  const queryClient  = useQueryClient();
+  const queryClient = useQueryClient()
 
   const handleSubmit = useCallback(async () => {
     try {
@@ -129,7 +129,10 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
         syntax: 'markdown',
         once: '000000',
       })
-      queryClient.setQueryData([[`/page/t/:id/topic.json`, newTopic.id]], newTopic);
+      queryClient.setQueryData(
+        [[`/page/t/:id/topic.json`, newTopic.id]],
+        newTopic,
+      )
       navigation.replace('topic', {
         id: newTopic.id,
       })
@@ -137,7 +140,12 @@ export default function NewTopicScreen(props: NewTopicScreenProps) {
     } catch (err) {
       setIsSubmitting(false)
       if (err.code == 'PROBLEMS') {
-        alert.show({ type: 'error', message: err.message + err.data.map((line, i) => `${i+1}. ${line}`).join('; ') });
+        alert.show({
+          type: 'error',
+          message:
+            err.message +
+            err.data.map((line, i) => `${i + 1}. ${line}`).join('; '),
+        })
       } else {
         alert.show({ type: 'error', message: err.message })
       }

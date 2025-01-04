@@ -1,12 +1,11 @@
 import { ReactElement } from 'react'
 import { Platform, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import Constants from 'expo-constants'
 
 import BackButton from '@/components/BackButton'
 import SearchInput from '@/components/SearchInput'
 import { useTheme } from '@/containers/ThemeService'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const HEADER_HEIGHT = 48
 
@@ -20,7 +19,7 @@ export default function Header(props: {
 }) {
   const { styles } = useTheme()
   const navigation = useNavigation()
-  const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets()
   return (
     <View style={styles.layer1}>
       <View
@@ -31,8 +30,7 @@ export default function Header(props: {
               Platform.OS === 'android'
                 ? HEADER_HEIGHT
                 : HEADER_HEIGHT + insets.top,
-            paddingTop:
-              Platform.OS === 'android' ? 0 : insets.top,
+            paddingTop: Platform.OS === 'android' ? 0 : insets.top,
           },
         ]}>
         <View

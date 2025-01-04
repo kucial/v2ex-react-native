@@ -1,7 +1,10 @@
-import { PaginatedResponse } from './v2ex-client/types'
 import { UseInfiniteQueryResult, UseQueryResult } from '@tanstack/react-query'
 
-export const isRefreshing = (queryResult: UseInfiniteQueryResult | UseQueryResult) => {
+import { PaginatedResponse } from './v2ex-client/types'
+
+export const isRefreshing = (
+  queryResult: UseInfiniteQueryResult | UseQueryResult,
+) => {
   return queryResult.isRefetching
 }
 
@@ -22,7 +25,10 @@ const maybeOutdated = (data: any, ttl: number) => {
   )
 }
 
-export const shouldFetch = (query: UseInfiniteQueryResult | UseQueryResult, ttl?: number) => {
+export const shouldFetch = (
+  query: UseInfiniteQueryResult | UseQueryResult,
+  ttl?: number,
+) => {
   // console.log('.....shouldFetch.... check')
   if (query.data && ttl && maybeOutdated(query.data, ttl)) {
     console.log('fetch as data maybe outdated')
@@ -36,7 +42,11 @@ export const shouldFetch = (query: UseInfiniteQueryResult | UseQueryResult, ttl?
 }
 
 export const shouldLoadMore = (queryResult: UseInfiniteQueryResult) => {
-  return !isLoadingMore(queryResult) && !queryResult.error && !hasReachEnd(queryResult)
+  return (
+    !isLoadingMore(queryResult) &&
+    !queryResult.error &&
+    !hasReachEnd(queryResult)
+  )
 }
 
 export const isLoadingMore = (queryResult: UseInfiniteQueryResult) => {

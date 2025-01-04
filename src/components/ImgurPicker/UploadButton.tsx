@@ -95,10 +95,10 @@ export default function UploadButton(props) {
         }
       }}>
       <ArrowUpTrayIcon size={22} color={props.tintColor} />
-      <View className='ml-1 w-[60px]'>
-      <Text style={{ color: props.tintColor, fontSize: 10 }}>
-        从系统相册中选择图片
-      </Text>
+      <View className="ml-1 w-[60px]">
+        <Text style={{ color: props.tintColor, fontSize: 10 }}>
+          从系统相册中选择图片
+        </Text>
       </View>
     </Pressable>
   )

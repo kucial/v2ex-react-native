@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef } from 'react'
 import { Keyboard, SectionList, Text, View } from 'react-native'
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { useFocusEffect } from '@react-navigation/native'
+import { useQuery } from '@tanstack/react-query'
 
 import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -15,7 +16,6 @@ import { getMyCollectedNodes, getNodeGroups } from '@/utils/v2ex-client'
 
 import CollectedNodes from './CollectedNodes'
 import PubliicNodeItem from './PubliicNodeItem'
-import { useQuery } from '@tanstack/react-query'
 
 const CACHE_KEY = '$app$/nodes-filter'
 
@@ -32,11 +32,11 @@ export default function NodesScreen({ navigation }: ScreenProps) {
   const collectedNodesQuery = useQuery({
     queryKey: ['/page/my/nodes.json'],
     queryFn: getMyCollectedNodes,
-    enabled: hasAuthed
+    enabled: hasAuthed,
   })
   const commonNodesQuery = useQuery({
     queryKey: ['/page/planes/node-groups.json'],
-    queryFn: getNodeGroups
+    queryFn: getNodeGroups,
   })
 
   const filterInput = useRef()
@@ -78,7 +78,13 @@ export default function NodesScreen({ navigation }: ScreenProps) {
         }
       },
     }
-  }, [commonNodesQuery.data, collectedNodesQuery.data,  hasAuthed, filter, styles.layer1])
+  }, [
+    commonNodesQuery.data,
+    collectedNodesQuery.data,
+    hasAuthed,
+    filter,
+    styles.layer1,
+  ])
 
   useFocusEffect(
     useCallback(() => {

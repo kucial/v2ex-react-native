@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from 'react'
+import { useContext, useMemo } from 'react'
 import { createContext } from 'react'
 
 import {
@@ -16,10 +16,11 @@ export const useImgurService = () => useContext(ImgurServiceContext)
 
 const SERVICE_KEY = '$app$/services/imgur'
 
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+
 import { useCachedState } from '@/utils/hooks'
 
 import client from './ImgurClient'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function ImgurServiceProvider(props) {
   const [credentials, setCredentials] = useCachedState<
@@ -41,7 +42,7 @@ export default function ImgurServiceProvider(props) {
             const res = await client.getAlbums('me')
             return res.data
           },
-          enabled: !!credentials
+          enabled: !!credentials,
         })
       },
       useImages() {
@@ -50,7 +51,7 @@ export default function ImgurServiceProvider(props) {
           queryFn: async () => {
             const res = await client.getImages()
             return res.data
-          }
+          },
         })
       },
       useImage(hashid: string) {
@@ -69,8 +70,7 @@ export default function ImgurServiceProvider(props) {
             const res = await client.getAlbumImages(album)
             return res.data
           },
-        }
-        )
+        })
       },
       getAlbums() {
         return client.getAlbums()
@@ -80,8 +80,8 @@ export default function ImgurServiceProvider(props) {
         queryClient.invalidateQueries({
           queryKey: ['/imgur/albums'],
           exact: true,
-          refetchType: 'active'
-        });
+          refetchType: 'active',
+        })
       },
       async uploadImage(payload) {
         const res = await client.upload(payload)
@@ -89,14 +89,14 @@ export default function ImgurServiceProvider(props) {
           queryClient.invalidateQueries({
             queryKey: ['/imgur/album/:id/images', payload.album],
             exact: true,
-            refetchType: 'active'
-          });
+            refetchType: 'active',
+          })
         } else {
           queryClient.invalidateQueries({
             queryKey: ['/imgur/images'],
             exact: true,
-            refetchType: 'active'
-          });
+            refetchType: 'active',
+          })
         }
         return res.data
       },
@@ -104,15 +104,15 @@ export default function ImgurServiceProvider(props) {
         queryClient.invalidateQueries({
           queryKey: ['/imgur/images'],
           exact: true,
-          refetchType: 'active'
-        });
+          refetchType: 'active',
+        })
       },
       refreshAlbumImages(album) {
         queryClient.invalidateQueries({
           queryKey: ['/imgur/album/:id/images', album],
           exact: true,
-          refetchType: 'active'
-        });
+          refetchType: 'active',
+        })
       },
     }
   }, [credentials])

@@ -6,7 +6,6 @@ import {
   MemberTopicFeed,
   NodeTopicFeed,
   RepliedTopicFeed,
-  TopicDetail,
 } from './v2ex'
 
 declare global {

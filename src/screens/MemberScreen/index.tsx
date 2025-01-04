@@ -4,6 +4,7 @@ import {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabView } from 'react-native-tab-view'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
@@ -11,11 +12,8 @@ import AnimatedTabBar from './AnimatedTabBar'
 import MemberReplies from './MemberReplies'
 import MemberScreenHeader from './MemberScreenHeader'
 import MemberTopics from './MemberTopics'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type MemberScreenProps = NativeStackScreenProps<AppStackParamList, 'member'>
-
-
 
 export default function MemberScreen({ route }: MemberScreenProps) {
   const { username, tab } = route.params
@@ -23,9 +21,8 @@ export default function MemberScreen({ route }: MemberScreenProps) {
   const [headerHeight, setHeaderHeight] = useState(0)
   const [tabBarHeight, setTabBarHeight] = useState(0)
 
-  const insets = useSafeAreaInsets();
-  const headerCollapsedHeight =
-  Platform.OS === 'ios' ? 44 + insets.top : 44 + 6
+  const insets = useSafeAreaInsets()
+  const headerCollapsedHeight = Platform.OS === 'ios' ? 44 + insets.top : 44 + 6
 
   const [routes] = useState([
     { key: 'topics', title: '主题' },

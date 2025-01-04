@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native'
 import { FunnelIcon } from 'react-native-heroicons/outline'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -26,7 +27,6 @@ import { CACHE_KEY } from '../constants'
 import { SearchParams } from '../types'
 import AdvancedSearchForm from './AdvancedSearchForm'
 import SearchResultView from './SearchResultView'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'search'>
 
@@ -77,10 +77,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
           className="w-full flex-row items-start pl-1"
           style={[
             {
-              minHeight:
-                Platform.OS === 'android' ? 58 : 56 + insets.top,
-              paddingTop:
-                Platform.OS === 'android' ? 0 : insets.top,
+              minHeight: Platform.OS === 'android' ? 58 : 56 + insets.top,
+              paddingTop: Platform.OS === 'android' ? 0 : insets.top,
               flexShrink: 0,
             },
             styles.layer1,
@@ -137,19 +135,19 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     }}
                   />
                   {!!searchParams.q && (
-                  <View className="h-full flex flex-row items-center justify-center">
-                    <MyClearButton
-                      onPress={() => {
-                        updateSearchParams((prev) => ({
-                          ...prev,
-                          q: '',
-                        }))
-                        searchInput.current?.clear()
-                        searchInput.current?.focus()
-                      }}
-                    />
-                  </View>
-                )}
+                    <View className="h-full flex flex-row items-center justify-center">
+                      <MyClearButton
+                        onPress={() => {
+                          updateSearchParams((prev) => ({
+                            ...prev,
+                            q: '',
+                          }))
+                          searchInput.current?.clear()
+                          searchInput.current?.focus()
+                        }}
+                      />
+                    </View>
+                  )}
                 </View>
               </View>
               <View className="px-1 -mr-3">

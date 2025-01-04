@@ -1,4 +1,4 @@
-import { MutableRefObject, ReactNode, useMemo, useRef } from 'react'
+import { MutableRefObject, ReactNode, useMemo } from 'react'
 import { Text, View, ViewProps, ViewStyle } from 'react-native'
 import classNames from 'classnames'
 import { useField } from 'formik'

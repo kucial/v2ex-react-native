@@ -1,11 +1,11 @@
 import 'react-native-url-polyfill/auto'
 
 import { Image, Platform } from 'react-native'
+import * as Sentry from '@sentry/react-native'
 import GetPixelColor from '@thebeka/react-native-get-pixel-color'
 import Color from 'color'
 import * as Crypto from 'expo-crypto'
 import * as FileSystem from 'expo-file-system'
-import * as Sentry from '@sentry/react-native'
 
 import PixelTally from './PixelTally'
 

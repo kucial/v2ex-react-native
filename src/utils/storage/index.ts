@@ -58,7 +58,6 @@ export const stateStorage = {
   },
 }
 
-
 export default storage
 
 export const getJSON = (key: string, fallback?: any) => {

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { InteractionManager, Platform, TextInput, View } from 'react-native'
 import { NProgress } from 'react-native-nprogress'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import WebView from 'react-native-webview'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
@@ -13,7 +14,6 @@ import { getScreenInfo } from '@/utils/url'
 
 import { CACHE_KEY } from './constants'
 import { SearchParams } from './types'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const topicLinkCapture = `(function() {
   if (window._topic_link_capture_injected) {
@@ -78,10 +78,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
         className="w-full flex-row items-center pl-1"
         style={[
           {
-            height:
-              Platform.OS === 'android' ? 58 : 56 + insets.top,
-            paddingTop:
-              Platform.OS === 'android' ? 0 : insets.top,
+            height: Platform.OS === 'android' ? 58 : 56 + insets.top,
+            paddingTop: Platform.OS === 'android' ? 0 : insets.top,
           },
           styles.layer1,
         ]}>

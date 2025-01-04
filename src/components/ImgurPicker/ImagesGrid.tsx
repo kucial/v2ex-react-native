@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import ImageView from 'react-native-image-viewing'
+import { UseQueryResult } from '@tanstack/react-query'
 import classNames from 'classnames'
 
 import CheckIcon from '@/components/CheckIcon'
@@ -9,7 +10,6 @@ import { useTheme } from '@/containers/ThemeService'
 
 import MyRefreshControl from '../MyRefreshControl'
 import ImageCard from './ImageCard'
-import { UseQueryResult } from '@tanstack/react-query'
 
 export type ImagesGridProps = {
   imagesQuery: UseQueryResult<ImgurImage[], Error>

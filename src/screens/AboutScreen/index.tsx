@@ -76,7 +76,7 @@ export default function AboutScreen(props) {
                     V2EX 第三方客户端 ({Constants.expoConfig?.version})
                   </Text>
                 </View>
-                <View className='mt-1'>
+                <View className="mt-1">
                   <Text
                     className="text-center"
                     style={[styles.text_meta, styles.text_xs]}>

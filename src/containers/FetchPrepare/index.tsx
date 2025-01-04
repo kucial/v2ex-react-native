@@ -10,7 +10,6 @@ import Status from './Status'
 const CACHE_KEY = '$app$/fetch-ready'
 
 // 用于处理 v2ex.com CF 认证的问题
-import { Platform } from 'react-native'
 
 import { useTheme } from '../ThemeService'
 import { PrepareStatus } from './type'

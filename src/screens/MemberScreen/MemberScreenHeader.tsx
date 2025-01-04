@@ -6,10 +6,12 @@ import Animated, {
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import * as Sentry from '@sentry/react-native'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 
 import BackButton from '@/components/BackButton'
@@ -30,8 +32,6 @@ import { MemberBasic, MemberDetail } from '@/utils/v2ex-client/types'
 import { StatusResponse } from '@/utils/v2ex-client/types'
 
 import MemberInfoLinks from './MemberInfoLinks'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
@@ -46,7 +46,6 @@ export default function MemberScreenHeader(props: {
   headerCollapsedHeight: number
   scrollY: SharedValue<number>
 }) {
-
   const {
     username,
     brief,
@@ -63,19 +62,18 @@ export default function MemberScreenHeader(props: {
       BottomTabNavigationProp<MainTabParamList>
   >()
 
-
   const { user: currentUser } = useAuthService()
   const fetchMember = useCallback(async () => {
     const { data } = await getMemberDetail({ username })
     return data
-  }, [username]);
+  }, [username])
 
   const memberQuery = useQuery({
     queryKey: [`/page/member/:username/info.json`, username],
-    queryFn: fetchMember
+    queryFn: fetchMember,
   })
 
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const data = memberQuery.data
   const avatar = data?.avatar_large || brief?.avatar_large
@@ -123,10 +121,13 @@ export default function MemberScreenHeader(props: {
           type: 'success',
           message: successMsg,
         })
-        queryClient.setQueryData([`/page/member/:username/info.json`, username], {
-          ...memberQuery.data,
-          meta: patch.meta,
-        })
+        queryClient.setQueryData(
+          [`/page/member/:username/info.json`, username],
+          {
+            ...memberQuery.data,
+            meta: patch.meta,
+          },
+        )
       })
       .catch((err) => {
         alert.show({ type: 'error', message: err.message })
@@ -163,10 +164,13 @@ export default function MemberScreenHeader(props: {
           type: 'success',
           message: successMsg,
         })
-        queryClient.setQueryData([`/page/member/:username/info.json`, username], {
-          ...memberQuery.data,
-          meta: patch.meta,
-        })
+        queryClient.setQueryData(
+          [`/page/member/:username/info.json`, username],
+          {
+            ...memberQuery.data,
+            meta: patch.meta,
+          },
+        )
       })
       .catch((err) => {
         alert.show({ type: 'error', message: err.message })

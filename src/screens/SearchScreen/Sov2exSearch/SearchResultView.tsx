@@ -1,26 +1,24 @@
 import { useCallback, useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { stringify } from 'qs'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import Loader from '@/components/Loader'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useTheme } from '@/containers/ThemeService'
-import { isRefreshing } from '@/utils/react-query'
 import * as v2exClient from '@/utils/v2ex-client'
 import { SearchHit } from '@/utils/v2ex-client/types'
 
 import { SearchParams } from '../types'
 import ResultRow from './ResultRow'
-import { useInfiniteQuery, UseInfiniteQueryResult } from '@tanstack/react-query'
 
 const SIZE = 20
 
 const isEmpty = (data: any) => {
   return data.hits?.length === 0
 }
-
 
 export default function SearchResultView(props: { params: SearchParams }) {
   const { styles } = useTheme()
@@ -35,13 +33,16 @@ export default function SearchResultView(props: { params: SearchParams }) {
     }
   }, [props.params])
 
-  const fetchItems = useCallback(async ({ pageParam }) => {
-    return v2exClient.search({
-      ...props.params,
-      size: SIZE,
-      from: pageParam,
-    })
-  }, [props.params]);
+  const fetchItems = useCallback(
+    async ({ pageParam }) => {
+      return v2exClient.search({
+        ...props.params,
+        size: SIZE,
+        from: pageParam,
+      })
+    },
+    [props.params],
+  )
 
   const listQuery = useInfiniteQuery({
     queryKey: ['sove2x-search', stringify(props.params)],
@@ -55,8 +56,6 @@ export default function SearchResultView(props: { params: SearchParams }) {
     },
     refetchOnMount: true,
   })
-
-
 
   const items = useMemo(() => {
     if (!listQuery.data) {
@@ -74,7 +73,7 @@ export default function SearchResultView(props: { params: SearchParams }) {
       return
     }
     if (!listQuery.isFetching && items.length < total) {
-      listQuery.fetchNextPage();
+      listQuery.fetchNextPage()
     }
   }, [listQuery, items, total])
 

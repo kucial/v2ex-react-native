@@ -516,7 +516,9 @@ export async function getXnaFeeds({
   }
 }
 
-export async function getHotTopics(): Promise<PaginatedResponse<HomeTopicFeed>> {
+export async function getHotTopics(): Promise<
+  PaginatedResponse<HomeTopicFeed>
+> {
   const res = await request({
     url: '/',
     headers: {
@@ -1179,15 +1181,15 @@ export async function collectNode({
     url: `/favorite/node/${detail.id}`,
     params: { once },
     headers: {
-      referer: `${BASE_URL}/go/${name}`
-    }
+      referer: `${BASE_URL}/go/${name}`,
+    },
   })
   const $ = res.$ || cheerioDoc(res.data)
   const success = !!$('a[href^="/unfavorite/node"]').length
   if (!success) {
     throw new ApiError({
       code: 'OPERATION_FAILED',
-      message: '操作失败'
+      message: '操作失败',
     })
   }
 
@@ -1195,10 +1197,9 @@ export async function collectNode({
     success: true,
     message: '操作成功',
     data: {
-      collected: true
-    }
+      collected: true,
+    },
   }
-
 }
 export async function uncollectNode({
   name,
@@ -1215,8 +1216,8 @@ export async function uncollectNode({
     url: `/unfavorite/node/${detail.id}`,
     params: { once },
     headers: {
-      referer: `${BASE_URL}/go/${name}`
-    }
+      referer: `${BASE_URL}/go/${name}`,
+    },
   })
   const $ = res.$ || cheerioDoc(res.data)
   const success = !!$('a[href^="/favorite/node"]').length
@@ -1224,7 +1225,7 @@ export async function uncollectNode({
   if (!success) {
     throw new ApiError({
       code: 'OPERATION_FAILED',
-      message: '操作失败'
+      message: '操作失败',
     })
   }
 
@@ -1232,8 +1233,8 @@ export async function uncollectNode({
     success: true,
     message: '操作成功',
     data: {
-      collected: false
-    }
+      collected: false,
+    },
   }
 }
 export async function getNodeFeeds({
@@ -1963,7 +1964,7 @@ const _settingsForm = ($) => {
   // checkbox
   $(`form[action="/settings"] input[type=checkbox]`).each((i, el) => {
     const $el = $(el)
-    data[$el.attr('name')] = !!$el.is(':checked');
+    data[$el.attr('name')] = !!$el.is(':checked')
   })
   // select
   $(`form[action="/settings"] select`).each((i, el) => {

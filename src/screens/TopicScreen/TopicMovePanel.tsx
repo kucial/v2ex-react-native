@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
-import { KeyboardAvoidingView, SafeAreaView, Text, View } from 'react-native'
-import { Formik, FormikHelpers, useField } from 'formik'
+import { KeyboardAvoidingView, View } from 'react-native'
+import { Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 
 import Button from '@/components/Button'

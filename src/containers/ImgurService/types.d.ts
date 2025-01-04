@@ -1,6 +1,5 @@
 import { UseQueryResult } from '@tanstack/react-query'
 
-
 export type ImgurCredentials = {
   access_token: string
   account_id: string

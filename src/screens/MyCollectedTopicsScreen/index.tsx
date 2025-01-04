@@ -1,21 +1,20 @@
 import { useCallback, useMemo } from 'react'
 import { FlashList } from '@shopify/flash-list'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { isRefreshing, shouldLoadMore } from '@/utils/react-query'
+import { shouldLoadMore } from '@/utils/react-query'
 import { getMyCollectedTopics } from '@/utils/v2ex-client'
 
 import CollectedTopicRow from './CollectedTopicRow'
-import { useInfiniteQuery } from '@tanstack/react-query'
 
 export default function CollectedTopicsScreen() {
   const { data: settings } = useAppSettings()
   const getKey = useCallback((index: number): [string, number] => {
     return ['/page/my/topics.json', index + 1]
   }, [])
-
 
   const fetchItems = useCallback(async ({ pageParam }) => {
     return getMyCollectedTopics({ p: pageParam })
@@ -26,8 +25,11 @@ export default function CollectedTopicsScreen() {
     queryFn: fetchItems,
     initialPageParam: 1,
     getNextPageParam(lastPage) {
-      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
-        return lastPage.pagination.current +1
+      if (
+        lastPage.pagination &&
+        lastPage.pagination.total > lastPage.pagination.current
+      ) {
+        return lastPage.pagination.current + 1
       }
       return undefined
     },

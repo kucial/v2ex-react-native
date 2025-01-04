@@ -1,10 +1,9 @@
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { persistQueryClient } from '@tanstack/react-query-persist-client'
 
 import { stateStorage } from '@/utils/storage'
 import ApiError from '@/utils/v2ex-client/ApiError'
-
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,10 +22,9 @@ export const queryClient = new QueryClient({
         ) {
           return false
         }
-        return failCount < 3;
-      }
+        return failCount < 3
+      },
     },
-
   },
 })
 
@@ -38,7 +36,6 @@ persistQueryClient({
   persister: localStoragePersister,
   maxAge: Infinity,
 })
-
 
 export default function Provider(props) {
   return (

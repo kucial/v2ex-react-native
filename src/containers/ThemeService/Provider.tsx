@@ -2,7 +2,7 @@ import { ReactNode, useContext, useEffect, useMemo } from 'react'
 import { Platform } from 'react-native'
 import { getAppIcon, setAppIcon } from 'expo-dynamic-app-icon'
 import * as NavigationBar from 'expo-navigation-bar'
-import * as SystemUI from 'expo-system-ui';
+import * as SystemUI from 'expo-system-ui'
 
 import { useAppSettings } from '../AppSettingsService'
 import { ThemeContext } from './context'

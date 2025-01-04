@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Text, useWindowDimensions, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 
 import AnimatedHeader from '@/components/AnimatedHeader'
@@ -14,10 +15,9 @@ import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
-import { getNodeDetail, uncollectNode, collectNode } from '@/utils/v2ex-client'
-import { NodeDetail } from '@/utils/v2ex-client/types'
 import { getAbsoluteUrl } from '@/utils/url'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { collectNode, getNodeDetail, uncollectNode } from '@/utils/v2ex-client'
+import { NodeDetail } from '@/utils/v2ex-client/types'
 
 type NodeBrief = {
   name: string
@@ -39,8 +39,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
   const { composeAuthedNavigation } = useAuthService()
   const queryClient = useQueryClient()
 
-
-  const fetchNode  = useCallback(async () => {
+  const fetchNode = useCallback(async () => {
     try {
       const res = await getNodeDetail({ name })
       return res.data
@@ -73,9 +72,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
   const handleCollectToggle = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        const request = node.collected
-          ? uncollectNode
-          : collectNode
+        const request = node.collected ? uncollectNode : collectNode
         const indicator = alert.show({
           type: 'default',
           message: '处理中',
@@ -94,7 +91,7 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
             queryClient.invalidateQueries({
               queryKey: ['/page/my/nodes.json'],
             })
-            alert.show({ type: 'success', message  })
+            alert.show({ type: 'success', message })
           })
           .catch((err) => {
             if (err.code == 'OPERATION_FAILED') {

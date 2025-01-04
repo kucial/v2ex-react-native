@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import { Text, TextStyle } from 'react-native'
+import { useQuery } from '@tanstack/react-query'
 import { styled } from 'nativewind'
 
 import { getNodes } from '@/utils/v2ex-client'
-import { useQuery } from '@tanstack/react-query'
 
 function NodeLabel(props: {
   id?: number
@@ -14,7 +14,7 @@ function NodeLabel(props: {
     queryKey: ['/api/nodes/all.json'],
     queryFn: getNodes,
     refetchOnMount: false,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   })
 
   const { name, id } = props

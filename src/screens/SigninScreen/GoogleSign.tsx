@@ -1,7 +1,8 @@
 import { memo, useCallback, useRef, useState } from 'react'
-import { Alert, Platform, Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, Text, View } from 'react-native'
 import WebView from 'react-native-webview'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useQuery } from '@tanstack/react-query'
 
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
@@ -11,7 +12,6 @@ import { useTheme } from '@/containers/ThemeService'
 import { fetchOnce } from '@/utils/v2ex-client'
 
 import { checkAuthStatus, get2FASubmitCode } from './scripts'
-import { useQuery } from '@tanstack/react-query'
 
 type GoogleSigninProps = NativeStackScreenProps<AppStackParamList, 'signin'> & {
   onSelectPasswordSignin(): void

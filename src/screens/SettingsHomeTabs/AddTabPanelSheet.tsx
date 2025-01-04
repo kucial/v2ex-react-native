@@ -6,6 +6,7 @@ import {
   BottomSheetTextInput,
 } from '@gorhom/bottom-sheet'
 import composeRefs from '@seznam/compose-react-refs'
+import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 
 import CheckIcon from '@/components/CheckIcon'
@@ -15,7 +16,6 @@ import { getNodes } from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import TypeIcon from './TypeIcon'
-import { useQuery } from '@tanstack/react-query'
 
 const pickerSnapPoints = ['50%']
 

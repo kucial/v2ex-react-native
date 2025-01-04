@@ -8,10 +8,7 @@ import {
 } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-<<<<<<< Updated upstream
-=======
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
->>>>>>> Stashed changes
 import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
 
@@ -20,14 +17,13 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { isRefreshing, shouldFetch, shouldLoadMore } from '@/utils/react-query'
+import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
 import { getXnaFeeds } from '@/utils/v2ex-client'
 import { XnaFeed } from '@/utils/v2ex-client/types'
 
 import { useViewedLinks } from './hooks'
 import TideTopicRow from './TideTopicRow'
 import TopicRow from './TopicRow'
-import { useInfiniteQuery } from '@tanstack/react-query'
 
 type XnaTopicListProps = {
   isFocused: boolean
@@ -45,7 +41,7 @@ function XnaTopicList(props: XnaTopicListProps) {
 
   const fetchItems = useCallback(async ({ pageParam }) => {
     try {
-      return getXnaFeeds({ p: pageParam });
+      return getXnaFeeds({ p: pageParam })
     } catch (err) {
       if (err.code !== '2FA_ENABLED') {
         alert.show({
@@ -61,11 +57,14 @@ function XnaTopicList(props: XnaTopicListProps) {
     queryFn: fetchItems,
     initialPageParam: 1,
     getNextPageParam(lastPage) {
-      if (lastPage.pagination && lastPage.pagination.total > lastPage.pagination.current) {
+      if (
+        lastPage.pagination &&
+        lastPage.pagination.total > lastPage.pagination.current
+      ) {
         return lastPage.pagination.current + 1
       }
       return undefined
-    }
+    },
   })
 
   const handleRefresh = useCallback(() => {
@@ -98,7 +97,10 @@ function XnaTopicList(props: XnaTopicListProps) {
   useEffect(() => {
     if (
       isFocused &&
-      shouldFetch(listQuery, settings.autoRefresh && settings.autoRefreshDuration)
+      shouldFetch(
+        listQuery,
+        settings.autoRefresh && settings.autoRefreshDuration,
+      )
     ) {
       scrollToRefresh()
     }
