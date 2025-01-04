@@ -302,7 +302,7 @@ export default function MemberScreenHeader(props: {
                 position: 'absolute',
                 zIndex: 2,
                 left: 16,
-                bottom: -AVATAR_SIZE * 0.7,
+                bottom: -1 * Math.round(AVATAR_SIZE * 0.7),
                 width: AVATAR_SIZE,
                 alignItems: 'center',
               }}>
@@ -310,7 +310,7 @@ export default function MemberScreenHeader(props: {
                 className="w-full h-full rounded-full"
                 style={[
                   {
-                    borderWidth: 3,
+                    borderWidth: 4,
                     borderColor: theme.colors.bg_layer1,
                     backgroundColor: theme.colors.text_placeholder,
                   },
@@ -325,7 +325,7 @@ export default function MemberScreenHeader(props: {
               className="flex flex-row"
               style={{
                 marginLeft: AVATAR_SIZE + 16 + 12,
-                minHeight: AVATAR_SIZE * 0.7,
+                minHeight: Math.round(AVATAR_SIZE * 0.7),
               }}>
               <View className="flex flex-row pr-3 pt-2 ml-auto">
                 {data && currentUser && username !== currentUser.username && (
