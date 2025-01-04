@@ -6,6 +6,7 @@ import Constants from 'expo-constants'
 import BackButton from '@/components/BackButton'
 import SearchInput from '@/components/SearchInput'
 import { useTheme } from '@/containers/ThemeService'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const HEADER_HEIGHT = 48
 
@@ -19,6 +20,7 @@ export default function Header(props: {
 }) {
   const { styles } = useTheme()
   const navigation = useNavigation()
+  const insets = useSafeAreaInsets();
   return (
     <View style={styles.layer1}>
       <View
@@ -28,16 +30,16 @@ export default function Header(props: {
             height:
               Platform.OS === 'android'
                 ? HEADER_HEIGHT
-                : HEADER_HEIGHT + Constants.statusBarHeight,
+                : HEADER_HEIGHT + insets.top,
             paddingTop:
-              Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
+              Platform.OS === 'android' ? 0 : insets.top,
           },
         ]}>
         <View
           style={{
             position: 'absolute',
             left: 6,
-            top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
+            top: Platform.OS === 'android' ? 4 : insets.top,
             zIndex: 10,
           }}>
           <BackButton
@@ -75,7 +77,7 @@ export default function Header(props: {
             style={{
               position: 'absolute',
               right: 6,
-              top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
+              top: Platform.OS === 'android' ? 4 : insets.top,
               zIndex: 10,
             }}>
             {props.headerRight}

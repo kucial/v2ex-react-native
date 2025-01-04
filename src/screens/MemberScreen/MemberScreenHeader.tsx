@@ -10,7 +10,6 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import * as Sentry from '@sentry/react-native'
-import Constants from 'expo-constants'
 import { Image } from 'expo-image'
 
 import BackButton from '@/components/BackButton'
@@ -32,6 +31,7 @@ import { StatusResponse } from '@/utils/v2ex-client/types'
 
 import MemberInfoLinks from './MemberInfoLinks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const AnimatedImage = Animated.createAnimatedComponent(Image)
 
@@ -46,10 +46,7 @@ export default function MemberScreenHeader(props: {
   headerCollapsedHeight: number
   scrollY: SharedValue<number>
 }) {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<AppStackParamList> &
-      BottomTabNavigationProp<MainTabParamList>
-  >()
+
   const {
     username,
     brief,
@@ -58,6 +55,14 @@ export default function MemberScreenHeader(props: {
     headerCollapsedHeight,
     scrollY,
   } = props
+
+  const insets = useSafeAreaInsets()
+
+  const navigation = useNavigation<
+    NativeStackNavigationProp<AppStackParamList> &
+      BottomTabNavigationProp<MainTabParamList>
+  >()
+
 
   const { user: currentUser } = useAuthService()
   const fetchMember = useCallback(async () => {
@@ -173,7 +178,7 @@ export default function MemberScreenHeader(props: {
 
   const topBannerHeight =
     Platform.OS === 'ios'
-      ? HEADER_CANVAS_HEIGHT + Constants.statusBarHeight
+      ? HEADER_CANVAS_HEIGHT + insets.top
       : HEADER_CANVAS_HEIGHT + 6
 
   const topDelta = topBannerHeight - headerCollapsedHeight
@@ -249,7 +254,7 @@ export default function MemberScreenHeader(props: {
         style={{
           position: 'absolute',
           left: 12,
-          top: Platform.OS === 'ios' ? Constants.statusBarHeight : 6,
+          top: Platform.OS === 'ios' ? insets.top : 6,
           zIndex: 10,
         }}>
         <BackButton
@@ -375,7 +380,7 @@ export default function MemberScreenHeader(props: {
         style={[
           {
             position: 'absolute',
-            top: Platform.OS == 'ios' ? Constants.statusBarHeight : 6,
+            top: Platform.OS == 'ios' ? insets.top : 6,
             left: 64,
             zIndex: 6,
             height: 36,

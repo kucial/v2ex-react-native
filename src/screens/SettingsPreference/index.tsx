@@ -462,11 +462,6 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   <Text style={[styles.text, styles.text_base]}>
                     启用平板布局
                   </Text>
-                  <View className="ml-1 mt-1">
-                    <Text style={[styles.text_desc, styles.text_xs]}>
-                      窗口尺寸满足条件时生效
-                    </Text>
-                  </View>
                 </View>
                 <View className="mr-2 px-2">
                   <MySwitch

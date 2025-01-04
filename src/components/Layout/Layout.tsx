@@ -7,6 +7,7 @@ import { useTheme } from '@/containers/ThemeService'
 
 import AppSidebar from '../AppSidebar'
 import { AppLayoutContext } from './context'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const ANIMATE_DURATION = 300
 const OFFSET_X = -60
@@ -19,6 +20,7 @@ export default function Layout(props: { children: ReactNode }) {
   const fadeAnim = useRef(new Animated.Value(0)).current
   const translateXAnim = useRef(new Animated.Value(OFFSET_X)).current
   const translateYAnim = useRef(new Animated.Value(OFFSET_Y)).current
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (!!nav) {
@@ -81,20 +83,27 @@ export default function Layout(props: { children: ReactNode }) {
     <AppLayoutContext.Provider value={context}>
       <View
         className={classNames(
-          'flex-1 flex dark:bg-neutral-900',
+          'flex-1 flex',
           padLayout.orientation === 'PORTRAIT'
             ? 'flex-col'
             : 'flex-row-reverse',
         )}>
         <View
-          style={{
-            flex: 1,
-          }}>
+          style={[
+            {
+              flex: 1,
+              paddingLeft: padLayout.active ? 0 : insets.left,
+              paddingRight: insets.right,
+            },
+            styles.layer1
+          ]}
+          >
           {props.children}
         </View>
         {padLayout.active && (
           <AppSidebar
             position={padLayout.orientation === 'PORTRAIT' ? 'BOTTOM' : 'SIDE'}
+            hasDynamicContent={!!nav}
             dynamic={
               <Animated.View
                 style={[
@@ -112,7 +121,6 @@ export default function Layout(props: { children: ReactNode }) {
                       }
                     : {
                         opacity: fadeAnim,
-                        marginTop: 'auto',
                         borderRadius: 8,
                         alignItems: 'center',
                         marginLeft: 8,

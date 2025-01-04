@@ -167,7 +167,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
         <LineItemGroup className="mx-2 my-2">{header}</LineItemGroup>
 
         <View className="flex flex-wrap flex-row flex-1 mx-1">
-          <View className="basis-1/2 px-1 my-2">
+          <View className="w-1/2 px-1 my-2">
             <GroupWapper>
               <LineItem
                 title="创建的主题"
@@ -178,7 +178,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
               />
             </GroupWapper>
           </View>
-          <View className="basis-1/2 px-1 my-2">
+          <View className="w-1/2 px-1 my-2">
             <GroupWapper>
               <LineItem
                 title="收藏的主题"
@@ -189,7 +189,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
               />
             </GroupWapper>
           </View>
-          <View className="basis-1/2 px-1 my-2">
+          <View className="w-1/2 px-1 my-2">
             <GroupWapper>
               <LineItem
                 title="回复的主题"
@@ -200,7 +200,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
               />
             </GroupWapper>
           </View>
-          <View className="basis-1/2 px-1 my-2">
+          <View className="w-1/2 px-1 my-2">
             <GroupWapper>
               <LineItem
                 title="浏览的主题"

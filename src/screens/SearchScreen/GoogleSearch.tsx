@@ -4,7 +4,6 @@ import { NProgress } from 'react-native-nprogress'
 import WebView from 'react-native-webview'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
-import Constants from 'expo-constants'
 
 import BackButton from '@/components/BackButton'
 import MyClearButton from '@/components/MyClearButton'
@@ -14,6 +13,7 @@ import { getScreenInfo } from '@/utils/url'
 
 import { CACHE_KEY } from './constants'
 import { SearchParams } from './types'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const topicLinkCapture = `(function() {
   if (window._topic_link_capture_injected) {
@@ -49,7 +49,9 @@ const topicLinkCapture = `(function() {
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'search'>
 export default function GoogleSearch({ navigation }: ScreenProps) {
   const { theme, styles } = useTheme()
+  const insets = useSafeAreaInsets()
   const searchInput = useRef<TextInput>()
+
   const [searchParams, updateSearchParams] = useCachedState<SearchParams>(
     CACHE_KEY,
     { q: '' },
@@ -77,9 +79,9 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
         style={[
           {
             height:
-              Platform.OS === 'android' ? 58 : 56 + Constants.statusBarHeight,
+              Platform.OS === 'android' ? 58 : 56 + insets.top,
             paddingTop:
-              Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
+              Platform.OS === 'android' ? 0 : insets.top,
           },
           styles.layer1,
         ]}>

@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react'
 import { useWindowDimensions } from 'react-native'
+import * as Device from 'expo-device'
 
-import { APP_SIDEBAR_SIZE } from '../../constants'
 import { AppSettingsContext } from './context'
 
 export const useAppSettings = () => useContext(AppSettingsContext)
@@ -17,8 +17,7 @@ export const usePadLayout = () => {
   const info = useMemo(() => {
     return {
       active:
-        data.payLayoutEnabled &&
-        width > data.maxContainerWidth + APP_SIDEBAR_SIZE,
+        data.payLayoutEnabled && Device.deviceType === Device.DeviceType.TABLET,
       orientation: height > width ? 'PORTRAIT' : 'LANDSCAPE',
     }
   }, [data.payLayoutEnabled, data.maxContainerWidth, width, height])

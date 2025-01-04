@@ -11,7 +11,6 @@ import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import classNames from 'classnames'
-import Constants from 'expo-constants'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
@@ -27,6 +26,7 @@ import { CACHE_KEY } from '../constants'
 import { SearchParams } from '../types'
 import AdvancedSearchForm from './AdvancedSearchForm'
 import SearchResultView from './SearchResultView'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'search'>
 
@@ -47,6 +47,7 @@ const hasAdvancedOption = (params: SearchParams) => {
 
 export default function GoogleSearch({ navigation }: ScreenProps) {
   const { theme, styles } = useTheme()
+  const insets = useSafeAreaInsets()
   const searchInput = useRef<TextInput>()
   const advancedSearchModalRef = useRef<BottomSheetModal>()
   const [searchParams, updateSearchParams] = useCachedState<SearchParams>(
@@ -77,9 +78,9 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
           style={[
             {
               minHeight:
-                Platform.OS === 'android' ? 58 : 56 + Constants.statusBarHeight,
+                Platform.OS === 'android' ? 58 : 56 + insets.top,
               paddingTop:
-                Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
+                Platform.OS === 'android' ? 0 : insets.top,
               flexShrink: 0,
             },
             styles.layer1,

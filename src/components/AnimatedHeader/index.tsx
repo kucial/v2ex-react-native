@@ -7,10 +7,10 @@ import Animate, {
   useAnimatedStyle,
 } from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native'
-import Constants from 'expo-constants'
 
 import BackButton from '@/components/BackButton'
 import { useTheme } from '@/containers/ThemeService'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 function AnimatedHeader(props: {
   title?: string
@@ -22,6 +22,7 @@ function AnimatedHeader(props: {
   const { styles } = useTheme()
   const { scrollY } = props
   const navigation = useNavigation()
+  const insets = useSafeAreaInsets()
 
   const titleStyles = useAnimatedStyle(() => {
     const opacity = interpolate(scrollY.value, [50, 150], [0, 1], {
@@ -35,21 +36,21 @@ function AnimatedHeader(props: {
 
   return (
     <View
-      className="w-full flex-row items-center pl-4"
+      className="w-full flex-row items-center"
       style={[
         {
           height:
-            Platform.OS === 'android' ? 48 : 48 + Constants.statusBarHeight,
-          paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
-          backgroundColor: styles.layer1.backgroundColor,
+            Platform.OS === 'android' ? 48 : 48 + insets.top,
+          paddingTop: Platform.OS === 'android' ? 0 : insets.top,
         },
+        styles.layer1,
         props.hasBorder && styles.border_b_light,
       ]}>
       <View
         style={{
           position: 'absolute',
           left: 6,
-          top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
+          top: Platform.OS === 'android' ? 4 : insets.top,
           zIndex: 10,
         }}>
         <BackButton
@@ -86,7 +87,7 @@ function AnimatedHeader(props: {
           style={{
             position: 'absolute',
             right: 6,
-            top: Platform.OS === 'android' ? 4 : Constants.statusBarHeight,
+            top: Platform.OS === 'android' ? 4 : insets.top,
             zIndex: 10,
           }}>
           {props.headerRight}

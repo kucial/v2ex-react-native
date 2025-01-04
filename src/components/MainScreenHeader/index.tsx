@@ -6,9 +6,9 @@ import {
   EnvelopeIcon,
   MagnifyingGlassIcon,
 } from 'react-native-heroicons/outline'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import type { BottomTabHeaderProps } from '@react-navigation/bottom-tabs'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import Constants from 'expo-constants'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
@@ -26,6 +26,7 @@ export default function MainScreenHeader(
   const { navigation, options } = props
   const { composeAuthedNavigation, meta } = useAuthService()
   const { theme, styles } = useTheme()
+  const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()
   const handleNewTopicPress = usePressBreadcrumb(
     composeAuthedNavigation(
@@ -72,22 +73,27 @@ export default function MainScreenHeader(
       className="w-full flex-row items-center pl-4"
       style={[
         {
-          height:
-            Platform.OS === 'android' ? 48 : 48 + Constants.statusBarHeight,
-          paddingTop: Platform.OS === 'android' ? 0 : Constants.statusBarHeight,
+          height: padLayout.active
+            ? insets.top
+            : Platform.OS === 'android'
+            ? 48
+            : 48 + insets.top,
+          paddingTop: Platform.OS === 'android' ? 0 : insets.top,
           backgroundColor: theme.colors.bg_layer1,
         },
         props.hasBorder && styles.border_b_light,
       ]}>
-      <View className="flex-1">
-        <View className="">
-          <Text
-            className="font-bold"
-            style={[styles.text_lg, styles.text_title]}>
-            {title}
-          </Text>
+      {!padLayout.active && (
+        <View className="flex-1">
+          <View className="">
+            <Text
+              className="font-bold"
+              style={[styles.text_lg, styles.text_title]}>
+              {title}
+            </Text>
+          </View>
         </View>
-      </View>
+      )}
 
       {!padLayout.active && (
         <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">

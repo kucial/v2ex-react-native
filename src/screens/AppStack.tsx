@@ -8,13 +8,11 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 import { headerLeft } from '@/components/BackButton'
-import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 
 import AboutScreen from './AboutScreen'
 import BrowserScreen from './BrowserScreen'
 import FeedbackScreen from './FeedbackScreen'
-import HomeScreen from './HomeScreen'
 import MainTab from './MainTab'
 import MemberInfoScreen from './MemberInfoScreen'
 import MemberScreen from './MemberScreen'
@@ -24,11 +22,9 @@ import MyCreatedTopicsScreen from './MyCreatedTopicsScreen'
 import MyNotificationScreen from './MyNotificationScreen'
 import MyProfileScreen from './MyProfileScreen'
 import MyRepliedTopicsScreen from './MyRepliedTopicsScreen'
-import MyScreen from './MyScreen'
 import MyViewedTopicsScreen from './MyViewedTopicsScreen'
 import NewTopicScreen from './NewTopicScreen'
 import NodeScreen from './NodeScreen'
-import NodesScreen from './NodesScreen'
 import SearchScreen from './SearchScreen'
 import SettingsHomeTabs from './SettingsHomeTabs'
 import SettingsImgur from './SettingsImgur'
@@ -72,8 +68,6 @@ function AppStack() {
   const { theme, styles, colorScheme } = useTheme()
   const tintColor = theme.colors.text_title
 
-  const padLayout = usePadLayout()
-
   return (
     <Stack.Navigator
       screenOptions={{
@@ -108,46 +102,7 @@ function AppStack() {
       }}
       // initialRouteName={'theme-settings'}
     >
-      {/* <Stack.Screen
-        name="main"
-        component={MainTab}
-        options={{
-          headerShown: false,
-          headerTransparent: true,
-          headerBackground: transparentHeaderBackground,
-        }}
-      /> */}
-      {padLayout.active ? (
-        <Stack.Group>
-          <Stack.Screen
-            name="feed"
-            component={HomeScreen}
-            options={{
-              headerBackground: null,
-              header() {
-                return (
-                  <SafeAreaView style={styles.layer1} className="min-h-[30]" />
-                )
-              },
-            }}
-          />
-          <Stack.Screen
-            name="nodes"
-            component={NodesScreen}
-            options={{
-              title: '节点',
-            }}
-          />
-          <Stack.Screen
-            name="my"
-            component={MyScreen}
-            options={{
-              title: '我的',
-            }}
-          />
-        </Stack.Group>
-      ) : (
-        <Stack.Screen
+      <Stack.Screen
           name="main"
           component={MainTab}
           options={{
@@ -156,7 +111,6 @@ function AppStack() {
             headerBackground: transparentHeaderBackground,
           }}
         />
-      )}
       <Stack.Group>
         <Stack.Screen
           name="search"
