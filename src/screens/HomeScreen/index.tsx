@@ -15,6 +15,7 @@ import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'
@@ -35,6 +36,7 @@ export default function HomeScreen(props: HomeScreenProps) {
   } = useAppSettings()
   const { navigation } = props
   const { width, height } = useWindowDimensions()
+  const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()
   const [error, setError] = useState<Error>(null)
   const { theme, styles } = useTheme()
@@ -66,6 +68,10 @@ export default function HomeScreen(props: HomeScreenProps) {
   const tabIdleResetTimer = useRef<NodeJS.Timeout>()
   const isFocused = useIsFocused()
   const scrollY = useSharedValue(0)
+
+  const viewWidth = padLayout.active && padLayout.orientation === 'PORTRAIT'
+  ? width - APP_SIDEBAR_SIZE - insets.left - insets.right
+  : width - insets.left - insets.right
 
   const { renderScene, renderTabBar } = useMemo(() => {
     if (!homeTabs) {
@@ -132,20 +138,40 @@ export default function HomeScreen(props: HomeScreenProps) {
             contentContainerStyle={{
               display: 'flex',
               flexDirection: 'row',
+              minWidth: viewWidth,
               overflow: 'scroll',
             }}
             renderLabel={(props) => {
               return (
-                <Text
-                  style={{
-                    color: props.focused
-                      ? theme.colors.primary
-                      : theme.colors.text,
-                    fontWeight: props.focused ? '600' : '400',
-                    fontSize: 13,
-                  }}>
-                  {props.route.title}
-                </Text>
+                <View>
+                  <Text
+                    style={{
+                      color: theme.colors.primary,
+                      fontWeight: '600',
+                      fontSize: 13,
+                      opacity: props.focused ? 1 : 0
+                    }}>
+                    {props.route.title}
+                  </Text>
+                  <View style={{
+                      position: 'absolute', opacity: props.focused ? 0 : 1,
+                      left: 0,
+                      bottom: 0,
+                      width: '100%',
+                      height: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center'
+                      }}>
+                    <Text
+                      style={{
+                        color: theme.colors.text,
+                        fontWeight: '400',
+                        fontSize: 13,
+                      }}>
+                      {props.route.title}
+                    </Text>
+                  </View>
+                </View>
               )
             }}
             onTabPress={({ route }) => {
@@ -233,9 +259,7 @@ export default function HomeScreen(props: HomeScreenProps) {
       onIndexChange={setIndex}
       initialLayout={{
         width:
-          padLayout.active && padLayout.orientation === 'PORTRAIT'
-            ? width - APP_SIDEBAR_SIZE
-            : width,
+          viewWidth,
         height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
       }}
     />
