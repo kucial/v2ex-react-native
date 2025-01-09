@@ -36,10 +36,7 @@ export const ThemeProvider = (props: {
       SystemUI.setBackgroundColorAsync(service.theme.colors.bg_overlay)
     }
     if (Platform.OS == 'ios') {
-      const iconName = `${themeName}_${service.colorScheme}`
-      if (iconName !== getAppIcon()) {
-        setAppIcon(iconName)
-      }
+      setAppIcon(themeName)
     }
   }, [service, themeName])
 

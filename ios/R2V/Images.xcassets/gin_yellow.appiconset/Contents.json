@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon-r2v-light.png",
+      "filename" : "icon-gin_yellow-light.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "icon-r2v-dark.png",
+      "filename" : "icon-gin_yellow-dark.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
