@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { InteractionManager } from 'react-native'
+import { InteractionManager, Text, View } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
   useAnimatedScrollHandler,
@@ -37,6 +37,7 @@ import { isLoading, shouldLoadMore } from '@/utils/react-query'
 import { isBouncingBottom, isBouncingTop } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
+import ApiError from '@/utils/v2ex-client/ApiError'
 import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
 
 import BottomBar from './BottomBar'
@@ -182,12 +183,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       // initial loading
       return new Array(10)
     }
-    const items = repliesQuery.data?.pages.reduce((combined, page) => {
-      if (page.data) {
-        return [...combined, ...page.data]
-      }
-      return combined
-    }, myReplies)
+    const items =
+      repliesQuery.data?.pages.reduce((combined, page) => {
+        if (page.data) {
+          return [...combined, ...page.data]
+        }
+        return combined
+      }, myReplies) || []
 
     items.sort((a, b) => a.num - b.num)
     return items
@@ -652,6 +654,27 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       }
     },
   })
+
+  if (topicQuery.error) {
+    return (
+      <>
+        <AnimatedHeader scrollY={scrollY} />
+        <View className="flex-1 items-center justify-center">
+          <Text style={styles.text}>{topicQuery.error.message}</Text>
+          {(topicQuery.error as ApiError).code !== 'RESOURCE_ERROR' &&
+            (topicQuery.error as ApiError).code !== 'NOT_FOUND' && (
+              <Button
+                label="重试"
+                size="md"
+                onPress={() => topicQuery.refetch()}
+                className="mt-4"
+                variant="primary"
+              />
+            )}
+        </View>
+      </>
+    )
+  }
 
   if (!topic) {
     return (

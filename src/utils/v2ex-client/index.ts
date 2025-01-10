@@ -304,6 +304,16 @@ instance.interceptors.response.use(
     } else {
       n_403 = 0
     }
+    if (
+      error.response?.status === 404 &&
+      error.response.headers['content-type'].indexOf('html') !== -1
+    ) {
+      const $ = cheerioDoc(error.response.data)
+      throw new ApiError({
+        code: 'NOT_FOUND',
+        message: $('.gray.bigger').text() || '资源未找到',
+      })
+    }
     Sentry.captureEvent(error)
     return Promise.reject(error)
   },
