@@ -41,7 +41,7 @@
         "IOS_APP_ID": "1645766550"
       },
       "ios": {
-        "image": "macos-ventura-13.6-xcode-15.1"
+        "image": "macos-sonoma-14.6-xcode-16.0"
       }
     }
   },
