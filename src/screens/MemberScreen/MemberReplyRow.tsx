@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -19,6 +20,16 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
   const { data, isLast } = props
   const { styles, colorScheme } = useTheme()
+  const htmlRenderProps = useMemo(
+    () => ({
+      key: `${data?.reply_content_rendered}${colorScheme}`,
+      source: {
+        html: data?.reply_content_rendered,
+        baseUrl: 'https://v2ex.com',
+      },
+    }),
+    [data?.reply_content_rendered, colorScheme],
+  )
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
@@ -68,13 +79,9 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
         </View>
         <View className="pt-1 pb-2 px-3">
           <HtmlRender
-            key={data.reply_content_rendered + colorScheme}
+            {...htmlRenderProps}
             navigation={navigation}
             contentWidth={CONTAINER_WIDTH - 24}
-            source={{
-              html: data.reply_content_rendered,
-              baseUrl: 'https://v2ex.com',
-            }}
           />
         </View>
       </View>
@@ -82,4 +89,4 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
   )
 }
 
-export default MemberReplyRow
+export default memo(MemberReplyRow)

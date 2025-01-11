@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef, useState } from 'react'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import {
   Pressable,
   Text,
@@ -107,6 +107,19 @@ function ReplyRow(props: ReplyRowProps) {
       message: '[ReplyRow] `conversation` button press',
       data: { target: data?.id },
     },
+  )
+
+  const htmlRenderProps = useMemo(
+    () => ({
+      key: `${data?.id}-${colorScheme}-${showMarkdown}`,
+      source: {
+        html: showMarkdown
+          ? marked(data?.content || '')
+          : data?.content_rendered,
+        baseUrl: 'https://v2ex.com',
+      },
+    }),
+    [data?.content_rendered, colorScheme, showMarkdown],
   )
 
   if (!data) {
@@ -273,16 +286,10 @@ function ReplyRow(props: ReplyRowProps) {
                 marginBottom: showMarkdown ? -14 : 0,
               }}>
               <HtmlRender
-                key={data.id + colorScheme}
+                {...htmlRenderProps}
                 navigation={navigation}
                 onOpenMemberInfo={props.onShowUserInfo}
                 contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 16}
-                source={{
-                  html: showMarkdown
-                    ? marked(data.content)
-                    : data.content_rendered,
-                  baseUrl: 'https://v2ex.com',
-                }}
               />
             </View>
             <View className="py-[10px] relative flex flex-row ">
