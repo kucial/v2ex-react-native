@@ -6,7 +6,7 @@ import { useImgurService } from '@/containers/ImgurService'
 import { useTheme } from '@/containers/ThemeService'
 
 import Album from './AlbumImages'
-import { AlbumContext } from './context'
+import { PickerContext } from './context'
 import Landing from './LandingView'
 import SubmitButton from './SubmitButton'
 
@@ -55,6 +55,18 @@ export default function ImgurPicker(props: ImgurPickerProps) {
     },
     [props.maxCount],
   )
+
+  const context = useMemo(() => {
+    return {
+      stack,
+      current: stack[stack.length - 1],
+      selected,
+      toggleImage,
+      submit: () => {
+        props.onSubmit(selected)
+      },
+    }
+  }, [stack, selected, toggleImage, props.onSubmit])
 
   if (!imgur.credentials) {
     return (
@@ -114,29 +126,21 @@ export default function ImgurPicker(props: ImgurPickerProps) {
     case 'album':
       view = (
         <Album
-          selected={selected}
           album={current.params.album}
-          onCancel={() => {
+          onBackward={() => {
             setStack((prev) => prev.slice(0, -1))
           }}
-          onToggleSelect={toggleImage}
         />
       )
       break
   }
 
   return (
-    <AlbumContext.Provider
-      value={'params' in current ? current.params?.album : undefined}>
+    <PickerContext.Provider value={context}>
       <View className="relative flex-1 w-full" style={props.style}>
         {view}
-        <SubmitButton
-          disabled={!selected.length}
-          onPress={() => {
-            props.onSubmit(selected)
-          }}
-        />
+        <SubmitButton />
       </View>
-    </AlbumContext.Provider>
+    </PickerContext.Provider>
   )
 }

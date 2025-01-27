@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
+import ContextMenu from 'react-native-context-menu-view'
 import ImageView from 'react-native-image-viewing'
 import { UseQueryResult } from '@tanstack/react-query'
 import classNames from 'classnames'
@@ -8,19 +9,23 @@ import CheckIcon from '@/components/CheckIcon'
 import { ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 
+import Loader from '../Loader'
 import MyRefreshControl from '../MyRefreshControl'
+import { usePickerContext } from './context'
 import ImageCard from './ImageCard'
 
 export type ImagesGridProps = {
   imagesQuery: UseQueryResult<ImgurImage[], Error>
   selected: ImgurImage[]
   onToggleSelect(image: ImgurImage): void
+  onDelete(image: ImgurImage): void
 }
 export default function ImagesGrid(props: ImagesGridProps) {
   const { imagesQuery } = props
   const { styles } = useTheme()
 
   const [viewIndex, setViewIndex] = useState(-1)
+  const context = usePickerContext()
 
   const imageViewingProps = useMemo(() => {
     const imageItems = imagesQuery.data
@@ -67,12 +72,13 @@ export default function ImagesGrid(props: ImagesGridProps) {
             </View>
             <View className="w-[80px]">
               <Pressable
-                className="h-[52px] rounded-lg flex flex-row items-center justify-center px-4 active:opacity-60"
+                className="h-[52px] min-w-[52px] rounded-lg flex flex-row items-center justify-center px-2 active:opacity-60"
                 onPress={() => {
                   setViewIndex(-1)
+                  props.selected.length && context.submit()
                 }}>
                 <Text className="text-neutral-300" style={styles.text_base}>
-                  {props.selected.length ? '完成' : '关闭'}
+                  {props.selected.length ? '完成选择' : '关闭'}
                 </Text>
               </Pressable>
             </View>
@@ -84,6 +90,49 @@ export default function ImagesGrid(props: ImagesGridProps) {
 
   const imageItems = imagesQuery.data
 
+  const hasData = !imagesQuery.isLoading && imageItems?.length
+
+  let content
+  if (imagesQuery.isLoading) {
+    content = (
+      <View className="py-6 w-full items-center justify-center">
+        <Loader />
+      </View>
+    )
+  } else if (!hasData) {
+    content = (
+      <View className="p-6">
+        <Text style={styles.text}>相册里没有图片哦~</Text>
+      </View>
+    )
+  } else {
+    content = imageItems?.map((image, index) => (
+      <View className="basis-1/3 p-[1px]" key={image.id}>
+        <ContextMenu
+          actions={[{ title: '删除', systemIcon: 'trash' }]}
+          onPress={({ nativeEvent }) => {
+            switch (nativeEvent.index) {
+              case 0:
+                return props.onDelete(image)
+            }
+          }}>
+          <View>
+            <ImageCard
+              data={image}
+              selected={!!props.selected.find((i) => i.id === image.id)}
+              onToggleSelect={() => {
+                props.onToggleSelect(image)
+              }}
+              onPress={() => {
+                setViewIndex(index)
+              }}
+            />
+          </View>
+        </ContextMenu>
+      </View>
+    ))
+  }
+
   return (
     <ScrollView
       refreshControl={
@@ -91,24 +140,10 @@ export default function ImagesGrid(props: ImagesGridProps) {
           refreshing={imagesQuery.isRefetching}
           onRefresh={imagesQuery.refetch}
         />
-      }>
+      }
+      contentContainerStyle={{ paddingBottom: 100 }}>
       <View className="py-2 px-[1px]">
-        <View className="flex flex-row flex-wrap">
-          {imageItems?.map((image, index) => (
-            <View className="basis-1/3 p-[1px]" key={image.id}>
-              <ImageCard
-                data={image}
-                selected={!!props.selected.find((i) => i.id === image.id)}
-                onToggleSelect={() => {
-                  props.onToggleSelect(image)
-                }}
-                onPress={() => {
-                  setViewIndex(index)
-                }}
-              />
-            </View>
-          ))}
-        </View>
+        <View className="flex flex-row flex-wrap">{content}</View>
       </View>
       <ImageView
         {...imageViewingProps}

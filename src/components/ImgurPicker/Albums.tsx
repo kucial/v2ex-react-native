@@ -5,6 +5,7 @@ import { useImgurService } from '@/containers/ImgurService'
 import { ImgurAlbum } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 
+import Loader from '../Loader'
 import AlbumAdd from './AlbumAdd'
 import AlbumCard from './AlbumCard'
 
@@ -14,15 +15,15 @@ type AlbumsProps = {
 export default function Albums(props: AlbumsProps) {
   const imgur = useImgurService()
   const albumsQuery = imgur.useAlbums()
-  const { theme } = useTheme()
-  return (
-    <ScrollView
-      refreshControl={
-        <MyRefreshControl
-          refreshing={albumsQuery.isRefetching}
-          onRefresh={albumsQuery.refetch}
-        />
-      }>
+  let content = null
+  if (albumsQuery.isLoading) {
+    content = (
+      <View className="py-6 items-center justify-center">
+        <Loader />
+      </View>
+    )
+  } else if (albumsQuery.data) {
+    content = (
       <View className="py-2 px-[2px]">
         <View className="flex flex-row flex-wrap">
           {albumsQuery.data?.map((album) => (
@@ -41,6 +42,17 @@ export default function Albums(props: AlbumsProps) {
           </View>
         </View>
       </View>
+    )
+  }
+  return (
+    <ScrollView
+      refreshControl={
+        <MyRefreshControl
+          refreshing={albumsQuery.isRefetching}
+          onRefresh={albumsQuery.refetch}
+        />
+      }>
+      {content}
     </ScrollView>
   )
 }

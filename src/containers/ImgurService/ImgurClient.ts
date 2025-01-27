@@ -64,15 +64,20 @@ export class ImgurClient {
     })
   }
 
+  deleteImage(hashid: string) {
+    return this.fetcher.request<never, never>({
+      url: `/3/image/${hashid}`,
+      method: 'DELETE',
+    })
+  }
+
   async upload(payload: ImgurUploadImagePayload) {
     const formData = new FormData()
     formData.append('image', payload.image)
     formData.append('name', payload.name)
     formData.append('type', payload.type)
-    if (payload.album) {
-      formData.append('album', payload.album)
-    }
-    return this.fetcher.request<never, ImgurResponse<ImgurImage>>({
+
+    return await this.fetcher.request<never, ImgurResponse<ImgurImage>>({
       url: `/3/upload`,
       method: 'POST',
       data: formData,
@@ -94,6 +99,28 @@ export class ImgurClient {
       url: '/3/album',
       method: 'POST',
       data,
+    })
+  }
+  updateAlbum(albumHash: string, data) {
+    return this.fetcher.request<never, ImgurResponse<ImgurAlbum>>({
+      url: `/3/album/${albumHash}`,
+      method: 'PUT',
+      data,
+    })
+  }
+  deleteAlbum(albumHash: string) {
+    return this.fetcher.request<never, never>({
+      url: `/3/album/${albumHash}`,
+      method: 'DELETE',
+    })
+  }
+  addAlbumImages(albumHash: string, images: string[]) {
+    return this.fetcher.request<never, never>({
+      url: `/3/album/${albumHash}/add`,
+      method: 'POST',
+      data: {
+        deletehashes: images,
+      },
     })
   }
   setCredentials(credentials: ImgurCredentials) {

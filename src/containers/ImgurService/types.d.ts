@@ -91,7 +91,13 @@ export interface ImgurService {
   useImages: () => UseQueryResult<ImgurImage[], Error>
   useImage: (hashid: string) => UseQueryResult<ImgurImage, Error>
   useAlbumImages: (album: string) => UseQueryResult<ImgurImage[], Error>
+  deleteImage: (payload: {
+    imageHash: string
+    albumHash?: string
+  }) => Promise<void>
   createAlbum: (data: ImgurCreateAlbumPayload) => Promise<void>
+  deleteAlbum: (hashid: string) => Promise<void>
+  renameAlbum: (hashid: string, newName: string) => Promise<void>
   uploadImage: (data: ImgurUploadImagePayload) => Promise<ImgurUploadResponse>
   refreshImages: () => void
   refreshAlbumImages: (album: string) => void

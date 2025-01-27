@@ -1,11 +1,9 @@
 import { Pressable, Text, View } from 'react-native'
 import { Alert } from 'react-native'
-import { Image } from 'expo-image'
+import { PlusIcon } from 'react-native-heroicons/outline'
 
 import { useImgurService } from '@/containers/ImgurService'
 import { useTheme } from '@/containers/ThemeService'
-
-import albumAdd from './assets/album-add.png'
 
 export default function AlbumCard(props) {
   const imgur = useImgurService()
@@ -26,26 +24,21 @@ export default function AlbumCard(props) {
       }}>
       <View className="w-full pt-[100%] rounded-lg overflow-hidden ">
         <View
-          className="absolute inset-0 w-full"
+          className="absolute inset-0 w-full items-center justify-center"
           style={{
-            backgroundColor: theme.colors.text_placeholder,
+            backgroundColor: theme.colors.bg_layer3,
           }}>
-          <Image
-            source={albumAdd}
-            resizeMode="cover"
-            style={{
-              justifyContent: 'center',
-              flex: 1,
-            }}></Image>
+          <PlusIcon size={30} color={theme.colors.text} />
         </View>
       </View>
-      <Text
-        className="text-center mt-1"
-        style={[styles.text, styles.text_sm]}
-        numberOfLines={1}
-        ellipsizeMode="tail">
-        新建相册
-      </Text>
+      <View className="mt-1 px-1">
+        <Text
+          style={[styles.text, styles.text_sm]}
+          numberOfLines={1}
+          ellipsizeMode="tail">
+          新建相册
+        </Text>
+      </View>
     </Pressable>
   )
 }

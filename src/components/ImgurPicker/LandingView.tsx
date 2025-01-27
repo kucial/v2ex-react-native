@@ -43,9 +43,7 @@ export default function Landing(props: LandingProps) {
                 Imgur 图床
               </Text>
             </View>
-            <View className="w-[100px] items-end">
-              {tabIndex === 0 && <UploadButton tintColor={theme.colors.text} />}
-            </View>
+            <View className="w-[100px] items-end"></View>
           </View>
           <View className="px-4 pt-1 pb-3 relative">
             <SegmentedControl
@@ -66,6 +64,7 @@ export default function Landing(props: LandingProps) {
           onToggleSelect={props.onToggleSelect}
         />
       )}
+      {tabIndex === 0 && <UploadButton tintColor={theme.colors.text} />}
     </View>
   )
 }

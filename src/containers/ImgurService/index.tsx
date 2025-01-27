@@ -72,9 +72,6 @@ export default function ImgurServiceProvider(props) {
           },
         })
       },
-      getAlbums() {
-        return client.getAlbums()
-      },
       async createAlbum(data) {
         await client.createAlbum(data)
         queryClient.invalidateQueries({
@@ -83,11 +80,34 @@ export default function ImgurServiceProvider(props) {
           refetchType: 'active',
         })
       },
+
       async uploadImage(payload) {
         const res = await client.upload(payload)
+        const image = res.data
+        if (payload.album) {
+          await client.addAlbumImages(payload.album, [image.deletehash])
+        }
+
         if (payload.album) {
           queryClient.invalidateQueries({
             queryKey: ['/imgur/album/:id/images', payload.album],
+            exact: true,
+            refetchType: 'active',
+          })
+        }
+        queryClient.invalidateQueries({
+          queryKey: ['/imgur/images'],
+          exact: true,
+          refetchType: 'active',
+        })
+        return image
+      },
+
+      async deleteImage(payload: { imageHash: string; albumHash?: string }) {
+        await client.deleteImage(payload.imageHash)
+        if (payload.albumHash) {
+          queryClient.invalidateQueries({
+            queryKey: ['/imgur/album/:id/images', payload.albumHash],
             exact: true,
             refetchType: 'active',
           })
@@ -98,7 +118,6 @@ export default function ImgurServiceProvider(props) {
             refetchType: 'active',
           })
         }
-        return res.data
       },
       refreshImages() {
         queryClient.invalidateQueries({
@@ -112,6 +131,29 @@ export default function ImgurServiceProvider(props) {
           queryKey: ['/imgur/album/:id/images', album],
           exact: true,
           refetchType: 'active',
+        })
+      },
+      async renameAlbum(albumHashId: string, newTitle: string) {
+        await client.updateAlbum(albumHashId, {
+          title: newTitle,
+        })
+        queryClient.invalidateQueries({
+          queryKey: ['/imgur/albums'],
+          exact: true,
+          refetchType: 'active',
+        })
+      },
+      async deleteAlbum(albumHashId: string) {
+        await client.deleteAlbum(albumHashId)
+        queryClient.invalidateQueries({
+          queryKey: ['/imgur/albums'],
+          exact: true,
+          refetchType: 'active',
+        })
+        queryClient.invalidateQueries({
+          queryKey: ['/imgur/album/:id/images', albumHashId],
+          exact: true,
+          refetchType: 'none',
         })
       },
     }

@@ -22,7 +22,6 @@ export default function UploadButton(props) {
       const filename = localUri.split('/').pop()
       const match = /\.(\w+)$/.exec(filename)
       const type = match ? `image/${match[1]}` : `image`
-
       const imgurRes = await imgur.uploadImage({
         image: {
           uri: imageInfo.uri,
@@ -41,65 +40,67 @@ export default function UploadButton(props) {
     return null
   }
   return (
-    <Pressable
-      className="h-[44px] pl-2 pr-1 flex-row items-center justify-center rounded-full active:bg-neutral-100 dark:active:bg-neutral-600"
-      onPress={async () => {
-        const permissionRes =
-          await ImagePicker.requestMediaLibraryPermissionsAsync()
-        if (permissionRes.accessPrivileges === 'none') {
-          Alert.alert('无相册访问权限')
-          return
-        }
-        const result = await ImagePicker.launchImageLibraryAsync({
-          allowsMultipleSelection: true,
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          // allowsEditing: true
-          // base64: true
-        })
-        if (result.canceled) {
-          return
-        }
-        const indicator = alert.show({
-          type: 'default',
-          message: '上传中',
-          loading: true,
-          duration: 0,
-        })
-        try {
-          await new Promise((resolve) => {
-            setTimeout(resolve, 3000)
+    <View className="absolute bottom-[56px] right-[16px]">
+      <Pressable
+        className="h-[56px] w-[56px] flex-row items-center justify-center rounded-full bg-blue-300"
+        onPress={async () => {
+          const permissionRes =
+            await ImagePicker.requestMediaLibraryPermissionsAsync()
+          if (permissionRes.accessPrivileges === 'none') {
+            Alert.alert('无相册访问权限')
+            return
+          }
+          const result = await ImagePicker.launchImageLibraryAsync({
+            allowsMultipleSelection: true,
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            // allowsEditing: true
+            // base64: true
           })
-          let uploaded
-          if (result.assets) {
-            uploaded = await Promise.all(
-              result.assets.map((item) => {
-                return uploadImage(item)
-              }),
-            )
-          } else {
-            const imageEntity = await uploadImage(result)
-            uploaded = [imageEntity]
+          if (result.canceled) {
+            return
           }
-          // 刷新缓存
-          if (album?.id) {
-            imgur.refreshAlbumImages(album.id)
-          } else {
-            imgur.refreshImages()
+          const indicator = alert.show({
+            type: 'default',
+            message: '上传中',
+            loading: true,
+            duration: 0,
+          })
+          try {
+            await new Promise((resolve) => {
+              setTimeout(resolve, 3000)
+            })
+            let uploaded
+            if (result.assets) {
+              uploaded = await Promise.all(
+                result.assets.map((item) => {
+                  return uploadImage(item)
+                }),
+              )
+            } else {
+              const imageEntity = await uploadImage(result)
+              uploaded = [imageEntity]
+            }
+            // 刷新缓存
+            if (album?.id) {
+              imgur.refreshAlbumImages(album.id)
+            } else {
+              imgur.refreshImages()
+            }
+            alert.show({ type: 'success', message: '上传成功' })
+          } catch (err) {
+            alert.show({ type: 'error', message: err.message })
+            Sentry.captureException(err)
+          } finally {
+            alert.hide(indicator)
           }
-          alert.show({ type: 'success', message: '上传成功' })
-        } catch (err) {
-          alert.show({ type: 'error', message: err.message })
-          Sentry.captureException(err)
-        } finally {
-          alert.hide(indicator)
-        }
-      }}>
-      <ArrowUpTrayIcon size={22} color={props.tintColor} />
-      <View className="ml-1 w-[60px]">
-        <Text style={{ color: props.tintColor, fontSize: 10 }}>
-          从系统相册中选择图片
-        </Text>
-      </View>
-    </Pressable>
+        }}>
+        <ArrowUpTrayIcon size={22} color={props.tintColor} />
+        {/* <View className="ml-1 w-[60px]">
+          <Text style={{ color: props.tintColor, fontSize: 10 }}>
+            从系统相册中选择图片
+          </Text>
+        </View> */}
+      </Pressable>
+    </View>
   )
 }
