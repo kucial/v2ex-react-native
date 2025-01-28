@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   InteractionManager,
   Platform,
@@ -24,6 +24,8 @@ import { useCachedState } from '@/utils/hooks'
 import { formatDate } from '@/utils/time'
 
 import { CACHE_KEY } from '../constants'
+import { useSearchHistory } from '../hooks'
+import SearchHistory from '../SearchHistory'
 import { SearchParams } from '../types'
 import AdvancedSearchForm from './AdvancedSearchForm'
 import SearchResultView from './SearchResultView'
@@ -50,18 +52,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
   const insets = useSafeAreaInsets()
   const searchInput = useRef<TextInput>()
   const advancedSearchModalRef = useRef<BottomSheetModal>()
-  const [searchParams, updateSearchParams] = useCachedState<SearchParams>(
-    CACHE_KEY,
-    { q: '' },
-    (state) => {
-      if (typeof state === 'string') {
-        return {
-          q: state,
-        }
-      }
-      return state
-    },
-  )
+  const [searchParams, setSearchParams] = useState<SearchParams>({ q: '' })
+  const searchHistory = useSearchHistory()
   useEffect(() => {
     setTimeout(() => {
       InteractionManager.runAfterInteractions(() => {
@@ -69,6 +61,12 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
       })
     }, 500)
   }, [])
+
+  useEffect(() => {
+    if (searchParams.q) {
+      searchHistory.addRecord(searchParams)
+    }
+  }, [searchParams])
 
   return (
     <KeyboardDismiss className="flex-1">
@@ -128,7 +126,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     placeholder="输入关键词"
                     returnKeyType="search"
                     onSubmitEditing={({ nativeEvent }) => {
-                      updateSearchParams((prev) => ({
+                      setSearchParams((prev) => ({
                         ...prev,
                         q: nativeEvent.text,
                       }))
@@ -138,7 +136,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     <View className="h-full flex flex-row items-center justify-center">
                       <MyClearButton
                         onPress={() => {
-                          updateSearchParams((prev) => ({
+                          setSearchParams((prev) => ({
                             ...prev,
                             q: '',
                           }))
@@ -223,7 +221,11 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
           </View>
         </View>
         <View className="flex-1 relative">
-          {searchParams.q && <SearchResultView params={searchParams} />}
+          {searchParams.q ? (
+            <SearchResultView params={searchParams} />
+          ) : (
+            <SearchHistory onSelect={setSearchParams} />
+          )}
         </View>
         <MyBottomSheetModal
           ref={advancedSearchModalRef}
@@ -232,7 +234,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
             <AdvancedSearchForm
               initialValues={searchParams}
               onSubmit={(values) => {
-                updateSearchParams(values)
+                setSearchParams(values)
                 advancedSearchModalRef.current?.dismiss()
               }}
             />

@@ -9,10 +9,10 @@ import classNames from 'classnames'
 import BackButton from '@/components/BackButton'
 import MyClearButton from '@/components/MyClearButton'
 import { useTheme } from '@/containers/ThemeService'
-import { useCachedState } from '@/utils/hooks'
 import { getScreenInfo } from '@/utils/url'
 
-import { CACHE_KEY } from './constants'
+import { useSearchHistory } from './hooks'
+import SearchHistory from './SearchHistory'
 import { SearchParams } from './types'
 
 const topicLinkCapture = `(function() {
@@ -52,16 +52,9 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
   const insets = useSafeAreaInsets()
   const searchInput = useRef<TextInput>()
 
-  const [searchParams, updateSearchParams] = useCachedState<SearchParams>(
-    CACHE_KEY,
-    { q: '' },
-    (state) => {
-      if (typeof state === 'string') {
-        return { q: state }
-      }
-      return state
-    },
-  )
+  const searchHistory = useSearchHistory()
+
+  const [searchParams, setSearchParams] = useState<SearchParams>({ q: '' })
   const onceLoaded = useRef(false)
   const [loading, setLoading] = useState(false)
   useEffect(() => {
@@ -71,6 +64,14 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
       })
     }, 500)
   }, [])
+
+  const keyword = searchParams.q.trim()
+
+  useEffect(() => {
+    if (searchParams.q) {
+      searchHistory.addRecord(searchParams)
+    }
+  }, [searchParams])
 
   return (
     <View className="flex-1">
@@ -114,17 +115,17 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               placeholder="输入关键词"
               returnKeyType="search"
               onSubmitEditing={({ nativeEvent }) => {
-                updateSearchParams((prev) => ({
+                setSearchParams((prev) => ({
                   ...prev,
                   q: nativeEvent.text,
                 }))
               }}
             />
-            {!!searchParams.q && (
+            {!!keyword && (
               <View className="h-full flex flex-row items-center justify-center">
                 <MyClearButton
                   onPress={() => {
-                    updateSearchParams((prev) => ({
+                    setSearchParams((prev) => ({
                       ...prev,
                       q: '',
                     }))
@@ -139,7 +140,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
         </View>
       </View>
       <View className="flex-1 relative">
-        {!!searchParams.q?.trim() && (
+        {!!keyword ? (
           <WebView
             injectedJavaScript={topicLinkCapture}
             source={{
@@ -169,6 +170,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                 }
               }
             }}></WebView>
+        ) : (
+          <SearchHistory onSelect={setSearchParams} />
         )}
         <View className="absolute w-full top-0">
           <NProgress

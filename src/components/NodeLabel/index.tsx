@@ -8,7 +8,7 @@ import { getNodes } from '@/utils/v2ex-client'
 function NodeLabel(props: {
   id?: number
   name?: string
-  style: TextStyle | TextStyle[]
+  style?: TextStyle | TextStyle[]
 }) {
   const nodesQuery = useQuery({
     queryKey: ['/api/nodes/all.json'],

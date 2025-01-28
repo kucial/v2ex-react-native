@@ -7,3 +7,9 @@ export type SearchParams = {
   sort?: string
   order?: string
 }
+
+export type SearcHistorySerivce = {
+  records: SearchParams[]
+  addRecord: (record: SearchParams) => void
+  clear: () => void
+}
