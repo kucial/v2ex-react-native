@@ -440,9 +440,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   )
   const getReplyFormCacheKey = useCallback(
     (context: ReplyContext) => {
+      if (settings.enableMultiMention) {
+        return `$app$/topic-${context.type}:${id}`
+      }
       return `$app$/topic-${context.type}:${id}/${context.target?.id || 'root'}`
     },
-    [id, replyContext],
+    [id, replyContext, settings],
   )
 
   const handleThankToReply = useCallback(

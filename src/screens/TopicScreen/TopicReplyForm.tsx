@@ -55,29 +55,42 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
     props.cacheKey,
     undefined,
     (cache) => {
+      const prefix = context.target
+        ? `@${context.target.member.username} #${context.target.num} `
+        : ''
       if (cache) {
+        if (prefix && !cache.content.includes(prefix)) {
+          return {
+            content: [cache.content, prefix].filter(Boolean).join('\n'),
+          }
+        }
+
         return cache
       }
       return {
-        content: context.target
-          ? `@${context.target.member.username} #${context.target.num} `
-          : '',
+        content: prefix,
       }
     },
   )
 
   const pickerRef = useRef<BottomSheetModal>()
   const inputSelection = useRef<TextSelection>()
-  const { handleSubmit, control, getValues, setValue } = useForm({
-    defaultValues: cache,
-  })
+  const { handleSubmit, control, getValues, setValue, watch } =
+    useForm<ReplyCache>({
+      defaultValues: cache,
+    })
 
   useEffect(() => {
-    return () => {
-      const values = getValues()
-      setCache(values, true)
-    }
-  }, [])
+    const subscription = watch((values) => {
+      setCache(
+        {
+          content: values.content || '',
+        },
+        true,
+      )
+    })
+    return () => subscription.unsubscribe()
+  }, [watch, setCache])
 
   useEffect(() => {
     inputRef.current?.focus()

@@ -24,4 +24,6 @@ export const DEFAULT_SETTINGS: AppSettings = {
 
   searchProvider: 'google',
   historyRecordLimit: 500,
+
+  enableMultiMention: true,
 }

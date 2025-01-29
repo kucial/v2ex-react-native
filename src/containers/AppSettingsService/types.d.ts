@@ -19,6 +19,9 @@ type AppSettings = {
   autoRefreshDuration: number // minutes
   refreshHaptics?: boolean
 
+  // reply form.
+  enableMultiMention?: boolean
+
   maxContainerWidth: number
   googleSigninEnabled?: boolean
   payLayoutEnabled?: boolean

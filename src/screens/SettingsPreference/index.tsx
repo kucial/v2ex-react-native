@@ -446,6 +446,37 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 </View>
               </View>
             </Pressable>
+            <View
+              sentry-label="AutoRefrehLineItem"
+              className={classNames('pl-4')}
+              style={styles.layer1}>
+              <View
+                className={classNames(
+                  'min-h-[52px] flex flex-row items-center',
+                )}>
+                <View className="flex-1 flex flex-row items-center">
+                  <Text style={[styles.text, styles.text_base]}>
+                    启用多用户回复
+                  </Text>
+                  <View className="ml-1 mt-1">
+                    <Text style={[styles.text_desc, styles.text_xs]}>
+                      一次回复多个用户
+                    </Text>
+                  </View>
+                </View>
+                <View className="mr-2 px-2">
+                  <MySwitch
+                    value={state.enableMultiMention}
+                    onValueChange={(val) =>
+                      setState((prev) => ({
+                        ...prev,
+                        enableMultiMention: val,
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+            </View>
           </GroupWapper>
 
           <SectionHeader title="布局" desc="修改此项时会重新启动应用" />
