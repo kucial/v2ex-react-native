@@ -1,6 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Keyboard, Pressable, Text, TextInput, View } from 'react-native'
+import {
+  InteractionManager,
+  Keyboard,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
 import { Platform } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/outline'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
@@ -42,7 +49,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
   const [imagePickerOpened, showImagePicker] = useState(false)
 
   const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
-  // Use SWR as cache.
+  const inputRef = useRef<TextInput>(null)
 
   const [cache, setCache] = useCachedState<ReplyCache>(
     props.cacheKey,
@@ -72,6 +79,10 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
     }
   }, [])
 
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
   const iconColor = theme.colors.text
 
   return (
@@ -94,14 +105,14 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                   },
               ]}>
               <Input
-                autoFocus
+                ref={inputRef}
                 style={[
                   {
                     width: '100%',
                     height: Platform.OS === 'android' ? 200 : '100%',
                     borderRadius: 8,
                     paddingHorizontal: 8,
-                    paddingVertical: Platform.OS === 'android' ? 8 : 1,
+                    paddingVertical: Platform.OS === 'android' ? 8 : 4,
                     color: theme.colors.text,
                     verticalAlign:
                       Platform.OS === 'android' ? 'top' : undefined,
