@@ -195,6 +195,33 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     return items
   }, [repliesQuery, myReplies])
 
+  // cleanup replies.
+  useEffect(() => {
+    if (myReplies.length && repliesQuery.data) {
+      for (let i = 0; i < myReplies.length; i += 1) {
+        let loaded = false
+        const myReply = myReplies[i]
+        const page = Math.ceil(myReply.num / 100)
+        const page_i = myReply.num % 100
+        if (
+          repliesQuery.data.pages[page - 1] &&
+          repliesQuery.data.pages[page - 1].data.length > page_i
+        ) {
+          loaded = true
+        }
+        if (loaded) {
+          setMyReplies((prev) => {
+            const index = prev.findIndex((item) => item.id == myReply.id)
+            if (index > -1) {
+              return [...prev.slice(0, index), ...prev.slice(index + 1)]
+            }
+            return prev
+          })
+        }
+      }
+    }
+  }, [repliesQuery.data?.pages, myReplies])
+
   const handleToggleBlock = composeAuthedNavigation(
     useCallback(() => {
       const indicator = alert.show({
@@ -592,7 +619,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           />
         )
       },
-      keyExtractor(item, index) {
+      keyExtractor(item, index: number) {
         return item?.id || `index-${index}`
       },
     }
