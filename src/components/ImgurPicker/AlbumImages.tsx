@@ -60,7 +60,7 @@ export default function AlbumImages(props: {
       />
       <UploadButton
         onUploaded={imagesQuery.refetch}
-        tintColor={theme.colors.text}
+        tintColor={styles.btn_success__text.color}
       />
     </View>
   )

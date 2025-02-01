@@ -72,7 +72,7 @@ export default function ImagesGrid(props: ImagesGridProps) {
             </View>
             <View className="w-[80px]">
               <Pressable
-                className="h-[52px] min-w-[52px] rounded-lg flex flex-row items-center justify-center px-2 active:opacity-60"
+                className="h-[52px] min-w-[60px] rounded-lg flex flex-row items-center justify-center px-2 active:opacity-60"
                 onPress={() => {
                   setViewIndex(-1)
                   props.selected.length && context.submit()

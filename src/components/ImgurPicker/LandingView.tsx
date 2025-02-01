@@ -64,7 +64,9 @@ export default function Landing(props: LandingProps) {
           onToggleSelect={props.onToggleSelect}
         />
       )}
-      {tabIndex === 0 && <UploadButton tintColor={theme.colors.text} />}
+      {tabIndex === 0 && (
+        <UploadButton tintColor={styles.btn_success__text.color} />
+      )}
     </View>
   )
 }

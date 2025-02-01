@@ -42,7 +42,7 @@ export default function UploadButton(props) {
   return (
     <View className="absolute bottom-[56px] right-[16px]">
       <Pressable
-        className="h-[56px] w-[56px] flex-row items-center justify-center rounded-full bg-blue-300"
+        className="opacity-70 h-[56px] w-[56px] flex-row items-center justify-center rounded-full bg-blue-700 dark:bg-blue-300 active:opacity-50"
         onPress={async () => {
           const permissionRes =
             await ImagePicker.requestMediaLibraryPermissionsAsync()
