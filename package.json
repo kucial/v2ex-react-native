@@ -120,6 +120,7 @@
     "@types/jest": "^29.2.4",
     "@types/lodash": "^4.14.191",
     "@types/marked": "^4.0.8",
+    "@types/qs": "^6.9.18",
     "@types/react": "~18.2.79",
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.50.0",

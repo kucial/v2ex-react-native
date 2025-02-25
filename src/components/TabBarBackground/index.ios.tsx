@@ -8,7 +8,6 @@ import { useTheme } from '@/containers/ThemeService'
 
 export default function BlurTabBarBackground() {
   const { theme } = useTheme()
-  console.log(theme.colors.primary)
   return (
     <BlurView
       // System chrome material automatically adapts to the system's theme

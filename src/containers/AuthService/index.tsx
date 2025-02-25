@@ -53,6 +53,8 @@ export const AuthServiceContext = createContext<AuthService>({
     return function () {}
   },
 } as AuthService)
+
+let isFetchingUser = false
 export default function AuthServiceProvider(props: { children: ReactElement }) {
   const navigation =
     useNavigation<NativeStackNavigationProp<AppStackParamList>>()
@@ -79,7 +81,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
         status: 'loading',
       }))
       try {
-        const res = await v2exClient.getCurrentUser()
+        const res = await v2exClient.getCurrentUser(true)
         setState(() => ({
           user: res.data,
           meta: res.meta,
@@ -199,6 +201,12 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     }
   }, [])
 
+  useEffect(() => {
+    service.fetchCurrentUser().then((res) => {
+      console.log(res)
+    })
+  }, [])
+
   // 已登陆用户的初始化行为
   useEffect(() => {
     if (service.user) {
@@ -241,6 +249,30 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
       subscription.remove()
     }
   }, [service.user, dailySignIn])
+
+  // 处理登录状态不匹配的问题
+  useEffect(() => {
+    const unsubscribe = v2exClient.subscribe(
+      'current_user',
+      async (username) => {
+        if (isFetchingUser) {
+          return
+        }
+        if (service?.user?.username !== username) {
+          service
+            .fetchCurrentUser()
+            .then(() => {
+              isFetchingUser = false
+            })
+            .catch(() => {
+              isFetchingUser = false
+            })
+        }
+      },
+    )
+
+    return unsubscribe
+  }, [service.user])
 
   // 处理未读消息更新
   useEffect(() => {
@@ -285,8 +317,13 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     const unsubscribe = v2exClient.subscribe(
       '2fa_enabled',
       async (error: TFA_Error) => {
-        const result = await prompt2faInput(error)
-        if (result?.action === '2fa_verified') {
+        console.log('should handle 2fa_enabled error')
+        const result = await prompt2faInput({
+          state: '2fa',
+          once: error.data.once,
+          message: error.message,
+        })
+        if (result?.state === '2fa_verified') {
           alert.show({ type: 'success', message: '2FA 验证成功' })
         }
       },

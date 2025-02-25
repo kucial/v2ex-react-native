@@ -41,7 +41,6 @@ export function getThemeService(
     console.log('construct theme', name, scheme, usePureDark)
 
     const theme = (themes[name] || themes.r2v)[subkey]
-    console.log(key, theme)
 
     const contrastTextColor = theme.dark
       ? theme.colors.black

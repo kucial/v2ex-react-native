@@ -207,7 +207,7 @@ export default function ThemePreview(props: {
           </GroupWapper>
           <SectionHeader title="表单" />
           <GroupWapper className="mx-2" innerStyle={styles.overlay}>
-            <View className="px-2 py-4">
+            <View className="px-2 py-4 gap-4">
               <Button
                 size="md"
                 variant="primary"
@@ -215,8 +215,16 @@ export default function ThemePreview(props: {
                 onPress={(e) => {
                   sheetRef.current?.present()
                 }}></Button>
-            </View>
-            <View className="px-2 pb-4">
+
+              <Button
+                size="md"
+                variant="default"
+                label="About v2ex"
+                onPress={(e) => {
+                  props.navigation.push('browser', {
+                    url: 'https://v2ex.com/about',
+                  })
+                }}></Button>
               <Button
                 size="md"
                 variant="secondary"

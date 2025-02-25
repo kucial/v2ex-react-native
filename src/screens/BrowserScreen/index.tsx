@@ -54,6 +54,7 @@ export default function BrowserScreen({
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
         decelerationRate="normal"
+        sharedCookiesEnabled={true}
         onNavigationStateChange={(navState) => {
           setHistoryState({
             canGoBack: navState.canGoBack,

@@ -16,6 +16,9 @@ export const checkAuthStatus = `
   if (location.pathname === '/2fa') {
     window.ReactNativeWebView.postMessage(JSON.stringify({
       type: '2fa',
+      payload: {
+        once: document.querySelector('input[name=once]').getAttribute('value')
+      }
     }));
     return;
   }
@@ -35,7 +38,7 @@ export const checkAuthStatus = `
   if (username) {
     window.ReactNativeWebView.postMessage(JSON.stringify({
       type: 'login_success',
-      payload: { username }
+      payload: { username, cookies: document.cookie }
     }));
   } else if (location.pathname === '/') {
     window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -51,5 +54,8 @@ export const checkAuthStatus = `
       payload: problems
     }));
   }
-}())
+}());
 `
+
+export const syncCookies = `window.ReactNativeWebView.postMessage("Cookie: " + document.cookie);
+  true;`

@@ -202,7 +202,12 @@ instance.interceptors.response.use(
       }
     }
 
-    if (responseURL === BASE_URL + '/2fa' && res.config.url !== '/2fa') {
+    if (
+      responseURL === BASE_URL + '/2fa' &&
+      res.config.url !== '/2fa' &&
+      res.config.url !== '/signin' &&
+      res.config.url !== '/about?init=1'
+    ) {
       const once = $('form[action="/2fa"] input[name=once]').attr('value')
       const error = new ApiError({
         code: '2FA_ENABLED',
@@ -1719,15 +1724,16 @@ export async function getMyCollectedNodes(): Promise<
     data,
   }
 }
-export async function getCurrentUser(): Promise<
-  EntityResponse<MemberDetail, { unread_count: number }>
-> {
+export async function getCurrentUser(
+  afterLogin = false,
+): Promise<EntityResponse<MemberDetail, { unread_count: number }>> {
   const res = await request({
-    url: '/about',
+    url: afterLogin ? '/about?init=1' : '/about',
   })
   const $ = res.$ || cheerioDoc(res.data)
   const username = $('#menu-entry img.avatar').attr('alt')
   if (!username) {
+    console.log('NOT Authed...')
     return {
       data: null,
       meta: null,
@@ -1886,14 +1892,15 @@ export async function loginWithPassword(
   const responseURL = res.request?.responseURL || ''
 
   if (/\/2fa/.test(responseURL)) {
-    const once = $('form[action="/2fa"] input[name=once]').attr('value')
-    throw new ApiError({
-      code: '2FA_ENABLED',
-      message: '你的 V2EX 账号已经开启了两步验证，请输入验证码继续',
+    return {
+      success: true,
+      message: '登录成功，请完成两步验证',
       data: {
-        once,
+        state: '2fa',
+        once: $('form[action="/2fa"] input[name=once]').attr('value'),
+        message: '登录成功，请完成两步验证',
       },
-    })
+    }
   } else if (/\/signin/.test(responseURL)) {
     const problems = $('.problem ul li')
       .map(function (_, el) {

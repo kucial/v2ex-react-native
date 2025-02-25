@@ -3,11 +3,11 @@ import { Alert } from 'react-native'
 import { logout, verify2faCode } from '@/utils/v2ex-client'
 import ApiError from '@/utils/v2ex-client/ApiError'
 
-async function promptInput(context) {
+async function promptInput(context: { message: string; once: string }) {
   return new Promise((resolve) => {
     Alert.prompt(
       context.message,
-      context.data.problems?.join(''),
+      '',
       [
         {
           text: '退出登录',
@@ -15,7 +15,7 @@ async function promptInput(context) {
             try {
               await logout()
               resolve({
-                action: 'logout',
+                state: 'logout',
               })
             } catch (err) {
               resolve(err)
@@ -27,12 +27,16 @@ async function promptInput(context) {
           text: '提交',
           onPress: async (value) => {
             try {
-              await verify2faCode({ code: value, once: context.data.once })
+              await verify2faCode({ code: value, once: context.once })
               resolve({
-                action: '2fa_verified',
+                state: '2fa_verified',
               })
             } catch (err) {
-              resolve(err)
+              resolve({
+                state: '2fa',
+                once: (err as ApiError).data.once,
+                message: err.message,
+              })
             }
           },
         },
@@ -42,26 +46,29 @@ async function promptInput(context) {
   })
 }
 
-const shouldPrompt = (info: any) => {
-  if (
-    info instanceof ApiError &&
-    (info.code === '2FA_ENABLED' || info.code === '2FA_VERIFY_FAILED')
-  ) {
+type TFAState = '2fa' | '2fa_verfied' | 'logout' | '2fa_prompting'
+
+const shouldPrompt = (info: { state: TFAState }) => {
+  if (info.state == '2fa') {
     return true
   }
 }
 
-let open = false
+let prompting = false
 let promptContext = null
 
-export default async function prompt2faInput(
-  initContext: ApiError<{ problems?: string[]; once: string }>,
-): Promise<{ action: 'logout' } | { action: '2fa_verified' } | null> {
-  if (open) {
-    return null
+export default async function prompt2faInput(initContext: {
+  state: '2fa'
+  once: string
+  message: string
+}): Promise<
+  { state: 'logout' } | { state: '2fa_verified' } | { state: '2fa_prompting' }
+> {
+  if (prompting) {
+    return { state: '2fa_prompting' }
   }
 
-  open = true
+  prompting = true
   let result = null
   promptContext = initContext
   while (true) {
@@ -73,6 +80,6 @@ export default async function prompt2faInput(
     }
   }
   promptContext = null
-  open = false
+  prompting = false
   return result
 }

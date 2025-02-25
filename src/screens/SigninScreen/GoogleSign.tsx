@@ -1,6 +1,7 @@
 import { memo, useCallback, useRef, useState } from 'react'
-import { Alert, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import WebView from 'react-native-webview'
+import CookieManager from '@react-native-cookies/cookies'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useQuery } from '@tanstack/react-query'
 
@@ -11,11 +12,11 @@ import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchOnce } from '@/utils/v2ex-client'
 
-import { checkAuthStatus, get2FASubmitCode } from './scripts'
+import { checkAuthStatus, syncCookies } from './scripts'
 
 type GoogleSigninProps = NativeStackScreenProps<AppStackParamList, 'signin'> & {
   onSelectPasswordSignin(): void
-  onSuccess(): void
+  onSuccess(state?: { code: '2fa'; once: string; message: string }): void
 }
 
 function GoogleSign(props: GoogleSigninProps) {
@@ -31,25 +32,22 @@ function GoogleSign(props: GoogleSigninProps) {
     staleTime: 0,
     refetchOnMount: true,
   })
-  const scriptsToInject = useRef([])
   const alert = useAlertService()
 
   const handleWebviewMessage = useCallback((event) => {
     if (event.nativeEvent.data) {
       const data = JSON.parse(event.nativeEvent.data)
+
       switch (data.type) {
         case '2fa':
-          Alert.prompt(
-            '你的账号已开启两步验证，请输入验证码',
-            undefined,
-            async (val) => {
-              webviewRef.current.injectJavaScript(get2FASubmitCode(val))
-              scriptsToInject.current.unshift(checkAuthStatus)
-            },
-          )
+          // wait for finished in webview.
           break
         case 'login_success':
-          props.onSuccess()
+          console.log(data.payload.cookies)
+          CookieManager.get('https://www.v2ex.com', true).then((cookies) => {
+            console.log(cookies)
+            props.onSuccess()
+          })
           break
         case 'login_error':
           setLoading(false)
@@ -100,12 +98,6 @@ function GoogleSign(props: GoogleSigninProps) {
             source={{
               uri: `https://www.v2ex.com/auth/google?once=${onceQuery.data.data}`,
               // uri: Platform.OS == 'android' ?  `https://www.v2ex.com/signin` : `https://www.v2ex.com/auth/google?once=${onceQuery.data.data}`,
-            }}
-            onLoad={() => {
-              const toInject = scriptsToInject.current.shift()
-              if (toInject) {
-                webviewRef.current.injectJavaScript(toInject)
-              }
             }}
             onNavigationStateChange={(navState) => {
               if (navState.loading) {

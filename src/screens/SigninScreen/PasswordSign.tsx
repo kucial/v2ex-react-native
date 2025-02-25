@@ -20,7 +20,6 @@ import Button from '@/components/Button'
 import GoogleIcon from '@/components/GoogleIcon'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import prompt2faInput from '@/containers/AuthService/prompt2FaInput'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchLoginForm, loginWithPassword } from '@/utils/v2ex-client'
 
@@ -29,7 +28,7 @@ type PasswordSigninProps = NativeStackScreenProps<
   'signin'
 > & {
   onSelectGoogleSignin(): void
-  onSuccess(): void
+  onSuccess(state?: { code: '2fa'; once: string; message: string }): void
 }
 
 function PasswordSignin(props: PasswordSigninProps) {
@@ -43,18 +42,6 @@ function PasswordSignin(props: PasswordSigninProps) {
       return data
     },
   })
-
-  const handle2Fa = useCallback(
-    async (context) => {
-      const result = await prompt2faInput(context)
-      if (result?.action === '2fa_verified') {
-        props.onSuccess()
-      } else if (result?.action === 'logout') {
-        navigation.goBack()
-      }
-    },
-    [props.onSuccess],
-  )
 
   const {
     data: { googleSigninEnabled },
@@ -80,20 +67,17 @@ function PasswordSignin(props: PasswordSigninProps) {
       try {
         setIsSubmitting(true)
         setError(null)
-        await loginWithPassword(
+        const res = await loginWithPassword(
           {
             ...data,
             once: formQuery.data.once,
           },
           formQuery.data.hashMap,
         )
-        props.onSuccess()
+        props.onSuccess(res.data)
       } catch (err) {
         console.log(err.code, err)
         switch (err.code) {
-          case '2FA_ENABLED':
-            handle2Fa(err)
-            break
           case 'LOGIN_ERROR':
             setError(err.data)
             formQuery.refetch()

@@ -217,7 +217,7 @@ type CollectionResponse<T> = {
   fetchedAt?: number
 }
 
-type StatusResponse<T = null, M = null> = {
+type StatusResponse<T = any, M = null> = {
   success: boolean
   message: string
   data?: T

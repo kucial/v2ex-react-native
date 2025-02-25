@@ -20,7 +20,7 @@ export const clearCache = async () => {
 
 export const reset = async () => {
   storage.clearAll()
-  await CookieManager.clearAll()
+  await CookieManager.clearAll(true)
   await new Promise((resolve) => Networking.clearCookies(resolve))
   RNRestart.Restart()
 }
