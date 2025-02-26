@@ -220,7 +220,7 @@ export default function HomeTabs(props: ScreenProps) {
         icon = <HomeModernIcon size={18} color={tintColor} />
       }
       return (
-        <MaxWidthWrapper className="px-2">
+        <MaxWidthWrapper key={`${item.type}-${item.name}`} className="px-2">
           <LineItem
             title={item.label}
             icon={icon}
@@ -271,6 +271,7 @@ export default function HomeTabs(props: ScreenProps) {
       <DraggableFlatList
         containerStyle={{ flex: 1 }}
         activationDistance={10}
+        initialNumToRender={20}
         ListHeaderComponent={
           <MaxWidthWrapper className="px-2">
             <SectionHeader title="已启用" desc="长按拖放可调整顺序" />

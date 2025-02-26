@@ -66,6 +66,7 @@ type ThemeColors = Theme['colors'] & {
   bg_layer1: string
   bg_layer2: string
   bg_layer3: string
+  bg_grouped_secondary: string
   shadow: string
 
   bg_danger_mask: string
@@ -123,6 +124,7 @@ type ThemeStyles = {
   layer2: ThemeBackgroundStyle
   layer3: ThemeBackgroundStyle
   underlay: ThemeBackgroundStyle
+  grouped_secondary: ThemeBackgroundStyle
   overlay: ViewStyle
   highlight: ViewStyle
   border: ViewStyle
@@ -151,6 +153,7 @@ type MyThemeDefinition = {
   name: string
   light: MyTheme
   dark: MyTheme
+  pure_dark: MyTheme
 }
 
 type ThemeService = {

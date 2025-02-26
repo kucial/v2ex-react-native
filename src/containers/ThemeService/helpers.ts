@@ -6,7 +6,11 @@ import {
   ViewStyle,
 } from 'react-native'
 
-import { getActiveFontScale, getActiveTheme } from '../AppSettingsService'
+import {
+  getActiveFontScale,
+  getActiveTheme,
+  getUsePureDarkTheme,
+} from '../AppSettingsService'
 import * as themes from './themes'
 import { SemanticType, ThemeService, ThemeStyles } from './types'
 
@@ -16,15 +20,29 @@ export function getThemeService(
   themeName?: string,
   colorScheme?: ColorSchemeName,
   fontScale?: number,
+  pureDarkTheme?: boolean,
 ): ThemeService {
   const name = themeName || getActiveTheme()
   const scale = fontScale || getActiveFontScale()
   const scheme = colorScheme || Appearance.getColorScheme()
+  const usePureDark = pureDarkTheme ?? getUsePureDarkTheme()
 
-  const key = `${name}-${scheme}-${scale}`
+  let subkey
+
+  if (scheme == 'dark' && usePureDark) {
+    subkey = 'pure_dark'
+  } else {
+    subkey = scheme
+  }
+
+  const key = `${name}-${subkey}-${scale}`
+
   if (!themeServiceMap[key]) {
-    console.log('construct theme', name, scheme)
-    const theme = (themes[name] || themes.r2v)[scheme]
+    console.log('construct theme', name, scheme, usePureDark)
+
+    const theme = (themes[name] || themes.r2v)[subkey]
+    console.log(key, theme)
+
     const contrastTextColor = theme.dark
       ? theme.colors.black
       : theme.colors.white
@@ -123,6 +141,9 @@ export function getThemeService(
       },
       overlay: {
         backgroundColor: theme.colors.bg_overlay,
+      },
+      grouped_secondary: {
+        backgroundColor: theme.colors.bg_grouped_secondary,
       },
       underlay: {
         backgroundColor: theme.colors.background,

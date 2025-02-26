@@ -21,6 +21,7 @@ import GroupWapper from '@/components/GroupWrapper'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
+import MySwitch from '@/components/MySwitch'
 import SectionHeader from '@/components/SectionHeader'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAlertService } from '@/containers/AlertService'
@@ -54,6 +55,8 @@ export default function ThemePreview(props: {
   setFontScale(scale: number): void
   colorScheme: 'dark' | 'light'
   setColorScheme(scheme: 'dark' | 'light'): void
+  pureDarkTheme: boolean
+  setPureDarkTheme(val: boolean): void
 }) {
   const { width } = useWindowDimensions()
   const CONTAINER_WIDTH = Math.min(width, 600)
@@ -112,6 +115,22 @@ export default function ThemePreview(props: {
                 }}
                 appearance={props.colorScheme}
               />
+            </View>
+          </View>
+          <View className={classNames('pl-3')}>
+            <View
+              className={classNames('min-h-[44px] flex flex-row items-center')}>
+              <View className="flex-1">
+                <Text style={[styles.text, styles.text_base]}>
+                  纯黑暗夜主题
+                </Text>
+              </View>
+              <View className="mr-2 px-2">
+                <MySwitch
+                  value={props.pureDarkTheme}
+                  onValueChange={(val) => props.setPureDarkTheme(val)}
+                />
+              </View>
             </View>
           </View>
 

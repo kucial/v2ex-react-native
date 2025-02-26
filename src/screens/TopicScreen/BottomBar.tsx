@@ -1,11 +1,19 @@
 import { useCallback, useRef } from 'react'
-import { Pressable, SafeAreaView, Text, View } from 'react-native'
+import {
+  Platform,
+  Pressable,
+  SafeAreaView,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { ShareIcon } from 'react-native-heroicons/outline'
 import LottieView from 'lottie-react-native'
 
 import HeartIcon from '@/components/HeartIcon'
 import NumberIcon from '@/components/NumberIcon'
 import StarIcon from '@/components/StarIcon'
+import TabBarBackground from '@/components/TabBarBackground'
 import ToBottomIcon from '@/components/ToBottomIcon'
 import { useTheme } from '@/containers/ThemeService'
 
@@ -14,6 +22,7 @@ import { BarProps } from './types'
 
 export default function BottomBar(props: BarProps) {
   const { styles, theme } = useTheme()
+  const { width } = useWindowDimensions()
 
   const iconColor = theme.colors.text_meta
   const heartIconRef = useRef<LottieView>(null)
@@ -37,7 +46,15 @@ export default function BottomBar(props: BarProps) {
   }, [props.onToggleCollect, props.collected])
 
   return (
-    <SafeAreaView style={[styles.overlay, styles.border_t_light]}>
+    <SafeAreaView
+      style={[
+        Platform.select({
+          android: styles.overlay,
+          ios: { position: 'absolute', bottom: 0, width },
+        }),
+        styles.border_t_light,
+      ]}>
+      <TabBarBackground />
       <View className="h-[48px] flex flex-row items-center pl-3 pr-1">
         <View className="flex-1 mr-2">
           <Pressable

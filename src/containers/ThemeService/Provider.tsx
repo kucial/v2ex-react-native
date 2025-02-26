@@ -12,21 +12,27 @@ import { useColorScheme } from './hooks'
 export const ThemeProvider = (props: {
   theme?: string
   fontScale?: number
+  pureDarkTheme?: boolean
   colorScheme?: 'light' | 'dark'
   children: ReactNode
 }) => {
   const { colorScheme } = useColorScheme()
   const {
-    data: { theme: themeName, fontScale: defaultFontScale },
+    data: {
+      theme: themeName,
+      fontScale: defaultFontScale,
+      pureDarkTheme: defaultPureDarkTheme,
+    },
   } = useAppSettings()
 
   const activeTheme = props.theme ?? themeName
   const activeScheme = props.colorScheme || colorScheme
   const fontScale = props.fontScale ?? defaultFontScale
+  const pureDarkTheme = props.pureDarkTheme ?? defaultPureDarkTheme
 
   const service = useMemo(
-    () => getThemeService(activeTheme, activeScheme, fontScale),
-    [activeScheme, activeTheme, fontScale],
+    () => getThemeService(activeTheme, activeScheme, fontScale, pureDarkTheme),
+    [activeScheme, activeTheme, fontScale, pureDarkTheme],
   )
 
   useEffect(() => {

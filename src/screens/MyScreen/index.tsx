@@ -85,7 +85,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
     header = (
       <Pressable
         className="flex flex-row py-3 px-4 active:opacity-60"
-        style={styles.layer1}
+        style={styles.grouped_secondary}
         onPress={() => {
           navigation.push('profile')
         }}>
@@ -128,7 +128,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
     header = (
       <Pressable
         className="flex flex-row py-3 px-4 items-center active:opacity-60"
-        style={styles.layer1}
+        style={styles.grouped_secondary}
         onPress={() => {
           goToSigninSreen()
         }}>
@@ -144,7 +144,9 @@ export default function MyScreen({ navigation }: ScreenProps) {
     )
   } else {
     header = (
-      <View className="flex flex-row py-3 px-4" style={styles.layer1}>
+      <View
+        className="flex flex-row py-3 px-4"
+        style={styles.grouped_secondary}>
         <Box className="w-[40px] h-[40px] mr-3" />
         <View className="flex-1">
           <InlineText
@@ -170,6 +172,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
           <View className="w-1/2 px-1 my-2">
             <GroupWapper>
               <LineItem
+                style={styles.grouped_secondary}
                 title="创建的主题"
                 isLast
                 icon={<DocumentPlusIcon size={22} color={iconColor} />}
@@ -181,6 +184,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
           <View className="w-1/2 px-1 my-2">
             <GroupWapper>
               <LineItem
+                style={styles.grouped_secondary}
                 title="收藏的主题"
                 isLast
                 icon={<StarIcon size={22} color={iconColor} />}
@@ -192,6 +196,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
           <View className="w-1/2 px-1 my-2">
             <GroupWapper>
               <LineItem
+                style={styles.grouped_secondary}
                 title="回复的主题"
                 isLast
                 icon={<ReplyIcon size={22} color={iconColor} />}
@@ -203,6 +208,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
           <View className="w-1/2 px-1 my-2">
             <GroupWapper>
               <LineItem
+                style={styles.grouped_secondary}
                 title="浏览的主题"
                 isLast
                 icon={<ClockIcon size={22} color={iconColor} />}
@@ -217,6 +223,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
 
         <LineItemGroup className="mx-2 my-2">
           <LineItem
+            style={styles.grouped_secondary}
             title="首页 Tab 设置"
             icon={<HomeIcon size={22} color={iconColor} />}
             onPress={() => {
@@ -224,6 +231,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
             }}
           />
           <LineItem
+            style={styles.grouped_secondary}
             title="Imgur 图床"
             onPress={() => {
               navigation.push('imgur-settings')
@@ -231,6 +239,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
             icon={<PhotoIcon size={22} color={iconColor} />}
           />
           <LineItem
+            style={styles.grouped_secondary}
             title="主题样式"
             icon={<PaintBrushIcon size={22} color={iconColor} />}
             onPress={() => {
@@ -238,6 +247,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
             }}
           />
           <LineItem
+            style={styles.grouped_secondary}
             title="功能设置"
             icon={<Cog6ToothIcon size={22} color={iconColor} />}
             onPress={() => {
@@ -249,6 +259,7 @@ export default function MyScreen({ navigation }: ScreenProps) {
 
         <LineItemGroup className="mx-2 my-2">
           <LineItem
+            style={styles.grouped_secondary}
             onPress={() => {
               navigation.push('about')
             }}

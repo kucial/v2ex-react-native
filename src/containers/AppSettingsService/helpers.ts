@@ -11,3 +11,7 @@ export const getActiveFontScale = () => {
   const settings = getJSON(CACHE_KEY)
   return settings?.fontScale || DEFAULT_SETTINGS.fontScale
 }
+export const getUsePureDarkTheme = () => {
+  const settings = getJSON(CACHE_KEY)
+  return settings?.pureDarkTheme || DEFAULT_SETTINGS.pureDarkTheme
+}

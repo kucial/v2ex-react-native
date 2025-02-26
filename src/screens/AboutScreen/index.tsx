@@ -50,7 +50,7 @@ export default function AboutScreen(props) {
           <GroupWapper>
             <Pressable
               className="pt-6 active:opacity-80"
-              style={styles.layer1}
+              style={styles.grouped_secondary}
               onPress={() => {
                 setCount((prev) => prev + 1)
               }}>
@@ -88,6 +88,7 @@ export default function AboutScreen(props) {
             </Pressable>
 
             <LineItem
+              style={styles.grouped_secondary}
               onPress={async () => {
                 Linking.openURL('https://github.com/kucial/v2ex-react-native')
               }}
@@ -97,6 +98,7 @@ export default function AboutScreen(props) {
             {Platform.OS == 'ios' && IOS_APP_ID && (
               <>
                 <LineItem
+                  style={styles.grouped_secondary}
                   onPress={async () => {
                     try {
                       await Share.open({
@@ -112,6 +114,7 @@ export default function AboutScreen(props) {
                   title="分享"
                 />
                 <LineItem
+                  style={styles.grouped_secondary}
                   onPress={() => {
                     Linking.openURL(
                       `itms-apps://apps.apple.com/app/id${IOS_APP_ID}?action=write-review`,
@@ -124,6 +127,7 @@ export default function AboutScreen(props) {
             )}
 
             <LineItem
+              style={styles.grouped_secondary}
               onPress={async () => {
                 try {
                   const params = {
@@ -155,7 +159,7 @@ export default function AboutScreen(props) {
                     'h-[50px] rounded-md flex items-center justify-center mt-4',
                     'active:opacity-60',
                   )}
-                  style={[styles.layer1]}
+                  style={[styles.grouped_secondary]}
                   onPress={clearCache}>
                   <Text style={styles.text}>清除缓存</Text>
                 </Pressable>
@@ -168,7 +172,7 @@ export default function AboutScreen(props) {
                     'h-[50px] rounded-md flex items-center justify-center mt-4',
                     'active:opacity-60',
                   )}
-                  style={[styles.layer1]}
+                  style={[styles.grouped_secondary]}
                   onPress={reset}>
                   <Text style={styles.text_danger}>重置</Text>
                 </Pressable>

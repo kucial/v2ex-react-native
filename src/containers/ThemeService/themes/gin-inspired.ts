@@ -77,6 +77,7 @@ const createTheme = (info: AccentInfo): MyThemeDefinition => {
         bg_layer3: Color('#eaeaea')
           .mix(Color(accent_light).alpha(0.5), 0.1 * light_mix_alpha)
           .toString(),
+        bg_grouped_secondary: '#FFFFFF',
 
         bg_danger_mask: Color('#b91c1c')
           .alpha(0.04 * light_mix_alpha)
@@ -168,6 +169,9 @@ const createTheme = (info: AccentInfo): MyThemeDefinition => {
         bg_layer3: Color('#333333')
           .mix(Color(accent_dark).alpha(0.9), 0.05 * dark_mix_alpha)
           .toString(),
+        bg_grouped_secondary: Color('#171717')
+          .mix(Color(accent_dark), 0.01 * dark_mix_alpha)
+          .toString(),
 
         bg_danger_mask: Color('#e11d48')
           .alpha(0.04 * dark_mix_alpha)
@@ -191,6 +195,93 @@ const createTheme = (info: AccentInfo): MyThemeDefinition => {
         icon_markdown_bg: '#a7f3d0', // emerald[200]
 
         tag_bg: Color('#404040')
+          .mix(Color(accent_dark), 0.1 * dark_mix_alpha)
+          .toString(), // neutral[600]
+        overlay_input_bg: Color('#171717')
+          .mix(Color(accent_dark).alpha(0.9), 0.03 * dark_mix_alpha)
+          .toString(),
+        input_bg: Color('#131313')
+          .mix(Color(accent_dark).alpha(0.9), 0.01 * dark_mix_alpha)
+          .toString(),
+        shadow: Color('#111111').mix(Color(accent_light), 0.1).toString(),
+      },
+    },
+    pure_dark: {
+      dark: true,
+      colors: {
+        primary: accent_dark,
+        background: '#000000',
+        card: '#000000', // alias bg_layer1
+        text: '#d4d4d4', // neutral[200]
+        border: Color('#525252')
+          .mix(Color(accent_dark), 0.1 * dark_mix_alpha)
+          .toString(),
+        notification: '#e11d48',
+
+        white: '#f5f5f5',
+        black: '#101010',
+
+        success: '#34d399', // colors.emerald[400]
+        danger: '#e11d48', // rose[600]
+        warning: '#eab308', // yellow[500]
+        info: '#06b6d4', // colors.cyan[500]
+        skeleton: Color('#d4d4d4')
+          .mix(Color(accent_dark), 0.05)
+          .alpha(0.05)
+          .toString(),
+
+        text_title: '#e5e5e5',
+        text_desc: '#a3a3a3', // netural[400]
+        text_meta: '#8a8a8a', // neutral[450]
+        text_placeholder: '#737373', // neutral[600]
+        text_link: accent_dark,
+
+        text_danger_inverse: '#f5f5f5',
+        text_primary_inverse: '#171717',
+        text_info_inverse: '#f5f5f5',
+        text_badge_inverse: '#000000',
+        text_tag_inverse: '#cccccc', // neutral[300]
+
+        border_light: Color('#383838')
+          .mix(Color(accent_dark), 0.05 * dark_mix_alpha)
+          .toString(), // neutral[700]
+
+        bg_overlay: Color('#101010')
+          .mix(Color(accent_dark), 0.01 * dark_mix_alpha)
+          .toString(),
+        bg_layer1: '#000000',
+        bg_layer2: Color('#101010')
+          .mix(Color(accent_dark).alpha(0.9), 0.05 * dark_mix_alpha)
+          .toString(),
+        bg_layer3: Color('#101010')
+          .mix(Color(accent_dark).alpha(0.9), 0.05 * dark_mix_alpha)
+          .toString(),
+        bg_grouped_secondary: Color('#1C1C1E')
+          .mix(Color(accent_dark), 0.01 * dark_mix_alpha)
+          .toString(),
+
+        bg_danger_mask: Color('#e11d48')
+          .alpha(0.04 * dark_mix_alpha)
+          .toString(), // rose[600]/8
+        bg_highlight_mask: Color(accent_dark)
+          .alpha(0.04 * dark_mix_alpha)
+          .toString(),
+
+        badge_bg: accent_dark, //sky[400]
+        badge_border: accent_dark, //sky[400]
+
+        bts_handle_bg: Color('#a3a3a3')
+          .mix(Color(accent_dark), 0.1 * dark_mix_alpha)
+          .toString(),
+        html_pre_bg: Color('#171717')
+          .mix(Color(accent_dark).alpha(0.9), 0.05 * dark_mix_alpha)
+          .toString(),
+
+        icon_collected_bg: '#fef08a', // yellow[200]
+        icon_liked_bg: '#fb7185', // rose[400]
+        icon_markdown_bg: '#a7f3d0', // emerald[200]
+
+        tag_bg: Color('#222222')
           .mix(Color(accent_dark), 0.1 * dark_mix_alpha)
           .toString(), // neutral[600]
         overlay_input_bg: Color('#171717')

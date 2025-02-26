@@ -43,6 +43,7 @@
     "expo-application": "~5.9.1",
     "expo-asset": "~10.0.10",
     "expo-barcode-scanner": "~13.0.1",
+    "expo-blur": "~13.0.3",
     "expo-build-properties": "~0.12.5",
     "expo-clipboard": "~6.0.3",
     "expo-constants": "~16.0.2",

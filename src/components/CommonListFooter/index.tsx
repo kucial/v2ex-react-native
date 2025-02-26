@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native'
+import { Platform, Pressable, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { UseInfiniteQueryResult } from '@tanstack/react-query'
 
@@ -27,7 +27,16 @@ export default function CommonListFooter(props: CommonListFooterProps) {
     <View
       sentry-label="ListFooter"
       className="min-h-[60px] flex flex-col items-center justify-center"
-      style={{ paddingBottom: (insets?.bottom || 4) + 12, paddingTop: 16 }}>
+      style={{
+        paddingBottom:
+          (insets?.bottom || 4) +
+          12 +
+          Platform.select({
+            ios: 62,
+            android: 0,
+          }),
+        paddingTop: 16,
+      }}>
       {isLoadingMore(listQuery) && (
         <View className="w-full flex flex-row items-center justify-center">
           <Loader />
