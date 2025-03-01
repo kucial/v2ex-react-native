@@ -54,7 +54,7 @@ export default function BottomBar(props: BarProps) {
         }),
         styles.border_t_light,
       ]}>
-      <TabBarBackground />
+      {Platform.OS == 'ios' && <TabBarBackground />}
       <View className="h-[48px] flex flex-row items-center pl-3 pr-1">
         <View className="flex-1 mr-2">
           <Pressable
