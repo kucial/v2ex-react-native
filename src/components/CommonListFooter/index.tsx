@@ -28,13 +28,7 @@ export default function CommonListFooter(props: CommonListFooterProps) {
       sentry-label="ListFooter"
       className="min-h-[60px] flex flex-col items-center justify-center"
       style={{
-        paddingBottom:
-          (insets?.bottom || 4) +
-          12 +
-          Platform.select({
-            ios: 62,
-            android: 0,
-          }),
+        paddingBottom: (insets?.bottom || 4) + 12,
         paddingTop: 16,
       }}>
       {isLoadingMore(listQuery) && (

@@ -1,14 +1,11 @@
-import { Platform } from 'react-native'
 import {
   HomeIcon,
   RectangleStackIcon,
   UserIcon,
 } from 'react-native-heroicons/outline'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import Color from 'color'
 
 import MainScreenHeader from '@/components/MainScreenHeader'
-import TabBarBackground from '@/components/TabBarBackground'
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 
@@ -27,15 +24,7 @@ function MainTab() {
       backBehavior="initialRoute"
       screenOptions={{
         tabBarInactiveTintColor: theme.colors.text_meta,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: padLayout.active
-          ? { display: 'none' }
-          : Platform.select({
-              ios: {
-                position: 'absolute',
-              },
-              android: styles.overlay,
-            }),
+        tabBarStyle: padLayout.active ? { display: 'none' } : styles.overlay,
       }}>
       <Tab.Screen
         name="nodes"
