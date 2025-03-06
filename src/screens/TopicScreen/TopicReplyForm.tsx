@@ -1,13 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import {
-  InteractionManager,
-  Keyboard,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
+import { Keyboard, Pressable, Text, TextInput, View } from 'react-native'
 import { Platform } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/outline'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'

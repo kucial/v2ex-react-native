@@ -1733,7 +1733,6 @@ export async function getCurrentUser(
   const $ = res.$ || cheerioDoc(res.data)
   const username = $('#menu-entry img.avatar').attr('alt')
   if (!username) {
-    console.log('NOT Authed...')
     return {
       data: null,
       meta: null,

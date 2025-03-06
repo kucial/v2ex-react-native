@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
-import prompt2faInput from '@/containers/AuthService/prompt2FaInput'
+import { use2FaModalPrompt } from '@/containers/AuthService/2fa'
 
 import GoogleSign from './GoogleSign'
 import PasswordSign from './PasswordSign'
@@ -20,31 +20,28 @@ export default function SigninScreen(props: SigninScreenProps) {
     user: currentUser,
     getNextAction,
   } = useAuthService()
+  const prompt2faModal = use2FaModalPrompt()
+  const extraState = useRef(null)
 
   const handleSuccess = useCallback(
     async (state?: { code: '2fa'; once: string; message: string }) => {
-      console.log('state', state)
-      if (state) {
-        const result = await prompt2faInput({
-          state: '2fa',
-          once: state.once,
-          message: state.message,
-        })
-        if (result.state == 'logout') {
-          return
-        }
-        if (result.state == '2fa_prompting') {
-          return
-        }
-      }
       await fetchCurrentUser(true)
       alert.show({ type: 'success', message: '登录成功' })
+      extraState.current = state
     },
     [],
   )
 
   useEffect(() => {
     if (currentUser) {
+      if (extraState.current) {
+        setTimeout(() => {
+          prompt2faModal({
+            once: extraState.current.once,
+            message: extraState.current.message,
+          })
+        }, 300)
+      }
       navigation.goBack()
       const nextAction = getNextAction()
       if (nextAction) {

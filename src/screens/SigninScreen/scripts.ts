@@ -17,7 +17,8 @@ export const checkAuthStatus = `
     window.ReactNativeWebView.postMessage(JSON.stringify({
       type: '2fa',
       payload: {
-        once: document.querySelector('input[name=once]').getAttribute('value')
+        once: document.querySelector('input[name=once]').getAttribute('value'),
+        message: '你的 V2EX 账号已经开启了两步验证，请输入验证码继续',
       }
     }));
     return;

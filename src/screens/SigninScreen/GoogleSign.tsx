@@ -40,12 +40,16 @@ function GoogleSign(props: GoogleSigninProps) {
 
       switch (data.type) {
         case '2fa':
-          // wait for finished in webview.
+          CookieManager.get('https://www.v2ex.com', true).then((cookies) => {
+            props.onSuccess({
+              code: '2fa',
+              once: data.payload.once,
+              message: data.payload.message,
+            })
+          })
           break
         case 'login_success':
-          console.log(data.payload.cookies)
           CookieManager.get('https://www.v2ex.com', true).then((cookies) => {
-            console.log(cookies)
             props.onSuccess()
           })
           break

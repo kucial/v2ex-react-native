@@ -21,7 +21,7 @@ import {
 } from '@/utils/v2ex-client/types'
 
 import { useAlertService } from '../AlertService'
-import prompt2faInput from './prompt2FaInput'
+import { TwoFAServiceProvider } from './2fa'
 import { AuthService, AuthState } from './types'
 
 const CACHE_KEY = '$app$/current-user'
@@ -313,28 +313,9 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     return unsubscribe
   }, [])
 
-  useEffect(() => {
-    const unsubscribe = v2exClient.subscribe(
-      '2fa_enabled',
-      async (error: TFA_Error) => {
-        console.log('should handle 2fa_enabled error')
-        const result = await prompt2faInput({
-          state: '2fa',
-          once: error.data.once,
-          message: error.message,
-        })
-        if (result?.state === '2fa_verified') {
-          alert.show({ type: 'success', message: '2FA 验证成功' })
-        }
-      },
-    )
-
-    return unsubscribe
-  }, [])
-
   return (
     <AuthServiceContext.Provider value={service}>
-      {props.children}
+      <TwoFAServiceProvider>{props.children}</TwoFAServiceProvider>
     </AuthServiceContext.Provider>
   )
 }
