@@ -1,11 +1,12 @@
 import { useCallback } from 'react'
 import { Text, View } from 'react-native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 
 import Button from '@/components/Button'
 import { Box } from '@/components/Skeleton/Elements'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { localTime } from '@/utils/time'
@@ -20,11 +21,11 @@ const AVATAR_SIZE = 48
 
 export default function SimpleMemberInfo(props: {
   username: string
-  navigation: NativeStackNavigationProp<AppStackParamList>
   currentUser: MemberDetail
 }) {
-  const { username, navigation, currentUser } = props
+  const { username, currentUser } = props
   const { styles } = useTheme()
+  const router = useRouter()
   const fetchMemberDetail = useCallback(async () => {
     const { data } = await getMemberDetail({ username })
     return data
@@ -83,20 +84,24 @@ export default function SimpleMemberInfo(props: {
   const { data } = memberQuery
 
   return (
-    <View className="px-2 pt-1 pb-3" style={styles.border_b_light}>
-      <View className="flex flex-row">
-        <View className="flex-1">
+    <View className='px-2 pt-1 pb-3' style={styles.border_b_light}>
+      <View className='flex flex-row'>
+        <View className='flex-1'>
           <Button
-            className="flex-row"
+            className='flex-row'
             onPress={() => {
-              navigation.navigate('member', {
-                username,
+              router.push({
+                pathname: '/member/[username]',
+                params: {
+                  username,
+                },
               })
-            }}>
-            <View className="mr-3">
+            }}
+          >
+            <View className='mr-3'>
               {data?.avatar_large ? (
                 <Image
-                  className="w-full h-full rounded-md"
+                  className='w-full h-full rounded-md'
                   style={[
                     {
                       width: AVATAR_SIZE,
@@ -108,7 +113,7 @@ export default function SimpleMemberInfo(props: {
                 />
               ) : (
                 <Box
-                  className="rounded-md"
+                  className='rounded-md'
                   style={[
                     {
                       width: AVATAR_SIZE,
@@ -119,14 +124,15 @@ export default function SimpleMemberInfo(props: {
                 />
               )}
             </View>
-            <View className="flex-1">
+            <View className='flex-1'>
               <Text
-                className="font-bold"
-                style={[styles.text_primary, styles.text_lg]}>
+                className='font-bold'
+                style={[styles.text_primary, styles.text_lg]}
+              >
                 {username}
               </Text>
               <Text style={[styles.text_meta, styles.text_sm]}>
-                <Text className="pl-2 mb-1">
+                <Text className='pl-2 mb-1'>
                   {data?.created
                     ? `${localTime(data.created * 1000)} 加入`
                     : ''}
@@ -135,14 +141,15 @@ export default function SimpleMemberInfo(props: {
             </View>
           </Button>
         </View>
-        <View className="flex flex-col justify-center">
-          <View className="flex flex-row">
+        <View className='flex flex-col justify-center'>
+          <View className='flex flex-row'>
             {data && currentUser && username !== currentUser.username && (
               <Button
-                size="sm"
-                variant="default"
+                size='sm'
+                variant='default'
                 onPress={handleBlockToggle}
-                label={data.meta?.blocked ? '已屏蔽' : '屏蔽'}></Button>
+                label={data.meta?.blocked ? '已屏蔽' : '屏蔽'}
+              ></Button>
             )}
           </View>
         </View>

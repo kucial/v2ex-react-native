@@ -167,11 +167,11 @@ declare module 'react-native' {
   namespace StyleSheet {
     type NamedStyles<T> = {
       [P in keyof T]:
-        | ViewStyle
-        | TextStyle
-        | ImageStyle
-        | ThemeTextStyle
-        | ThemeBackgroundStyle
+      | ViewStyle
+      | TextStyle
+      | ImageStyle
+      | ThemeTextStyle
+      | ThemeBackgroundStyle
     }
   }
 }

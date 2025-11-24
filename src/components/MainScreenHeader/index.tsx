@@ -7,8 +7,7 @@ import {
   MagnifyingGlassIcon,
 } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import type { BottomTabHeaderProps } from '@react-navigation/bottom-tabs'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useRouter } from 'expo-router'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
@@ -17,21 +16,18 @@ import { usePressBreadcrumb } from '@/utils/hooks'
 
 import Button from '../Button'
 
-export default function MainScreenHeader(
-  props: BottomTabHeaderProps &
-    NativeStackScreenProps<AppStackParamList> & {
-      hasBorder?: boolean
-    },
-) {
-  const { navigation, options } = props
+export default function MainScreenHeader(props) {
+  const { options } = props
   const { composeAuthedNavigation, meta } = useAuthService()
   const { theme, styles } = useTheme()
   const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()
+  const router = useRouter()
+
   const handleNewTopicPress = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        navigation.push('new-topic')
+        router.push('/new-topic')
       }, []),
     ),
     {
@@ -41,7 +37,7 @@ export default function MainScreenHeader(
   const handleNotificationPress = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        navigation.push('notification')
+        router.push('/me/notification')
       }, []),
     ),
     {
@@ -50,7 +46,7 @@ export default function MainScreenHeader(
   )
   const handleSearchButtonPress = usePressBreadcrumb(
     useCallback(() => {
-      navigation.push('search')
+      router.push('/search')
     }, []),
     {
       message: '[MainScreenHeader] `Search` button pressed',
@@ -58,7 +54,7 @@ export default function MainScreenHeader(
   )
   const handleViewedTopicButtonPress = usePressBreadcrumb(
     useCallback(() => {
-      navigation.push('viewed-topics')
+      router.push('/me/viewed-topics')
     }, []),
     {
       message: '[MainScreenHeader] `Viewed-Topic` button pressed',
@@ -70,25 +66,27 @@ export default function MainScreenHeader(
   const title = options.title
   return (
     <View
-      className="w-full flex-row items-center pl-4"
+      className='w-full flex-row items-center pl-4'
       style={[
         {
           height: padLayout.active
             ? insets.top
             : Platform.OS === 'android'
-            ? 48
-            : 48 + insets.top,
+              ? 48
+              : 48 + insets.top,
           paddingTop: Platform.OS === 'android' ? 0 : insets.top,
           backgroundColor: theme.colors.bg_layer1,
         },
         props.hasBorder && styles.border_b_light,
-      ]}>
+      ]}
+    >
       {!padLayout.active && (
-        <View className="flex-1">
-          <View className="">
+        <View className='flex-1'>
+          <View className=''>
             <Text
-              className="font-bold"
-              style={[styles.text_lg, styles.text_title]}>
+              className='font-bold'
+              style={[styles.text_lg, styles.text_title]}
+            >
               {title}
             </Text>
           </View>
@@ -96,24 +94,29 @@ export default function MainScreenHeader(
       )}
 
       {!padLayout.active && (
-        <View className="flex flex-row space-x-1 items-center justify-self-end pr-1">
+        <View className='flex flex-row space-x-1 items-center justify-self-end pr-1'>
           <Button
-            className="w-[44px] h-[44px] rounded-full"
-            variant="icon"
+            className='w-[44px] h-[44px] rounded-full'
+            variant='icon'
             radius={22}
-            onPress={handleNewTopicPress}>
+            // onPress={handleNewTopicPress}
+            onPress={() => {
+              router.push('/new-topic')
+            }}
+          >
             <DocumentPlusIcon size={24} color={iconColor} />
           </Button>
           <Button
-            className="w-[44px] h-[44px] rounded-full"
-            variant="icon"
+            className='w-[44px] h-[44px] rounded-full'
+            variant='icon'
             radius={22}
-            onPress={handleNotificationPress}>
-            <View className="relative w-[24px] h-[24px]">
+            onPress={handleNotificationPress}
+          >
+            <View className='relative w-[24px] h-[24px]'>
               <EnvelopeIcon size={24} color={iconColor} />
               {!!meta?.unread_count && (
-                <View className="absolute bg-neutral-700 top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-white border-solid">
-                  <Text className="text-white text-[10px]">
+                <View className='absolute bg-neutral-700 top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-white border-solid'>
+                  <Text className='text-white text-[10px]'>
                     {meta.unread_count}
                   </Text>
                 </View>
@@ -122,18 +125,20 @@ export default function MainScreenHeader(
           </Button>
 
           <Button
-            className="w-[44px] h-[44px] rounded-full"
-            variant="icon"
+            className='w-[44px] h-[44px] rounded-full'
+            variant='icon'
             radius={22}
-            onPress={handleSearchButtonPress}>
+            onPress={handleSearchButtonPress}
+          >
             <MagnifyingGlassIcon size={24} color={iconColor} />
           </Button>
 
           <Button
-            className="w-[44px] h-[44px] rounded-full"
-            variant="icon"
+            className='w-[44px] h-[44px] rounded-full'
+            variant='icon'
             radius={22}
-            onPress={handleViewedTopicButtonPress}>
+            onPress={handleViewedTopicButtonPress}
+          >
             <ClockIcon size={24} color={iconColor} />
           </Button>
         </View>

@@ -1,8 +1,7 @@
 import { Platform, Text, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+
 import * as Sentry from '@sentry/react-native'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
 import { Image } from 'expo-image'
 import * as WebBrowser from 'expo-web-browser'
 
@@ -11,18 +10,18 @@ import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
+import { useRouter } from 'expo-router'
 
 export default function TideTopicRow(props: XnaFeedRowProps) {
   const { data, showAvatar, isLast } = props
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
+  const router = useRouter()
   const { styles, theme } = useTheme()
 
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
         <View
-          className={classNames('flex flex-row items-center')}
+          className={cn('flex flex-row items-center')}
           style={!isLast && styles.border_b_light}>
           {showAvatar ? (
             <View className="px-2 py-2 self-start">
@@ -52,7 +51,7 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label="TideTopicRow"
-        className={classNames('flex flex-row items-center active:opacity-50')}
+        className={cn('flex flex-row items-center active:opacity-50')}
         style={!isLast && styles.border_b_light}
         onPress={() => {
           props.onView(url)
@@ -66,18 +65,24 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
               Sentry.captureException(err)
             })
           } else {
-            navigation.push('browser', {
-              url,
+            router.push({
+              pathname: '/browser',
+              params: {
+                url,
+              }
             })
           }
         }}>
         {showAvatar ? (
           <View className="px-2 py-2 self-start">
-            <FixedPressable
+              <FixedPressable
               onPress={() => {
-                navigation.navigate('member', {
-                  username: member.username,
-                  brief: member,
+                router.push({
+                  pathname: '/member/[username]',
+                  params: {
+                    username: member.username,
+                    // brief: member,
+                  },
                 })
               }}>
               <Image
@@ -93,12 +98,12 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
           <View className="pl-3"></View>
         )}
         <View
-          className={classNames(
+          className={cn(
             'flex-1 pt-1 pb-2',
             props.viewedStatus === 'viewed' && 'opacity-70',
           )}>
           <Text
-            className={classNames({
+            className={cn({
               'font-[500]': props.titleStyle === 'emphasized',
             })}
             style={[styles.text, styles.text_base]}>
@@ -120,8 +125,11 @@ export default function TideTopicRow(props: XnaFeedRowProps) {
                     Sentry.captureException(err)
                   })
                 } else {
-                  navigation.push('browser', {
-                    url: source.link,
+                  router.push({
+                    pathname: '/browser',
+                    params: {
+                      url: source.link,
+                    },
                   })
                 }
               }}>

@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { Animated, Pressable, Text, View } from 'react-native'
-import { styled } from 'nativewind'
 
 import { useTheme } from '@/containers/ThemeService'
 
 const OFFSET_Y = 12
 const ANIMATE_DURATION = 300
 
-function ScrollToLastPosition(props) {
+function ScrollToLastPosition(props: {
+  onPress: () => void
+  className?: string
+}) {
   const [visible, setVisible] = useState(true)
   const fadeAnim = useRef(new Animated.Value(0)).current
   const translateYAnim = useRef(new Animated.Value(OFFSET_Y)).current
@@ -53,14 +55,15 @@ function ScrollToLastPosition(props) {
   }
 
   return (
-    <View style={props.style}>
+    <View className={props.className}>
       <Animated.View
         style={[
           {
             opacity: fadeAnim,
             transform: [{ translateY: translateYAnim }],
           },
-        ]}>
+        ]}
+      >
         <Pressable
           onPress={() => {
             Animated.timing(fadeAnim, {
@@ -80,14 +83,16 @@ function ScrollToLastPosition(props) {
               paddingVertical: 10,
               borderRadius: 9999,
             },
-          ]}>
+          ]}
+        >
           <Text
             style={[
               styles.btn_primary__text,
               {
                 fontSize: 14,
               },
-            ]}>
+            ]}
+          >
             滚动到上次浏览的位置
           </Text>
         </Pressable>
@@ -96,4 +101,4 @@ function ScrollToLastPosition(props) {
   )
 }
 
-export default styled(ScrollToLastPosition)
+export default ScrollToLastPosition

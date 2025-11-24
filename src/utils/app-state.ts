@@ -2,7 +2,7 @@ import Networking from 'react-native/Libraries/Network/RCTNetworking'
 import RNRestart from 'react-native-restart'
 import CookieManager from '@react-native-cookies/cookies'
 
-import storage from './storage'
+import { storage } from './storage'
 
 export const restart = async () => {
   RNRestart.Restart()

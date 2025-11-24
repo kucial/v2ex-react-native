@@ -8,10 +8,9 @@ import {
 } from 'react-native'
 import { FunnelIcon } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import classNames from 'classnames'
+import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
@@ -19,7 +18,9 @@ import KeyboardDismiss from '@/components/KeyboardDismiss'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MyClearButton from '@/components/MyClearButton'
 import NodeLabel from '@/components/NodeLabel'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { useCachedState } from '@/utils/hooks'
 import { formatDate } from '@/utils/time'
 
@@ -29,8 +30,6 @@ import SearchHistory from '../SearchHistory'
 import { SearchParams } from '../types'
 import AdvancedSearchForm from './AdvancedSearchForm'
 import SearchResultView from './SearchResultView'
-
-type ScreenProps = NativeStackScreenProps<AppStackParamList, 'search'>
 
 const snapPoints = Platform.select({
   ios: ['54%'],
@@ -47,11 +46,12 @@ const hasAdvancedOption = (params: SearchParams) => {
   )
 }
 
-export default function GoogleSearch({ navigation }: ScreenProps) {
+export default function GoogleSearch() {
   const { theme, styles } = useTheme()
+  const router = useRouter()
   const insets = useSafeAreaInsets()
-  const searchInput = useRef<TextInput>()
-  const advancedSearchModalRef = useRef<BottomSheetModal>()
+  const searchInput = useRef<TextInput>(null)
+  const advancedSearchModalRef = useRef<BottomSheetModal>(null)
   const [searchParams, setSearchParams] = useState<SearchParams>({ q: '' })
   const searchHistory = useSearchHistory()
   useEffect(() => {
@@ -69,10 +69,10 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
   }, [searchParams])
 
   return (
-    <KeyboardDismiss className="flex-1">
-      <View className="flex-1">
+    <KeyboardDismiss className='flex-1'>
+      <View className='flex-1'>
         <View
-          className="w-full flex-row items-start pl-1"
+          className='w-full flex-row items-start pl-1'
           style={[
             {
               minHeight: Platform.OS === 'android' ? 58 : 56 + insets.top,
@@ -81,40 +81,44 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
             },
             styles.layer1,
             hasAdvancedOption(searchParams) && styles.border_b_light,
-          ]}>
+          ]}
+        >
           <View
-            className={classNames(
+            className={cn(
               'mr-1',
               Platform.select({
                 ios: 'py-[6]',
                 android: 'py-[8]',
               }),
-            )}>
+            )}
+          >
             <BackButton
               tintColor={theme.colors.text}
               onPress={() => {
-                navigation.goBack()
+                router.back()
               }}
             />
           </View>
           <View
-            className={classNames(
+            className={cn(
               'pr-3 flex-1',
               Platform.select({
                 ios: 'py-[6]',
                 android: 'py-[8]',
               }),
-            )}>
+            )}
+          >
             {/* Base */}
-            <View className="flex-row items-center">
-              <View className={classNames('relative flex-1')}>
+            <View className='flex-row items-center'>
+              <View className={cn('relative flex-1')}>
                 <View
-                  className={classNames(
+                  className={cn(
                     'flex flex-row items-center rounded-lg min-h-[40px]',
                   )}
-                  style={styles.input__bg}>
+                  style={styles.input__bg}
+                >
                   <TextInput
-                    className="flex-1 px-2"
+                    className='flex-1 px-2'
                     style={[
                       styles.text,
                       { fontSize: styles.text_base.fontSize },
@@ -123,8 +127,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     placeholderTextColor={theme.colors.text_placeholder}
                     defaultValue={searchParams.q || ''}
                     ref={searchInput}
-                    placeholder="输入关键词"
-                    returnKeyType="search"
+                    placeholder='输入关键词'
+                    returnKeyType='search'
                     onSubmitEditing={({ nativeEvent }) => {
                       setSearchParams((prev) => ({
                         ...prev,
@@ -133,7 +137,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     }}
                   />
                   {!!searchParams.q && (
-                    <View className="h-full flex flex-row items-center justify-center">
+                    <View className='h-full flex flex-row items-center justify-center'>
                       <MyClearButton
                         onPress={() => {
                           setSearchParams((prev) => ({
@@ -148,15 +152,16 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                   )}
                 </View>
               </View>
-              <View className="px-1 -mr-3">
+              <View className='px-1 -mr-3'>
                 <Button
-                  className="rounded-full w-[44px] h-[44px]"
-                  variant="icon"
+                  className='rounded-full w-[44px] h-[44px]'
+                  variant='icon'
                   radius={22}
                   onPress={() => {
                     searchInput.current?.blur()
                     advancedSearchModalRef.current?.present()
-                  }}>
+                  }}
+                >
                   <FunnelIcon size={20} color={theme.colors.text} />
                 </Button>
               </View>
@@ -164,17 +169,19 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
             {/* Advanced */}
             {hasAdvancedOption(searchParams) && (
               <Button
-                className="mt-1 -mb-1"
+                className='mt-1 -mb-1'
                 onPress={() => {
                   searchInput.current?.blur()
                   advancedSearchModalRef.current?.present()
-                }}>
-                <View className="flex-row w-full items-center px-1 py-2">
+                }}
+              >
+                <View className='flex-row w-full items-center px-1 py-2'>
                   {searchParams.gte && (
                     <>
                       <Text style={styles.text_desc}>起始日期：</Text>
                       <Text
-                        style={[styles.text_desc, { paddingHorizontal: 4 }]}>
+                        style={[styles.text_desc, { paddingHorizontal: 4 }]}
+                      >
                         {formatDate(searchParams.gte * 1000)}
                       </Text>
                     </>
@@ -183,7 +190,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     <>
                       <Text style={styles.text_desc}>结束日期：</Text>
                       <Text
-                        style={[styles.text_desc, { paddingHorizontal: 4 }]}>
+                        style={[styles.text_desc, { paddingHorizontal: 4 }]}
+                      >
                         {formatDate(searchParams.lte * 1000)}
                       </Text>
                     </>
@@ -192,7 +200,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     <>
                       <Text style={styles.text_desc}>排序：</Text>
                       <Text
-                        style={[styles.text_desc, { paddingHorizontal: 4 }]}>
+                        style={[styles.text_desc, { paddingHorizontal: 4 }]}
+                      >
                         {searchParams.order === '1' ? '时间升序' : '时间降序'}
                       </Text>
                     </>
@@ -201,7 +210,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     <>
                       <Text style={styles.text_desc}>用户：</Text>
                       <Text
-                        style={[styles.text_desc, { paddingHorizontal: 4 }]}>
+                        style={[styles.text_desc, { paddingHorizontal: 4 }]}
+                      >
                         {searchParams.username}
                       </Text>
                     </>
@@ -210,7 +220,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                     <>
                       <Text style={styles.text_desc}>节点：</Text>
                       <Text
-                        style={[styles.text_desc, { paddingHorizontal: 4 }]}>
+                        style={[styles.text_desc, { paddingHorizontal: 4 }]}
+                      >
                         <NodeLabel name={searchParams.node} />
                       </Text>
                     </>
@@ -220,7 +231,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
             )}
           </View>
         </View>
-        <View className="flex-1 relative">
+        <View className='flex-1 relative'>
           {searchParams.q ? (
             <SearchResultView params={searchParams} />
           ) : (
@@ -229,7 +240,8 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
         </View>
         <MyBottomSheetModal
           ref={advancedSearchModalRef}
-          snapPoints={snapPoints}>
+          snapPoints={snapPoints}
+        >
           <BottomSheetScrollView style={{ height: '100%' }}>
             <AdvancedSearchForm
               initialValues={searchParams}

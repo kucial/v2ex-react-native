@@ -1,4 +1,7 @@
+import { View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
+
+import NavigationHeader from '@/components/NavigationHeader'
 
 import { useAuthService } from '@/containers/AuthService'
 
@@ -14,12 +17,15 @@ export default function CreatedTopicsScreen() {
   const scrollY = useSharedValue(0)
 
   return (
-    <MemberTopics
-      username={user.username}
-      scrollY={scrollY}
-      contentContainerStyle={style}
-      isFocused={true}
-      onGetRef={voidFunction}
-    />
+    <View className='flex-1'>
+      <NavigationHeader canGoBack title='创建的主题' />
+      <MemberTopics
+        username={user.username}
+        scrollY={scrollY}
+        contentContainerStyle={style}
+        isFocused={true}
+        onGetRef={voidFunction}
+      />
+    </View>
   )
 }

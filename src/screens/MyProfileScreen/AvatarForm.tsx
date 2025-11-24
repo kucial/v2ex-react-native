@@ -9,6 +9,7 @@ import GroupWapper from '@/components/GroupWrapper'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import SectionHeader from '@/components/SectionHeader'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchAvatarForm, uploadAvatar } from '@/utils/v2ex-client'
@@ -96,71 +97,74 @@ const AvatarPicker = (props: {
           refreshing={avatarFormQuery.isRefetching}
           onRefresh={handleFormRefetch}
         />
-      }>
-      <MaxWidthWrapper className="py-4 px-2">
+      }
+    >
+      <MaxWidthWrapper className='py-4 px-2'>
         <GroupWapper
           innerStyle={styles.layer1}
           style={avatarFormQuery.isRefetching && { opacity: 0.4 }}
-          pointerEvents={avatarFormQuery.isRefetching ? 'none' : 'auto'}>
-          <SectionHeader title="当前头像" />
-          <View className="flex flex-row items-end px-1 py-2">
+          pointerEvents={avatarFormQuery.isRefetching ? 'none' : 'auto'}
+        >
+          <SectionHeader title='当前头像' />
+          <View className='flex flex-row items-end px-1 py-2'>
             <Image
               source={{ uri: avatarFormQuery.data?.avatars[0] }}
               style={{ backgroundColor: theme.colors.skeleton }}
-              className="w-[73] h-[73] rounded mx-2"
+              className='w-[73] h-[73] rounded mx-2'
             />
             <Image
               source={{ uri: avatarFormQuery.data?.avatars[1] }}
               style={{ backgroundColor: theme.colors.skeleton }}
-              className="w-[48] h-[48] rounded mx-2"
+              className='w-[48] h-[48] rounded mx-2'
             />
             <Image
               source={{ uri: avatarFormQuery.data?.avatars[2] }}
               style={{ backgroundColor: theme.colors.skeleton }}
-              className="w-[24] h-[24] rounded mx-2"
+              className='w-[24] h-[24] rounded mx-2'
             />
           </View>
-          <SectionHeader title="新头像" />
+          <SectionHeader title='新头像' />
 
-          <View className="px-1 py-2">
+          <View className='px-1 py-2'>
             <Pressable
-              className="flex flex-row items-end active:opacity-50"
-              onPress={pickImage}>
+              className='flex flex-row items-end active:opacity-50'
+              onPress={pickImage}
+            >
               <Image
                 key={avatar?.uri + 'large'}
                 source={avatar}
                 style={{ backgroundColor: theme.colors.skeleton }}
-                className="w-[73] h-[73] rounded mx-2"
+                className='w-[73] h-[73] rounded mx-2'
               />
               <Image
                 key={avatar?.uri + 'normal'}
                 source={avatar}
                 style={{ backgroundColor: theme.colors.skeleton }}
-                className="w-[48] h-[48] rounded mx-2"
+                className='w-[48] h-[48] rounded mx-2'
               />
               <Image
                 key={avatar?.uri + 'mini'}
                 source={avatar}
                 style={{ backgroundColor: theme.colors.skeleton }}
-                className="w-[24] h-[24] rounded mx-2"
+                className='w-[24] h-[24] rounded mx-2'
               />
             </Pressable>
           </View>
-          <View className="p-3 flex flex-row mb-2">
+          <View className='p-3 flex flex-row mb-2'>
             {avatar ? (
               <Button
                 loading={uploading}
                 disabled={uploading}
-                variant="primary"
-                size="md"
-                label="上传头像"
+                variant='primary'
+                size='md'
+                label='上传头像'
                 onPress={handleUpload}
               />
             ) : (
               <Button
-                variant="primary"
-                size="md"
-                label="选择图片"
+                variant='primary'
+                size='md'
+                label='选择图片'
                 onPress={pickImage}
               />
             )}

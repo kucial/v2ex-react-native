@@ -1,21 +1,20 @@
 import { memo } from 'react'
 import { Text, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import classNames from 'classnames'
 import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 
 import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import TriangleCorner from '@/components/TriangleCorner'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { preloadTopicInfo } from '@/utils/preload'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
 
 function NodeTopicRow(props: NodeFeedRowProps) {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
+  const router = useRouter()
   const { data, showAvatar, isLast } = props
 
   const { styles } = useTheme()
@@ -24,26 +23,24 @@ function NodeTopicRow(props: NodeFeedRowProps) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
         <View
-          className={classNames('flex flex-row items-center')}
-          style={!isLast && styles.border_b_light}>
+          className={cn('flex flex-row items-center')}
+          style={!isLast && styles.border_b_light}
+        >
           {showAvatar ? (
-            <View className="px-2 py-2 self-start">
-              <Box className="w-[24px] h-[24px] rounded" />
+            <View className='px-2 py-2 self-start'>
+              <Box className='w-[24px] h-[24px] rounded' />
             </View>
           ) : (
-            <View className="pl-3"></View>
+            <View className='pl-3'></View>
           )}
-          <View className="flex-1 pt-1 pb-2">
-            <BlockText
-              randomWidth
-              lines={[1, 2]}
-              style={styles.text_base}></BlockText>
-            <View className="mt-1">
+          <View className='flex-1 pt-1 pb-2'>
+            <BlockText lines={[1, 2]} style={styles.text_base}></BlockText>
+            <View className='mt-1'>
               <InlineText width={[80, 120]} style={styles.text_xs}></InlineText>
             </View>
           </View>
-          <View className="flex flex-row justify-end pl-1 pr-2">
-            <Box className="rounded-full px-2">
+          <View className='flex flex-row justify-end pl-1 pr-2'>
+            <Box className='rounded-full px-2'>
               <InlineText width={8} style={styles.text_xs} />
             </Box>
           </View>
@@ -57,61 +54,75 @@ function NodeTopicRow(props: NodeFeedRowProps) {
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
-        className="flex flex-row items-center active:opacity-60"
+        className='flex flex-row items-center active:opacity-60'
         style={!isLast && styles.border_b_light}
-        onPress={() => {
+        onPressIn={() => {
           preloadTopicInfo(props.data.id)
-          navigation.push('topic', {
-            id: props.data.id,
-            brief: props.data,
+        }}
+        onPress={() => {
+          router.push({
+            pathname: '/topic/[id]',
+            params: {
+              id: props.data.id,
+              // brief: props.data,
+            },
           })
-        }}>
+        }}
+      >
         {showAvatar ? (
-          <View className="px-2 py-2 self-start">
+          <View className='px-2 py-2 self-start'>
             <FixedPressable
               onPress={() => {
-                navigation.navigate('member', {
-                  username: member.username,
-                  brief: member,
+                router.push({
+                  pathname: '/member/[username]',
+                  params: {
+                    username: member.username,
+                    // brief: member,
+                  },
                 })
-              }}>
+              }}
+            >
               <Image
-                className="w-[24px] h-[24px] rounded"
+                className='w-[24px] h-[24px] rounded'
                 recyclingKey={`user-avatar:${member.username}`}
                 source={{
                   uri: member.avatar_normal,
                 }}
-                priority="low"
+                priority='low'
               />
             </FixedPressable>
           </View>
         ) : (
-          <View className="pl-3"></View>
+          <View className='pl-3'></View>
         )}
 
         <View
-          className={classNames(
+          className={cn(
             'flex-1 pt-1 pb-2',
             props.viewedStatus === 'viewed' && 'opacity-70',
-          )}>
+          )}
+        >
           <Text
-            className={classNames({
+            className={cn({
               'font-[600]': props.titleStyle === 'emphasized',
             })}
-            style={[styles.text, styles.text_base]}>
+            style={[styles.text, styles.text_base]}
+          >
             {data.title}
           </Text>
-          <View className="mt-1 flex flex-row">
+          <View className='mt-1 flex flex-row'>
             <Text
-              className="font-[600]"
-              style={[styles.text_desc, styles.text_xs]}>
+              className='font-[600]'
+              style={[styles.text_desc, styles.text_xs]}
+            >
               {member.username}
             </Text>
             {!!data.characters && (
               <>
                 <Text
-                  className="px-1"
-                  style={[styles.text_meta, styles.text_xs]}>
+                  className='px-1'
+                  style={[styles.text_meta, styles.text_xs]}
+                >
                   ·
                 </Text>
                 <Text style={[styles.text_meta, styles.text_xs]}>
@@ -122,8 +133,9 @@ function NodeTopicRow(props: NodeFeedRowProps) {
             {!!data.clicks && (
               <>
                 <Text
-                  className="px-1"
-                  style={[styles.text_meta, styles.text_xs]}>
+                  className='px-1'
+                  style={[styles.text_meta, styles.text_xs]}
+                >
                   ·
                 </Text>
                 <Text style={[styles.text_meta, styles.text_xs]}>
@@ -134,16 +146,16 @@ function NodeTopicRow(props: NodeFeedRowProps) {
           </View>
         </View>
 
-        <View className="flex flex-row justify-end pl-1 pr-2">
+        <View className='flex flex-row justify-end pl-1 pr-2'>
           {!!replies && (
-            <View className="rounded-full px-1" style={styles.tag__bg}>
+            <View className='rounded-full px-1' style={styles.tag__bg}>
               <Text style={[styles.tag__text, styles.text_xs]}>{replies}</Text>
             </View>
           )}
         </View>
         {props.viewedStatus === 'has_update' && (
           <TriangleCorner
-            corner="top-left"
+            corner='top-left'
             size={10}
             style={{
               position: 'absolute',

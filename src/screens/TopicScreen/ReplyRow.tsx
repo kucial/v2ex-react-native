@@ -8,9 +8,8 @@ import {
 } from 'react-native'
 import { ChatBubbleLeftRightIcon } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import classNames from 'classnames'
 import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
 import { marked } from 'marked'
 
@@ -21,9 +20,11 @@ import MarkdownIcon from '@/components/MarkdownIcon'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
+
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { usePressBreadcrumb } from '@/utils/hooks'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
@@ -34,7 +35,6 @@ type ReplyRowProps = {
   style?: ViewStyle
   isPivot?: boolean
   isLast?: boolean
-  navigation: NativeStackNavigationProp<AppStackParamList>
   hasConversation?: boolean
   onReply(data: TopicReply): void
   onShowConversation?: (data: ConversationContext) => void
@@ -49,12 +49,13 @@ function ReplyRow(props: ReplyRowProps) {
     data: { maxContainerWidth },
   } = useAppSettings()
   const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
-  const { data, isPivot, isLast, navigation, showAvatar = true } = props
+  const { data, isPivot, isLast, showAvatar = true } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
   const { theme, styles, colorScheme } = useTheme()
+  const router = useRouter()
 
-  const heartIconRef = useRef<LottieView>()
+  const heartIconRef = useRef<LottieView>(null)
 
   const iconColor = theme.colors.text_meta
   const likedActiveColor = theme.colors.icon_liked_bg
@@ -119,27 +120,33 @@ function ReplyRow(props: ReplyRowProps) {
         baseUrl: 'https://v2ex.com',
       },
     }),
-    [data?.content_rendered, colorScheme, showMarkdown],
+    [
+      data?.id,
+      data?.content,
+      data?.content_rendered,
+      colorScheme,
+      showMarkdown,
+    ],
   )
 
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
-        <View className="py-2" style={[styles.layer1, styles.border_b_light]}>
-          <View className="flex flex-row pl-2">
-            {showAvatar && <Box className="w-[24px] h-[24px] rounded mr-2" />}
-            <View className="flex-1 ml-1">
-              <View className="flex flex-row">
-                <View className="flex flex-row items-center flex-1">
-                  <View className="">
+        <View className='py-2' style={[styles.layer1, styles.border_b_light]}>
+          <View className='flex flex-row pl-2'>
+            {showAvatar && <Box className='w-[24px] h-[24px] rounded mr-2' />}
+            <View className='flex-1 ml-1'>
+              <View className='flex flex-row'>
+                <View className='flex flex-row items-center flex-1'>
+                  <View className=''>
                     <InlineText style={styles.text_xs} width={120}></InlineText>
                   </View>
                 </View>
-                <View className="pr-2 space-x-2 justify-center">
+                <View className='pr-2 space-x-2 justify-center'>
                   <InlineText style={styles.text_xs} width={24}></InlineText>
                 </View>
               </View>
-              <View className="pr-2">
+              <View className='pr-2'>
                 <BlockText lines={[2, 4]} />
               </View>
             </View>
@@ -153,11 +160,12 @@ function ReplyRow(props: ReplyRowProps) {
   return (
     <MaxWidthWrapper style={props.style}>
       <View
-        className={classNames('pt-2')}
-        style={[!isLast && styles.border_b_light, isPivot && styles.highlight]}>
-        <View className="flex flex-row pl-2">
+        className={cn('pt-2')}
+        style={[!isLast && styles.border_b_light, isPivot && styles.highlight]}
+      >
+        <View className='flex flex-row pl-2'>
           {showAvatar ? (
-            <View className="mr-2">
+            <View className='mr-2'>
               <Pressable
                 hitSlop={3}
                 onPress={() => {
@@ -167,31 +175,30 @@ function ReplyRow(props: ReplyRowProps) {
                       data: member.username,
                     })
                   } else {
-                    navigation.push('member', {
-                      username: member.username,
-                    })
+                    router.push(`/member/${member.username}`)
                   }
-                }}>
+                }}
+              >
                 <Image
                   source={{
                     uri: member.avatar_normal,
                   }}
-                  priority="low"
+                  priority='low'
                   recyclingKey={`user-avatar:${member.username}`}
-                  className="w-[24px] h-[24px] rounded"
+                  className='w-[24px] h-[24px] rounded'
                 />
               </Pressable>
             </View>
           ) : (
-            <View className="mr-1"></View>
+            <View className='mr-1'></View>
           )}
 
-          <View className="flex-1">
-            <View className="flex flex-row mb-2">
-              <View className="flex flex-row items-center flex-1">
+          <View className='flex-1'>
+            <View className='flex flex-row mb-2'>
+              <View className='flex flex-row items-center flex-1'>
                 <Pressable
                   hitSlop={4}
-                  className="active:opacity-60"
+                  className='active:opacity-60'
                   onPress={() => {
                     if (props.onShowUserInfo) {
                       props.onShowUserInfo({
@@ -199,36 +206,38 @@ function ReplyRow(props: ReplyRowProps) {
                         data: member.username,
                       })
                     } else {
-                      navigation.push('member', {
-                        username: member.username,
-                      })
+                      router.push(`/member/${member.username}`)
                     }
-                  }}>
+                  }}
+                >
                   <Text
-                    className="font-bold"
-                    style={[styles.text_desc, styles.text_xs]}>
+                    className='font-bold'
+                    style={[styles.text_desc, styles.text_xs]}
+                  >
                     {member.username}
                   </Text>
                 </Pressable>
                 {data.member_is_op && (
                   <View
-                    className="ml-2 px-1 rounded"
+                    className='ml-2 px-1 rounded'
                     style={[
                       styles.border,
                       {
                         borderColor: theme.colors.badge_bg,
                       },
-                    ]}>
+                    ]}
+                  >
                     <Text
-                      className="text-[10px] font-medium leading-[17px]"
-                      style={{ color: theme.colors.badge_bg }}>
+                      className='text-[10px] font-medium leading-[17px]'
+                      style={{ color: theme.colors.badge_bg }}
+                    >
                       OP
                     </Text>
                   </View>
                 )}
                 {data.member_is_mod && (
                   <View
-                    className="ml-2 px-1 rounded"
+                    className='ml-2 px-1 rounded'
                     style={[
                       styles.border,
                       styles.badge__bg,
@@ -236,44 +245,48 @@ function ReplyRow(props: ReplyRowProps) {
                         borderColor: theme.colors.badge_bg,
                         backgroundColor: theme.colors.badge_border,
                       },
-                    ]}>
+                    ]}
+                  >
                     <Text
-                      className="text-[10px] font-medium leading-[17px]"
-                      style={styles.badge__text}>
+                      className='text-[10px] font-medium leading-[17px]'
+                      style={styles.badge__text}
+                    >
                       MOD
                     </Text>
                   </View>
                 )}
-                <View className="ml-2">
+                <View className='ml-2'>
                   <Text style={[styles.text_meta, styles.text_xs]}>
                     {data.reply_time}
                   </Text>
                 </View>
                 {data.reply_device && (
                   <Text
-                    className="ml-2"
-                    style={[styles.text_meta, styles.text_xs]}>
+                    className='ml-2'
+                    style={[styles.text_meta, styles.text_xs]}
+                  >
                     {data.reply_device}
                   </Text>
                 )}
                 {!!data.thanks_count && (
                   <>
-                    <View className="relative top-[1px] mx-1">
+                    <View className='relative top-[1px] mx-1'>
                       <Text style={styles.text_meta}>·</Text>
                     </View>
-                    <View className="flex flex-row items-center">
+                    <View className='flex flex-row items-center'>
                       <FilledHeartIcon size={14} color={likedActiveColor} />
                       <Text
-                        className="ml-1"
-                        style={[styles.text_meta, styles.text_xs]}>
+                        className='ml-1'
+                        style={[styles.text_meta, styles.text_xs]}
+                      >
                         {data.thanks_count}
                       </Text>
                     </View>
                   </>
                 )}
               </View>
-              <View className="pr-1 justify-center">
-                <View className="px-[3px] rounded-full">
+              <View className='pr-1 justify-center'>
+                <View className='px-[3px] rounded-full'>
                   <Text style={[styles.text_meta, styles.text_xs]}>
                     #{data.num}
                   </Text>
@@ -281,49 +294,52 @@ function ReplyRow(props: ReplyRowProps) {
               </View>
             </View>
             <View
-              className="pr-2 pb-1 min-h-[28px]"
+              className='pr-2 pb-1 min-h-[28px]'
               style={{
                 marginBottom: showMarkdown ? -14 : 0,
-              }}>
+              }}
+            >
               <HtmlRender
-                {...htmlRenderProps}
-                navigation={navigation}
+                key={htmlRenderProps.key}
+                source={htmlRenderProps.source}
                 onOpenMemberInfo={props.onShowUserInfo}
                 contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 16}
               />
             </View>
-            <View className="py-[10px] relative flex flex-row ">
-              <View className="flex flex-row items-center flex-1">
+            <View className='py-[10px] relative flex flex-row '>
+              <View className='flex flex-row items-center flex-1'>
                 <Pressable
                   hitSlop={2}
-                  className={classNames(
+                  className={cn(
                     'h-[36px] px-2',
                     '-m-2 flex flex-row items-center justify-center rounded-full',
                     'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                     'relative z-10',
                   )}
-                  onPress={handleReply}>
+                  onPress={handleReply}
+                >
                   <ReplyIcon size={14} color={iconColor} />
-                  <View className="ml-1">
+                  <View className='ml-1'>
                     <Text style={[styles.text_meta, styles.text_xs]}>回复</Text>
                   </View>
                 </Pressable>
-                <View className="w-4"></View>
+                <View className='w-4'></View>
                 <Pressable
                   hitSlop={2}
-                  className={classNames(
+                  className={cn(
                     'h-[36px] px-2',
                     '-m-2 flex flex-row items-center justify-center rounded-full',
                     'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                     'relative z-10',
                   )}
-                  onPress={handleThank}>
+                  onPress={handleThank}
+                >
                   <HeartIcon
                     size={14}
                     liked={data.thanked}
                     ref={heartIconRef}
                   />
-                  <View className="ml-1">
+                  <View className='ml-1'>
                     {data.thanked ? (
                       <Text style={[styles.text_meta, styles.text_xs]}>
                         已感谢
@@ -336,19 +352,20 @@ function ReplyRow(props: ReplyRowProps) {
                   </View>
                 </Pressable>
 
-                <View className="w-4"></View>
+                <View className='w-4'></View>
                 {props.hasConversation && (
                   <Pressable
                     hitSlop={2}
-                    className={classNames(
+                    className={cn(
                       'h-[36px] px-2',
                       '-m-2 flex flex-row items-center justify-center rounded-full',
                       'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                       'relative z-10',
                     )}
-                    onPress={handleConversation}>
+                    onPress={handleConversation}
+                  >
                     <ChatBubbleLeftRightIcon size={14} color={iconColor} />
-                    <View className="ml-1">
+                    <View className='ml-1'>
                       <Text style={[styles.text_meta, styles.text_xs]}>
                         会话
                       </Text>
@@ -357,17 +374,18 @@ function ReplyRow(props: ReplyRowProps) {
                 )}
               </View>
 
-              <View className="mr-1 flex flex-row">
+              <View className='mr-1 flex flex-row'>
                 <Pressable
                   key={data.id}
                   hitSlop={2}
-                  className={classNames(
+                  className={cn(
                     'h-[36px] w-[36px]',
                     '-my-2 flex flex-row items-center justify-center rounded-full',
                     'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
                     'relative z-10',
                   )}
-                  onPress={toggleMarkdown}>
+                  onPress={toggleMarkdown}
+                >
                   {showMarkdown ? (
                     <MarkdownFilledIcon
                       size={20}

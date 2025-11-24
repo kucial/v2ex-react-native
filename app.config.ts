@@ -13,10 +13,16 @@ const themes = [
   'gin_pink',
 ]
 
-const icons = {}
+const icons: Record<
+  string,
+  {
+    image: string
+    prerendered: boolean
+    platforms: ('ios' | 'android')[]
+  }
+> = {}
 
 themes.forEach((theme) => {
-
   icons[`${theme}_light`] = {
     image: `./src/assets/icons/icon-${theme}-light.png`, // icon path
     prerendered: true, // for ios UIPrerenderedIcon option
@@ -36,6 +42,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     slug: 'v2ex-react-native',
     icon: './src/assets/icons/icon-r2v-light.png',
     userInterfaceStyle: 'automatic',
+    scheme: 'r2v',
     jsEngine: 'hermes',
     updates: {
       fallbackToCacheTimeout: 0,
@@ -80,7 +87,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         projectId: '5c24d369-c0ba-41e3-8679-8b8cee82fc13',
       },
     },
+    appRouter: {
+      root: './src/app',
+    },
+    experiments: {
+      typedRoutes: true,
+    },
     plugins: [
+      'expo-router',
       [
         'expo-asset',
         {
@@ -105,7 +119,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         },
       ],
     ],
-    scheme: 'r2v',
   }
 
   if (process.env.EAS_BUILD_GIT_COMMIT_HASH) {

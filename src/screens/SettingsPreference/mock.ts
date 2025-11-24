@@ -1,4 +1,6 @@
-export const topic = {
+import { HomeTopicFeed } from '@/utils/v2ex-client/types'
+
+export const topic: HomeTopicFeed = {
   id: 1,
   member: {
     avatar_normal:

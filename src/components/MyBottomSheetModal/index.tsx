@@ -17,7 +17,7 @@ const DismissBackdropComponent = (props: BottomSheetBackdropProps) => {
       {...props}
       appearsOnIndex={0}
       disappearsOnIndex={-1}
-      pressBehavior="close"
+      pressBehavior='close'
       onPress={() => {
         if (Platform.OS === 'ios') {
           Keyboard.dismiss()

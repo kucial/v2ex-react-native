@@ -31,26 +31,28 @@ export default function AlbumImages(props: {
   )
 
   return (
-    <View className="flex flex-1">
+    <View className='flex flex-1'>
       <View
-        className="flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1"
-        style={[styles.border_b_light]}>
-        <View className="w-[56px]">
+        className='flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1'
+        style={[styles.border_b_light]}
+      >
+        <View className='w-[56px]'>
           <BackButton
             tintColor={theme.colors.text}
             onPress={props.onBackward}
           />
         </View>
-        <View className="flex-1 px-1">
+        <View className='flex-1 px-1'>
           <Text
-            className="text-center font-medium"
+            className='text-center font-medium'
             style={[styles.text, styles.text_base]}
             numberOfLines={1}
-            ellipsizeMode="tail">
+            ellipsizeMode='tail'
+          >
             {album.title}
           </Text>
         </View>
-        <View className="w-[56px] items-end"></View>
+        <View className='w-[56px] items-end'></View>
       </View>
       <ImagesGrid
         imagesQuery={imagesQuery}

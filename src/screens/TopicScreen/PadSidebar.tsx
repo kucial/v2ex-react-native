@@ -13,6 +13,7 @@ import {
 import AppSidebarButton from '@/components/AppSidebar/AppSidebarButton'
 import { useAppLayout } from '@/components/Layout'
 import NumberIcon from '@/components/NumberIcon'
+
 import { useTheme } from '@/containers/ThemeService'
 
 import ScrollControl from './ScrollControl'
@@ -28,7 +29,7 @@ export default function PadSidebar(props: BarProps) {
         <>
           <AppSidebarButton
             isActive={false}
-            label="评论"
+            label='评论'
             activeColor={theme.colors.primary}
             staticColor={theme.colors.text_desc}
             Icon={ChatBubbleBottomCenterTextIcon}
@@ -75,7 +76,7 @@ export default function PadSidebar(props: BarProps) {
           />
           <AppSidebarButton
             isActive={props.collected}
-            label="收藏"
+            label='收藏'
             activeColor={theme.colors.icon_collected_bg}
             staticColor={theme.colors.text_desc}
             Icon={props.collected ? FilledStarIcon : StarIcon}
@@ -83,7 +84,7 @@ export default function PadSidebar(props: BarProps) {
           />
           <AppSidebarButton
             isActive={props.thanked}
-            label="感谢"
+            label='感谢'
             activeColor={theme.colors.icon_liked_bg}
             staticColor={theme.colors.text_desc}
             Icon={props.thanked ? FilledHeartIcon : HeartIcon}
@@ -91,7 +92,7 @@ export default function PadSidebar(props: BarProps) {
           />
           <AppSidebarButton
             isActive={false}
-            label="分享"
+            label='分享'
             activeColor={theme.colors.text_desc}
             staticColor={theme.colors.text_desc}
             Icon={ShareIcon}

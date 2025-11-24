@@ -1,17 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Keyboard, Pressable, Text, TextInput, View } from 'react-native'
-import { Platform } from 'react-native'
+import {
+  Keyboard,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/outline'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
-import classNames from 'classnames'
 import { encode } from 'js-base64'
 import colors from 'tailwindcss/colors'
 
 import ImgurPicker from '@/components/ImgurPicker'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { useCachedState } from '@/utils/hooks'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
@@ -66,8 +73,8 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
     },
   )
 
-  const pickerRef = useRef<BottomSheetModal>()
-  const inputSelection = useRef<TextSelection>()
+  const pickerRef = useRef<BottomSheetModal>(null)
+  const inputSelection = useRef<TextSelection>(null)
   const { handleSubmit, control, getValues, setValue, watch } =
     useForm<ReplyCache>({
       defaultValues: cache,
@@ -92,7 +99,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
   const iconColor = theme.colors.text
 
   return (
-    <View className="px-3 flex flex-col flex-1">
+    <View className='px-3 flex flex-col flex-1' style={{ height: 220 }}>
       <Controller
         control={control}
         render={({
@@ -101,7 +108,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
         }) => {
           return (
             <View
-              className={classNames('flex-1 w-full rounded-lg')}
+              className={cn('flex-1 w-full rounded-lg')}
               style={[
                 styles.border,
                 styles.overlay_input__bg,
@@ -109,8 +116,9 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                   error && {
                     borderColor: theme.colors.danger,
                   },
-              ]}>
-              <Input
+              ]}
+            >
+              <BottomSheetTextInput
                 ref={inputRef}
                 style={[
                   {
@@ -143,22 +151,23 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
             </View>
           )
         }}
-        name="content"
+        name='content'
         rules={{ required: true }}
       />
-      <View className="h-[48px] flex flex-row items-center">
-        <View className="flex-1 flex flex-row">
+      <View className='h-[48px] flex flex-row items-center'>
+        <View className='flex-1 flex flex-row'>
           <Pressable
-            className="w-[40px] h-[40px] items-center justify-center rounded-full active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600"
+            className='w-[40px] h-[40px] items-center justify-center rounded-full active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600'
             onPress={() => {
               showImagePicker(true)
               Keyboard.dismiss()
               pickerRef.current?.present()
-            }}>
+            }}
+          >
             <PhotoIcon size={22} color={iconColor} />
           </Pressable>
           <Pressable
-            className="w-[40px] h-[40px] items-center justify-center rounded-full active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600"
+            className='w-[40px] h-[40px] items-center justify-center rounded-full active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600'
             onPress={() => {
               const selection = inputSelection.current
               if (selection) {
@@ -172,14 +181,15 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                 ].join('')
                 setValue('content', replaced)
               }
-            }}>
+            }}
+          >
             <Base64Icon size={22} color={iconColor} />
           </Pressable>
         </View>
 
-        <View className="pr-1">
+        <View className='pr-1'>
           <Pressable
-            className={classNames(
+            className={cn(
               'h-[40px] min-w-[80px] items-center justify-center px-3 rounded-md',
               'active:opacity-60',
             )}
@@ -187,7 +197,8 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
             onPress={(e) => {
               Keyboard.dismiss()
               handleSubmit(props.onSubmit)(e)
-            }}>
+            }}
+          >
             <Text style={styles.btn_primary__text}>
               {context.type === 'reply' ? '回复' : '附言'}
             </Text>
@@ -199,7 +210,8 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
           snapPoints={pickerSnapPoints}
           onDismiss={() => {
             showImagePicker(false)
-          }}>
+          }}
+        >
           {imagePickerOpened && (
             <ImgurPicker
               onConfigSettings={() => {

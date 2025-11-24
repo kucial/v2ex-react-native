@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react'
-import { Dimensions, SafeAreaView, Text, View } from 'react-native'
+import { Dimensions, Text, View } from 'react-native'
 
 import Button from '@/components/Button'
 import HeartIcon from '@/components/HeartIcon'
 import HtmlRender from '@/components/HtmlRender'
 import Loader from '@/components/Loader'
 import StarIcon from '@/components/StarIcon'
+
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { getCurrentUser } from '@/utils/v2ex-client'
@@ -19,7 +20,7 @@ const p = {
   textAlign: 'left',
 }
 
-export default function DebugScreen(props) {
+export default function DebugScreen() {
   // ref
   const { theme, styles } = useTheme()
 
@@ -41,7 +42,7 @@ export default function DebugScreen(props) {
   // return null
 
   return (
-    <SafeAreaView style={[{ flex: 1 }, styles.layer1]}>
+    <View className='p-safe' style={[{ flex: 1 }, styles.layer1]}>
       <View>
         <Text>Current User: {user?.username}</Text>
       </View>
@@ -51,26 +52,27 @@ export default function DebugScreen(props) {
           source={{
             html: `<div><p>这是一段测试文本 <a href="https://www.kongkx.com">TEST LINK</a> Inline test</p><img src="https://www.kongkx.com/sites/default/files/inline-images/Fantom.png" /></div>`,
           }}
-          navigation={props.navigation}
         />
         <Loader />
         <Button
-          size="md"
-          variant="icon"
+          size='md'
+          variant='icon'
           onPress={() => {
             starIconRef.current?.play()
-          }}>
+          }}
+        >
           <StarIcon ref={starIconRef} />
         </Button>
         <Button
-          size="md"
-          variant="icon"
+          size='md'
+          variant='icon'
           onPress={() => {
             heartIconRef.current?.play()
-          }}>
+          }}
+        >
           <HeartIcon ref={heartIconRef} />
         </Button>
       </View>
-    </SafeAreaView>
+    </View>
   )
 }

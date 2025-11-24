@@ -14,6 +14,7 @@ import { uniqBy } from 'lodash'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -134,8 +135,10 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration])
 
   useEffect(() => {
-    currentListRef.current = {
-      scrollToRefresh,
+    if (currentListRef) {
+      currentListRef.current = {
+        scrollToRefresh,
+      }
     }
   }, [isFocused, scrollToRefresh])
 
@@ -188,7 +191,6 @@ function FeedTopicList(props: FeedTopicListProps) {
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      estimatedItemSize={settings.feedLayout === 'tide' ? 80 : 120}
       onEndReachedThreshold={0.4}
       onEndReached={() => {
         if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {

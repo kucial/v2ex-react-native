@@ -8,15 +8,18 @@ import {
 import Share from 'react-native-share'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import { useIsFocused } from '@react-navigation/native'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import {
+  BottomSheetModal,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import {
   useInfiniteQuery,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import AnimatedHeader from '@/components/AnimatedHeader'
@@ -25,9 +28,9 @@ import CommonListFooter from '@/components/CommonListFooter'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
+
 import { useAlertService } from '@/containers/AlertService'
-import { useAppSettings } from '@/containers/AppSettingsService'
-import { usePadLayout } from '@/containers/AppSettingsService'
+import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -81,29 +84,36 @@ type ReplyContext = {
   target?: TopicReply
 }
 
-type TopicScreenProps = NativeStackScreenProps<AppStackParamList, 'topic'>
+function TopicScreen() {
+  const params = useLocalSearchParams()
+  const router = useRouter()
+  const navigation = useNavigation()
 
-function TopicScreen({ navigation, route }: TopicScreenProps) {
-  const {
-    params: { brief, id },
-  } = route
+  const { id: rawId, brief: rawBrief } = params
+  const id = Array.isArray(rawId) ? rawId[0] : rawId // Ensure string
+  const topicId = Number(id) // Convert to number for API
+  const brief = Array.isArray(rawBrief)
+    ? rawBrief[0]
+    : rawBrief
+      ? JSON.parse(rawBrief)
+      : undefined
 
   const alert = useAlertService()
   const queryClient = useQueryClient()
   const topicQuery = useQuery({
-    queryKey: [`/page/t/:id/topic.json`, id],
+    queryKey: [`/page/t/:id/topic.json`, topicId.toString()],
     queryFn: async () => {
-      const { data } = await v2exClient.getTopicDetail({ id })
+      const { data } = await v2exClient.getTopicDetail({ id: topicId })
       return data
     },
     refetchOnMount: false,
   })
 
-  const topic = topicQuery.data || (brief as TopicDetail)
+  const topic = topicQuery.data || (brief as TopicDetail | undefined)
 
   const { touchViewed } = useViewedTopics()
   const [lastIndex, setLastIndex] = useCachedState(
-    `$app$/topic/${route.params.id}/last-position`,
+    `$app$/topic/${id}/last-position`,
     null,
   )
   const [showScrollToLastPosition, setShowScrollToLastPosition] =
@@ -115,7 +125,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       // side effects...
       if (data.meta?.topic) {
         queryClient.setQueryData(
-          [`/page/t/:id/topic.json`, id],
+          [`/page/t/:id/topic.json`, id.toString()],
           data.meta.topic,
         )
       }
@@ -162,11 +172,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const { data: settings } = useAppSettings()
   const padLayout = usePadLayout()
 
-  const listRef = useRef<FlashList<TopicReply>>()
-  const replyModalRef = useRef<BottomSheetModal>()
-  const conversationModalRef = useRef<BottomSheetModal>()
-  const userInfoModalRef = useRef<BottomSheetModal>()
-  const changeNodeModalRef = useRef<BottomSheetModal>()
+  const listRef = useRef<FlashList<TopicReply>>(null)
+  const replyModalRef = useRef<BottomSheetModal>(null)
+  const conversationModalRef = useRef<BottomSheetModal>(null)
+  const userInfoModalRef = useRef<BottomSheetModal>(null)
+  const changeNodeModalRef = useRef<BottomSheetModal>(null)
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
   const [myReplies, setMyReplies] = useCachedState<TopicReply[]>(
@@ -239,10 +249,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       })
         .then(({ data }) => {
           topicQuery.data &&
-            queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
-              ...topicQuery.data,
-              ...data,
-            })
+            queryClient.setQueryData(
+              [`/page/t/:id/topic.json`, id.toString()],
+              {
+                ...topicQuery.data,
+                ...data,
+              },
+            )
           alert.show({
             type: 'success',
             message: data.blocked ? '已忽略主题' : '已撤销主题忽略',
@@ -269,10 +282,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         .reportTopic({ id })
         .then(({ data }) => {
           topicQuery.data &&
-            queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
-              ...topicQuery.data,
-              ...data,
-            })
+            queryClient.setQueryData(
+              [`/page/t/:id/topic.json`, id.toString()],
+              {
+                ...topicQuery.data,
+                ...data,
+              },
+            )
           if (data.reported) {
             alert.show({ type: 'success', message: '已举报主题' })
           } else {
@@ -295,7 +311,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   const handleToggleCollect = composeAuthedNavigation(
     useCallback(() => {
       if (topic.collected) {
-        queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+        queryClient.setQueryData([`/page/t/:id/topic.json`, id.toString()], {
           ...topic,
           collected: false,
         })
@@ -310,14 +326,17 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             })
           })
           .catch((err) => {
-            queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
-              ...topic,
-              collected: true,
-            })
+            queryClient.setQueryData(
+              [`/page/t/:id/topic.json`, id.toString()],
+              {
+                ...topic,
+                collected: true,
+              },
+            )
             alert.show({ type: 'error', message: err.message })
           })
       } else {
-        queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+        queryClient.setQueryData([`/page/t/:id/topic.json`, id.toString()], {
           ...topic,
           collected: true,
         })
@@ -332,10 +351,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             })
           })
           .catch((err) => {
-            queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
-              ...topic,
-              collected: false,
-            })
+            queryClient.setQueryData(
+              [`/page/t/:id/topic.json`, id.toString()],
+              {
+                ...topic,
+                collected: false,
+              },
+            )
             alert.show({ type: 'error', message: err.message })
           })
       }
@@ -348,7 +370,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
         alert.show({ type: 'info', message: '已感谢过主题' })
         return
       }
-      queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+      queryClient.setQueryData([`/page/t/:id/topic.json`, id.toString()], {
         ...topic,
         thanked: true,
       })
@@ -363,7 +385,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           })
         })
         .catch((err) => {
-          queryClient.setQueryData([`/page/t/:id/topic.json`, id], {
+          queryClient.setQueryData([`/page/t/:id/topic.json`, id.toString()], {
             ...topic,
             thanked: false,
           })
@@ -385,13 +407,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     }
   }, [topic])
 
-  const isFocused = useIsFocused()
+  const isFocused = true // Expo-router handles focus automatically
 
   const headerRight = useMemo(
     () => (
       <Button
-        className="h-[44px] w-[44px] rounded-full"
-        variant="icon"
+        className='h-[44px] w-[44px] rounded-full'
+        variant='icon'
         radius={22}
         onPress={() => {
           // actionsheet
@@ -413,8 +435,11 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             },
             (buttonIndex) => {
               if (buttonIndex === 1) {
-                navigation.push('browser', {
-                  url: getTopicLink(id),
+                router.push({
+                  pathname: '/browser',
+                  params: {
+                    url: getTopicLink(topicId),
+                  },
                 })
               } else if (buttonIndex === 2) {
                 handleToggleBlock()
@@ -423,21 +448,29 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
               }
             },
           )
-        }}>
+        }}
+      >
         <EllipsisHorizontalIcon size={24} color={styles.text.color} />
       </Button>
     ),
-    [id, topic?.blocked, colorScheme],
+    [
+      id,
+      topic?.blocked,
+      colorScheme,
+      topicId,
+      router,
+      styles,
+      showActionSheetWithOptions,
+      handleToggleBlock,
+      handleReportTopic,
+    ],
   )
 
   const [replyContext, setReplyContext] = useState<ReplyContext>(null)
-  const initReply = useCallback(
-    (reply = null) => {
-      setReplyContext({ target: reply, type: 'reply' })
-      replyModalRef.current?.present()
-    },
-    [id],
-  )
+  const initReply = useCallback((reply = null) => {
+    setReplyContext({ target: reply, type: 'reply' })
+    replyModalRef.current?.present()
+  }, [])
   const getReplyFormCacheKey = useCallback(
     (context: ReplyContext) => {
       if (settings.enableMultiMention) {
@@ -445,7 +478,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       }
       return `$app$/topic-${context.type}:${id}/${context.target?.id || 'root'}`
     },
-    [id, replyContext, settings],
+    [id, settings],
   )
 
   const handleThankToReply = useCallback(
@@ -536,10 +569,13 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           case 'append':
             try {
               const { data: topic } = await v2exClient.appendTopic({
-                id,
+                id: topicId,
                 content: values.content,
               })
-              queryClient.setQueryData([`/page/t/:id/topic.json`, id], topic)
+              queryClient.setQueryData(
+                [`/page/t/:id/topic.json`, id.toString()],
+                topic,
+              )
               const cacheKey = getReplyFormCacheKey(replyContext)
               setJSON(cacheKey, undefined)
               alert.show({ type: 'success', message: '附言成功' })
@@ -562,10 +598,15 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
   }, [])
 
   const handleEdit = useCallback(() => {
-    navigation.push('edit-topic', {
-      id: topic?.id,
-    })
-  }, [topic?.id])
+    if (topic) {
+      router.push({
+        pathname: '/topic/[id]/edit',
+        params: {
+          id: topic.id,
+        },
+      })
+    }
+  }, [topic, router])
 
   const handleChangeNode = useCallback(() => {
     changeNodeModalRef.current?.present()
@@ -612,7 +653,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             isLast={index === replyItems.length - 1}
             style={styles.layer1}
             showAvatar={settings.feedShowAvatar}
-            navigation={navigation}
             data={item}
             onReply={initReply}
             onThank={handleThankToReply}
@@ -632,7 +672,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     if (shouldLoadMore(repliesQuery)) {
       repliesQuery.fetchNextPage()
     }
-  }, [repliesQuery, topicQuery])
+  }, [repliesQuery])
 
   const handleNavTo = useCallback(
     (target: number) => {
@@ -689,16 +729,16 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
     return (
       <>
         <AnimatedHeader scrollY={scrollY} />
-        <View className="flex-1 items-center justify-center">
+        <View className='flex-1 items-center justify-center'>
           <Text style={styles.text}>{topicQuery.error.message}</Text>
           {(topicQuery.error as ApiError).code !== 'RESOURCE_ERROR' &&
             (topicQuery.error as ApiError).code !== 'NOT_FOUND' && (
               <Button
-                label="重试"
-                size="md"
+                label='重试'
+                size='md'
                 onPress={() => topicQuery.refetch()}
-                className="mt-4"
-                variant="primary"
+                className='mt-4'
+                variant='primary'
               />
             )}
         </View>
@@ -726,7 +766,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       />
       <AnimatedFlashList
         ref={listRef}
-        className="flex-1"
+        className='flex-1'
         data={replyItems}
         renderItem={renderReply}
         keyExtractor={keyExtractor}
@@ -739,7 +779,6 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
             data={topicQuery.data}
             hasReply={!!replyItems.length}
             fallback={brief}
-            navigation={navigation}
             onAppend={handleAppend}
             onEdit={handleEdit}
             onChangeNode={handleChangeNode}
@@ -747,9 +786,8 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
           />
         }
         ListFooterComponent={
-          <CommonListFooter data={repliesQuery} emptyMessage="目前尚无回复" />
+          <CommonListFooter data={repliesQuery} emptyMessage='目前尚无回复' />
         }
-        estimatedItemSize={140}
         onEndReachedThreshold={0.4}
         onEndReached={handleReachEnd}
         onViewableItemsChanged={({ viewableItems }) => {
@@ -767,13 +805,7 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       />
       {showScrollToLastPosition && (
         <ScrollToLastPosition
-          style={{
-            position: 'absolute',
-            bottom: 110,
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-          }}
+          className='absolute bottom-[100px] w-full flex items-center'
           onPress={() => {
             InteractionManager.runAfterInteractions(() => {
               listRef.current?.scrollToIndex({
@@ -805,12 +837,12 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       <MyBottomSheetModal
         ref={conversationModalRef}
         index={0}
-        snapPoints={conversationSnapPoints}>
+        snapPoints={conversationSnapPoints}
+      >
         {conversationContext && (
           <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
             <ReplyList
               showAvatar={settings.feedShowAvatar}
-              navigation={navigation}
               data={conversation}
               pivot={conversationContext.data}
               onReply={initReply}
@@ -823,18 +855,17 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       <MyBottomSheetModal
         ref={userInfoModalRef}
         index={0}
-        snapPoints={conversationSnapPoints}>
+        snapPoints={conversationSnapPoints}
+      >
         {userInfoContext && (
           <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
             <ReplyList
               showAvatar={settings.feedShowAvatar}
-              navigation={navigation}
               data={userPostedMessages}
               header={
                 <SimpleMemberInfo
                   currentUser={currentUser}
                   username={userInfoContext.data}
-                  navigation={navigation}
                 />
               }
               onReply={initReply}
@@ -847,36 +878,48 @@ function TopicScreen({ navigation, route }: TopicScreenProps) {
       <MyBottomSheetModal
         ref={replyModalRef}
         index={0}
-        snapPoints={replyModalSnapPoints}>
-        {replyContext && (
-          <TopicReplyForm
-            cacheKey={getReplyFormCacheKey(replyContext)}
-            context={replyContext}
-            onSubmit={handleSubmitReply}
-            onInitImgurSettings={() => {
-              replyModalRef.current?.dismiss()
-              navigation.push('imgur-settings', {
-                autoBack: true,
-              })
-            }}
-          />
-        )}
+        snapPoints={replyModalSnapPoints}
+      >
+        <BottomSheetView>
+          {replyContext && (
+            <TopicReplyForm
+              cacheKey={getReplyFormCacheKey(replyContext)}
+              context={replyContext}
+              onSubmit={handleSubmitReply}
+              onInitImgurSettings={() => {
+                replyModalRef.current?.dismiss()
+                router.push({
+                  pathname: '/imgur-settings',
+                  params: {
+                    autoBack: '1',
+                  },
+                })
+              }}
+            />
+          )}
+        </BottomSheetView>
       </MyBottomSheetModal>
       {topicQuery.data?.canMove && (
         <MyBottomSheetModal
           ref={changeNodeModalRef}
           index={0}
-          snapPoints={moveModalSnapPoints}>
-          <TopicMovePanel
-            topicId={topicQuery.data.id}
-            node={topicQuery.data.node}
-            onExit={() => {
-              changeNodeModalRef.current?.dismiss()
-            }}
-            onUpdated={(topic) => {
-              queryClient.setQueryData([`/page/t/:id/topic.json`, id], topic)
-            }}
-          />
+          snapPoints={moveModalSnapPoints}
+        >
+          <BottomSheetView>
+            <TopicMovePanel
+              topicId={topicQuery.data.id}
+              node={topicQuery.data.node}
+              onExit={() => {
+                changeNodeModalRef.current?.dismiss()
+              }}
+              onUpdated={(topic) => {
+                queryClient.setQueryData(
+                  [`/page/t/:id/topic.json`, id.toString()],
+                  topic,
+                )
+              }}
+            />
+          </BottomSheetView>
         </MyBottomSheetModal>
       )}
     </>

@@ -1,4 +1,4 @@
-import { SafeAreaView, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
 import { ImgurAlbum, ImgurImage } from '@/containers/ImgurService/types'
@@ -22,11 +22,11 @@ export default function Landing(props: LandingProps) {
   const { theme, styles, colorScheme } = useTheme()
 
   return (
-    <View className="flex flex-1">
-      <SafeAreaView>
-        <View className="pt-1" style={styles.border_b}>
-          <View className="flex flex-row items-center min-h-[44px] px-1">
-            <View className="w-[100px]">
+    <View className='flex flex-1'>
+      <View className='p-safe'>
+        <View className='pt-1' style={styles.border_b}>
+          <View className='flex flex-row items-center min-h-[44px] px-1'>
+            <View className='w-[100px]'>
               {props.onCancel && (
                 <BackButton
                   tintColor={theme.colors.text}
@@ -34,18 +34,19 @@ export default function Landing(props: LandingProps) {
                 />
               )}
             </View>
-            <View className="flex-1 px-1">
+            <View className='flex-1 px-1'>
               <Text
-                className="text-center font-medium"
+                className='text-center font-medium'
                 style={[styles.text, styles.text_base]}
                 numberOfLines={1}
-                ellipsizeMode="tail">
+                ellipsizeMode='tail'
+              >
                 Imgur 图床
               </Text>
             </View>
-            <View className="w-[100px] items-end"></View>
+            <View className='w-[100px] items-end'></View>
           </View>
-          <View className="px-4 pt-1 pb-3 relative">
+          <View className='px-4 pt-1 pb-3 relative'>
             <SegmentedControl
               values={['图片', '相册']}
               selectedIndex={tabIndex}
@@ -56,7 +57,7 @@ export default function Landing(props: LandingProps) {
             />
           </View>
         </View>
-      </SafeAreaView>
+      </View>
       {tabIndex === 1 && <Albums onSelectAlbum={props.onSelectAlbum} />}
       {tabIndex == 0 && (
         <Images

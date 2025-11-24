@@ -1,8 +1,18 @@
+import { View } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useLocalSearchParams } from 'expo-router'
+
+import NavigationHeader from '@/components/NavigationHeader'
 
 import Balance from './Balance'
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'balance'>
 export default function MyBalanceScreen(props: ScreenProps) {
-  const { username } = props.route.params
-  return <Balance username={username} />
+  const params = useLocalSearchParams()
+  const username = params.username as string
+  return (
+    <View className='flex-1'>
+      <NavigationHeader canGoBack title='帐号余额' />
+      <Balance username={username} />
+    </View>
+  )
 }

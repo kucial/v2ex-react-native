@@ -11,10 +11,11 @@ export default function Swatch({
   const { theme, styles } = useTheme()
   return (
     <View
-      className="items-center mr-4 mb-4"
+      className='items-center mr-4 mb-4'
       style={{
         width: 72,
-      }}>
+      }}
+    >
       <View
         style={[
           {
@@ -25,9 +26,11 @@ export default function Swatch({
             marginBottom: 6,
           },
           shadow && styles.shadow,
-        ]}></View>
+        ]}
+      ></View>
       <Text
-        style={{ textAlign: 'right', fontSize: 10, color: theme.colors.text }}>
+        style={{ textAlign: 'right', fontSize: 10, color: theme.colors.text }}
+      >
         {name}
       </Text>
     </View>

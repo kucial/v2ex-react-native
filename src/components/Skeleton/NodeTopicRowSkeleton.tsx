@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -9,7 +9,7 @@ export default function NodeTopicRowSkeleton() {
   const { styles } = useTheme()
   return (
     <View
-      className={classNames(
+      className={cn(
         'flex flex-row items-center p-2',
         'active:opacity-60',
       )}

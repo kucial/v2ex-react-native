@@ -11,7 +11,10 @@ import { CheerioAPI } from 'cheerio'
 import { stringify } from 'qs'
 
 import {
+  BalanceBrief,
   CollectedTopicFeed,
+  CollectionResponse,
+  EntityResponse,
   HomeTabOption,
   HomeTopicFeed,
   MemberDetail,
@@ -22,10 +25,14 @@ import {
   NodeGroup,
   NodeTopicFeed,
   Notification,
+  PaginatedResponse,
   RepliedTopicFeed,
+  ReplyId,
   SearchHit,
+  StatusResponse,
   TFA_Error,
   TopicDetail,
+  TopicId,
   TopicReply,
   XnaFeed,
 } from '@/utils/v2ex-client/types'
@@ -52,15 +59,6 @@ import {
   topicReplyFromCell,
   userMetaForCurrentUser,
 } from './helpers'
-import {
-  BalanceBrief,
-  CollectionResponse,
-  EntityResponse,
-  PaginatedResponse,
-  ReplyId,
-  StatusResponse,
-  TopicId,
-} from './types'
 
 interface CustomAxiosResponse extends AxiosResponse {
   $?: CheerioAPI
@@ -996,7 +994,7 @@ export async function getTopicReplies({
   id,
   p = 1,
 }: {
-  id: number
+  id: number | string
   p?: number
 }): Promise<TopicRepliesResponse> {
   const res = await request({

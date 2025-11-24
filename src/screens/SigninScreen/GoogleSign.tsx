@@ -2,11 +2,12 @@ import { memo, useCallback, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import WebView from 'react-native-webview'
 import CookieManager from '@react-native-cookies/cookies'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
 import Loader from '@/components/Loader'
+
 import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
@@ -14,15 +15,15 @@ import { fetchOnce } from '@/utils/v2ex-client'
 
 import { checkAuthStatus, syncCookies } from './scripts'
 
-type GoogleSigninProps = NativeStackScreenProps<AppStackParamList, 'signin'> & {
+type GoogleSigninProps = {
   onSelectPasswordSignin(): void
   onSuccess(state?: { code: '2fa'; once: string; message: string }): void
 }
 
 function GoogleSign(props: GoogleSigninProps) {
-  const { navigation } = props
+  const router = useRouter()
   const { theme, styles } = useTheme()
-  const webviewRef = useRef<WebView>()
+  const webviewRef = useRef<WebView>(null)
   const [loading, setLoading] = useState(false)
   const onceQuery = useQuery({
     queryKey: ['$tmp$/once-token.json'],
@@ -71,30 +72,32 @@ function GoogleSign(props: GoogleSigninProps) {
   }, [])
 
   return (
-    <View className="flex-1" style={styles.overlay}>
+    <View className='flex-1' style={styles.overlay}>
       <View
-        className="min-h-[44px] flex-row justify-between p-1"
-        style={[styles.border_b_light]}>
+        className='min-h-[44px] flex-row justify-between p-1'
+        style={[styles.border_b_light]}
+      >
         <BackButton
           tintColor={theme.colors.text}
           onPress={() => {
-            navigation.goBack()
+            router.back()
           }}
         />
         <Pressable
-          className="h-[44px] px-3 justify-center active:opacity-70"
-          onPress={props.onSelectPasswordSignin}>
+          className='h-[44px] px-3 justify-center active:opacity-70'
+          onPress={props.onSelectPasswordSignin}
+        >
           <Text style={styles.text}>密码登录</Text>
         </Pressable>
       </View>
-      <View className="flex-1 relative">
+      <View className='flex-1 relative'>
         {onceQuery.data && (
           <WebView
             ref={webviewRef}
             userAgent={USER_AGENT}
             originWhitelist={['*']}
             sharedCookiesEnabled={true}
-            decelerationRate="normal"
+            decelerationRate='normal'
             javaScriptEnabled={true}
             domStorageEnabled={true}
             startInLoadingState={true}
@@ -121,8 +124,9 @@ function GoogleSign(props: GoogleSigninProps) {
         )}
         {loading && (
           <View
-            className="absolute inset-0 p-4 items-center"
-            style={styles.layer1}>
+            className='absolute inset-0 p-4 items-center'
+            style={styles.layer1}
+          >
             <Loader />
           </View>
         )}

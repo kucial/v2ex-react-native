@@ -27,7 +27,8 @@ const StarIcon = forwardRef<LottieView, StarIconProps>((props, ref) => {
           height: offsetSize,
           marginTop: (offsetSize / 4) * -1,
           marginLeft: (offsetSize / 4) * -1,
-        }}>
+        }}
+      >
         <LottieView
           style={{
             width: offsetSize,

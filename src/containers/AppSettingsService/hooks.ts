@@ -20,7 +20,7 @@ export const usePadLayout = () => {
         data.payLayoutEnabled && Device.deviceType === Device.DeviceType.TABLET,
       orientation: height > width ? 'PORTRAIT' : 'LANDSCAPE',
     }
-  }, [data.payLayoutEnabled, data.maxContainerWidth, width, height])
+  }, [data.payLayoutEnabled, width, height])
 
   return info as PadLayoutInfo
 }

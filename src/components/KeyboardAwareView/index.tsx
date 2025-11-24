@@ -128,12 +128,14 @@ class KeyboardAwareView extends React.Component<Props, State> {
               Keyboard.dismiss()
             }
           }
-        }}>
+        }}
+      >
         <Animated.View
           style={[{ height: this.state.height }, this.props.innerViewStyle]}
           onLayout={(e) => {
             const { x, y, width, height } = e.nativeEvent.layout
-          }}>
+          }}
+        >
           {this.props.children}
         </Animated.View>
       </View>

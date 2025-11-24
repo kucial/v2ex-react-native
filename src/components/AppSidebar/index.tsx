@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useMemo } from 'react'
-import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native'
+import { StyleSheet, useWindowDimensions, View } from 'react-native'
 import {
   ClockIcon,
   DocumentPlusIcon,
@@ -10,14 +10,11 @@ import {
   UserIcon,
 } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Image } from 'expo-image'
+import { usePathname, useRouter } from 'expo-router'
 
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAuthService } from '@/containers/AuthService'
-import { useCurrentRoute } from '@/containers/NavigationContainer'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
@@ -32,20 +29,15 @@ export default function AppSidebar(props: {
   const { composeAuthedNavigation, meta, user } = useAuthService()
   const { theme, styles } = useTheme()
   const { width, height } = useWindowDimensions()
-  const currentRoute = useCurrentRoute()
-  const navigation = useNavigation<
-    NativeStackNavigationProp<AppStackParamList> &
-      BottomTabNavigationProp<MainTabParamList>
-  >()
-
-  const currentRouteName = currentRoute?.name
+  const pathname = usePathname()
+  const router = useRouter()
 
   const insets = useSafeAreaInsets()
 
   const handleNewTopicPress = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        navigation.navigate('new-topic')
+        router.push('/new-topic')
       }, []),
     ),
     {
@@ -55,8 +47,8 @@ export default function AppSidebar(props: {
   const handleNotificationPress = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        navigation.navigate('notification')
-      }, [navigation]),
+        router.push('/me/notification')
+      }, [router]),
     ),
     {
       message: '[AppSidebar] `Notification` button pressed',
@@ -64,7 +56,7 @@ export default function AppSidebar(props: {
   )
   const handleSearchButtonPress = usePressBreadcrumb(
     useCallback(() => {
-      navigation.navigate('search')
+      router.push('/search')
     }, []),
     {
       message: '[AppSidebar] `Search` button pressed',
@@ -72,7 +64,7 @@ export default function AppSidebar(props: {
   )
   const handleViewedTopicButtonPress = usePressBreadcrumb(
     useCallback(() => {
-      navigation.navigate('viewed-topics')
+      router.push('/me/viewed-topics')
     }, []),
     {
       message: '[AppSidebar] `Viewed-Topic` button pressed',
@@ -102,9 +94,12 @@ export default function AppSidebar(props: {
 
   const layoutStyles = useMemo(() => {
     return StyleSheet.create({
-      wrapper: {
-        paddingTop: insets.top,
-      },
+      wrapper:
+        props.position === 'SIDE'
+          ? {
+              paddingTop: insets.top,
+            }
+          : null,
       container_base: {
         justifyContent: 'space-between',
         display: 'flex',
@@ -161,44 +156,38 @@ export default function AppSidebar(props: {
             props.position === 'BOTTOM'
               ? styles.border_t_light
               : styles.border_r_light,
-          ]}>
+          ]}
+        >
           <View
             className={
               props.position === 'BOTTOM'
                 ? 'flex-row pl-2 pt-[2] pb-[2]'
                 : 'items-center pt-2'
-            }>
+            }
+          >
             <AppSidebarButton
-              isActive={currentRouteName == 'feed'}
-              label="主题"
+              isActive={pathname === '/feed'}
+              label='主题'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
               Icon={HomeIcon}
               onPress={() => {
-                navigation.navigate('feed')
-                navigation.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: 'feed',
-                    },
-                  ],
-                })
+                router.push('/feed')
               }}
             />
             <AppSidebarButton
-              isActive={currentRouteName == 'nodes'}
-              label="节点"
+              isActive={pathname === '/nodes'}
+              label='节点'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
               Icon={RectangleStackIcon}
               onPress={() => {
-                navigation.navigate('nodes')
+                router.push('/nodes')
               }}
             />
             <AppSidebarButton
-              isActive={currentRouteName == 'search'}
-              label="搜索"
+              isActive={pathname === '/search'}
+              label='搜索'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
               Icon={MagnifyingGlassIcon}
@@ -206,8 +195,9 @@ export default function AppSidebar(props: {
             />
             {props.position === 'BOTTOM' && width > 730 && (
               <View
-                className="w-[50px] h-[50px]"
-                style={layoutStyles.button}></View>
+                className='w-[50px] h-[50px]'
+                style={layoutStyles.button}
+              ></View>
             )}
           </View>
 
@@ -216,33 +206,35 @@ export default function AppSidebar(props: {
               layoutStyles.dynamic_wrapper,
               props.hasDynamicContent ? styles.layer1 : undefined,
             ]}
-            pointerEvents="box-none">
+            pointerEvents='box-none'
+          >
             {props.dynamic}
           </View>
 
           <View
             className={
               props.position === 'BOTTOM' ? 'flex-row pr-2' : 'items-center'
-            }>
+            }
+          >
             <AppSidebarButton
-              isActive={currentRouteName == 'new-topic'}
-              label="新主题"
+              isActive={pathname === '/new-topic'}
+              label='新主题'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
               Icon={DocumentPlusIcon}
               onPress={handleNewTopicPress}
             />
             <AppSidebarButton
-              isActive={currentRouteName == 'viewed-topics'}
-              label="历史"
+              isActive={pathname === '/me/viewed-topics'}
+              label='历史'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
               Icon={ClockIcon}
               onPress={handleViewedTopicButtonPress}
             />
             <AppSidebarButton
-              isActive={currentRouteName == 'notification'}
-              label="消息"
+              isActive={pathname === '/me/notification'}
+              label='消息'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
               Icon={EnvelopeIcon}
@@ -250,14 +242,14 @@ export default function AppSidebar(props: {
               onPress={handleNotificationPress}
             />
             <AppSidebarButton
-              isActive={currentRouteName == 'my'}
-              label="我的"
+              isActive={pathname === '/my'}
+              label='我的'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
               Icon={user ? CurrentUserIcon : UserIcon}
               isLast
               onPress={() => {
-                navigation.navigate('my')
+                router.push('/my')
               }}
             />
           </View>

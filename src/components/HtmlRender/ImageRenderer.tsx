@@ -1,17 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Image, Pressable } from 'react-native'
+import { Image, Pressable, View } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
   CustomBlockRenderer,
   useInternalRenderer,
 } from 'react-native-render-html'
 import { useQuery } from '@tanstack/react-query'
-import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { downloadImage } from '@/utils/image'
 
-import { Box } from '../Skeleton/Elements'
 import { useImageViewing } from './ImageViewingService'
 
 async function loadImage(
@@ -35,11 +34,10 @@ async function loadImage(
 
 const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   const { rendererProps } = useInternalRenderer<'img'>('img', props)
-  const imageSwr = useQuery({
+  const imageQuery = useQuery({
     queryKey: ['image-cache', rendererProps.source.uri],
     queryFn: () => loadImage(rendererProps.source.uri),
     refetchOnMount: 'always',
-    staleTime: 0,
   })
   const [containerWidth, setContainerWidth] = useState(Infinity)
   const containerWidthRef = useRef(0)
@@ -49,7 +47,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   useEffect(() => {
     service.add({
       origin: rendererProps.source.uri,
-      local: imageSwr.data?.uri,
+      local: imageQuery.data?.uri,
     })
     return () => {
       service.remove(rendererProps.source.uri)
@@ -59,15 +57,19 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   useEffect(() => {
     service.update({
       origin: rendererProps.source.uri,
-      local: imageSwr.data?.uri,
+      local: imageQuery.data?.uri,
     })
-  }, [imageSwr.data?.uri, rendererProps.source.uri])
+  }, [imageQuery.data?.uri, rendererProps.source.uri])
 
   const contentWidth = rendererProps.contentWidth || 320
   const imageStyle = useMemo(() => {
-    if (imageSwr.data) {
-      const width = Math.min(imageSwr.data.width, containerWidth, contentWidth)
-      const height = (imageSwr.data.height / imageSwr.data.width) * width
+    if (imageQuery.data) {
+      const width = Math.min(
+        imageQuery.data.width,
+        containerWidth,
+        contentWidth,
+      )
+      const height = (imageQuery.data.height / imageQuery.data.width) * width
       return {
         width,
         height,
@@ -79,7 +81,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
         height: width * 0.66667,
       }
     }
-  }, [imageSwr.data, contentWidth, containerWidth])
+  }, [imageQuery.data, contentWidth, containerWidth])
 
   const handleContainerLayout = useCallback((event) => {
     const { width } = event.nativeEvent.layout
@@ -90,17 +92,18 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
     setContainerWidth(width)
   }, [])
 
-  if (imageSwr.data) {
+  if (imageQuery.data) {
     return (
       <Pressable
-        className={classNames(
+        className={cn(
           'py-1 active:opacity-50 w-full items-center overflow-hidden',
           containerWidth === Infinity ? 'opacity-0' : 'opacity-100',
         )}
         onPress={() => {
           service.open(rendererProps.source.uri)
         }}
-        onLayout={handleContainerLayout}>
+        onLayout={handleContainerLayout}
+      >
         <Image
           style={[
             imageStyle,
@@ -109,7 +112,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
             },
           ]}
           source={{
-            uri: imageSwr.data.uri,
+            uri: imageQuery.data.uri,
           }}
         />
       </Pressable>
@@ -118,26 +121,30 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   return (
     <Pressable
-      className="py-1 active:opacity-50 w-full overflow-hidden"
+      className='py-1 active:opacity-50 w-full overflow-hidden'
       onPress={() => {
         service.open(rendererProps.source.uri)
       }}
-      onLayout={handleContainerLayout}>
-      <Box
+      onLayout={handleContainerLayout}
+    >
+      <View
         style={[
           imageStyle,
           {
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 4,
+            backgroundColor: theme.colors.skeleton,
           },
-        ]}>
-        {imageSwr.error ? (
+        ]}
+        className={imageQuery.error ? '' : 'animate-pulse'}
+      >
+        {imageQuery.error ? (
           <PhotoIcon size={36} color={theme.colors.danger} />
         ) : (
           <PhotoIcon size={36} color={theme.colors.text_meta} />
         )}
-      </Box>
+      </View>
     </Pressable>
   )
 }

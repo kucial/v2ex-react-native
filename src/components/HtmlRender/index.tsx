@@ -16,11 +16,11 @@ import BaseRender, {
 import WebView from 'react-native-webview'
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import * as Sentry from '@sentry/react-native'
 import Color from 'color'
-import { BarCodeScannerResult } from 'expo-barcode-scanner'
+import { BarcodeScanningResult } from 'expo-camera'
 import * as Clipboard from 'expo-clipboard'
+import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 // import { convert as htmlToMarkdown } from 'react-native-html-to-markdown'
 import htmlToMarkdown from 'html-to-md'
@@ -64,19 +64,18 @@ const defaultTextProps = { selectable: false }
 function HtmlRender({
   tagsStyles,
   baseStyle,
-  navigation,
   onOpenMemberInfo,
   ...props
 }: RenderHTMLProps & {
-  navigation: NativeStackNavigationProp<AppStackParamList>
   source: HTMLSourceInline
   onOpenMemberInfo?: (data) => void
 }) {
   const { theme, colorScheme, styles: themeStyles } = useTheme()
   const alert = useAlertService()
   const viewingRef = useRef<ImageViewingService>(null)
-  const selectModalRef = useRef<BottomSheetModal>()
-  const base64ModalRef = useRef<BottomSheetModal>()
+  const selectModalRef = useRef<BottomSheetModal>(null)
+  const base64ModalRef = useRef<BottomSheetModal>(null)
+  const router = useRouter()
 
   const renderersProps = useMemo(
     () => ({
@@ -204,7 +203,10 @@ function HtmlRender({
               })
               return
             }
-            navigation.push(screen.name, screen.params)
+            router.push({
+              pathname: screen.pathname,
+              params: screen.params,
+            })
             return
           }
         }
@@ -226,21 +228,27 @@ function HtmlRender({
             Sentry.captureException(err)
           })
         } else {
-          navigation.push('browser', {
-            url,
+          router.push({
+            pathname: '/browser',
+            params: {
+              url,
+            },
           })
         }
       },
     }),
-    [navigation, onOpenMemberInfo],
+    [router, onOpenMemberInfo],
   )
 
-  const handleQrCode = useCallback((result: BarCodeScannerResult) => {
+  const handleQrCode = useCallback((result: BarcodeScanningResult) => {
     const { data } = result
     if (isAppLink(data)) {
       const screen = getScreenInfo(data)
       if (screen) {
-        navigation.push(screen.name, screen.params)
+        router.push({
+          pathname: screen.pathname,
+          params: screen.params,
+        })
         return
       }
     } else if (isURL(data) || isDeepLink(data)) {
@@ -342,7 +350,8 @@ function HtmlRender({
                   return handleBase64Decode()
               }
             }}
-            previewBackgroundColor={themeStyles.layer1.backgroundColor}>
+            previewBackgroundColor={themeStyles.layer1.backgroundColor}
+          >
             <View style={[{ padding: 6, borderRadius: 8 }]}>
               <BaseRender
                 WebView={WebView}
@@ -362,13 +371,15 @@ function HtmlRender({
       <MyBottomSheetModal
         ref={selectModalRef}
         index={0}
-        snapPoints={snapPoints}>
+        snapPoints={snapPoints}
+      >
         <BottomSheetScrollView
           contentContainerStyle={{
             paddingBottom: 44,
             paddingTop: 16,
             paddingHorizontal: 16,
-          }}>
+          }}
+        >
           {Platform.OS == 'ios' ? (
             <TextInput
               style={styles.body}
@@ -383,7 +394,8 @@ function HtmlRender({
               selectable
               selectionColor={Color(theme.colors.primary)
                 .alpha(0.15)
-                .toString()}>
+                .toString()}
+            >
               {textToSelect}
             </Text>
           )}
@@ -392,31 +404,35 @@ function HtmlRender({
       <MyBottomSheetModal
         ref={base64ModalRef}
         index={0}
-        snapPoints={['50%', '90%']}>
+        snapPoints={['50%', '90%']}
+      >
         <BottomSheetScrollView
           contentContainerStyle={{
             paddingBottom: 44,
             paddingTop: 16,
             paddingHorizontal: 16,
-          }}>
-          <View className="flex-row w-full">
-            <View className="flex-1 py-2" style={themeStyles.border_b}>
+          }}
+        >
+          <View className='flex-row w-full'>
+            <View className='flex-1 py-2' style={themeStyles.border_b}>
               <Text
                 style={[
                   themeStyles.text,
                   themeStyles.text_base,
                   { fontWeight: 'bold' },
-                ]}>
+                ]}
+              >
                 字符串
               </Text>
             </View>
-            <View className="flex-1 py-2" style={themeStyles.border_b}>
+            <View className='flex-1 py-2' style={themeStyles.border_b}>
               <Text
                 style={[
                   themeStyles.text,
                   themeStyles.text_base,
                   { fontWeight: 'bold' },
-                ]}>
+                ]}
+              >
                 解码内容
               </Text>
             </View>
@@ -424,24 +440,25 @@ function HtmlRender({
           {base64Options.map((item) => (
             <Pressable
               key={item[0]}
-              className="flex-row w-full"
+              className='flex-row w-full'
               onPress={() => {
                 base64ModalRef.current?.dismiss()
                 copyAndNotice(item[1])
-              }}>
-              <View className="flex-1 py-2" style={themeStyles.border_b}>
+              }}
+            >
+              <View className='flex-1 py-2' style={themeStyles.border_b}>
                 <Text style={[themeStyles.text, themeStyles.text_base]}>
                   {item[0]}
                 </Text>
               </View>
-              <View className="flex-1 py-2" style={themeStyles.border_b}>
+              <View className='flex-1 py-2' style={themeStyles.border_b}>
                 <Text style={[themeStyles.text, themeStyles.text_base]}>
                   {item[1]}
                 </Text>
               </View>
             </Pressable>
           ))}
-          <View className="mt-3">
+          <View className='mt-3'>
             <Text style={[themeStyles.text, themeStyles.text_sm]}>
               点击选择复制
             </Text>

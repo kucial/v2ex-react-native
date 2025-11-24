@@ -3,12 +3,13 @@ import { InteractionManager, Platform, TextInput, View } from 'react-native'
 import { NProgress } from 'react-native-nprogress'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import WebView from 'react-native-webview'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import classNames from 'classnames'
+import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
 import MyClearButton from '@/components/MyClearButton'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { getScreenInfo } from '@/utils/url'
 
 import { useSearchHistory } from './hooks'
@@ -46,11 +47,11 @@ const topicLinkCapture = `(function() {
   }
 }())`
 
-type ScreenProps = NativeStackScreenProps<AppStackParamList, 'search'>
-export default function GoogleSearch({ navigation }: ScreenProps) {
+export default function GoogleSearch() {
   const { theme, styles } = useTheme()
+  const router = useRouter()
   const insets = useSafeAreaInsets()
-  const searchInput = useRef<TextInput>()
+  const searchInput = useRef<TextInput>(null)
 
   const searchHistory = useSearchHistory()
 
@@ -74,46 +75,47 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
   }, [searchParams])
 
   return (
-    <View className="flex-1">
+    <View className='flex-1'>
       <View
-        className="w-full flex-row items-center pl-1"
+        className='w-full flex-row items-center pl-1'
         style={[
           {
             height: Platform.OS === 'android' ? 58 : 56 + insets.top,
             paddingTop: Platform.OS === 'android' ? 0 : insets.top,
           },
           styles.layer1,
-        ]}>
-        <View className="mr-1">
+        ]}
+      >
+        <View className='mr-1'>
           <BackButton
             tintColor={theme.colors.text}
             onPress={() => {
-              navigation.goBack()
+              router.back()
             }}
           />
         </View>
         <View
-          className={classNames(
+          className={cn(
             'flex flex-row flex-1 pr-3 items-center',
             Platform.select({
               ios: 'py-[6]',
               android: 'py-[8]',
             }),
-          )}>
+          )}
+        >
           <View
-            className={classNames(
-              'flex flex-row items-center rounded-lg min-h-[40px]',
-            )}
-            style={styles.input__bg}>
+            className={cn('flex flex-row items-center rounded-lg min-h-[40px]')}
+            style={styles.input__bg}
+          >
             <TextInput
-              className="flex-1 px-2"
+              className='flex-1 px-2'
               style={[styles.text, { fontSize: styles.text_base.fontSize }]}
               selectionColor={theme.colors.primary}
               placeholderTextColor={theme.colors.text_placeholder}
               defaultValue={searchParams.q || ''}
               ref={searchInput}
-              placeholder="输入关键词"
-              returnKeyType="search"
+              placeholder='输入关键词'
+              returnKeyType='search'
               onSubmitEditing={({ nativeEvent }) => {
                 setSearchParams((prev) => ({
                   ...prev,
@@ -122,7 +124,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               }}
             />
             {!!keyword && (
-              <View className="h-full flex flex-row items-center justify-center">
+              <View className='h-full flex flex-row items-center justify-center'>
                 <MyClearButton
                   onPress={() => {
                     setSearchParams((prev) => ({
@@ -139,7 +141,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
           </View>
         </View>
       </View>
-      <View className="flex-1 relative">
+      <View className='flex-1 relative'>
         {!!keyword ? (
           <WebView
             injectedJavaScript={topicLinkCapture}
@@ -152,7 +154,7 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
               styles.layer1,
               loading && !onceLoaded.current && { opacity: 0 },
             ]}
-            decelerationRate="normal"
+            decelerationRate='normal'
             onLoadStart={() => setLoading(true)}
             onLoadEnd={() => {
               setLoading(false)
@@ -165,15 +167,19 @@ export default function GoogleSearch({ navigation }: ScreenProps) {
                 if (data.type === 'open-app-link') {
                   const screen = getScreenInfo(data.payload.link)
                   if (screen) {
-                    navigation.push(screen.name, screen.params)
+                    router.push({
+                      pathname: screen.pathname,
+                      params: screen.params,
+                    })
                   }
                 }
               }
-            }}></WebView>
+            }}
+          ></WebView>
         ) : (
           <SearchHistory onSelect={setSearchParams} />
         )}
-        <View className="absolute w-full top-0">
+        <View className='absolute w-full top-0'>
           <NProgress
             backgroundColor={theme.colors.primary}
             height={3}

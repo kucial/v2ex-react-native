@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
 import { Text, TextStyle } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
-import { styled } from 'nativewind'
 
 import { getNodes } from '@/utils/v2ex-client'
 
 function NodeLabel(props: {
   id?: number
   name?: string
+  className?: string
   style?: TextStyle | TextStyle[]
 }) {
   const nodesQuery = useQuery({
@@ -34,7 +34,11 @@ function NodeLabel(props: {
     return null
   }
 
-  return <Text style={props.style}>{node.title}</Text>
+  return (
+    <Text style={props.style} className={props.className}>
+      {node.title}
+    </Text>
+  )
 }
 
-export default styled(NodeLabel)
+export default NodeLabel

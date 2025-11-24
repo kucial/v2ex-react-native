@@ -9,6 +9,7 @@ import { TextField } from '@/components/formik'
 import GroupWapper from '@/components/GroupWrapper'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchSocialForm, updateSocial } from '@/utils/v2ex-client'
@@ -78,7 +79,8 @@ export default function SocialForm(props: {
     <Formik
       initialValues={socialQuery.data?.values || {}}
       onSubmit={handleSubmit}
-      enableReinitialize>
+      enableReinitialize
+    >
       {(formikProps) => (
         <ScrollView
           refreshControl={
@@ -90,23 +92,26 @@ export default function SocialForm(props: {
                 }
               }}
             />
-          }>
-          <MaxWidthWrapper className="py-4 px-2 mb-4">
+          }
+        >
+          <MaxWidthWrapper className='py-4 px-2 mb-4'>
             {socialQuery.data && (
               <GroupWapper
                 innerStyle={styles.layer1}
                 style={socialQuery.isRefetching && { opacity: 0.4 }}
-                pointerEvents={socialQuery.isRefetching ? 'none' : 'auto'}>
-                <View className="p-3">
+                pointerEvents={socialQuery.isRefetching ? 'none' : 'auto'}
+              >
+                <View className='p-3'>
                   {socialQuery.data.fields.map((field) => (
                     <View
-                      className="flex flex-row items-center mb-2"
-                      key={field.name}>
+                      className='flex flex-row items-center mb-2'
+                      key={field.name}
+                    >
                       <Image
                         source={{ uri: field.image }}
                         style={{ width: 28, height: 28, marginRight: 12 }}
                       />
-                      <View className="flex-1">
+                      <View className='flex-1'>
                         <TextField
                           placeholder={field.label}
                           name={field.name}
@@ -116,10 +121,10 @@ export default function SocialForm(props: {
                     </View>
                   ))}
                   <Button
-                    className="my-2"
-                    variant="primary"
-                    size="md"
-                    label="提交"
+                    className='my-2'
+                    variant='primary'
+                    size='md'
+                    label='提交'
                     loading={formikProps.isSubmitting}
                     disabled={formikProps.isSubmitting}
                     onPress={() => {

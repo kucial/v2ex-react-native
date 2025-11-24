@@ -7,15 +7,14 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import * as Sentry from '@sentry/react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
@@ -23,13 +22,16 @@ import { getImageLuminosity } from '@/utils/image'
 import { localTime } from '@/utils/time'
 import {
   blockMember,
+  getMemberDetail,
   unblockMember,
   unwatchMember,
   watchMember,
 } from '@/utils/v2ex-client'
-import { getMemberDetail } from '@/utils/v2ex-client'
-import { MemberBasic, MemberDetail } from '@/utils/v2ex-client/types'
-import { StatusResponse } from '@/utils/v2ex-client/types'
+import {
+  MemberBasic,
+  MemberDetail,
+  StatusResponse,
+} from '@/utils/v2ex-client/types'
 
 import MemberInfoLinks from './MemberInfoLinks'
 
@@ -57,10 +59,7 @@ export default function MemberScreenHeader(props: {
 
   const insets = useSafeAreaInsets()
 
-  const navigation = useNavigation<
-    NativeStackNavigationProp<AppStackParamList> &
-      BottomTabNavigationProp<MainTabParamList>
-  >()
+  const router = useRouter()
 
   const { user: currentUser } = useAuthService()
   const fetchMember = useCallback(async () => {
@@ -260,7 +259,8 @@ export default function MemberScreenHeader(props: {
           left: 12,
           top: Platform.OS === 'ios' ? insets.top : 6,
           zIndex: 10,
-        }}>
+        }}
+      >
         <BackButton
           tintColor={headerContractColor}
           style={{
@@ -268,7 +268,7 @@ export default function MemberScreenHeader(props: {
             height: 36,
           }}
           onPress={() => {
-            navigation.goBack()
+            router.back()
           }}
         />
       </View>
@@ -283,11 +283,12 @@ export default function MemberScreenHeader(props: {
           },
           styles.layer1,
           layer1OffsetStyle,
-        ]}>
+        ]}
+      >
         <Image
           style={{ width: '100%', height: '100%', position: 'absolute' }}
           source={{ uri: avatar }}
-          contentFit="cover"
+          contentFit='cover'
           blurRadius={10}
         />
       </Animated.View>
@@ -299,13 +300,15 @@ export default function MemberScreenHeader(props: {
             width: '100%',
           },
           layer2OffsetStyle,
-        ]}>
+        ]}
+      >
         <View style={[{ width: '100%' }]} onLayout={handleLayout}>
           <View
             style={{
               height: topBannerHeight,
               zIndex: 2,
-            }}>
+            }}
+          >
             <View
               style={{
                 position: 'absolute',
@@ -314,9 +317,10 @@ export default function MemberScreenHeader(props: {
                 bottom: -1 * Math.round(AVATAR_SIZE * 0.7),
                 width: AVATAR_SIZE,
                 alignItems: 'center',
-              }}>
+              }}
+            >
               <AnimatedImage
-                className="w-full h-full rounded-full"
+                className='w-full h-full rounded-full'
                 style={[
                   {
                     borderWidth: 4,
@@ -331,34 +335,38 @@ export default function MemberScreenHeader(props: {
           </View>
           <View style={styles.layer1}>
             <View
-              className="flex flex-row"
+              className='flex flex-row'
               style={{
                 marginLeft: AVATAR_SIZE + 16 + 12,
                 minHeight: Math.round(AVATAR_SIZE * 0.7),
-              }}>
-              <View className="flex flex-row pr-3 pt-2 ml-auto">
+              }}
+            >
+              <View className='flex flex-row pr-3 pt-2 ml-auto'>
                 {data && currentUser && username !== currentUser.username && (
                   <Button
-                    size="md"
-                    variant="default"
+                    size='md'
+                    variant='default'
                     onPress={handleBlockToggle}
-                    label={data.meta?.blocked ? '取消屏蔽' : '屏蔽'}></Button>
+                    label={data.meta?.blocked ? '取消屏蔽' : '屏蔽'}
+                  ></Button>
                 )}
                 {data && currentUser && username !== currentUser.username && (
                   <Button
-                    size="md"
-                    variant="default"
-                    className="ml-3"
+                    size='md'
+                    variant='default'
+                    className='ml-3'
                     onPress={handleWatchToggle}
-                    label={data.meta?.watched ? '取消关注' : '关注'}></Button>
+                    label={data.meta?.watched ? '取消关注' : '关注'}
+                  ></Button>
                 )}
               </View>
             </View>
-            <View className="px-3 pb-2">
-              <View className="flex-1 pb-2">
+            <View className='px-3 pb-2'>
+              <View className='flex-1 pb-2'>
                 <Text
-                  className="font-bold"
-                  style={[styles.text_primary, styles.text_lg]}>
+                  className='font-bold'
+                  style={[styles.text_primary, styles.text_lg]}
+                >
                   {username}
                 </Text>
                 {data?.tagline && (
@@ -384,14 +392,15 @@ export default function MemberScreenHeader(props: {
         style={[
           {
             position: 'absolute',
-            top: Platform.OS == 'ios' ? insets.top : 6,
+            top: Platform.OS === 'ios' ? insets.top : 6,
             left: 64,
             zIndex: 6,
             height: 36,
             justifyContent: 'center',
           },
           headerTitleStyle,
-        ]}>
+        ]}
+      >
         <Text
           style={[
             {
@@ -399,7 +408,8 @@ export default function MemberScreenHeader(props: {
               fontWeight: '500',
               color: headerContractColor,
             },
-          ]}>
+          ]}
+        >
           {username}
         </Text>
       </Animated.View>

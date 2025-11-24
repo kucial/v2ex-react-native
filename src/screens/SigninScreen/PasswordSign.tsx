@@ -10,29 +10,27 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useQuery } from '@tanstack/react-query'
-import classNames from 'classnames'
 import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import GoogleIcon from '@/components/GoogleIcon'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { fetchLoginForm, loginWithPassword } from '@/utils/v2ex-client'
 
-type PasswordSigninProps = NativeStackScreenProps<
-  AppStackParamList,
-  'signin'
-> & {
+type PasswordSigninProps = {
   onSelectGoogleSignin(): void
   onSuccess(state?: { code: '2fa'; once: string; message: string }): void
 }
 
 function PasswordSignin(props: PasswordSigninProps) {
-  const { navigation } = props
+  const router = useRouter()
   const { theme, styles } = useTheme()
 
   const formQuery = useQuery({
@@ -104,42 +102,46 @@ function PasswordSignin(props: PasswordSigninProps) {
   const values = watch()
   return (
     <View
-      className="flex-1"
-      style={Platform.OS === 'android' ? styles.layer1 : styles.overlay}>
-      <View className="u-absolute left-1 top-1">
+      className='flex-1'
+      style={Platform.OS === 'android' ? styles.layer1 : styles.overlay}
+    >
+      <View className='u-absolute left-1 top-1'>
         <BackButton
           tintColor={theme.colors.text}
           onPress={() => {
-            navigation.goBack()
+            router.back()
           }}
         />
       </View>
-      <ScrollView className="flex-1 w-full ">
+      <ScrollView className='flex-1 w-full '>
         <MaxWidthWrapper>
-          <View className="flex flex-row justify-center mt-1">
+          <View className='flex flex-row justify-center mt-1'>
             {/* <View style={{ width: 94, height: 20 }}></View> */}
           </View>
           <Pressable
-            className="w-full"
+            className='w-full'
             onPress={() => {
               Keyboard.dismiss()
-            }}>
+            }}
+          >
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              className="flex-1 w-full items-center">
-              <View className="py-4 px-8 w-full">
+              className='flex-1 w-full items-center'
+            >
+              <View className='py-4 px-8 w-full'>
                 <Text
-                  className={classNames('pl-2 pb-[2px]', {
+                  className={cn('pl-2 pb-[2px]', {
                     'opacity-0': !values.username,
                   })}
-                  style={[styles.text, styles.text_xs]}>
+                  style={[styles.text, styles.text_xs]}
+                >
                   用户名
                 </Text>
                 <Controller
                   control={control}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className="h-[44px] px-2 mb-2 rounded-md"
+                      className='h-[44px] px-2 mb-2 rounded-md'
                       style={[
                         styles.text,
                         Platform.OS === 'android'
@@ -149,30 +151,31 @@ function PasswordSignin(props: PasswordSigninProps) {
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
-                      placeholder="用户名"
+                      placeholder='用户名'
                       onChangeText={(value) => onChange(value)}
                       value={value}
                       spellCheck={false}
                       autoCorrect={false}
-                      autoCapitalize="none"
+                      autoCapitalize='none'
                       ref={nameInput}
                     />
                   )}
-                  name="username"
+                  name='username'
                   rules={{ required: true }}
                 />
                 <Text
-                  className={classNames('pl-2 pb-[2px]', {
+                  className={cn('pl-2 pb-[2px]', {
                     'opacity-0': !values.password,
                   })}
-                  style={[styles.text, styles.text_xs]}>
+                  style={[styles.text, styles.text_xs]}
+                >
                   密码
                 </Text>
                 <Controller
                   control={control}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className="h-[44px] px-2 mb-2 rounded-md"
+                      className='h-[44px] px-2 mb-2 rounded-md'
                       style={[
                         styles.text,
                         Platform.OS === 'android'
@@ -182,29 +185,30 @@ function PasswordSignin(props: PasswordSigninProps) {
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
-                      placeholder="密码"
+                      placeholder='密码'
                       onChangeText={(value) => onChange(value)}
                       secureTextEntry
                       value={value}
                       autoCorrect={false}
-                      autoCapitalize="none"
+                      autoCapitalize='none'
                     />
                   )}
-                  name="password"
+                  name='password'
                   rules={{ required: true }}
                 />
                 {formQuery.data?.captcha ? (
                   <Pressable
                     onPress={refreshCaptcha}
-                    className="active:opacity-60 mb-2 mt-1"
+                    className='active:opacity-60 mb-2 mt-1'
                     style={{
                       width: 320,
                       height: 80,
                     }}
-                    disabled={formQuery.isLoading}>
+                    disabled={formQuery.isLoading}
+                  >
                     <Image
                       source={{ uri: formQuery.data.captcha }}
-                      className="rounded-md"
+                      className='rounded-md'
                       style={{
                         width: 320,
                         height: 80,
@@ -215,21 +219,22 @@ function PasswordSignin(props: PasswordSigninProps) {
                 ) : (
                   <View
                     style={[{ width: 320, height: 80 }, styles.layer1]}
-                    className="rounded-md mb-2 mt-1"
+                    className='rounded-md mb-2 mt-1'
                   />
                 )}
                 <Text
-                  className={classNames('pl-2 pb-[2px]', {
+                  className={cn('pl-2 pb-[2px]', {
                     'opacity-0': !values.captcha,
                   })}
-                  style={[styles.text, styles.text_xs]}>
+                  style={[styles.text, styles.text_xs]}
+                >
                   验证码
                 </Text>
                 <Controller
                   control={control}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className="h-[44px] px-2 mb-2 rounded-md"
+                      className='h-[44px] px-2 mb-2 rounded-md'
                       style={[
                         styles.text,
                         Platform.OS === 'android'
@@ -239,27 +244,27 @@ function PasswordSignin(props: PasswordSigninProps) {
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
-                      placeholder="验证码"
+                      placeholder='验证码'
                       onChangeText={(value) => onChange(value)}
                       value={value}
                       spellCheck={false}
                       autoCorrect={false}
-                      autoCapitalize="none"
-                      returnKeyLabel="登录"
-                      returnKeyType="go"
+                      autoCapitalize='none'
+                      returnKeyLabel='登录'
+                      returnKeyType='go'
                       onSubmitEditing={(e) => {
                         handleSubmit(submitLoginForm)(e)
                       }}
                     />
                   )}
-                  name="captcha"
+                  name='captcha'
                   rules={{ required: true }}
                 />
 
                 <Button
-                  className="mt-4"
-                  size="md"
-                  variant="primary"
+                  className='mt-4'
+                  size='md'
+                  variant='primary'
                   disabled={!formQuery.data || isSubmitting}
                   loading={isSubmitting}
                   onPress={(e) => {
@@ -268,18 +273,18 @@ function PasswordSignin(props: PasswordSigninProps) {
                     }
                     handleSubmit(submitLoginForm)(e)
                   }}
-                  label="登录"
+                  label='登录'
                 />
 
                 {!formQuery.isLoading && formQuery.error && (
-                  <View className="mt-4">
+                  <View className='mt-4'>
                     <Text style={styles.text_danger}>
                       {formQuery.error.message}
                     </Text>
                   </View>
                 )}
                 {error && (
-                  <View className="mt-4">
+                  <View className='mt-4'>
                     {error.map((str) => (
                       <View key={str}>
                         <Text style={styles.text_danger}>{str}</Text>
@@ -289,11 +294,12 @@ function PasswordSignin(props: PasswordSigninProps) {
                 )}
 
                 {googleSigninEnabled && (
-                  <View className="mt-8">
+                  <View className='mt-8'>
                     <Pressable
-                      className="h-[44px] flex-row rounded-md items-center justify-center active:opacity-70"
-                      onPress={props.onSelectGoogleSignin}>
-                      <View className="mr-2">
+                      className='h-[44px] flex-row rounded-md items-center justify-center active:opacity-70'
+                      onPress={props.onSelectGoogleSignin}
+                    >
+                      <View className='mr-2'>
                         <GoogleIcon />
                       </View>
                       <View>

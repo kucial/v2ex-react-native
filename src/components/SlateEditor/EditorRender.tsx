@@ -2,7 +2,6 @@ import { CSSProperties, useEffect, useState } from 'react'
 import { LayoutChangeEvent, Pressable } from 'react-native'
 import WebView from 'react-native-webview'
 import { useAssets } from 'expo-asset'
-import * as FileSystem from 'expo-file-system'
 
 import { useEditor } from './context'
 
@@ -18,11 +17,6 @@ export default function EditorRender(props: EditorRenderProps) {
   const [assets, error] = useAssets([require('./assets/editor.html')])
   const [editorHtml, setEditorHTML] = useState('')
 
-  useEffect(() => {
-    if (assets) {
-      FileSystem.readAsStringAsync(assets[0].localUri).then(setEditorHTML)
-    }
-  }, [assets])
   const editor = useEditor()
   useEffect(() => {
     editor.setInitialConfig({
@@ -48,18 +42,19 @@ export default function EditorRender(props: EditorRenderProps) {
       onPress={(e) => {
         e.stopPropagation()
       }}
-      onLayout={props.onLayout}>
-      {editorHtml && (
+      onLayout={props.onLayout}
+    >
+      {!!assets?.length && (
         <WebView
           originWhitelist={['*']}
           allowFileAccess={true}
           source={{
-            html: editorHtml,
+            uri: assets[0].localUri,
           }}
           // source={{ uri: 'http://192.168.1.102:3000/editor.html' }}
           ref={editor.webview}
           onMessage={editor.handleMessage}
-          allowingReadAccessToURL="file://"
+          allowingReadAccessToURL='file://'
           style={{
             opacity: editor.isReady() ? 1 : 0,
             backgroundColor: props.containerStyle?.backgroundColor,

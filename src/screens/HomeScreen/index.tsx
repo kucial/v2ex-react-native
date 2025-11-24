@@ -1,17 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
-import { useWindowDimensions } from 'react-native'
+import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabBar, TabView } from 'react-native-tab-view'
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
-import { CompositeScreenProps, useIsFocused } from '@react-navigation/native'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useNavigation, usePathname } from 'expo-router'
 
 import HomeTopicList from '@/components/HomeTopicList'
 import NodeTopicList from '@/components/NodeTopicList'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
 import XnaTopicList from '@/components/XnaTopicList'
+
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
@@ -20,21 +18,15 @@ import { useCachedState } from '@/utils/hooks'
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'
 
-type HomeScreenProps = CompositeScreenProps<
-  BottomTabScreenProps<MainTabParamList, 'feed'>,
-  NativeStackScreenProps<AppStackParamList>
->
-
 interface RefreshableView {
   scrollToRefresh(): void
 }
 
-export default function HomeScreen(props: HomeScreenProps) {
+export default function HomeScreen(props) {
   const {
     data: { homeTabs },
     initHomeTabs,
   } = useAppSettings()
-  const { navigation } = props
   const { width, height } = useWindowDimensions()
   const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()
@@ -61,12 +53,15 @@ export default function HomeScreen(props: HomeScreenProps) {
 
   const [index, setIndex] = useCachedState<number>(CACHE_KEY, 0)
 
+  const pathname = usePathname()
+  const navigation = useNavigation()
+
   const normalizedIndex = Math.min(index, routes ? routes.length - 1 : 0)
 
   const currentListRef = useRef<RefreshableView>(null)
   const tabIdleForRefresh = useRef<string>(null)
-  const tabIdleResetTimer = useRef<NodeJS.Timeout>()
-  const isFocused = useIsFocused()
+  const tabIdleResetTimer = useRef<NodeJS.Timeout>(null)
+
   const scrollY = useSharedValue(0)
 
   const viewWidth =
@@ -82,6 +77,7 @@ export default function HomeScreen(props: HomeScreenProps) {
     return {
       renderScene: ({ route }) => {
         const { tab } = route
+        const isFocused = pathname === '/feed'
         const isActive = isFocused && route.key === routes[normalizedIndex].key
         switch (tab.type) {
           case 'node':
@@ -106,7 +102,7 @@ export default function HomeScreen(props: HomeScreenProps) {
           case 'xna':
             return (
               <XnaTopicList
-                key="xna"
+                key='xna'
                 isFocused={isActive}
                 currentListRef={isActive && currentListRef}
               />
@@ -127,6 +123,7 @@ export default function HomeScreen(props: HomeScreenProps) {
             pressColor={theme.colors.bg_layer3}
             indicatorStyle={{
               backgroundColor: theme.colors.primary,
+              height: 2,
             }}
             style={styles.layer1}
             tabStyle={{
@@ -134,7 +131,7 @@ export default function HomeScreen(props: HomeScreenProps) {
               width: 'auto',
               minWidth: 56,
               height: 42,
-              paddingTop: 4,
+              paddingTop: 3,
             }}
             contentContainerStyle={{
               display: 'flex',
@@ -142,41 +139,8 @@ export default function HomeScreen(props: HomeScreenProps) {
               minWidth: viewWidth,
               overflow: 'scroll',
             }}
-            renderLabel={(props) => {
-              return (
-                <View>
-                  <Text
-                    style={{
-                      color: theme.colors.primary,
-                      fontWeight: '600',
-                      fontSize: 13,
-                      opacity: props.focused ? 1 : 0,
-                    }}>
-                    {props.route.title}
-                  </Text>
-                  <View
-                    style={{
-                      position: 'absolute',
-                      opacity: props.focused ? 0 : 1,
-                      left: 0,
-                      bottom: 0,
-                      width: '100%',
-                      height: '100%',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
-                    <Text
-                      style={{
-                        color: theme.colors.text,
-                        fontWeight: '400',
-                        fontSize: 13,
-                      }}>
-                      {props.route.title}
-                    </Text>
-                  </View>
-                </View>
-              )
-            }}
+            activeColor={theme.colors.primary}
+            inactiveColor={theme.colors.text}
             onTabPress={({ route }) => {
               const currentRoute = routes[normalizedIndex]
               if (currentRoute.key === route.key) {
@@ -198,7 +162,7 @@ export default function HomeScreen(props: HomeScreenProps) {
         )
       },
     }
-  }, [routes, normalizedIndex, isFocused, theme])
+  }, [routes, normalizedIndex, pathname, theme])
 
   useEffect(() => {
     if (!homeTabs) {
@@ -209,7 +173,8 @@ export default function HomeScreen(props: HomeScreenProps) {
   }, [homeTabs])
 
   useEffect(() => {
-    if (isFocused && routes) {
+    if (pathname === '/feed' && routes) {
+      // TODO: fix it later.
       const unsubscribe = navigation.addListener('tabPress', (e) => {
         if (tabIdleForRefresh.current) {
           clearTimeout(tabIdleResetTimer.current)
@@ -227,22 +192,23 @@ export default function HomeScreen(props: HomeScreenProps) {
       })
       return unsubscribe
     }
-  }, [navigation, routes, normalizedIndex, isFocused])
+  }, [navigation, routes, normalizedIndex, pathname])
 
   if (error) {
     return (
-      <View className="flex-1 flex flex-row items-center justify-center bg-white">
-        <View className="px-4 flex items-center justify-center">
+      <View className='flex-1 flex flex-row items-center justify-center bg-white'>
+        <View className='px-4 flex items-center justify-center'>
           <Text>{error?.message || '数据加载失败'}</Text>
           <Pressable
-            className="mt-4 px-4 h-[44px] w-[200px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60"
+            className='mt-4 px-4 h-[44px] w-[200px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60'
             onPress={() => {
               setError(null)
               initHomeTabs().catch((err) => {
                 setError(err)
               })
-            }}>
-            <Text className="text-white">重试</Text>
+            }}
+          >
+            <Text className='text-white'>重试</Text>
           </Pressable>
         </View>
       </View>

@@ -8,8 +8,7 @@ import {
   useRef,
 } from 'react'
 import { AppState, InteractionManager } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { useRouter } from 'expo-router'
 
 import { useCachedState } from '@/utils/hooks'
 import { getJSON, setJSON } from '@/utils/storage'
@@ -56,10 +55,9 @@ export const AuthServiceContext = createContext<AuthService>({
 
 let isFetchingUser = false
 export default function AuthServiceProvider(props: { children: ReactElement }) {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
+  const router = useRouter()
 
-  const nextAction = useRef<VoidFunction>()
+  const nextAction = useRef<VoidFunction>(null)
   const dailySigning = useRef(false)
   const alert = useAlertService()
 
@@ -129,7 +127,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
       fetchCurrentUser,
       logout,
       goToSigninSreen() {
-        navigation.navigate('signin')
+        router.push('/signin')
       },
       composeAuthedNavigation: function <T>(callback) {
         return useCallback(
@@ -142,7 +140,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
               return
             }
             if (!state.user) {
-              navigation.navigate('signin')
+              router.push('/signin')
               if (callback) {
                 nextAction.current = () => {
                   callback(params)
@@ -152,7 +150,7 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
             }
             callback?.(params)
           },
-          [callback],
+          [callback, router],
         )
       },
       getNextAction: () => {

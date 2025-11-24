@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import { ScrollView, Text, useWindowDimensions, View } from 'react-native'
 import { TabBar, TabView } from 'react-native-tab-view'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useLocalSearchParams } from 'expo-router'
 
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import NavigationHeader from '@/components/NavigationHeader'
+
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
@@ -28,18 +30,16 @@ const routes = [
   },
 ]
 
-type ScreenProps = NativeStackScreenProps<AppStackParamList, 'profile'>
-export default function ProfileScreen(props: ScreenProps) {
+export default function ProfileScreen() {
   const { user, fetchCurrentUser } = useAuthService()
   const { width, height } = useWindowDimensions()
   const { theme, styles } = useTheme()
   const padLayout = usePadLayout()
+  const params = useLocalSearchParams()
 
   const [index, setIndex] = useState(() => {
-    if (props.route.params?.initialTab) {
-      const i = routes.findIndex(
-        (item) => item.key === props.route.params?.initialTab,
-      )
+    if (params.initialTab) {
+      const i = routes.findIndex((item) => item.key === params.initialTab)
       if (i > -1) {
         return i
       }
@@ -77,7 +77,6 @@ export default function ProfileScreen(props: ScreenProps) {
                 username={user.username}
               />
             )
-            break
           case 'avatar':
             return (
               <AvatarForm
@@ -89,7 +88,7 @@ export default function ProfileScreen(props: ScreenProps) {
           default:
             return (
               <ScrollView>
-                <MaxWidthWrapper className="py-4 px-2">
+                <MaxWidthWrapper className='py-4 px-2'>
                   <View>
                     <Text>{route.title}</Text>
                   </View>
@@ -139,18 +138,21 @@ export default function ProfileScreen(props: ScreenProps) {
   }, [user.username, styles, index])
 
   return (
-    <TabView
-      navigationState={navigationState}
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      onIndexChange={setIndex}
-      initialLayout={{
-        width:
-          padLayout.active && padLayout.orientation === 'PORTRAIT'
-            ? width - APP_SIDEBAR_SIZE
-            : width,
-        height: height - 50 - 42 - 20,
-      }}
-    />
+    <View className='flex-1'>
+      <NavigationHeader canGoBack title='用户档案' shadow={false} />
+      <TabView
+        navigationState={navigationState}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={setIndex}
+        initialLayout={{
+          width:
+            padLayout.active && padLayout.orientation === 'PORTRAIT'
+              ? width - APP_SIDEBAR_SIZE
+              : width,
+          height: height - 50 - 42 - 20,
+        }}
+      />
+    </View>
   )
 }

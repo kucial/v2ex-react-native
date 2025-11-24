@@ -1,9 +1,12 @@
 import { useCallback, useMemo } from 'react'
+import { View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+import NavigationHeader from '@/components/NavigationHeader'
+
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { shouldLoadMore } from '@/utils/react-query'
 import { getMyCollectedTopics } from '@/utils/v2ex-client'
@@ -67,27 +70,29 @@ export default function CollectedTopicsScreen() {
   }, [settings.feedTitleStyle, listItems.length])
 
   return (
-    <FlashList
-      className="flex-1"
-      data={listItems}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      onEndReachedThreshold={0.4}
-      estimatedItemSize={110}
-      onEndReached={() => {
-        if (shouldLoadMore(listQuery)) {
-          listQuery.fetchNextPage()
+    <View className='flex-1'>
+      <NavigationHeader canGoBack title='收藏的主题' />
+      <FlashList
+        className='flex-1'
+        data={listItems}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        onEndReachedThreshold={0.4}
+        onEndReached={() => {
+          if (shouldLoadMore(listQuery)) {
+            listQuery.fetchNextPage()
+          }
+        }}
+        refreshControl={
+          <MyRefreshControl
+            refreshing={listQuery.isRefetching}
+            onRefresh={listQuery.refetch}
+          />
         }
-      }}
-      refreshControl={
-        <MyRefreshControl
-          refreshing={listQuery.isRefetching}
-          onRefresh={listQuery.refetch}
-        />
-      }
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listQuery} />
-      }}
-    />
+        ListFooterComponent={() => {
+          return <CommonListFooter data={listQuery} />
+        }}
+      />
+    </View>
   )
 }

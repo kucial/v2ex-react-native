@@ -1,6 +1,6 @@
 import { MutableRefObject, ReactNode, useMemo } from 'react'
 import { Text, View, ViewProps, ViewStyle } from 'react-native'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
 import { useField } from 'formik'
 import { marked } from 'marked'
 
@@ -41,7 +41,7 @@ function RichTextField({
       {label !== false && (
         <View className="flex flex-row">
           <Text
-            className={classNames('pl-2 pb-[2px]', {
+            className={cn('pl-2 pb-[2px]', {
               'opacity-0': !field.value,
             })}
             style={[styles.text, styles.text_xs]}>

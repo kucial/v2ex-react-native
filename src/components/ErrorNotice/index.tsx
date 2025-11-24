@@ -11,9 +11,9 @@ export default function ErrorNotice(props: {
   const { styles } = useTheme()
 
   return (
-    <View className="min-h-[60px] py-5" style={[props.style, styles.layer2]}>
-      <View className="flex flex-row items-center justify-center">
-        <Text className="my-md text-center" style={styles.text}>
+    <View className='min-h-[60px] py-5' style={[props.style, styles.layer2]}>
+      <View className='flex flex-row items-center justify-center'>
+        <Text className='my-md text-center' style={styles.text}>
           {props.error.message}
         </Text>
       </View>

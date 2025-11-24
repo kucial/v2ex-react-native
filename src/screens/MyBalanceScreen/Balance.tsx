@@ -1,7 +1,5 @@
 import { useCallback, useMemo } from 'react'
 import { Text, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
@@ -9,14 +7,13 @@ import CommonListFooter from '@/components/CommonListFooter'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { useTheme } from '@/containers/ThemeService'
 import { shouldLoadMore } from '@/utils/react-query'
 import { getBalanceDetail } from '@/utils/v2ex-client'
 
 export default function Balance(props: { username: string }) {
   const { theme, styles } = useTheme()
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
 
   const fetchItems = useCallback(
     async ({ pageParam }) => {
@@ -70,7 +67,8 @@ export default function Balance(props: { username: string }) {
                   {
                     height: 58,
                   },
-                ]}></View>
+                ]}
+              ></View>
             </MaxWidthWrapper>
           )
         }
@@ -84,18 +82,22 @@ export default function Balance(props: { username: string }) {
                   paddingLeft: 8,
                   paddingRight: 8,
                 },
-              ]}>
-              <View className="flex flex-row">
+              ]}
+            >
+              <View className='flex flex-row'>
                 <View
-                  style={{ flex: 2, paddingHorizontal: 4, paddingVertical: 6 }}>
+                  style={{ flex: 2, paddingHorizontal: 4, paddingVertical: 6 }}
+                >
                   <Text style={styles.text}>{item.time}</Text>
                 </View>
                 <View
-                  style={{ flex: 2, paddingHorizontal: 4, paddingVertical: 6 }}>
+                  style={{ flex: 2, paddingHorizontal: 4, paddingVertical: 6 }}
+                >
                   <Text style={styles.text}>{item.type}</Text>
                 </View>
                 <View
-                  style={{ flex: 1, paddingHorizontal: 4, paddingVertical: 6 }}>
+                  style={{ flex: 1, paddingHorizontal: 4, paddingVertical: 6 }}
+                >
                   <Text
                     style={{
                       color:
@@ -103,7 +105,8 @@ export default function Balance(props: { username: string }) {
                           ? theme.colors.success
                           : theme.colors.danger,
                       textAlign: 'center',
-                    }}>
+                    }}
+                  >
                     {item.amount}
                   </Text>
                 </View>
@@ -112,14 +115,16 @@ export default function Balance(props: { username: string }) {
                     flex: 1,
                     paddingHorizontal: 4,
                     paddingVertical: 6,
-                  }}>
+                  }}
+                >
                   <Text
                     style={[
                       styles.text,
                       {
                         textAlign: 'center',
                       },
-                    ]}>
+                    ]}
+                  >
                     {item.balance}
                   </Text>
                 </View>
@@ -128,13 +133,13 @@ export default function Balance(props: { username: string }) {
                 style={{
                   paddingHorizontal: 4,
                   paddingBottom: 8,
-                }}>
+                }}
+              >
                 <HtmlRender
                   source={{
                     html: item.description,
                     baseUrl: 'https://v2ex.com',
                   }}
-                  navigation={navigation}
                   tagsStyles={{
                     body: styles.text_desc,
                     a: {
@@ -161,7 +166,6 @@ export default function Balance(props: { username: string }) {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      estimatedItemSize={58}
       onEndReached={() => {
         if (shouldLoadMore(listQuery)) {
           listQuery.fetchNextPage()
@@ -173,7 +177,7 @@ export default function Balance(props: { username: string }) {
           onRefresh={listQuery.refetch}
         />
       }
-      ListHeaderComponent={() => <View className="h-[16]"></View>}
+      ListHeaderComponent={() => <View className='h-[16]'></View>}
       // TODO: 在头部显示显示余额信息
       ListFooterComponent={() => {
         return <CommonListFooter data={listQuery} />

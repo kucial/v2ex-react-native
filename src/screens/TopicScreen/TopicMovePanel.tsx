@@ -5,6 +5,7 @@ import * as Yup from 'yup'
 
 import Button from '@/components/Button'
 import { NodeSelectField, TextField } from '@/components/formik'
+
 import { useAlertService } from '@/containers/AlertService'
 import { moveTopic } from '@/utils/v2ex-client'
 import { NodeBasic, TopicDetail } from '@/utils/v2ex-client/types'
@@ -58,26 +59,27 @@ export default function TopicMovePanel(props: {
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
-        validationSchema={TopicMoveSchema}>
+        validationSchema={TopicMoveSchema}
+      >
         {(formikProps) => (
-          <View className="p-3 pb-5">
+          <View className='p-3 pb-5'>
             <NodeSelectField
-              className="mb-2"
-              name="node"
-              label="节点"
+              className='mb-2'
+              name='node'
+              label='节点'
               placeholder={`当前节点: ${props.node.name}`}
             />
             <TextField
-              name="memo"
-              label="备注"
-              placeholder="备注"
+              name='memo'
+              label='备注'
+              placeholder='备注'
               bottomSheet
             />
-            <View className="mt-7 mb-2">
+            <View className='mt-7 mb-2'>
               <Button
-                variant="primary"
-                size="md"
-                label="确认"
+                variant='primary'
+                size='md'
+                label='确认'
                 loading={formikProps.isSubmitting}
                 disabled={formikProps.isSubmitting}
                 onPress={() => {

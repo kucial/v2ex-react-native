@@ -1,15 +1,14 @@
-import { ReactElement, useCallback, useMemo, useRef, useState } from 'react'
-import { Pressable, Text, TextInput, View } from 'react-native'
-import { Platform } from 'react-native'
+import { ReactNode, useCallback, useMemo, useRef, useState } from 'react'
+import { Platform, Pressable, Text, TextInput, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { FlashList } from '@shopify/flash-list'
 import { useQuery } from '@tanstack/react-query'
-import classNames from 'classnames'
-import { styled } from 'nativewind'
 
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { getNodes } from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
 
@@ -24,7 +23,7 @@ const pickerSnapPoints = Platform.select({
 type NodeSelectProps = {
   filterPlaceholder?: string
   placeholder: string
-  renderLabel?(item: NodeDetail): ReactElement
+  renderLabel?(item: NodeDetail): ReactNode
   canClear?: boolean
   value?: NodeDetail | string
   onChange(item?: NodeDetail): void
@@ -39,7 +38,7 @@ function NodeSelect(props: NodeSelectProps) {
   const { theme, styles } = useTheme()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
-  const selectRef = useRef<BottomSheetModal>()
+  const selectRef = useRef<BottomSheetModal>(null)
 
   const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
 
@@ -92,14 +91,16 @@ function NodeSelect(props: NodeSelectProps) {
     ({ item }: { item: NodeDetail }) => {
       return (
         <Pressable
-          className="pl-3 active:opacity-50"
+          className='pl-3 active:opacity-50'
           onPress={() => {
             props.onChange(item)
             selectRef.current?.close()
-          }}>
+          }}
+        >
           <View
-            className={classNames('h-[50px] flex flex-row items-center pr-3')}
-            style={[styles.border_b_light]}>
+            className={cn('h-[50px] flex flex-row items-center pr-3')}
+            style={[styles.border_b_light]}
+          >
             {renderLabel(item)}
           </View>
         </Pressable>
@@ -109,15 +110,16 @@ function NodeSelect(props: NodeSelectProps) {
   )
   return (
     <>
-      <View className="relative">
+      <View className='relative'>
         <Button
-          size="md"
-          variant="input"
+          size='md'
+          variant='input'
           onPress={() => {
             setOpen(true)
             selectRef.current?.present()
-          }}>
-          <View className="w-full">
+          }}
+        >
+          <View className='w-full'>
             {value ? (
               <Text style={styles.text_base}>{renderLabel(value)}</Text>
             ) : (
@@ -128,7 +130,7 @@ function NodeSelect(props: NodeSelectProps) {
           </View>
         </Button>
         {props.canClear && props.value && (
-          <View className="absolute right-0 h-full flex flex-row items-center justify-center">
+          <View className='absolute right-0 h-full flex flex-row items-center justify-center'>
             <MyClearButton
               onPress={() => {
                 props.onChange(undefined)
@@ -144,10 +146,11 @@ function NodeSelect(props: NodeSelectProps) {
         onDismiss={() => {
           props.onBlur?.()
           setOpen(false)
-        }}>
+        }}
+      >
         {open && (
-          <View className="flex-1 w-full">
-            <View className="p-3">
+          <View className='flex-1 w-full'>
+            <View className='p-3'>
               <Input
                 autoFocus={!props.value}
                 style={{
@@ -160,7 +163,7 @@ function NodeSelect(props: NodeSelectProps) {
                 selectionColor={theme.colors.primary}
                 placeholderTextColor={theme.colors.text_placeholder}
                 placeholder={props.filterPlaceholder}
-                returnKeyType="search"
+                returnKeyType='search'
                 value={filter}
                 onChangeText={(text) => {
                   setFilter(text)
@@ -168,9 +171,8 @@ function NodeSelect(props: NodeSelectProps) {
               />
             </View>
             <FlashList
-              className="w-full"
+              className='w-full'
               data={filtered}
-              estimatedItemSize={50}
               renderItem={renderItem}
               keyExtractor={(n) => n.name}
               renderScrollComponent={ScrollView}
@@ -182,4 +184,4 @@ function NodeSelect(props: NodeSelectProps) {
   )
 }
 
-export default styled(NodeSelect)
+export default NodeSelect

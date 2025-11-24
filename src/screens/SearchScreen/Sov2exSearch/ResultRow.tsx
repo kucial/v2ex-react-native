@@ -1,14 +1,14 @@
 import { Text, useWindowDimensions, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import classNames from 'classnames'
+import { useRouter } from 'expo-router'
 
 import FixedPressable from '@/components/FixedPressable'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NodeLabel from '@/components/NodeLabel'
+
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { localTime } from '@/utils/time'
 import { SearchHit } from '@/utils/v2ex-client/types'
 
@@ -23,39 +23,35 @@ export default function ResultRow(props: { data: SearchHit }) {
   const { data } = props
   const { _source } = props.data
 
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
+  const router = useRouter()
 
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
-        sentry-label="TopicRow"
-        className={classNames(
-          'flex flex-row items-center',
-          'active:opacity-50',
-        )}
+        sentry-label='TopicRow'
+        className={cn('flex flex-row items-center', 'active:opacity-50')}
         style={[styles.layer1, styles.border_b_light]}
         onPress={() => {
-          navigation.push('topic', {
-            id: _source.id,
-            brief: {
+          router.push({
+            pathname: '/topic/[id]',
+            params: {
               id: _source.id,
-              title: _source.title,
             },
           })
-        }}>
-        <View className="pl-3"></View>
-        <View className={classNames('flex-1 py-2 pr-3')}>
+        }}
+      >
+        <View className='pl-3'></View>
+        <View className={cn('flex-1 py-2 pr-3')}>
           <View>
             <Text
-              className={classNames('font-[500]')}
-              style={[styles.text, styles.text_base]}>
+              className={cn('font-[500]')}
+              style={[styles.text, styles.text_base]}
+            >
               {_source.title}
             </Text>
           </View>
           <View>
             <HtmlRender
-              navigation={navigation}
               source={{
                 html: data.highlight?.content?.[0] || data._source.content,
                 baseUrl: 'https://v2ex.com',
@@ -66,8 +62,8 @@ export default function ResultRow(props: { data: SearchHit }) {
               }}
             />
           </View>
-          <View className="flex flex-row items-center space-x-1 py-1">
-            <View className="py-[2px] px-1 rounded" style={styles.layer2}>
+          <View className='flex flex-row items-center space-x-1 py-1'>
+            <View className='py-[2px] px-1 rounded' style={styles.layer2}>
               <NodeLabel
                 style={[styles.text_desc, styles.text_xs]}
                 id={_source.node}
@@ -79,18 +75,23 @@ export default function ResultRow(props: { data: SearchHit }) {
               </Text>
             </View>
             <Text style={styles.text_meta}>·</Text>
-            <View className="relative">
+            <View className='relative'>
               <FixedPressable
-                className="active:opacity-60"
+                className='active:opacity-60'
                 hitSlop={5}
                 onPress={() => {
-                  navigation.navigate('member', {
-                    username: _source.member,
+                  router.push({
+                    pathname: '/member/[username]',
+                    params: {
+                      username: _source.member,
+                    },
                   })
-                }}>
+                }}
+              >
                 <Text
-                  className="font-[600]"
-                  style={[styles.text_desc, styles.text_xs]}>
+                  className='font-[600]'
+                  style={[styles.text_desc, styles.text_xs]}
+                >
                   {_source.member}
                 </Text>
               </FixedPressable>

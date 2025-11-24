@@ -63,7 +63,7 @@ export default function FetchPrepare(props) {
               borderRadius: 6,
               zIndex: 5,
             },
-            styles.layer2,
+            // styles.layer2,
           ]}
           onUpdate={(status, err) => {
             switch (status) {
@@ -86,7 +86,6 @@ export default function FetchPrepare(props) {
           }}
         />
       )}
-
       {state.status === 'ready' ? (
         props.children
       ) : (

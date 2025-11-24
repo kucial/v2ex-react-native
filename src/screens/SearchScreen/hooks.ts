@@ -4,8 +4,7 @@ import { uniqBy } from 'lodash'
 import { useCachedState } from '@/utils/hooks'
 import { getJSON } from '@/utils/storage'
 
-import { HISTORY_CACHE_KEY } from './constants'
-import { CACHE_KEY } from './constants'
+import { CACHE_KEY, HISTORY_CACHE_KEY } from './constants'
 import { SearcHistorySerivce, SearchParams } from './types'
 
 export const useSearchHistory = () => {
@@ -37,7 +36,7 @@ export const useSearchHistory = () => {
         clear() {
           setHistory([])
         },
-      } as SearcHistorySerivce),
+      }) as SearcHistorySerivce,
     [history],
   )
 }

@@ -8,9 +8,8 @@ import {
   ViewStyle,
 } from 'react-native'
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
 import { useField } from 'formik'
-import { styled } from 'nativewind'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -18,7 +17,7 @@ import MyClearButton from '../MyClearButton'
 
 function TextField({
   label,
-  style,
+  className,
   inputStyle,
   name,
   bottomSheet,
@@ -40,11 +39,11 @@ function TextField({
       : BottomSheetTextInput
     : TextInput
   return (
-    <View style={style}>
+    <View className={className}>
       {label !== false && (
         <View className="flex flex-row">
           <Text
-            className={classNames('pl-2 pb-[2px]', {
+            className={cn('pl-2 pb-[2px]', {
               'opacity-0': !field.value,
             })}
             style={[styles.text, styles.text_xs]}>
@@ -60,7 +59,7 @@ function TextField({
       )}
       <View className="relative">
         <Component
-          className={classNames(
+          className={cn(
             'px-2 rounded-md',
             Platform.select({
               android: 'min-h-[44px] align-top py-2',
@@ -99,4 +98,4 @@ function TextField({
   )
 }
 
-export default styled(TextField)
+export default TextField

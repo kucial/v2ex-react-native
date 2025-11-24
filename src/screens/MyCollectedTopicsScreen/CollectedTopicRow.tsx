@@ -1,17 +1,15 @@
 import { Pressable, Text, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
 import { Image } from 'expo-image'
 
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
+import { useRouter } from 'expo-router'
 
 const CollectedTopicRow = (props: CollectedTopicRowProps) => {
   const { data, isLast } = props
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
+  const router = useRouter()
 
   const { styles } = useTheme()
 
@@ -51,9 +49,12 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
         style={!isLast && styles.border_b_light}
         onPress={() => {
           if (data) {
-            navigation.push('topic', {
-              id: props.data.id,
-              brief: props.data,
+            router.push({
+              pathname: '/topic/[id]',
+              params: {
+                id: props.data.id,
+                // brief: props.data,
+              },
             })
           }
         }}>
@@ -61,9 +62,12 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
           {data.member.avatar_normal ? (
             <Pressable
               onPress={() => {
-                navigation.push('member', {
-                  username: data.member.username,
-                  brief: data.member,
+                router.push({
+                  pathname: '/member/[username]',
+                  params: {
+                    username: data.member.username,
+                    // brief: data.member,
+                  },
                 })
               }}>
               <Image
@@ -79,7 +83,7 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
         <View className="flex-1 pl-2">
           <View className="">
             <Text
-              className={classNames({
+              className={cn({
                 'font-[500]': props.titleStyle === 'emphasized',
               })}
               style={[styles.text, styles.text_base]}>
@@ -91,9 +95,12 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                 className="py-[2px] px-[6px] rounded active:opacity-60"
                 style={styles.layer2}
                 onPress={() => {
-                  navigation.push('node', {
-                    name: data.node.name,
-                    brief: data.node,
+                  router.push({
+                    pathname: '/node/[name]',
+                    params: {
+                      name: data.node.name,
+                      brief: data.node,
+                    },
                   })
                 }}>
                 <Text style={[styles.text_meta, styles.text_xs]}>
@@ -107,8 +114,11 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                 className="px-1 active:opacity-60"
                 hitSlop={4}
                 onPress={() => {
-                  navigation.push('member', {
-                    username: data.member.username,
+                  router.push({
+                    pathname: '/member/[username]',
+                    params: {
+                      username: data.member.username,
+                    },
                   })
                 }}>
                 <Text
@@ -137,9 +147,12 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                       className="px-1 active:opacity-60"
                       hitSlop={4}
                       onPress={() => {
-                        navigation.push('member', {
-                          username: data.last_reply_by,
-                          tab: 'replies',
+                        router.push({
+                          pathname: '/member/[username]',
+                          params: {
+                            username: data.last_reply_by,
+                            tab: 'replies',
+                          },
                         })
                       }}>
                       <Text

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useRouter } from 'expo-router'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useAuthService } from '@/containers/AuthService'
@@ -9,10 +9,9 @@ import GoogleSign from './GoogleSign'
 import PasswordSign from './PasswordSign'
 
 type SignInType = 'password' | 'google'
-type SigninScreenProps = NativeStackScreenProps<AppStackParamList, 'signin'>
 
-export default function SigninScreen(props: SigninScreenProps) {
-  const { navigation } = props
+export default function SigninScreen() {
+  const router = useRouter()
   const [type, setType] = useState<SignInType>('password')
   const alert = useAlertService()
   const {
@@ -42,7 +41,7 @@ export default function SigninScreen(props: SigninScreenProps) {
           })
         }, 300)
       }
-      navigation.goBack()
+      router.back()
       const nextAction = getNextAction()
       if (nextAction) {
         nextAction()
@@ -54,7 +53,6 @@ export default function SigninScreen(props: SigninScreenProps) {
     case 'password':
       return (
         <PasswordSign
-          {...props}
           onSelectGoogleSignin={() => {
             setType('google')
           }}
@@ -64,7 +62,6 @@ export default function SigninScreen(props: SigninScreenProps) {
     case 'google':
       return (
         <GoogleSign
-          {...props}
           onSelectPasswordSignin={() => {
             setType('password')
           }}

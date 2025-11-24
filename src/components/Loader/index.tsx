@@ -18,7 +18,7 @@ const Loader = forwardRef<LottieView, LoaderProps>(
   ({ style, color, size = 28, speed = 2, autoPlay = true, ...props }, ref) => {
     const { theme } = useTheme()
 
-    const innerRef = useRef<LottieView>()
+    const innerRef = useRef<LottieView>(null)
     return (
       <LottieView
         onLayout={() => {

@@ -6,6 +6,7 @@ import * as WebBrowser from 'expo-web-browser'
 import Button from '@/components/Button'
 import GithubIcon from '@/components/GithubIcon'
 import TwitterIcon from '@/components/TwitterIcon'
+
 import { useTheme } from '@/containers/ThemeService'
 import { MemberDetail } from '@/utils/v2ex-client/types'
 
@@ -16,9 +17,9 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
     return null
   }
   return (
-    <View className="flex flex-row -ml-2">
+    <View className='flex flex-row -ml-2'>
       {data.location && (
-        <View className="flex flex-row items-center mr-3 pl-2">
+        <View className='flex flex-row items-center mr-3 pl-2'>
           <MapPinIcon
             size={18}
             style={{ marginRight: 4 }}
@@ -29,9 +30,9 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
       )}
       {data.twitter && (
         <Button
-          variant="icon"
-          size="sm"
-          className="flex flex-row items-center mr-2"
+          variant='icon'
+          size='sm'
+          className='flex flex-row items-center mr-2'
           onPress={() => {
             const url = `https://twitter.com/${data.twitter}`
             WebBrowser.openBrowserAsync(url, {
@@ -42,16 +43,17 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
             }).catch((err) => {
               Sentry.captureException(err)
             })
-          }}>
+          }}
+        >
           <TwitterIcon size={18} style={{ marginRight: 4 }} />
           <Text style={styles.text}>{data.twitter}</Text>
         </Button>
       )}
       {data.github && (
         <Button
-          variant="icon"
-          size="sm"
-          className="flex flex-row items-center mr-2"
+          variant='icon'
+          size='sm'
+          className='flex flex-row items-center mr-2'
           onPress={() => {
             const url = `https://github.com/${data.github}`
             WebBrowser.openBrowserAsync(url, {
@@ -62,7 +64,8 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
             }).catch((err) => {
               Sentry.captureException(err)
             })
-          }}>
+          }}
+        >
           <GithubIcon
             size={18}
             style={{ marginRight: 4 }}

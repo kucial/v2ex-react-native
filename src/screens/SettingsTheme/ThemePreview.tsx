@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import {
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,10 +14,9 @@ import type { BottomSheetModal } from '@gorhom/bottom-sheet'
 import Slider from '@react-native-community/slider'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import classNames from 'classnames'
+import { useRouter } from 'expo-router'
 
 import Button from '@/components/Button'
-import { StyledPressable } from '@/components/Button'
 import GroupWapper from '@/components/GroupWrapper'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -24,19 +24,21 @@ import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MySwitch from '@/components/MySwitch'
 import SectionHeader from '@/components/SectionHeader'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import * as themes from '@/containers/ThemeService/themes'
+import { cn } from '@/lib/utils'
 import NormalTopicRowDemo from '@/screens/SettingsPreference/NormalTopicRowDemo'
 
 import { html, topic } from './mock'
 import Swatch from './Swatch'
 import ThemeOption from './ThemeOption'
 
-const options: Array<{
+const options: {
   value: 'light' | 'dark'
   label: string
-}> = [
+}[] = [
   {
     value: 'light',
     label: '浅色',
@@ -50,7 +52,6 @@ const options: Array<{
 export default function ThemePreview(props: {
   theme: string
   fontScale: number
-  navigation: NativeStackNavigationProp<AppStackParamList>
   setTheme(theme: string): void
   setFontScale(scale: number): void
   colorScheme: 'dark' | 'light'
@@ -61,48 +62,51 @@ export default function ThemePreview(props: {
   const { width } = useWindowDimensions()
   const CONTAINER_WIDTH = Math.min(width, 600)
   const { styles, theme } = useTheme()
-  const sheetRef = useRef<BottomSheetModal>()
+  const sheetRef = useRef<BottomSheetModal>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const alert = useAlertService()
-  useEffect(() => {
-    props.navigation.setOptions({
-      headerStyle: {
-        backgroundColor: theme.colors.card,
-      },
-      headerTintColor: theme.colors.text,
-      headerTitleStyle: { color: theme.colors.text },
-      headerBackground() {
-        return (
-          <View
-            style={[
-              {
-                backgroundColor: theme.colors.card,
-                height: '100%',
-                borderBottomColor: theme.colors.border_light,
-                borderBottomWidth: StyleSheet.hairlineWidth,
-              },
-            ]}
-          />
-        )
-      },
-    })
-  }, [theme.colors.card])
+  const router = useRouter()
+  // useEffect(() => {
+  //   props.navigation.setOptions({
+  //     headerStyle: {
+  //       backgroundColor: theme.colors.card,
+  //     },
+  //     headerTintColor: theme.colors.text,
+  //     headerTitleStyle: { color: theme.colors.text },
+  //     headerBackground() {
+  //       return (
+  //         <View
+  //           style={[
+  //             {
+  //               backgroundColor: theme.colors.card,
+  //               height: '100%',
+  //               borderBottomColor: theme.colors.border_light,
+  //               borderBottomWidth: StyleSheet.hairlineWidth,
+  //             },
+  //           ]}
+  //         />
+  //       )
+  //     },
+  //   })
+  // }, [theme.colors.card])
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}>
+      style={{ flex: 1 }}
+    >
       <ScrollView style={{ backgroundColor: theme.colors.background }}>
         <MaxWidthWrapper>
-          <View className="flex flex-row px-3 py-3 items-center">
-            <View className="flex-1">
+          <View className='flex flex-row px-3 py-3 items-center'>
+            <View className='flex-1'>
               <Text
-                className="font-medium"
-                style={[styles.text, styles.text_base]}>
+                className='font-medium'
+                style={[styles.text, styles.text_base]}
+              >
                 外观预览
               </Text>
             </View>
-            <View className="w-[200] mr-1">
+            <View className='w-[200] mr-1'>
               <SegmentedControl
                 values={options.map((o) => o.label)}
                 selectedIndex={options.findIndex(
@@ -117,15 +121,14 @@ export default function ThemePreview(props: {
               />
             </View>
           </View>
-          <View className={classNames('pl-3')}>
-            <View
-              className={classNames('min-h-[44px] flex flex-row items-center')}>
-              <View className="flex-1">
+          <View className={cn('pl-3')}>
+            <View className={cn('min-h-[44px] flex flex-row items-center')}>
+              <View className='flex-1'>
                 <Text style={[styles.text, styles.text_base]}>
                   纯黑暗夜主题
                 </Text>
               </View>
-              <View className="mr-2 px-2">
+              <View className='mr-2 px-2'>
                 <MySwitch
                   value={props.pureDarkTheme}
                   onValueChange={(val) => props.setPureDarkTheme(val)}
@@ -134,7 +137,7 @@ export default function ThemePreview(props: {
             </View>
           </View>
 
-          <View className="flex flex-row flex-wrap px-2 pt-2">
+          <View className='flex flex-row flex-wrap px-2 pt-2'>
             {Object.values(themes).map((item) => (
               <ThemeOption
                 data={item}
@@ -149,11 +152,12 @@ export default function ThemePreview(props: {
             ))}
           </View>
 
-          <View className="px-3 pt-3">
+          <View className='px-3 pt-3'>
             <View>
               <Text
-                className="font-medium"
-                style={[styles.text, styles.text_base]}>
+                className='font-medium'
+                style={[styles.text, styles.text_base]}
+              >
                 字体大小
               </Text>
             </View>
@@ -172,7 +176,7 @@ export default function ThemePreview(props: {
                   props.setFontScale(Number(value.toFixed(2)))
                 }
               />
-              <View className="flex flex-row justify-between items-center px-1">
+              <View className='flex flex-row justify-between items-center px-1'>
                 <View>
                   <Text style={[styles.text_desc, styles.text_xs]}>小</Text>
                 </View>
@@ -183,12 +187,12 @@ export default function ThemePreview(props: {
             </View>
           </View>
 
-          <SectionHeader title="骨架图" />
-          <GroupWapper className="mx-2" innerStyle={styles.layer1}>
-            <View className="p-3">
-              <View className="flex flex-row mb-1">
-                <Box className="w-[24] h-[24] rounded" />
-                <View className="flex-1 pl-1">
+          <SectionHeader title='骨架图' />
+          <GroupWapper className='mx-2' innerStyle={styles.layer1}>
+            <View className='p-3'>
+              <View className='flex flex-row mb-1'>
+                <Box className='w-[24] h-[24] rounded' />
+                <View className='flex-1 pl-1'>
                   <InlineText style={styles.text_xs} width={120} />
                 </View>
               </View>
@@ -196,8 +200,8 @@ export default function ThemePreview(props: {
             </View>
           </GroupWapper>
 
-          <SectionHeader title="列表项" />
-          <GroupWapper className="mx-2" innerStyle={styles.layer1}>
+          <SectionHeader title='列表项' />
+          <GroupWapper className='mx-2' innerStyle={styles.layer1}>
             <NormalTopicRowDemo
               data={topic}
               showAvatar
@@ -205,74 +209,81 @@ export default function ThemePreview(props: {
               isLast
             />
           </GroupWapper>
-          <SectionHeader title="表单" />
-          <GroupWapper className="mx-2" innerStyle={styles.overlay}>
-            <View className="px-2 py-4 gap-4">
+          <SectionHeader title='表单' />
+          <GroupWapper className='mx-2' innerStyle={styles.overlay}>
+            <View className='px-2 py-4 gap-4'>
               <Button
-                size="md"
-                variant="primary"
-                label="Open Sheet"
+                size='md'
+                variant='primary'
+                label='Open Sheet'
                 onPress={(e) => {
                   sheetRef.current?.present()
-                }}></Button>
+                }}
+              ></Button>
 
               <Button
-                size="md"
-                variant="default"
-                label="About v2ex"
+                size='md'
+                variant='default'
+                label='About v2ex'
                 onPress={(e) => {
-                  props.navigation.push('browser', {
-                    url: 'https://v2ex.com/about',
+                  router.push({
+                    pathname: '/browser',
+                    params: {
+                      url: 'https://v2ex.com/about',
+                    },
                   })
-                }}></Button>
+                }}
+              ></Button>
               <Button
-                size="md"
-                variant="secondary"
-                label="Secondary"
+                size='md'
+                variant='secondary'
+                label='Secondary'
                 loading={loading}
-                onPress={() => setLoading((prev) => !prev)}></Button>
+                onPress={() => setLoading((prev) => !prev)}
+              ></Button>
             </View>
             <MyBottomSheetModal snapPoints={['50%', '75%']} ref={sheetRef}>
-              <View className="p-3">
+              <View className='p-3'>
                 <TextInput
-                  className="h-[44px] px-2 my-2 rounded-md"
+                  className='h-[44px] px-2 my-2 rounded-md'
                   style={[styles.text, styles.overlay_input__bg]}
                   selectionColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.text_placeholder}
-                  placeholder="用户名"
+                  placeholder='用户名'
                   spellCheck={false}
                   autoCorrect={false}
-                  autoCapitalize="none"
+                  autoCapitalize='none'
                 />
                 <TextInput
-                  className="h-[44px] px-2 my-2 rounded-md"
+                  className='h-[44px] px-2 my-2 rounded-md'
                   style={[styles.text, styles.overlay_input__bg]}
                   selectionColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.text_placeholder}
-                  placeholder="密码"
+                  placeholder='密码'
                   spellCheck={false}
                   autoCorrect={false}
-                  autoCapitalize="none"
+                  autoCapitalize='none'
                 />
-                <StyledPressable
-                  className={classNames(
+                <Pressable
+                  className={cn(
                     'h-[44px] rounded-md flex items-center justify-center my-4',
                     'active:opacity-60',
                   )}
                   style={styles.btn_primary__bg}
                   onPress={(e) => {
                     sheetRef.current?.dismiss()
-                  }}>
+                  }}
+                >
                   <Text style={[styles.btn_primary__text, styles.text_base]}>
                     确认
                   </Text>
-                </StyledPressable>
+                </Pressable>
               </View>
             </MyBottomSheetModal>
           </GroupWapper>
-          <SectionHeader title="消息提示" />
-          <View className="flex flex-row gap-2 px-2">
-            <View className="flex-1">
+          <SectionHeader title='消息提示' />
+          <View className='flex flex-row gap-2 px-2'>
+            <View className='flex-1'>
               <Button
                 onPress={() => {
                   alert.show({
@@ -280,11 +291,12 @@ export default function ThemePreview(props: {
                     message: '成功消息提示',
                   })
                 }}
-                size="sm"
-                variant="success"
-                label="success"></Button>
+                size='sm'
+                variant='success'
+                label='success'
+              ></Button>
             </View>
-            <View className="flex-1">
+            <View className='flex-1'>
               <Button
                 onPress={() => {
                   alert.show({
@@ -292,11 +304,12 @@ export default function ThemePreview(props: {
                     message: '注意消息提示',
                   })
                 }}
-                size="sm"
-                variant="warning"
-                label="warning"></Button>
+                size='sm'
+                variant='warning'
+                label='warning'
+              ></Button>
             </View>
-            <View className="flex-1">
+            <View className='flex-1'>
               <Button
                 onPress={() => {
                   alert.show({
@@ -304,11 +317,12 @@ export default function ThemePreview(props: {
                     message: '错误消息提示',
                   })
                 }}
-                size="sm"
-                variant="danger"
-                label="error"></Button>
+                size='sm'
+                variant='danger'
+                label='error'
+              ></Button>
             </View>
-            <View className="flex-1">
+            <View className='flex-1'>
               <Button
                 onPress={() => {
                   alert.show({
@@ -316,11 +330,12 @@ export default function ThemePreview(props: {
                     message: '信息消息提示',
                   })
                 }}
-                size="sm"
-                variant="info"
-                label="info"></Button>
+                size='sm'
+                variant='info'
+                label='info'
+              ></Button>
             </View>
-            <View className="flex-1">
+            <View className='flex-1'>
               <Button
                 onPress={() => {
                   alert.show({
@@ -329,17 +344,17 @@ export default function ThemePreview(props: {
                     message: '处理中消息提示',
                   })
                 }}
-                size="sm"
-                variant="primary"
-                label="loading"></Button>
+                size='sm'
+                variant='primary'
+                label='loading'
+              ></Button>
             </View>
           </View>
 
-          <SectionHeader title="富文本" />
-          <GroupWapper className="mx-2" innerStyle={[styles.layer1]}>
-            <View className="px-2">
+          <SectionHeader title='富文本' />
+          <GroupWapper className='mx-2' innerStyle={[styles.layer1]}>
+            <View className='px-2'>
               <HtmlRender
-                navigation={props.navigation}
                 key={`${props.theme}-${props.colorScheme}-${props.fontScale}`}
                 contentWidth={CONTAINER_WIDTH - 16}
                 source={{
@@ -350,59 +365,59 @@ export default function ThemePreview(props: {
             </View>
           </GroupWapper>
 
-          <SectionHeader title="色板" />
-          <GroupWapper className="mx-2" innerStyle={[styles.layer1]}>
-            <View className="pt-4 pl-4 flex flex-row flex-wrap">
-              <Swatch name="primary" />
-              <Swatch name="background" />
-              <Swatch name="card" />
-              <Swatch name="text" />
-              <Swatch name="border" />
-              <Swatch name="notification" />
+          <SectionHeader title='色板' />
+          <GroupWapper className='mx-2' innerStyle={[styles.layer1]}>
+            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+              <Swatch name='primary' />
+              <Swatch name='background' />
+              <Swatch name='card' />
+              <Swatch name='text' />
+              <Swatch name='border' />
+              <Swatch name='notification' />
             </View>
-            <View className="flex-1" style={styles.border_b} />
-            <View className="pt-4 pl-4 flex flex-row flex-wrap">
-              <Swatch name="success" />
-              <Swatch name="danger" />
-              <Swatch name="warning" />
-              <Swatch name="info" />
+            <View className='flex-1' style={styles.border_b} />
+            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+              <Swatch name='success' />
+              <Swatch name='danger' />
+              <Swatch name='warning' />
+              <Swatch name='info' />
             </View>
-            <View className="flex-1" style={styles.border_b} />
-            <View className="pt-4 pl-4 flex flex-row flex-wrap">
-              <Swatch name="text_title" />
-              <Swatch name="text" />
-              <Swatch name="text_desc" />
-              <Swatch name="text_meta" />
-              <Swatch name="text_placeholder" />
-              <Swatch name="text_link" />
+            <View className='flex-1' style={styles.border_b} />
+            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+              <Swatch name='text_title' />
+              <Swatch name='text' />
+              <Swatch name='text_desc' />
+              <Swatch name='text_meta' />
+              <Swatch name='text_placeholder' />
+              <Swatch name='text_link' />
             </View>
-            <View className="flex-1" style={styles.border_b} />
-            <View className="pt-4 pl-4 flex flex-row flex-wrap">
-              <Swatch name="bg_overlay" />
-              <Swatch name="bg_layer1" />
-              <Swatch name="bg_layer2" />
-              <Swatch name="bg_layer3" />
-              <Swatch name="shadow" />
-              <Swatch name="skeleton" />
-              <Swatch name="bg_danger_mask" />
-              <Swatch name="bg_highlight_mask" />
+            <View className='flex-1' style={styles.border_b} />
+            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+              <Swatch name='bg_overlay' />
+              <Swatch name='bg_layer1' />
+              <Swatch name='bg_layer2' />
+              <Swatch name='bg_layer3' />
+              <Swatch name='shadow' />
+              <Swatch name='skeleton' />
+              <Swatch name='bg_danger_mask' />
+              <Swatch name='bg_highlight_mask' />
             </View>
-            <View className="pt-4 pl-4 flex flex-row flex-wrap">
-              <Swatch name="border" />
-              <Swatch name="border_light" />
+            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+              <Swatch name='border' />
+              <Swatch name='border_light' />
             </View>
-            <View className="flex-1" style={styles.border_b} />
-            <View className="pt-4 pl-4 flex flex-row flex-wrap">
-              <Swatch name="badge_bg" />
-              <Swatch name="badge_border" />
-              <Swatch name="bts_handle_bg" />
-              <Swatch name="html_pre_bg" />
-              <Swatch name="icon_collected_bg" />
-              <Swatch name="icon_liked_bg" />
-              <Swatch name="icon_markdown_bg" />
-              <Swatch name="tag_bg" />
-              <Swatch name="overlay_input_bg" />
-              <Swatch name="input_bg" />
+            <View className='flex-1' style={styles.border_b} />
+            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+              <Swatch name='badge_bg' />
+              <Swatch name='badge_border' />
+              <Swatch name='bts_handle_bg' />
+              <Swatch name='html_pre_bg' />
+              <Swatch name='icon_collected_bg' />
+              <Swatch name='icon_liked_bg' />
+              <Swatch name='icon_markdown_bg' />
+              <Swatch name='tag_bg' />
+              <Swatch name='overlay_input_bg' />
+              <Swatch name='input_bg' />
             </View>
           </GroupWapper>
         </MaxWidthWrapper>

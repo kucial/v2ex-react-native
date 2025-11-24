@@ -10,13 +10,14 @@ import SwipeableItem, {
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
-import classNames from 'classnames'
 
 import Button from '@/components/Button'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { cn } from '@/lib/utils'
 
 import Header from './Header'
 import TideViewedTopicRow from './TideViewedTopicRow'
@@ -26,9 +27,9 @@ const Actions = (props) => {
   const params = useSwipeableItemParams()
   const { styles } = useTheme()
   return (
-    <View className="h-full flex-row justify-end" style={styles.btn_danger__bg}>
+    <View className='h-full flex-row justify-end' style={styles.btn_danger__bg}>
       <Pressable
-        className={classNames(
+        className={cn(
           'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',
           'active:opacity-70',
         )}
@@ -36,7 +37,8 @@ const Actions = (props) => {
           params.close().then(() => {
             props.onDelete(params.item)
           })
-        }}>
+        }}
+      >
         <TrashIcon color={styles.btn_danger__text.color} />
       </Pressable>
     </View>
@@ -90,7 +92,8 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
               swipeEnabled
               snapPointsLeft={[60]}
               overSwipe={60}
-              renderUnderlayLeft={() => <Actions onDelete={removeItem} />}>
+              renderUnderlayLeft={() => <Actions onDelete={removeItem} />}
+            >
               <View style={styles.layer1}>{inner}</View>
             </SwipeableItem>
           </MaxWidthWrapper>
@@ -104,8 +107,8 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   const headerRight = useMemo(
     () => (
       <Button
-        className="h-[44px] w-[44px] rounded-full"
-        variant="icon"
+        className='h-[44px] w-[44px] rounded-full'
+        variant='icon'
         radius={22}
         onPress={() => {
           // actionsheet
@@ -124,7 +127,8 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
               }
             },
           )
-        }}>
+        }}
+      >
         <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
       </Button>
     ),
@@ -143,7 +147,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   }, [setFilter])
 
   return (
-    <View className="flex-1">
+    <View className='flex-1'>
       <Header
         title={'浏览的主题（缓存）'}
         initialFilter={filter}
@@ -153,22 +157,22 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
         headerRight={headerRight}
       />
       <FlashList
-        contentInsetAdjustmentBehavior="automatic"
+        contentInsetAdjustmentBehavior='automatic'
         data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        estimatedItemSize={110}
         ListEmptyComponent={() => (
-          <View className="items-center py-9">
+          <View className='items-center py-9'>
             <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
           </View>
         )}
         ListFooterComponent={() =>
           !!data.length && (
             <View
-              sentry-label="ListFooter"
-              className="min-h-[60px] py-4 flex flex-row items-center justify-center">
-              <View className="w-full flex flex-row justify-center py-4">
+              sentry-label='ListFooter'
+              className='min-h-[60px] py-4 flex flex-row items-center justify-center'
+            >
+              <View className='w-full flex flex-row justify-center py-4'>
                 <Text style={styles.text_meta}>到达底部啦</Text>
               </View>
             </View>

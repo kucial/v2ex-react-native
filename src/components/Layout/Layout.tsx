@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
@@ -82,7 +82,7 @@ export default function Layout(props: { children: ReactNode }) {
   return (
     <AppLayoutContext.Provider value={context}>
       <View
-        className={classNames(
+        className={cn(
           'flex-1 flex',
           padLayout.orientation === 'PORTRAIT'
             ? 'flex-col'

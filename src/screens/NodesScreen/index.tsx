@@ -1,13 +1,14 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { Keyboard, SectionList, Text, View } from 'react-native'
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 import { useFocusEffect } from '@react-navigation/native'
 import { useQuery } from '@tanstack/react-query'
+import { useNavigation } from 'expo-router'
 
 import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import SearchInput from '@/components/SearchInput'
+
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
@@ -19,10 +20,9 @@ import PubliicNodeItem from './PubliicNodeItem'
 
 const CACHE_KEY = '$app$/nodes-filter'
 
-type ScreenProps = BottomTabScreenProps<MainTabParamList, 'nodes'>
-
-export default function NodesScreen({ navigation }: ScreenProps) {
+export default function NodesScreen() {
   const { status } = useAuthService()
+  const navigation = useNavigation()
 
   const { styles } = useTheme()
 
@@ -39,8 +39,8 @@ export default function NodesScreen({ navigation }: ScreenProps) {
     queryFn: getNodeGroups,
   })
 
-  const filterInput = useRef()
-  const listRef = useRef<SectionList>()
+  const filterInput = useRef(null)
+  const listRef = useRef<SectionList>(null)
 
   const { sections, renderItem } = useMemo(() => {
     return {
@@ -104,10 +104,10 @@ export default function NodesScreen({ navigation }: ScreenProps) {
   )
 
   return (
-    <View className="flex-1">
-      <View className="h-[52px] mb-1" style={styles.layer1}>
+    <View className='flex-1'>
+      <View className='h-[52px] mb-1' style={styles.layer1}>
         <SearchInput
-          placeholder="筛选"
+          placeholder='筛选'
           initialValue={filter}
           ref={filterInput}
           onSubmit={(text) => {
@@ -128,7 +128,7 @@ export default function NodesScreen({ navigation }: ScreenProps) {
             (collectedNodesQuery.isLoading || commonNodesQuery.isLoading)
           ) {
             return (
-              <View className="flex flex-row items-center justify-center py-4">
+              <View className='flex flex-row items-center justify-center py-4'>
                 <Loader />
               </View>
             )
@@ -143,12 +143,13 @@ export default function NodesScreen({ navigation }: ScreenProps) {
           return (
             <View>
               <MaxWidthWrapper>
-                <View className="mx-1">
+                <View className='mx-1'>
                   <View
-                    className="flex flex-row justify-between items-center px-3 rounded-t-sm"
-                    style={[styles.layer1, styles.border_b]}>
-                    <View className="py-2">
-                      <Text className="font-medium" style={styles.text}>
+                    className='flex flex-row justify-between items-center px-3 rounded-t-sm'
+                    style={[styles.layer1, styles.border_b]}
+                  >
+                    <View className='py-2'>
+                      <Text className='font-medium' style={styles.text}>
                         {section.title}
                       </Text>
                     </View>

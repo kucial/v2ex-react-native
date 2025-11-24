@@ -11,7 +11,6 @@ import {
   Alert,
   GestureResponderEvent,
   Pressable,
-  SafeAreaView,
   Text,
   View,
   ViewStyle,
@@ -29,15 +28,18 @@ import {
 } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import classNames from 'classnames'
+import type { EventArg } from '@react-navigation/native'
+import { Stack, useNavigation, useRouter } from 'expo-router'
 
 import Button from '@/components/Button'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import NavigationHeader from '@/components/NavigationHeader'
 import SectionHeader from '@/components/SectionHeader'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import AddTabPanelSheet from './AddTabPanelSheet'
@@ -55,7 +57,7 @@ const LineItem = (props: {
   const { styles } = useTheme()
   return (
     <Pressable
-      className={classNames('min-h-[50px] flex flex-row items-center pl-4')}
+      className={cn('min-h-[50px] flex flex-row items-center pl-4')}
       style={[
         styles.layer1,
         props.isFirst && { borderTopLeftRadius: 4, borderTopRightRadius: 4 },
@@ -66,16 +68,18 @@ const LineItem = (props: {
         props.style,
       ]}
       disabled={props.disabled}
-      onLongPress={props.onLongPress}>
+      onLongPress={props.onLongPress}
+    >
       <View
-        className={classNames('h-full flex-1 flex flex-row')}
-        style={!props.isLast && [styles.border_b]}>
-        <View className="flex-1 flex flex-row items-center">
-          {props.icon && <View className="mr-3">{props.icon}</View>}
+        className={cn('h-full flex-1 flex flex-row')}
+        style={!props.isLast && [styles.border_b]}
+      >
+        <View className='flex-1 flex flex-row items-center'>
+          {props.icon && <View className='mr-3'>{props.icon}</View>}
           <Text style={[styles.text, styles.text_base]}>{props.title}</Text>
         </View>
         {props.extra && (
-          <View className="h-full flex flex-row items-center pr-3">
+          <View className='h-full flex flex-row items-center pr-3'>
             {props.extra}
           </View>
         )}
@@ -84,13 +88,9 @@ const LineItem = (props: {
   )
 }
 
-type ScreenProps = NativeStackScreenProps<
-  AppStackParamList,
-  'home-tab-settings'
->
-
-export default function HomeTabs(props: ScreenProps) {
-  const { navigation } = props
+export default function HomeTabs() {
+  const router = useRouter()
+  const navigation = useNavigation()
   const { theme, styles, colorScheme } = useTheme()
   const {
     data: { homeTabs },
@@ -98,58 +98,15 @@ export default function HomeTabs(props: ScreenProps) {
     initHomeTabs,
   } = useAppSettings()
   const [tabs, setTabs] = useState<HomeTabOption[]>(homeTabs || [])
-  const sheetRef = useRef<BottomSheetModal>()
+  const sheetRef = useRef<BottomSheetModal>(null)
   const { showActionSheetWithOptions } = useActionSheet()
   const alert = useAlertService()
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Pressable
-          className="h-[44px] w-[44px] items-center justify-center -mr-4 active:opacity-60"
-          onPress={() => {
-            // actionsheet
-            showActionSheetWithOptions(
-              {
-                options: ['取消', '重置'],
-                cancelButtonIndex: 0,
-                destructiveButtonIndex: 1,
-                tintColor: theme.colors.primary,
-                userInterfaceStyle: colorScheme,
-                containerStyle: styles.layer1,
-              },
-              (buttonIndex) => {
-                if (buttonIndex === 1) {
-                  const instance = alert.show({
-                    type: 'info',
-                    message: '正在重新获取首页标签初始设置',
-                    duration: 0,
-                  })
-                  initHomeTabs()
-                    .then((newTabs) => {
-                      setTabs(newTabs)
-                      alert.hide(instance)
-                      alert.show({
-                        type: 'success',
-                        message: '首页标签已重置',
-                      })
-                    })
-                    .catch((err) => {
-                      alert.hide(instance)
-                      alert.show({
-                        type: 'error',
-                        message: err.message,
-                      })
-                    })
-                }
-              },
-            )
-          }}>
-          <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
-        </Pressable>
-      ),
-    })
-  }, [])
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight:
+  //   })
+  // }, [])
 
   const [enabledTabs, disabledTabs] = useMemo(() => {
     const a = []
@@ -175,7 +132,7 @@ export default function HomeTabs(props: ScreenProps) {
       }
       return (
         <ScaleDecorator>
-          <MaxWidthWrapper className="px-2">
+          <MaxWidthWrapper className='px-2'>
             <LineItem
               onLongPress={drag}
               disabled={isActive}
@@ -188,7 +145,7 @@ export default function HomeTabs(props: ScreenProps) {
               }}
               extra={
                 <Pressable
-                  className="px-2 py-2 rounded-md active:opacity-50 active:bg-red-100 dark:active:bg-rose-100"
+                  className='px-2 py-2 rounded-md active:opacity-50 active:bg-red-100 dark:active:bg-rose-100'
                   onPress={() => {
                     setTabs((prev) => {
                       return [
@@ -198,7 +155,8 @@ export default function HomeTabs(props: ScreenProps) {
                         { ...item, disabled: true },
                       ]
                     })
-                  }}>
+                  }}
+                >
                   <MinusCircleIcon color={theme.colors.danger} />
                 </Pressable>
               }
@@ -220,7 +178,7 @@ export default function HomeTabs(props: ScreenProps) {
         icon = <HomeModernIcon size={18} color={tintColor} />
       }
       return (
-        <MaxWidthWrapper key={`${item.type}-${item.name}`} className="px-2">
+        <MaxWidthWrapper key={`${item.type}-${item.name}`} className='px-2'>
           <LineItem
             title={item.label}
             icon={icon}
@@ -228,7 +186,7 @@ export default function HomeTabs(props: ScreenProps) {
             isLast={index === disabledTabs.length - 1}
             extra={
               <Pressable
-                className="px-2 py-2 rounded-md active:opacity-50 active:bg-green-100 dark:active:bg-emerald-100"
+                className='px-2 py-2 rounded-md active:opacity-50 active:bg-green-100 dark:active:bg-emerald-100'
                 onPress={() => {
                   setTabs((prev) => {
                     return [
@@ -238,7 +196,8 @@ export default function HomeTabs(props: ScreenProps) {
                       { ...item, disabled: false },
                     ]
                   })
-                }}>
+                }}
+              >
                 <PlusCircleIcon color={theme.colors.success} />
               </Pressable>
             }
@@ -246,49 +205,102 @@ export default function HomeTabs(props: ScreenProps) {
         </MaxWidthWrapper>
       )
     },
-    [disabledTabs],
+    [disabledTabs, theme],
   )
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      if (enabledTabs.length === 0) {
-        e.preventDefault()
-        Alert.alert('你需要至少设置一个首页标签页')
-        return
-      }
-      if (homeTabs !== tabs) {
-        update((prev) => ({
-          ...prev,
-          homeTabs: tabs,
-        }))
-      }
-    })
+    const unsubscribe = navigation.addListener(
+      'beforeRemove',
+      (e: EventArg<'beforeRemove', true>) => {
+        if (enabledTabs.length === 0) {
+          e.preventDefault()
+          Alert.alert('你需要至少设置一个首页标签页')
+          return
+        }
+        if (homeTabs !== tabs) {
+          update((prev) => ({
+            ...prev,
+            homeTabs: tabs,
+          }))
+        }
+      },
+    )
     return unsubscribe
-  }, [navigation, tabs, homeTabs, enabledTabs])
+  }, [navigation, tabs, homeTabs, enabledTabs, update])
 
   return (
-    <>
+    <View className='flex-1'>
+      <NavigationHeader
+        canGoBack
+        title='首页标签设置'
+        headerRight={() => (
+          <Pressable
+            className='h-[44px] w-[44px] items-center justify-center active:opacity-60'
+            onPress={() => {
+              // actionsheet
+              showActionSheetWithOptions(
+                {
+                  options: ['取消', '重置'],
+                  cancelButtonIndex: 0,
+                  destructiveButtonIndex: 1,
+                  tintColor: theme.colors.primary,
+                  userInterfaceStyle: colorScheme,
+                  containerStyle: styles.layer1,
+                },
+                (buttonIndex) => {
+                  if (buttonIndex === 1) {
+                    const instance = alert.show({
+                      type: 'info',
+                      message: '正在重新获取首页标签初始设置',
+                      duration: 0,
+                    })
+                    initHomeTabs()
+                      .then((newTabs) => {
+                        setTabs(newTabs)
+                        alert.hide(instance)
+                        alert.show({
+                          type: 'success',
+                          message: '首页标签已重置',
+                        })
+                      })
+                      .catch((err) => {
+                        alert.hide(instance)
+                        alert.show({
+                          type: 'error',
+                          message: err.message,
+                        })
+                      })
+                  }
+                },
+              )
+            }}
+          >
+            <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
+          </Pressable>
+        )}
+      />
       <DraggableFlatList
         containerStyle={{ flex: 1 }}
         activationDistance={10}
         initialNumToRender={20}
         ListHeaderComponent={
-          <MaxWidthWrapper className="px-2">
-            <SectionHeader title="已启用" desc="长按拖放可调整顺序" />
+          <MaxWidthWrapper className='px-2'>
+            <SectionHeader title='已启用' desc='长按拖放可调整顺序' />
           </MaxWidthWrapper>
         }
         ListFooterComponent={
           <>
-            <MaxWidthWrapper className="px-2">
-              <SectionHeader title="已停用" />
+            <MaxWidthWrapper className='px-2'>
+              <SectionHeader title='已停用' />
             </MaxWidthWrapper>
             {disabledTabs.length ? (
               <View>{disabledTabs.map(renderDisabledItem)}</View>
             ) : (
-              <MaxWidthWrapper className="px-2">
+              <MaxWidthWrapper className='px-2'>
                 <View
-                  className="py-4 px-3"
-                  style={[styles.layer1, { borderRadius: 4 }]}>
+                  className='py-4 px-3'
+                  style={[styles.layer1, { borderRadius: 4 }]}
+                >
                   <Text style={styles.text}>（空）</Text>
                 </View>
               </MaxWidthWrapper>
@@ -301,23 +313,22 @@ export default function HomeTabs(props: ScreenProps) {
         keyExtractor={(item) => `${item.type}-${item.value}`}
         renderItem={renderItem}
       />
-      <SafeAreaView
-        className="absolute w-full bottom-0 flex flex-row justify-center"
-        pointerEvents="box-none">
+      <View
+        className='absolute w-full bottom-0 flex flex-row justify-center pb-safe'
+        pointerEvents='box-none'
+      >
         <Button
-          variant="primary"
-          className={classNames(
-            'mb-3',
-            'w-[62px] h-[62px] rounded-full shadow-sm',
-          )}
+          variant='primary'
+          className={cn('mb-3', 'w-[62px] h-[62px] rounded-full shadow-sm')}
           radius={31}
           onPress={() => {
             sheetRef.current?.present()
-          }}>
+          }}
+        >
           <PlusIcon color={styles.btn_primary__text.color} size={24} />
         </Button>
-      </SafeAreaView>
+      </View>
       <AddTabPanelSheet ref={sheetRef} selected={tabs} onChange={setTabs} />
-    </>
+    </View>
   )
 }

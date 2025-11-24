@@ -1,6 +1,10 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
 import * as Sentry from '@sentry/react-native'
 
+import { reset, restart } from '@/utils/app-state'
+
+import ErrorNoticeView from './ErrorNoticeView'
+
 interface Props {
   children?: ReactNode
 }
@@ -8,10 +12,6 @@ interface Props {
 interface State {
   hasError: boolean
 }
-
-import { reset, restart } from '@/utils/app-state'
-
-import ErrorNoticeView from './ErrorNoticeView'
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,

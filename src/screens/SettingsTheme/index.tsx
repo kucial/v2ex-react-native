@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { View } from 'react-native'
+import { useNavigation } from 'expo-router'
+
+import NavigationHeader from '@/components/NavigationHeader'
 
 import AlertService from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
@@ -7,9 +10,8 @@ import { ThemeProvider, useColorScheme } from '@/containers/ThemeService'
 
 import ThemePreview from './ThemePreview'
 
-type ScreenProps = NativeStackScreenProps<AppStackParamList, 'theme-settings'>
-export default function SettingsTheme(props: ScreenProps) {
-  const { navigation } = props
+export default function SettingsTheme() {
+  const navigation = useNavigation()
   const {
     data: { theme, fontScale, pureDarkTheme },
     update,
@@ -36,26 +38,38 @@ export default function SettingsTheme(props: ScreenProps) {
       }
     })
     return unsubscribe
-  }, [navigation, theme, preview, scale, pureDark])
+  }, [
+    navigation,
+    theme,
+    preview,
+    scale,
+    pureDark,
+    fontScale,
+    pureDarkTheme,
+    update,
+  ])
 
   return (
     <ThemeProvider
       theme={preview}
       fontScale={scale}
       colorScheme={colorScheme}
-      pureDarkTheme={pureDark}>
+      pureDarkTheme={pureDark}
+    >
       <AlertService>
-        <ThemePreview
-          navigation={props.navigation}
-          theme={preview}
-          fontScale={scale}
-          pureDarkTheme={pureDark}
-          setTheme={setPreview}
-          setFontScale={setScale}
-          setPureDarkTheme={setPureDark}
-          colorScheme={colorScheme}
-          setColorScheme={setColorScheme}
-        />
+        <View className='flex-1'>
+          <NavigationHeader canGoBack title='主题样式' />
+          <ThemePreview
+            theme={preview}
+            fontScale={scale}
+            pureDarkTheme={pureDark}
+            setTheme={setPreview}
+            setFontScale={setScale}
+            setPureDarkTheme={setPureDark}
+            colorScheme={colorScheme}
+            setColorScheme={setColorScheme}
+          />
+        </View>
       </AlertService>
     </ThemeProvider>
   )

@@ -83,44 +83,49 @@ export default function AlbumCard(props: {
         { title: '重命名', systemIcon: 'pencil' },
         { title: '删除', systemIcon: 'trash', destructive: true },
       ]}
-      onPress={handleContextMenu}>
-      <View className="p-1 -m-1 rounded-md">
+      onPress={handleContextMenu}
+    >
+      <View className='p-1 -m-1 rounded-md'>
         <Pressable
-          className="w-full aspect-square rounded-lg overflow-hidden active:opacity-50"
-          onPress={props.onPress}>
+          className='w-full aspect-square rounded-lg overflow-hidden active:opacity-50'
+          onPress={props.onPress}
+        >
           <View
-            className="absolute inset-0 w-full items-center justify-center"
+            className='absolute inset-0 w-full items-center justify-center'
             style={{
               backgroundColor: theme.colors.bg_layer3,
-            }}>
+            }}
+          >
             {coverUri ? (
               <Image
                 source={{
                   uri: coverUri,
                 }}
-                contentFit="cover"
-                className="absolute inset-0"></Image>
+                contentFit='cover'
+                className='absolute inset-0'
+              ></Image>
             ) : (
               <PhotoIcon size={30} color={theme.colors.text} />
             )}
           </View>
-          <View className="absolute right-0 bottom-0 px-2 py-[2] items-center min-w-[30] bg-neutral-900/20 rounded-tl-md">
+          <View className='absolute right-0 bottom-0 px-2 py-[2] items-center min-w-[30] bg-neutral-900/20 rounded-tl-md'>
             <Text style={[styles.text_sm, { color: 'white' }]}>
               {data.images_count}
             </Text>
           </View>
         </Pressable>
-        <View className="flex-row items-center mt-1">
+        <View className='flex-row items-center mt-1'>
           {data.privacy === 'hidden' && (
-            <View className="px-1">
+            <View className='px-1'>
               <LockClosedIcon size={14} color={theme.colors.text_meta} />
             </View>
           )}
-          <View className="flex-1">
+          <View className='flex-1'>
             <Text
               style={[styles.text, styles.text_sm]}
               numberOfLines={1}
-              ellipsizeMode="tail">
+              ellipsizeMode='tail'
+            >
               {data.title}
             </Text>
           </View>

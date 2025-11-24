@@ -1,50 +1,55 @@
 import { Pressable, Text, View } from 'react-native'
 import { DocumentIcon } from 'react-native-heroicons/outline'
-import { useNavigation } from '@react-navigation/native'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import classNames from 'classnames'
 import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { getAbsoluteUrl } from '@/utils/url'
 import { NodeExtra } from '@/utils/v2ex-client/types'
 
 export default function CollectedNodes(props: { data: NodeExtra[] }) {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
+  const router = useRouter()
   const { data } = props
   const { theme, styles } = useTheme()
 
   return (
     <MaxWidthWrapper>
-      <View className="px-1">
+      <View className='px-1'>
         <View
           style={styles.layer1}
-          className="flex flex-row flex-wrap px-1 py-2">
+          className='flex flex-row flex-wrap px-1 py-2'
+        >
           {data.map((node) => (
-            <View key={node.name} className="basis-1/2 px-1 py-1">
+            <View key={node.name} className='basis-1/2 px-1 py-1'>
               <Pressable
-                className={classNames(
+                className={cn(
                   'py-2 px-2 rounded-lg',
                   'flex flex-row items-center',
                   'active:opacity-60',
                 )}
                 style={[styles.layer2]}
                 onPress={() => {
-                  navigation.navigate('node', {
-                    name: node.name,
+                  router.push({
+                    pathname: '/node/[name]',
+                    params: {
+                      name: node.name,
+                    },
                   })
-                }}>
+                }}
+              >
                 <Image
-                  className="w-[40px] h-[40px]"
-                  source={{ uri: getAbsoluteUrl(node.avatar_large) }}></Image>
-                <View className="ml-3 pt-1 pr-1" style={{ flex: 1 }}>
+                  className='w-[40px] h-[40px]'
+                  source={{ uri: getAbsoluteUrl(node.avatar_large) }}
+                ></Image>
+                <View className='ml-3 pt-1 pr-1' style={{ flex: 1 }}>
                   <Text numberOfLines={1} style={styles.text}>
                     {node.title}
                   </Text>
-                  <View className="mt-1 flex flex-row items-center">
-                    <View className="mr-1">
+                  <View className='mt-1 flex flex-row items-center'>
+                    <View className='mr-1'>
                       <DocumentIcon size={12} color={theme.colors.text_meta} />
                     </View>
                     <Text style={[styles.text_meta, styles.text_xs]}>

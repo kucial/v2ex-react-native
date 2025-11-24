@@ -6,6 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { shouldLoadMore } from '@/utils/react-query'
 import { getMemberReplies } from '@/utils/v2ex-client'
 
@@ -73,12 +74,11 @@ export default function MemberReplies(
 
   return (
     <AnimatedFlashList
-      className="flex-1"
+      className='flex-1'
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      estimatedItemSize={124}
       scrollEventThrottle={16}
       onEndReached={() => {
         if (shouldLoadMore(listQuery)) {

@@ -1,9 +1,5 @@
 const ListItem = ({ attributes, children, element }) => {
-  return (
-    <li {...attributes}>
-      {children}
-    </li>
-  )
+  return <li {...attributes}>{children}</li>
 }
 
-export default ListItem;
+export default ListItem

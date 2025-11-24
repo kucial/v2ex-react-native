@@ -8,6 +8,7 @@ import { TextField } from '@/components/formik'
 import GroupWapper from '@/components/GroupWrapper'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { fetchSettingsForm, updateSettings } from '@/utils/v2ex-client'
@@ -57,7 +58,8 @@ export default function SettingsForm(props: {
     <Formik
       initialValues={settingsQuery.data || {}}
       onSubmit={handleSubmit}
-      enableReinitialize>
+      enableReinitialize
+    >
       {(formikProps) => (
         <ScrollView
           refreshControl={
@@ -69,61 +71,63 @@ export default function SettingsForm(props: {
                 }
               }}
             />
-          }>
-          <MaxWidthWrapper className="py-4 px-2">
+          }
+        >
+          <MaxWidthWrapper className='py-4 px-2'>
             <GroupWapper
               innerStyle={styles.layer1}
               style={settingsQuery.isRefetching && { opacity: 0.4 }}
-              pointerEvents={settingsQuery.isRefetching ? 'none' : 'auto'}>
-              <View className="p-3">
+              pointerEvents={settingsQuery.isRefetching ? 'none' : 'auto'}
+            >
+              <View className='p-3'>
                 <TextField
-                  className="mb-2"
-                  name="website"
-                  label="个人网站"
-                  placeholder="个人网站"
+                  className='mb-2'
+                  name='website'
+                  label='个人网站'
+                  placeholder='个人网站'
                 />
-                <View className="-mx-2 flex flex-row mb-2">
-                  <View className="px-2 flex-1">
+                <View className='-mx-2 flex flex-row mb-2'>
+                  <View className='px-2 flex-1'>
                     <TextField
-                      name="company"
-                      label="所在公司"
-                      placeholder="所在公司"
+                      name='company'
+                      label='所在公司'
+                      placeholder='所在公司'
                     />
                   </View>
-                  <View className="px-2 flex-1">
+                  <View className='px-2 flex-1'>
                     <TextField
-                      name="company_title"
-                      label="工作职位"
-                      placeholder="工作职位"
+                      name='company_title'
+                      label='工作职位'
+                      placeholder='工作职位'
                     />
                   </View>
                 </View>
 
                 <TextField
-                  className="mb-2"
-                  name="location"
-                  label="所在地"
-                  placeholder="所在地"
+                  className='mb-2'
+                  name='location'
+                  label='所在地'
+                  placeholder='所在地'
                 />
                 <TextField
-                  className="mb-2"
-                  name="tagline"
-                  label="签名"
-                  placeholder="签名"
+                  className='mb-2'
+                  name='tagline'
+                  label='签名'
+                  placeholder='签名'
                 />
                 <TextField
-                  className="mb-2"
-                  name="bio"
-                  label="个人简介"
-                  placeholder="个人简介"
+                  className='mb-2'
+                  name='bio'
+                  label='个人简介'
+                  placeholder='个人简介'
                   multiline
                   inputStyle={{ height: 140 }}
                 />
-                <View className="mt-4 mb-2">
+                <View className='mt-4 mb-2'>
                   <Button
-                    variant="primary"
-                    size="md"
-                    label="提交"
+                    variant='primary'
+                    size='md'
+                    label='提交'
                     loading={formikProps.isSubmitting}
                     disabled={formikProps.isSubmitting}
                     onPress={() => {

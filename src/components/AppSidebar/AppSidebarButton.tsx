@@ -7,9 +7,9 @@ import {
   ViewStyle,
 } from 'react-native'
 import { HomeIcon } from 'react-native-heroicons/outline'
-import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 import { useLayoutStyle } from './context'
 
@@ -40,7 +40,7 @@ function AppSidebarButton(props: {
   const layoutStyle = useLayoutStyle()
   return (
     <Pressable
-      className={classNames(
+      className={cn(
         'w-[50px] h-[50px] rounded-lg items-center justify-center',
         'active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600',
       )}
@@ -51,8 +51,9 @@ function AppSidebarButton(props: {
           return
         }
         onPress(e)
-      }}>
-      <View className="relative w-[24px] h-[24px]">
+      }}
+    >
+      <View className='relative w-[24px] h-[24px]'>
         <Icon
           style={iconStyle}
           size={24}
@@ -60,14 +61,15 @@ function AppSidebarButton(props: {
         />
         {!!props.badge && (
           <View
-            className="absolute top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-solid"
+            className='absolute top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-solid'
             style={[
               styles.btn_primary__bg,
               {
                 borderColor: theme.colors.bg_overlay,
               },
-            ]}>
-            <Text className="text-[10px]" style={styles.btn_primary__text}>
+            ]}
+          >
+            <Text className='text-[10px]' style={styles.btn_primary__text}>
               {props.badge}
             </Text>
           </View>
@@ -75,7 +77,7 @@ function AppSidebarButton(props: {
       </View>
       {/* {label && (
         <Text
-          className={classNames('text-[10px] mt-1', isActive && 'font-bold')}
+          className={cn('text-[10px] mt-1', isActive && 'font-bold')}
           style={{
             color: isActive ? activeColor : staticColor,
           }}>

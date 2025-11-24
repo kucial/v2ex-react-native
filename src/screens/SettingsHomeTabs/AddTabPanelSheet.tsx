@@ -7,11 +7,12 @@ import {
 } from '@gorhom/bottom-sheet'
 import composeRefs from '@seznam/compose-react-refs'
 import { useQuery } from '@tanstack/react-query'
-import classNames from 'classnames'
 
 import CheckIcon from '@/components/CheckIcon'
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { getNodes } from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
@@ -62,7 +63,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
     ({ item, index }) => {
       return (
         <Pressable
-          className="pl-3 active:opacity-50"
+          className='pl-3 active:opacity-50'
           onPress={() => {
             const relatedItemIndex = selected.findIndex(
               (t) => t.type === 'node' && t.value === item.name,
@@ -82,12 +83,14 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
                 ...selected,
               ])
             }
-          }}>
+          }}
+        >
           <View
-            className={classNames('h-[50px] flex flex-row items-center pr-3')}
-            style={[styles.border_b_light, index === 0 && styles.border_t]}>
-            <TypeIcon size={18} color={tintColor} type="node" />
-            <View className="ml-3 flex-1">
+            className={cn('h-[50px] flex flex-row items-center pr-3')}
+            style={[styles.border_b_light, index === 0 && styles.border_t]}
+          >
+            <TypeIcon size={18} color={tintColor} type='node' />
+            <View className='ml-3 flex-1'>
               <Text style={styles.text}>{item.title}</Text>
             </View>
             {selectedMap[`node:${item.name}`] && (
@@ -105,16 +108,16 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
   return (
     <MyBottomSheetModal
       ref={composeRefs(sheetRef, ref)}
-      snapPoints={pickerSnapPoints}>
-      <View className="flex-1 h-full w-full">
+      snapPoints={pickerSnapPoints}
+    >
+      <View className='flex-1 h-full w-full'>
         <BottomSheetFlatList
-          className="w-full flex-1 bg-blue-300"
+          className='w-full flex-1'
           data={filtered}
-          // estimatedItemSize={50}
           renderItem={renderItem}
           keyExtractor={(n) => n.id}
           ListHeaderComponent={
-            <View className="p-3">
+            <View className='p-3'>
               <Input
                 onFocus={() => {
                   sheetRef.current?.snapToIndex(0)
@@ -132,7 +135,7 @@ const AddTabPanelSheet = forwardRef<BottomSheetModal, Props>((props, ref) => {
                 selectionColor={theme.colors.primary}
                 placeholderTextColor={theme.colors.text_placeholder}
                 placeholder={'查找'}
-                returnKeyType="search"
+                returnKeyType='search'
                 onChangeText={(text) => {
                   setFilter(text)
                 }}

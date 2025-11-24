@@ -1,11 +1,11 @@
 import { ReactElement } from 'react'
 import { Platform, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
 
 import BackButton from '@/components/BackButton'
 import SearchInput from '@/components/SearchInput'
 import { useTheme } from '@/containers/ThemeService'
+import { useRouter } from 'expo-router'
 
 const HEADER_HEIGHT = 48
 
@@ -18,7 +18,7 @@ export default function Header(props: {
   onSubmitFilter: (text: string) => void
 }) {
   const { styles } = useTheme()
-  const navigation = useNavigation()
+  const router = useRouter()
   const insets = useSafeAreaInsets()
   return (
     <View style={styles.layer1}>
@@ -43,7 +43,7 @@ export default function Header(props: {
           <BackButton
             tintColor={styles.text.color}
             onPress={() => {
-              navigation.goBack()
+              router.back()
             }}
           />
         </View>

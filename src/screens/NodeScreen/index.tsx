@@ -1,15 +1,16 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Text, useWindowDimensions, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 
 import AnimatedHeader from '@/components/AnimatedHeader'
 import Button from '@/components/Button'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NodeTopicList from '@/components/NodeTopicList'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
@@ -23,10 +24,12 @@ type NodeBrief = {
   name: string
 } & Partial<NodeDetail>
 
-type ScreenProps = NativeStackScreenProps<AppStackParamList, 'node'>
-
-export default function NodeScreen({ route, navigation }: ScreenProps) {
-  const { name, brief } = route.params
+export default function NodeScreen() {
+  const params = useLocalSearchParams()
+  const router = useRouter()
+  const name = params.name as string
+  const brief = null
+  // TODO: handle brief
   const { styles, colorScheme } = useTheme()
   const [collecting, setCollecting] = useState(false)
 
@@ -113,51 +116,61 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
   const handleCreateNewTopic = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        navigation.push('new-topic', {
-          node: node as NodeDetail,
-        })
+        if (node) {
+          router.push({
+            pathname: '/new-topic',
+            params: {
+              node: node?.name,
+            },
+          })
+        }
       }, [node?.name]),
     ),
     {
       message: '[NodeScreen] `New topic` button pressed',
     },
   )
-
+  console.log(node.avatar_large)
   const header = (
     <MaxWidthWrapper style={styles.layer1}>
-      <View className="p-2" style={[styles.border_b_light]}>
-        <View className="rounded-lg">
-          <View className="flex flex-row">
+      <View className='p-2' style={[styles.border_b_light]}>
+        <View className='rounded-lg'>
+          <View className='flex flex-row'>
             {node.avatar_large ? (
               <Image
-                className="w-[60px] h-[60px] mr-3"
+                className='w-[60px] h-[60px] mr-3'
                 source={{
                   uri: getAbsoluteUrl(node.avatar_large),
-                }}></Image>
+                }}
+              ></Image>
             ) : (
               <View
-                className="w-[60px] h-[60px] mr-3"
-                style={styles.layer3}></View>
+                className='w-[60px] h-[60px] mr-3'
+                style={styles.layer3}
+              ></View>
             )}
 
-            <View className="flex-1">
-              <View className="flex flex-row justify-between items-center mb-[6px]">
+            <View className='flex-1'>
+              <View className='flex flex-row justify-between items-center mb-[6px]'>
                 <View>
                   <Text
-                    className="font-semibold"
-                    style={[styles.text, styles.text_lg]}>
+                    className='font-semibold'
+                    style={[styles.text, styles.text_lg]}
+                  >
                     {node.title}
                   </Text>
                 </View>
-                <View className="flex flex-row pr-2">
+                <View className='flex flex-row pr-2'>
                   <Text
-                    className="mr-1"
-                    style={[styles.text_meta, styles.text_sm]}>
+                    className='mr-1'
+                    style={[styles.text_meta, styles.text_sm]}
+                  >
                     主题总数
                   </Text>
                   <Text
-                    className="font-medium"
-                    style={[styles.text_meta, styles.text_sm]}>
+                    className='font-medium'
+                    style={[styles.text_meta, styles.text_sm]}
+                  >
                     {node.topics || '--'}
                   </Text>
                 </View>
@@ -166,27 +179,26 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
                 {!!node.header && (
                   <HtmlRender
                     key={node.header + colorScheme}
-                    navigation={navigation}
                     contentWidth={CONTAINER_WIDTH - 100}
                     {...htmlProps}
                   />
                 )}
               </View>
-              <View className="flex flex-row mt-3 mb-2 justify-end mr-1">
+              <View className='flex flex-row mt-3 mb-2 justify-end mr-1'>
                 <Button
-                  variant="default"
-                  size="sm"
-                  className="mr-2"
+                  variant='default'
+                  size='sm'
+                  className='mr-2'
                   disabled={collecting || node.collected === undefined}
                   onPress={handleCollectToggle}
                   label={node.collected ? '取消收藏' : '加入收藏'}
                 />
                 <Button
-                  variant="default"
-                  size="sm"
+                  variant='default'
+                  size='sm'
                   disabled={!nodeQuery.data}
                   onPress={handleCreateNewTopic}
-                  label="创建新主题"
+                  label='创建新主题'
                 />
               </View>
             </View>
@@ -201,7 +213,12 @@ export default function NodeScreen({ route, navigation }: ScreenProps) {
   return (
     <View style={{ flex: 1 }}>
       <AnimatedHeader title={node?.title} scrollY={scrollY} />
-      <NodeTopicList header={header} name={name} isFocused scrollY={scrollY} />
+      <NodeTopicList
+        header={header}
+        name={name as string}
+        isFocused
+        scrollY={scrollY}
+      />
     </View>
   )
 }

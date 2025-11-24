@@ -6,18 +6,23 @@ import {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabView } from 'react-native-tab-view'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useLocalSearchParams } from 'expo-router'
 
 import AnimatedTabBar from './AnimatedTabBar'
 import MemberReplies from './MemberReplies'
 import MemberScreenHeader from './MemberScreenHeader'
 import MemberTopics from './MemberTopics'
 
-type MemberScreenProps = NativeStackScreenProps<AppStackParamList, 'member'>
-
-export default function MemberScreen({ route }: MemberScreenProps) {
-  const { username, tab } = route.params
+export default function MemberScreen() {
+  const params = useLocalSearchParams()
+  const username = params.username as string
+  const tab = params.tab as string
+  const brief = null
   const scrollY = useSharedValue(0)
+  const listOffset = useSharedValue({
+    topics: null,
+    replies: null,
+  })
   const [headerHeight, setHeaderHeight] = useState(0)
   const [tabBarHeight, setTabBarHeight] = useState(0)
 
@@ -30,7 +35,6 @@ export default function MemberScreen({ route }: MemberScreenProps) {
   ])
 
   const listRefArr = useRef([])
-  const listOffset = useRef({})
   const isListGliding = useRef(false)
 
   const [tabIndex, setIndex] = useState(() => {
@@ -50,26 +54,24 @@ export default function MemberScreen({ route }: MemberScreenProps) {
   const syncScrollOffset = () => {
     const curRouteKey = routes[tabIndex].key
     listRefArr.current.forEach((item) => {
+      const delta = headerHeight - headerCollapsedHeight
       if (item.key !== curRouteKey) {
-        if (scrollY.value < headerHeight && scrollY.value >= 0) {
+        if (scrollY.value < delta && scrollY.value >= 0) {
           if (item.value) {
             item.value.scrollToOffset({
               offset: scrollY.value,
               animated: false,
             })
-            listOffset.current[item.key] = scrollY.value
+            listOffset[item.key] = scrollY.value
           }
-        } else if (scrollY.value >= headerHeight) {
-          if (
-            listOffset.current[item.key] < headerHeight ||
-            listOffset.current[item.key] == null
-          ) {
+        } else if (scrollY.value >= delta) {
+          if (listOffset[item.key] < delta || listOffset[item.key] == null) {
             if (item.value) {
               item.value.scrollToOffset({
-                offset: headerHeight,
+                offset: delta,
                 animated: false,
               })
-              listOffset.current[item.key] = headerHeight
+              listOffset[item.key] = delta
             }
           }
         }
@@ -91,7 +93,7 @@ export default function MemberScreen({ route }: MemberScreenProps) {
       onScroll(e) {
         scrollY.value = e.contentOffset.y
         const route = routes[tabIndex].key
-        listOffset.current[route] = scrollY.value
+        listOffset[route] = scrollY.value
       },
     },
     [tabIndex],
@@ -100,8 +102,8 @@ export default function MemberScreen({ route }: MemberScreenProps) {
   const renderTabBar = (props) => (
     <>
       <MemberScreenHeader
-        username={username}
-        brief={route.params.brief}
+        username={username as string}
+        brief={brief}
         scrollY={scrollY}
         headerHeight={headerHeight}
         headerCollapsedHeight={headerCollapsedHeight}
@@ -112,13 +114,14 @@ export default function MemberScreen({ route }: MemberScreenProps) {
         scrollY={scrollY}
         headerCollapsedHeight={headerCollapsedHeight}
         setTabBarHeight={setTabBarHeight}
+        tabCount={2}
         {...props}
       />
     </>
   )
 
   return (
-    <View className="flex-1">
+    <View className='flex-1'>
       <TabView
         onIndexChange={setIndex}
         navigationState={{ index: tabIndex, routes }}
@@ -128,7 +131,7 @@ export default function MemberScreen({ route }: MemberScreenProps) {
           const contentContainerStyle = {
             paddingTop: headerHeight + tabBarHeight,
           }
-          if (route.key == 'topics') {
+          if (route.key === 'topics') {
             return (
               <MemberTopics
                 username={username}
@@ -182,7 +185,6 @@ export default function MemberScreen({ route }: MemberScreenProps) {
           )
         }}
         initialLayout={{
-          height: 0,
           width: Dimensions.get('window').width,
         }}
       />

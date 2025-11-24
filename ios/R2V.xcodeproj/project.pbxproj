@@ -7,34 +7,109 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
+		036B2320C68D4A33960CD900 /* r2v_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7260B3F2D8E04D53898BB717 /* r2v_dark-Icon-60x60@2x.png */; };
+		0AC69E44B25F4168A166AA79 /* gin_pink_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 937478631E004782B4D415E0 /* gin_pink_light-Icon-60x60@2x.png */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		171AA95CADF8496B8A002C7E /* r2v_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = AA26BBD7225A424B98C1B8EB /* r2v_light-Icon-60x60@2x.png */; };
+		1AEBBAFF7F14468A87C4F5F0 /* gin_green_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F77D518EDF7C4C8E81C7686D /* gin_green_dark-Icon-60x60@3x.png */; };
+		2A0AC5546BDF4DEEBFDAC39A /* r2v_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 51FD39A36DB34FB4B370F212 /* r2v_light-Icon-60x60@3x.png */; };
+		2AE0E97E03E04A84A0A8986C /* gin_teal_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3ABE5BBD04E4479AB0069CBB /* gin_teal_light-Icon-60x60@2x.png */; };
+		311EC20505F44A98A18BCFB6 /* gin_yellow_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 55E72BC277DF48A5BA90AF3F /* gin_yellow_dark-Icon-60x60@2x.png */; };
+		34AD7E15DBBB4603B1A94150 /* gin_blue_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E7890B32B7340B9B1B7DBE7 /* gin_blue_light-Icon-60x60@2x.png */; };
+		3907DF60CC4547AEA40530A1 /* gin_blue_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0D0537B1E2D24DD6A8F2040B /* gin_blue_light-Icon-60x60@3x.png */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		679A7D9CC7A743F58C4F00A6 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01B59DFCB28442C6BD03706F /* noop-file.swift */; };
-		96905EF65AED1B983A6B3ABC /* libPods-R2V.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-R2V.a */; };
-		AA6FEF9C1F4BAA94BDDA6F3E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 20A99727DC0A8BCC6FA23551 /* PrivacyInfo.xcprivacy */; };
-		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
+		48B700B6989940759ADBE6AB /* gin_red_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2148C4B1B2C24ED781C0EF7E /* gin_red_dark-Icon-60x60@2x.png */; };
+		491DB6BBFFB24E7F964E7885 /* gin_pink_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A71DC914F854647AF0D1F8F /* gin_pink_dark-Icon-60x60@2x.png */; };
+		501D33AD4AA04B8CBE0359D1 /* r2v_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DA1847E23CB4470A4A4BEDD /* r2v_dark-Icon-60x60@3x.png */; };
+		5EBF058BF06E4DD987875345 /* gin_teal_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FEA96A9D7F2F4F4FB08A1CE0 /* gin_teal_dark-Icon-60x60@2x.png */; };
+		60A150D7147844C6A7D10F15 /* gin_yellow_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = E94925260BDB4846A6400BC3 /* gin_yellow_dark-Icon-60x60@3x.png */; };
+		65397555615A4C1894415EE5 /* gin_orange_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3FB0051AD4E4451AADC247E3 /* gin_orange_light-Icon-60x60@3x.png */; };
+		66B6EE50E5DC433A86F4BF49 /* gin_orange_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3A8112D1E9A544E4A32E76FF /* gin_orange_dark-Icon-60x60@3x.png */; };
+		68A9B95ED0FD415FA0BD5AB1 /* gin_red_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5539834C74854D318BF9FFF9 /* gin_red_light-Icon-60x60@2x.png */; };
+		709CEAA7788E425286374FDA /* gin_orange_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF6556EB6DCC46F880AF5821 /* gin_orange_dark-Icon-60x60@2x.png */; };
+		735FC1FBAC2145938815C9FE /* gin_pink_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D7CBCAE43D4A46D8985F013A /* gin_pink_dark-Icon-60x60@3x.png */; };
+		861370F533B44ED4BA286884 /* gin_blue_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7F40403A86094CF881E2799C /* gin_blue_dark-Icon-60x60@2x.png */; };
+		89210B48BDFE4CE18A6DAB06 /* gin_green_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F6789D755FEE4F8B960AB50E /* gin_green_light-Icon-60x60@2x.png */; };
+		89A4F389D2444C6F97171E16 /* gin_teal_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 52F65336BDF84DB79DD336F1 /* gin_teal_light-Icon-60x60@3x.png */; };
+		8DA33D5102FE4D5B894996C3 /* gin_orange_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EDA9B6F3962D4D6EBB111CD2 /* gin_orange_light-Icon-60x60@2x.png */; };
+		8FE268A8EA6C41E7992E816F /* gin_purple_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B7C223F45AA144B49C1B714C /* gin_purple_light-Icon-60x60@2x.png */; };
+		9015863C8802CCED1E1BE484 /* libPods-R2V.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40B349698821437693F67138 /* libPods-R2V.a */; };
+		92D50F8A96EF90F54CD219E4 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5A318AE9026FD6EB0FACC3 /* ExpoModulesProvider.swift */; };
+		98C8F6F758F04761BE37898A /* gin_blue_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0414E1B363064D9297FB7B42 /* gin_blue_dark-Icon-60x60@3x.png */; };
+		99796F4D6BA841EEA9B8ED3F /* gin_purple_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 64EAC10BDA5D48898BCDFB8B /* gin_purple_light-Icon-60x60@3x.png */; };
+		9CF9E0A0F7C24C83A213530E /* gin_dark_purple_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8109D1364C974CE2A7841437 /* gin_dark_purple_light-Icon-60x60@3x.png */; };
+		A2B74097B25D47169EA5BD4E /* gin_green_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D096A11D51E4CF3A13A96EA /* gin_green_light-Icon-60x60@3x.png */; };
+		A883DDE1F4594551A0953691 /* gin_green_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9EC55CB3C6AA4636A7ECD359 /* gin_green_dark-Icon-60x60@2x.png */; };
+		BA1991D90F6E4C78A84D7DC8 /* gin_teal_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = E7A3D2EB826948B18902DE32 /* gin_teal_dark-Icon-60x60@3x.png */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		BFA535EB345C427490C31AEB /* gin_red_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = BACC200B93AB46DAA7FB6674 /* gin_red_light-Icon-60x60@3x.png */; };
+		CA037DD838A94871ADAA747E /* gin_dark_purple_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B01B41F90FCA40AB9C1A0E04 /* gin_dark_purple_dark-Icon-60x60@2x.png */; };
+		D3028B9EEC5151E7CB893DF1 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B4D5401A14A29B70F9AAE932 /* PrivacyInfo.xcprivacy */; };
+		DEF9CA68E3A24882B88595BC /* gin_pink_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D73C66E11BD24045853E0679 /* gin_pink_light-Icon-60x60@3x.png */; };
+		E34878AF08F849FC965CCFC3 /* gin_red_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = FE31F6279B7548B4959B4017 /* gin_red_dark-Icon-60x60@3x.png */; };
+		E621D67422E441A19DE83290 /* gin_purple_dark-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F5DF79E86055419FAE2358D4 /* gin_purple_dark-Icon-60x60@2x.png */; };
+		EA33D91084F1400A961C8A34 /* gin_dark_purple_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 898B7052D08A4820A95F2D38 /* gin_dark_purple_dark-Icon-60x60@3x.png */; };
+		EABDFF2250B6492FABA786A3 /* gin_yellow_light-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = AD68B7F530B34B6EB0BCD092 /* gin_yellow_light-Icon-60x60@3x.png */; };
+		EEB9751A3126444F951FF7F9 /* gin_yellow_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 97DD230F7B6E4414ACAAA3BC /* gin_yellow_light-Icon-60x60@2x.png */; };
+		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		F2E77D7C4EE547E198CD8FCE /* gin_purple_dark-Icon-60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1DCCF39D316E4D7D95F2272A /* gin_purple_dark-Icon-60x60@3x.png */; };
+		F8D0A4BC0E4249D3AEA54337 /* gin_dark_purple_light-Icon-60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3DA421F1B35F47B0B5B7CF21 /* gin_dark_purple_light-Icon-60x60@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		01B59DFCB28442C6BD03706F /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "R2V/noop-file.swift"; sourceTree = "<group>"; };
+		0414E1B363064D9297FB7B42 /* gin_blue_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_blue_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_blue_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		0D0537B1E2D24DD6A8F2040B /* gin_blue_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_blue_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_blue_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* R2V.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = R2V.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = R2V/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = R2V/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = R2V/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = R2V/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = R2V/main.m; sourceTree = "<group>"; };
-		20A99727DC0A8BCC6FA23551 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = R2V/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		48082C65043E492DB06D1FBF /* R2V-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "R2V-Bridging-Header.h"; path = "R2V/R2V-Bridging-Header.h"; sourceTree = "<group>"; };
-		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-R2V.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-R2V.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6C2E3173556A471DD304B334 /* Pods-R2V.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-R2V.debug.xcconfig"; path = "Target Support Files/Pods-R2V/Pods-R2V.debug.xcconfig"; sourceTree = "<group>"; };
-		7A4D352CD337FB3A3BF06240 /* Pods-R2V.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-R2V.release.xcconfig"; path = "Target Support Files/Pods-R2V/Pods-R2V.release.xcconfig"; sourceTree = "<group>"; };
+		1DCCF39D316E4D7D95F2272A /* gin_purple_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_purple_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_purple_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		2139CD6D4BAC264DC4B9BB52 /* Pods-R2V.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-R2V.release.xcconfig"; path = "Target Support Files/Pods-R2V/Pods-R2V.release.xcconfig"; sourceTree = "<group>"; };
+		2148C4B1B2C24ED781C0EF7E /* gin_red_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_red_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_red_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		2A71DC914F854647AF0D1F8F /* gin_pink_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_pink_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_pink_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		3A8112D1E9A544E4A32E76FF /* gin_orange_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_orange_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_orange_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		3ABE5BBD04E4479AB0069CBB /* gin_teal_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_teal_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_teal_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		3DA421F1B35F47B0B5B7CF21 /* gin_dark_purple_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_dark_purple_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_dark_purple_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		3FB0051AD4E4451AADC247E3 /* gin_orange_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_orange_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_orange_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		40B349698821437693F67138 /* libPods-R2V.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-R2V.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E7890B32B7340B9B1B7DBE7 /* gin_blue_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_blue_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_blue_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		51FD39A36DB34FB4B370F212 /* r2v_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "r2v_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/r2v_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		52F65336BDF84DB79DD336F1 /* gin_teal_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_teal_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_teal_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		5539834C74854D318BF9FFF9 /* gin_red_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_red_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_red_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		55E72BC277DF48A5BA90AF3F /* gin_yellow_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_yellow_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_yellow_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		64EAC10BDA5D48898BCDFB8B /* gin_purple_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_purple_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_purple_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		7260B3F2D8E04D53898BB717 /* r2v_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "r2v_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/r2v_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		7F40403A86094CF881E2799C /* gin_blue_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_blue_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_blue_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		8109D1364C974CE2A7841437 /* gin_dark_purple_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_dark_purple_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_dark_purple_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		898B7052D08A4820A95F2D38 /* gin_dark_purple_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_dark_purple_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_dark_purple_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		937478631E004782B4D415E0 /* gin_pink_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_pink_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_pink_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		97DD230F7B6E4414ACAAA3BC /* gin_yellow_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_yellow_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_yellow_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		9D096A11D51E4CF3A13A96EA /* gin_green_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_green_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_green_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		9DA1847E23CB4470A4A4BEDD /* r2v_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "r2v_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/r2v_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		9EC55CB3C6AA4636A7ECD359 /* gin_green_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_green_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_green_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		AA26BBD7225A424B98C1B8EB /* r2v_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "r2v_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/r2v_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = R2V/SplashScreen.storyboard; sourceTree = "<group>"; };
+		AD68B7F530B34B6EB0BCD092 /* gin_yellow_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_yellow_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_yellow_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		B01B41F90FCA40AB9C1A0E04 /* gin_dark_purple_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_dark_purple_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_dark_purple_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		B4D5401A14A29B70F9AAE932 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = R2V/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B7C223F45AA144B49C1B714C /* gin_purple_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_purple_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_purple_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		BACC200B93AB46DAA7FB6674 /* gin_red_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_red_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_red_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		CE5A318AE9026FD6EB0FACC3 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-R2V/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		D20D58408847662D9A55A672 /* Pods-R2V.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-R2V.debug.xcconfig"; path = "Target Support Files/Pods-R2V/Pods-R2V.debug.xcconfig"; sourceTree = "<group>"; };
+		D73C66E11BD24045853E0679 /* gin_pink_light-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_pink_light-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_pink_light-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		D7CBCAE43D4A46D8985F013A /* gin_pink_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_pink_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_pink_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		E7A3D2EB826948B18902DE32 /* gin_teal_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_teal_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_teal_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		E94925260BDB4846A6400BC3 /* gin_yellow_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_yellow_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_yellow_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-R2V/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		EDA9B6F3962D4D6EBB111CD2 /* gin_orange_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_orange_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_orange_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = R2V/AppDelegate.swift; sourceTree = "<group>"; };
+		F11748442D0722820044C1D9 /* R2V-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "R2V-Bridging-Header.h"; path = "R2V/R2V-Bridging-Header.h"; sourceTree = "<group>"; };
+		F5DF79E86055419FAE2358D4 /* gin_purple_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_purple_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_purple_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		F6789D755FEE4F8B960AB50E /* gin_green_light-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_green_light-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_green_light-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		F77D518EDF7C4C8E81C7686D /* gin_green_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_green_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_green_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		FE31F6279B7548B4959B4017 /* gin_red_dark-Icon-60x60@3x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_red_dark-Icon-60x60@3x.png"; path = "R2V/DynamicAppIcons/gin_red_dark-Icon-60x60@3x.png"; sourceTree = "<group>"; };
+		FEA96A9D7F2F4F4FB08A1CE0 /* gin_teal_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_teal_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_teal_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
+		FF6556EB6DCC46F880AF5821 /* gin_orange_dark-Icon-60x60@2x.png */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "gin_orange_dark-Icon-60x60@2x.png"; path = "R2V/DynamicAppIcons/gin_orange_dark-Icon-60x60@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,7 +117,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96905EF65AED1B983A6B3ABC /* libPods-R2V.a in Frameworks */,
+				9015863C8802CCED1E1BE484 /* libPods-R2V.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,34 +127,51 @@
 		13B07FAE1A68108700A75B9A /* R2V */ = {
 			isa = PBXGroup;
 			children = (
+				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
+				F11748442D0722820044C1D9 /* R2V-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
-				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
-				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				01B59DFCB28442C6BD03706F /* noop-file.swift */,
-				48082C65043E492DB06D1FBF /* R2V-Bridging-Header.h */,
-				20A99727DC0A8BCC6FA23551 /* PrivacyInfo.xcprivacy */,
+				9BEEEEFD09F04C4DA701583D /* DynamicAppIcons */,
+				B4D5401A14A29B70F9AAE932 /* PrivacyInfo.xcprivacy */,
 			);
 			name = R2V;
+			sourceTree = "<group>";
+		};
+		1DA3B4A5885D92D9E515B2A4 /* R2V */ = {
+			isa = PBXGroup;
+			children = (
+				CE5A318AE9026FD6EB0FACC3 /* ExpoModulesProvider.swift */,
+			);
+			name = R2V;
+			sourceTree = "<group>";
+		};
+		23CDCB87BEA5C6A9A366783B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D20D58408847662D9A55A672 /* Pods-R2V.debug.xcconfig */,
+				2139CD6D4BAC264DC4B9BB52 /* Pods-R2V.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-R2V.a */,
+				40B349698821437693F67138 /* libPods-R2V.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		3AF5846D5B9F4480B9A078E4 /* Resources */ = {
+		65495BA1DED03DE6CA35FBB4 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
+				1DA3B4A5885D92D9E515B2A4 /* R2V */,
 			);
-			name = Resources;
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -96,9 +188,9 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				D65327D7A22EEC0BE12398D9 /* Pods */,
-				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
-				3AF5846D5B9F4480B9A078E4 /* Resources */,
+				C18A4E6C39A043B48532D547 /* Resources */,
+				23CDCB87BEA5C6A9A366783B /* Pods */,
+				65495BA1DED03DE6CA35FBB4 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -113,12 +205,52 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		92DBD88DE9BF7D494EA9DA96 /* R2V */ = {
+		9BEEEEFD09F04C4DA701583D /* DynamicAppIcons */ = {
 			isa = PBXGroup;
 			children = (
-				FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */,
+				AA26BBD7225A424B98C1B8EB /* r2v_light-Icon-60x60@2x.png */,
+				51FD39A36DB34FB4B370F212 /* r2v_light-Icon-60x60@3x.png */,
+				7260B3F2D8E04D53898BB717 /* r2v_dark-Icon-60x60@2x.png */,
+				9DA1847E23CB4470A4A4BEDD /* r2v_dark-Icon-60x60@3x.png */,
+				4E7890B32B7340B9B1B7DBE7 /* gin_blue_light-Icon-60x60@2x.png */,
+				0D0537B1E2D24DD6A8F2040B /* gin_blue_light-Icon-60x60@3x.png */,
+				7F40403A86094CF881E2799C /* gin_blue_dark-Icon-60x60@2x.png */,
+				0414E1B363064D9297FB7B42 /* gin_blue_dark-Icon-60x60@3x.png */,
+				3DA421F1B35F47B0B5B7CF21 /* gin_dark_purple_light-Icon-60x60@2x.png */,
+				8109D1364C974CE2A7841437 /* gin_dark_purple_light-Icon-60x60@3x.png */,
+				B01B41F90FCA40AB9C1A0E04 /* gin_dark_purple_dark-Icon-60x60@2x.png */,
+				898B7052D08A4820A95F2D38 /* gin_dark_purple_dark-Icon-60x60@3x.png */,
+				B7C223F45AA144B49C1B714C /* gin_purple_light-Icon-60x60@2x.png */,
+				64EAC10BDA5D48898BCDFB8B /* gin_purple_light-Icon-60x60@3x.png */,
+				F5DF79E86055419FAE2358D4 /* gin_purple_dark-Icon-60x60@2x.png */,
+				1DCCF39D316E4D7D95F2272A /* gin_purple_dark-Icon-60x60@3x.png */,
+				F6789D755FEE4F8B960AB50E /* gin_green_light-Icon-60x60@2x.png */,
+				9D096A11D51E4CF3A13A96EA /* gin_green_light-Icon-60x60@3x.png */,
+				9EC55CB3C6AA4636A7ECD359 /* gin_green_dark-Icon-60x60@2x.png */,
+				F77D518EDF7C4C8E81C7686D /* gin_green_dark-Icon-60x60@3x.png */,
+				3ABE5BBD04E4479AB0069CBB /* gin_teal_light-Icon-60x60@2x.png */,
+				52F65336BDF84DB79DD336F1 /* gin_teal_light-Icon-60x60@3x.png */,
+				FEA96A9D7F2F4F4FB08A1CE0 /* gin_teal_dark-Icon-60x60@2x.png */,
+				E7A3D2EB826948B18902DE32 /* gin_teal_dark-Icon-60x60@3x.png */,
+				5539834C74854D318BF9FFF9 /* gin_red_light-Icon-60x60@2x.png */,
+				BACC200B93AB46DAA7FB6674 /* gin_red_light-Icon-60x60@3x.png */,
+				2148C4B1B2C24ED781C0EF7E /* gin_red_dark-Icon-60x60@2x.png */,
+				FE31F6279B7548B4959B4017 /* gin_red_dark-Icon-60x60@3x.png */,
+				EDA9B6F3962D4D6EBB111CD2 /* gin_orange_light-Icon-60x60@2x.png */,
+				3FB0051AD4E4451AADC247E3 /* gin_orange_light-Icon-60x60@3x.png */,
+				FF6556EB6DCC46F880AF5821 /* gin_orange_dark-Icon-60x60@2x.png */,
+				3A8112D1E9A544E4A32E76FF /* gin_orange_dark-Icon-60x60@3x.png */,
+				97DD230F7B6E4414ACAAA3BC /* gin_yellow_light-Icon-60x60@2x.png */,
+				AD68B7F530B34B6EB0BCD092 /* gin_yellow_light-Icon-60x60@3x.png */,
+				55E72BC277DF48A5BA90AF3F /* gin_yellow_dark-Icon-60x60@2x.png */,
+				E94925260BDB4846A6400BC3 /* gin_yellow_dark-Icon-60x60@3x.png */,
+				937478631E004782B4D415E0 /* gin_pink_light-Icon-60x60@2x.png */,
+				D73C66E11BD24045853E0679 /* gin_pink_light-Icon-60x60@3x.png */,
+				2A71DC914F854647AF0D1F8F /* gin_pink_dark-Icon-60x60@2x.png */,
+				D7CBCAE43D4A46D8985F013A /* gin_pink_dark-Icon-60x60@3x.png */,
 			);
-			name = R2V;
+			name = DynamicAppIcons;
+			path = "";
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -130,21 +262,12 @@
 			path = R2V/Supporting;
 			sourceTree = "<group>";
 		};
-		D65327D7A22EEC0BE12398D9 /* Pods */ = {
+		C18A4E6C39A043B48532D547 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				6C2E3173556A471DD304B334 /* Pods-R2V.debug.xcconfig */,
-				7A4D352CD337FB3A3BF06240 /* Pods-R2V.release.xcconfig */,
 			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				92DBD88DE9BF7D494EA9DA96 /* R2V */,
-			);
-			name = ExpoModulesProviders;
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -155,14 +278,14 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "R2V" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				50CE0FE13A1F166E3B6D5024 /* [Expo] Configure project */,
+				5A2C6F015D3E7D661C074A9B /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				0E1CA6413B8F4E5A9A6161AB /* Upload Debug Symbols to Sentry */,
-				6B302A5956B982B0DD59C5AA /* [CP] Embed Pods Frameworks */,
+				7606C86176CA4902AE510272 /* Upload Debug Symbols to Sentry */,
+				BA47C9B5FA82C7F51D51E6AA /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -212,7 +335,47 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				AA6FEF9C1F4BAA94BDDA6F3E /* PrivacyInfo.xcprivacy in Resources */,
+				171AA95CADF8496B8A002C7E /* r2v_light-Icon-60x60@2x.png in Resources */,
+				2A0AC5546BDF4DEEBFDAC39A /* r2v_light-Icon-60x60@3x.png in Resources */,
+				036B2320C68D4A33960CD900 /* r2v_dark-Icon-60x60@2x.png in Resources */,
+				501D33AD4AA04B8CBE0359D1 /* r2v_dark-Icon-60x60@3x.png in Resources */,
+				34AD7E15DBBB4603B1A94150 /* gin_blue_light-Icon-60x60@2x.png in Resources */,
+				3907DF60CC4547AEA40530A1 /* gin_blue_light-Icon-60x60@3x.png in Resources */,
+				861370F533B44ED4BA286884 /* gin_blue_dark-Icon-60x60@2x.png in Resources */,
+				98C8F6F758F04761BE37898A /* gin_blue_dark-Icon-60x60@3x.png in Resources */,
+				F8D0A4BC0E4249D3AEA54337 /* gin_dark_purple_light-Icon-60x60@2x.png in Resources */,
+				9CF9E0A0F7C24C83A213530E /* gin_dark_purple_light-Icon-60x60@3x.png in Resources */,
+				CA037DD838A94871ADAA747E /* gin_dark_purple_dark-Icon-60x60@2x.png in Resources */,
+				EA33D91084F1400A961C8A34 /* gin_dark_purple_dark-Icon-60x60@3x.png in Resources */,
+				8FE268A8EA6C41E7992E816F /* gin_purple_light-Icon-60x60@2x.png in Resources */,
+				99796F4D6BA841EEA9B8ED3F /* gin_purple_light-Icon-60x60@3x.png in Resources */,
+				E621D67422E441A19DE83290 /* gin_purple_dark-Icon-60x60@2x.png in Resources */,
+				F2E77D7C4EE547E198CD8FCE /* gin_purple_dark-Icon-60x60@3x.png in Resources */,
+				89210B48BDFE4CE18A6DAB06 /* gin_green_light-Icon-60x60@2x.png in Resources */,
+				A2B74097B25D47169EA5BD4E /* gin_green_light-Icon-60x60@3x.png in Resources */,
+				A883DDE1F4594551A0953691 /* gin_green_dark-Icon-60x60@2x.png in Resources */,
+				1AEBBAFF7F14468A87C4F5F0 /* gin_green_dark-Icon-60x60@3x.png in Resources */,
+				2AE0E97E03E04A84A0A8986C /* gin_teal_light-Icon-60x60@2x.png in Resources */,
+				89A4F389D2444C6F97171E16 /* gin_teal_light-Icon-60x60@3x.png in Resources */,
+				5EBF058BF06E4DD987875345 /* gin_teal_dark-Icon-60x60@2x.png in Resources */,
+				BA1991D90F6E4C78A84D7DC8 /* gin_teal_dark-Icon-60x60@3x.png in Resources */,
+				68A9B95ED0FD415FA0BD5AB1 /* gin_red_light-Icon-60x60@2x.png in Resources */,
+				BFA535EB345C427490C31AEB /* gin_red_light-Icon-60x60@3x.png in Resources */,
+				48B700B6989940759ADBE6AB /* gin_red_dark-Icon-60x60@2x.png in Resources */,
+				E34878AF08F849FC965CCFC3 /* gin_red_dark-Icon-60x60@3x.png in Resources */,
+				8DA33D5102FE4D5B894996C3 /* gin_orange_light-Icon-60x60@2x.png in Resources */,
+				65397555615A4C1894415EE5 /* gin_orange_light-Icon-60x60@3x.png in Resources */,
+				709CEAA7788E425286374FDA /* gin_orange_dark-Icon-60x60@2x.png in Resources */,
+				66B6EE50E5DC433A86F4BF49 /* gin_orange_dark-Icon-60x60@3x.png in Resources */,
+				EEB9751A3126444F951FF7F9 /* gin_yellow_light-Icon-60x60@2x.png in Resources */,
+				EABDFF2250B6492FABA786A3 /* gin_yellow_light-Icon-60x60@3x.png in Resources */,
+				311EC20505F44A98A18BCFB6 /* gin_yellow_dark-Icon-60x60@2x.png in Resources */,
+				60A150D7147844C6A7D10F15 /* gin_yellow_dark-Icon-60x60@3x.png in Resources */,
+				0AC69E44B25F4168A166AA79 /* gin_pink_light-Icon-60x60@2x.png in Resources */,
+				DEF9CA68E3A24882B88595BC /* gin_pink_light-Icon-60x60@3x.png in Resources */,
+				491DB6BBFFB24E7F964E7885 /* gin_pink_dark-Icon-60x60@2x.png in Resources */,
+				735FC1FBAC2145938815C9FE /* gin_pink_dark-Icon-60x60@3x.png in Resources */,
+				D3028B9EEC5151E7CB893DF1 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,6 +389,8 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
 			);
 			name = "Bundle React Native code and images";
 			outputPaths = (
@@ -256,7 +421,31 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		0E1CA6413B8F4E5A9A6161AB /* Upload Debug Symbols to Sentry */ = {
+		5A2C6F015D3E7D661C074A9B /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/R2V/R2V.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-R2V/expo-configure-project.sh",
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/Pods/Target Support Files/Pods-R2V/ExpoModulesProvider.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-R2V/expo-configure-project.sh\"\n";
+		};
+		7606C86176CA4902AE510272 /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -269,43 +458,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh `${NODE_BINARY:-node} --print \"require('path').dirname(require.resolve('@sentry/react-native/package.json')) + '/scripts/sentry-xcode-debug-files.sh'\"`";
-		};
-		50CE0FE13A1F166E3B6D5024 /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-R2V/expo-configure-project.sh\"\n";
-		};
-		6B302A5956B982B0DD59C5AA /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-R2V/Pods-R2V-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-R2V/Pods-R2V-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -321,10 +473,14 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoDevice/ExpoDevice_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoSystemUI/ExpoSystemUI_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNSVG/RNSVGFilters.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ReachabilitySwift/ReachabilitySwift.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/Sentry/Sentry.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-ios/LottiePrivacyInfo.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/lottie-react-native/Lottie_React_Native_Privacy.bundle",
 			);
@@ -337,16 +493,42 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoDevice_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoSystemUI_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNSVGFilters.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ReachabilitySwift.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Sentry.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevMenu.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/LottiePrivacyInfo.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Lottie_React_Native_Privacy.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-R2V/Pods-R2V-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BA47C9B5FA82C7F51D51E6AA /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-R2V/Pods-R2V-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-R2V/Pods-R2V-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -356,10 +538,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				679A7D9CC7A743F58C4F00A6 /* noop-file.swift in Sources */,
+				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
+				92D50F8A96EF90F54CD219E4 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -368,21 +548,19 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-R2V.debug.xcconfig */;
+			baseConfigurationReference = D20D58408847662D9A55A672 /* Pods-R2V.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = R2V/R2V.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HVCHYVPAAC;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = R2V/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -406,16 +584,14 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-R2V.release.xcconfig */;
+			baseConfigurationReference = 2139CD6D4BAC264DC4B9BB52 /* Pods-R2V.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = R2V/R2V.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HVCHYVPAAC;
 				INFOPLIST_FILE = R2V/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -440,7 +616,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -467,7 +642,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CXX = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -485,9 +659,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD = "";
-				LDPLUSPLUS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -495,12 +667,10 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				USE_HERMES = true;
 			};
 			name = Debug;
@@ -509,7 +679,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -536,7 +705,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CXX = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -547,21 +715,16 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD = "";
-				LDPLUSPLUS = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};

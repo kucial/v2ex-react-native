@@ -1,5 +1,4 @@
-import { useContext } from 'react'
-import { createContext } from 'react'
+import { createContext, useContext } from 'react'
 
 import { ImgurImage } from '@/containers/ImgurService/types'
 

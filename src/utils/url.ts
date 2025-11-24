@@ -3,6 +3,7 @@ const hrefMap = {
     match: RegExpExecArray,
   ) => ({
     name: 'topic',
+    pathname: '/topic/[id]',
     params: {
       id: match[1],
     },
@@ -11,6 +12,7 @@ const hrefMap = {
     match: RegExpExecArray,
   ) => ({
     name: 'member',
+    pathname: '/member/[username]',
     params: {
       username: match[1],
       tab: match[2],
@@ -18,6 +20,7 @@ const hrefMap = {
   }),
   'https?://(?:\\w+\\.)?v2ex.com/go/([\\w_]*)?$': (match: RegExpExecArray) => ({
     name: 'node',
+    pathname: '/node/[name]',
     params: {
       name: match[1],
     },
@@ -26,15 +29,18 @@ const hrefMap = {
 
 type TopicScreenInfo = {
   name: 'topic'
+  pathname: '/topic/[id]'
   params: AppStackParamList['topic']
 }
 type MemberScreenInfo = {
   name: 'member'
+  pathname: '/member/[username]'
   params: AppStackParamList['member']
 }
 
 type NodeScreenInfo = {
   name: 'node'
+  pathname: '/node/[name]'
   params: AppStackParamList['node']
 }
 

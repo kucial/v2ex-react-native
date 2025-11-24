@@ -10,21 +10,22 @@ export default function HomeSkeleton() {
   return (
     <View>
       <View
-        className="h-[46px] flex flex-row overflow-hidden"
-        style={styles.layer1}>
-        <View className="px-[12px] flex flex-row items-center justify-center">
+        className='h-[46px] flex flex-row overflow-hidden'
+        style={styles.layer1}
+      >
+        <View className='px-[12px] flex flex-row items-center justify-center'>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
-        <View className="px-[12px] flex flex-row items-center justify-center">
+        <View className='px-[12px] flex flex-row items-center justify-center'>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
-        <View className="px-[12px] flex flex-row items-center justify-center">
+        <View className='px-[12px] flex flex-row items-center justify-center'>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
-        <View className="px-[12px] flex flex-row items-center justify-center">
+        <View className='px-[12px] flex flex-row items-center justify-center'>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
-        <View className="px-[12px] flex flex-row items-center justify-center">
+        <View className='px-[12px] flex flex-row items-center justify-center'>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
       </View>

@@ -6,6 +6,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
@@ -40,7 +41,7 @@ export default function MemberTopics(
         throw err
       }
     },
-    [props.username],
+    [props.username, alert],
   )
 
   const listQuery = useInfiniteQuery({
@@ -98,7 +99,6 @@ export default function MemberTopics(
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      estimatedItemSize={110}
       scrollEventThrottle={16}
       onEndReached={() => {
         if (listQuery.error?.code === 'MEMBER_LOCKED') {
@@ -112,7 +112,7 @@ export default function MemberTopics(
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
           onRefresh={listQuery.refetch}
-          progressViewOffset={props.contentContainerStyle.paddingTop as number}
+          progressViewOffset={props.contentContainerStyle?.paddingTop as number}
         />
       }
       ListFooterComponent={() => {

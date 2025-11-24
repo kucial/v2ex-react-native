@@ -1,8 +1,0 @@
-<resources>
-  <color name="splashscreen_background">#ffffff</color>
-  <color name="iconBackground">#FFFFFF</color>
-  <color name="colorPrimary">#171717</color>
-  <color name="colorPrimaryDark">#d4d4d4</color>
-  <color name="bg_overlay">#ffffff</color>
-  <color name="text">#1C1C1E</color>
-</resources>

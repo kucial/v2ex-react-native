@@ -1,10 +1,18 @@
-import { forwardRef, ReactNode, useEffect, useImperativeHandle } from 'react'
-import { createContext, useContext, useMemo, useState } from 'react'
+import {
+  createContext,
+  forwardRef,
+  ReactNode,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
 import ImageView from 'react-native-image-viewing'
 import Share from 'react-native-share'
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner'
+import { BarcodeScanningResult, Camera } from 'expo-camera'
 import colors from 'tailwindcss/colors'
 
 import { getImageContentUri } from '@/utils/image'
@@ -31,7 +39,7 @@ const ServiceContext = createContext<ImageViewingService>(
 const ImageViewingFooter = (props: {
   images: ImageResource[]
   imageIndex: number
-  handleQrCode(result: BarCodeScannerResult): void
+  handleQrCode(result: BarcodeScanningResult): void
 }) => {
   const { images, imageIndex, handleQrCode } = props
   const [saveStatus, setSaveStatus] = useState('')
@@ -40,7 +48,7 @@ const ImageViewingFooter = (props: {
 
   useEffect(() => {
     if (displayUri) {
-      BarCodeScanner.scanFromURLAsync(displayUri).then(setQrCodes)
+      Camera.scanFromURLAsync(displayUri, ['qr']).then(setQrCodes)
       return () => {
         setQrCodes(null)
       }
@@ -48,25 +56,26 @@ const ImageViewingFooter = (props: {
   }, [displayUri])
 
   return (
-    <View className="flex flex-row justify-between items-center pb-8 px-8">
+    <View className='flex flex-row justify-between items-center pb-8 px-8'>
       <View>
-        <Text className="text-neutral-500">
+        <Text className='text-neutral-500'>
           {imageIndex + 1} / {images.length}
         </Text>
       </View>
-      <View className="flex flex-row gap-x-2">
+      <View className='flex flex-row gap-x-2'>
         {!!qrCodes?.length && (
           <Pressable
-            className="w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50"
+            className='w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50'
             hitSlop={6}
             onPress={() => {
               handleQrCode(qrCodes[0])
-            }}>
+            }}
+          >
             <QrCodeIcon size={16} color={colors.neutral[300]} />
           </Pressable>
         )}
         <Pressable
-          className="w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50"
+          className='w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50'
           hitSlop={6}
           disabled={saveStatus === 'loading'}
           onPress={async () => {
@@ -82,7 +91,8 @@ const ImageViewingFooter = (props: {
               console.log(err)
               setSaveStatus('')
             }
-          }}>
+          }}
+        >
           {saveStatus === '' && (
             <ShareIcon size={14} color={colors.neutral[300]} />
           )}
@@ -102,7 +112,7 @@ const ImageViewingServiceProvider = forwardRef<
   ImageViewingService,
   {
     children: ReactNode
-    handleQrCode(data: BarCodeScannerResult): void
+    handleQrCode(data: BarcodeScanningResult): void
   }
 >((props, ref) => {
   const [viewIndex, setViewIndex] = useState(-1)

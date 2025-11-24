@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import { View } from 'react-native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import { TopicReply } from '@/utils/v2ex-client/types'
 
@@ -12,7 +11,6 @@ type ReplyListProps = {
   pivot?: TopicReply
   header?: ReactElement
   showAvatar?: boolean
-  navigation: NativeStackNavigationProp<AppStackParamList>
   onReply: (reply: TopicReply) => void
   onThank: (reply: TopicReply) => void
   onShowUserInfo?: (context: UserInfoContext) => void
@@ -24,7 +22,6 @@ export default function ReplyList({
   onReply,
   onThank,
   onShowUserInfo,
-  navigation,
   showAvatar,
   header,
 }: ReplyListProps) {
@@ -40,7 +37,7 @@ export default function ReplyList({
           onReply={onReply}
           onThank={onThank}
           onShowUserInfo={onShowUserInfo}
-          navigation={navigation}></ReplyRow>
+        />
       ))}
     </View>
   )

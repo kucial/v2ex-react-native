@@ -21,6 +21,7 @@ export default function Dot(props: {
           borderRadius: 999,
         },
         props.style,
-      ]}></View>
+      ]}
+    ></View>
   )
 }

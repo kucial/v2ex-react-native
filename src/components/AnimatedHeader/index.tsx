@@ -7,9 +7,10 @@ import Animate, {
   useAnimatedStyle,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
+import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
+
 import { useTheme } from '@/containers/ThemeService'
 
 function AnimatedHeader(props: {
@@ -21,7 +22,7 @@ function AnimatedHeader(props: {
 }) {
   const { styles } = useTheme()
   const { scrollY } = props
-  const navigation = useNavigation()
+  const router = useRouter()
   const insets = useSafeAreaInsets()
 
   const titleStyles = useAnimatedStyle(() => {
@@ -36,7 +37,7 @@ function AnimatedHeader(props: {
 
   return (
     <View
-      className="w-full flex-row items-center"
+      className='w-full flex-row items-center'
       style={[
         {
           height: Platform.OS === 'android' ? 48 : 48 + insets.top,
@@ -44,18 +45,20 @@ function AnimatedHeader(props: {
         },
         styles.layer1,
         props.hasBorder && styles.border_b_light,
-      ]}>
+      ]}
+    >
       <View
         style={{
           position: 'absolute',
           left: 6,
           top: Platform.OS === 'android' ? 4 : insets.top,
           zIndex: 10,
-        }}>
+        }}
+      >
         <BackButton
           tintColor={styles.text.color}
           onPress={() => {
-            navigation.goBack()
+            router.back()
           }}
         />
       </View>
@@ -70,14 +73,16 @@ function AnimatedHeader(props: {
             justifyContent: 'center',
           },
           titleStyles,
-        ]}>
+        ]}
+      >
         <Text
           style={[
             styles.text,
             { textAlign: 'center', fontSize: 17, fontWeight: '500' },
           ]}
-          ellipsizeMode="tail"
-          numberOfLines={1}>
+          ellipsizeMode='tail'
+          numberOfLines={1}
+        >
           {props.title}
         </Text>
       </Animate.View>
@@ -88,7 +93,8 @@ function AnimatedHeader(props: {
             right: 6,
             top: Platform.OS === 'android' ? 4 : insets.top,
             zIndex: 10,
-          }}>
+          }}
+        >
           {props.headerRight}
         </View>
       )}

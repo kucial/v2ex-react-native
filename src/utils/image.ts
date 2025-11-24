@@ -9,7 +9,8 @@ import * as FileSystem from 'expo-file-system'
 
 import PixelTally from './PixelTally'
 
-const imageDir = FileSystem.cacheDirectory + '.image_cache/'
+// @ts-ignore -- cacheDirectory is available in expo-file-system but not in types
+const imageDir = (FileSystem as any).cacheDirectory + '.image_cache/'
 
 export function getImgXtension(uri: string, fallback: string) {
   const basename = getBasename(uri)

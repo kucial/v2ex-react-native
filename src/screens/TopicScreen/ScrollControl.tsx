@@ -7,14 +7,25 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Platform, Pressable, Text, TextInput, View } from 'react-native'
-import { Keyboard } from 'react-native'
-import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
-import classNames from 'classnames'
+import {
+  Keyboard,
+  Platform,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
+import {
+  BottomSheetModal,
+  BottomSheetTextInput,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet'
 
 import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import ToBottomIcon from '@/components/ToBottomIcon'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 export type ScrollControlProps = {
   max: number
@@ -37,7 +48,7 @@ export type ScrollControlApi = {
 const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
   (props, ref) => {
     const [action, setAction] = useState<Action>('')
-    const inputModalRef = useRef<BottomSheetModal>()
+    const inputModalRef = useRef<BottomSheetModal>(null)
     const [target, setTarget] = useState('')
 
     const { styles, theme } = useTheme()
@@ -75,19 +86,21 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
         <MyBottomSheetModal
           index={0}
           snapPoints={conversationSnapPoints}
-          ref={inputModalRef}>
-          <View className="pl-3 pr-3 flex flex-col flex-1">
-            <View className="flex flex-row">
+          ref={inputModalRef}
+        >
+          <BottomSheetView className='pl-3 pr-3 flex flex-col flex-1'>
+            <View className='flex flex-row'>
               <View
-                className="rounded-lg flex flex-row items-center flex-1"
-                style={[styles.border, styles.overlay_input__bg]}>
-                <View className="pl-3">
+                className='rounded-lg flex flex-row items-center flex-1'
+                style={[styles.border, styles.overlay_input__bg]}
+              >
+                <View className='pl-3'>
                   <Text style={styles.text_desc}>#</Text>
                 </View>
-                <View className="flex-1">
+                <View className='flex-1'>
                   <Input
                     autoFocus
-                    keyboardType="number-pad"
+                    keyboardType='number-pad'
                     placeholder={`最大: ${props.max}`}
                     placeholderTextColor={theme.colors.text_placeholder}
                     value={target}
@@ -105,30 +118,33 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                   />
                 </View>
                 <Pressable
-                  className="w-[40px] h-[40px] rounded-full items-center justify-center active:opacity-60 dark:active:bg-neutral-600 -mr-1"
+                  className='w-[40px] h-[40px] rounded-full items-center justify-center active:opacity-60 dark:active:bg-neutral-600 -mr-1'
                   onPress={() => {
                     Keyboard.dismiss()
                     inputModalRef.current?.dismiss()
                     props.onNavTo(0)
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       transform: [{ rotate: '180deg' }],
-                    }}>
+                    }}
+                  >
                     <ToBottomIcon size={24} color={styles.text_meta.color} />
                   </View>
                 </Pressable>
                 <Pressable
-                  className="w-[40px] h-[40px] rounded-full items-center justify-center active:opacity-60 dark:active:bg-neutral-600"
+                  className='w-[40px] h-[40px] rounded-full items-center justify-center active:opacity-60 dark:active:bg-neutral-600'
                   onPress={() => {
                     Keyboard.dismiss()
                     inputModalRef.current?.dismiss()
                     props.onNavTo(props.max)
-                  }}>
+                  }}
+                >
                   <ToBottomIcon size={24} color={styles.text_meta.color} />
                 </Pressable>
                 <Pressable
-                  className={classNames(
+                  className={cn(
                     'h-[34px] w-[64px] items-center justify-center rounded-md mx-[3px]',
                     'active:opacity-60',
                   )}
@@ -140,12 +156,13 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     }
                     Keyboard.dismiss()
                     inputModalRef.current?.dismiss()
-                  }}>
+                  }}
+                >
                   <Text style={styles.btn_primary__text}>定位</Text>
                 </Pressable>
               </View>
             </View>
-          </View>
+          </BottomSheetView>
         </MyBottomSheetModal>
       </>
     )

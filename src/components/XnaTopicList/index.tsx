@@ -133,8 +133,10 @@ function XnaTopicList(props: XnaTopicListProps) {
   }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration])
 
   useEffect(() => {
-    currentListRef.current = {
-      scrollToRefresh,
+    if (currentListRef) {
+      currentListRef.current = {
+        scrollToRefresh,
+      }
     }
   }, [isFocused, scrollToRefresh])
 

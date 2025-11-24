@@ -1,8 +1,7 @@
 import { Platform, Text, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+
 import * as Sentry from '@sentry/react-native'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
 import { Image } from 'expo-image'
 import * as WebBrowser from 'expo-web-browser'
 
@@ -11,18 +10,18 @@ import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import { useTheme } from '@/containers/ThemeService'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
+import { useRouter } from 'expo-router'
 
 export default function TopicRow(props: XnaFeedRowProps) {
   const { data, showAvatar, titleStyle } = props
-  const navigation =
-    useNavigation<NativeStackNavigationProp<AppStackParamList>>()
+  const router = useRouter()
   const { styles, theme } = useTheme()
 
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
         <View
-          className={classNames('flex flex-row items-center')}
+          className={cn('flex flex-row items-center')}
           style={[styles.border_b_light]}>
           <View className="flex-1 py-2 pl-1">
             <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
@@ -64,7 +63,7 @@ export default function TopicRow(props: XnaFeedRowProps) {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label="TopicRow"
-        className={classNames(
+        className={cn(
           'flex flex-row items-center',
           'active:opacity-50',
         )}
@@ -81,8 +80,11 @@ export default function TopicRow(props: XnaFeedRowProps) {
               Sentry.captureException(err)
             })
           } else {
-            navigation.push('browser', {
-              url,
+            router.push({
+              pathname: '/browser',
+              params: {
+                url,
+              },
             })
           }
         }}>
@@ -90,9 +92,12 @@ export default function TopicRow(props: XnaFeedRowProps) {
           <View className="px-2 py-2 self-start">
             <FixedPressable
               onPress={() => {
-                navigation.navigate('member', {
-                  username: member.username,
-                  brief: member,
+                router.push({
+                  pathname: '/member/[username]',
+                  params: {
+                    username: member.username,
+                    // brief: member,
+                  },
                 })
               }}>
               <Image
@@ -109,7 +114,7 @@ export default function TopicRow(props: XnaFeedRowProps) {
         )}
 
         <View
-          className={classNames(
+          className={cn(
             'flex-1 py-2',
             props.viewedStatus === 'viewed' && 'opacity-70',
           )}>
@@ -130,8 +135,11 @@ export default function TopicRow(props: XnaFeedRowProps) {
                       Sentry.captureException(err)
                     })
                   } else {
-                    navigation.push('browser', {
-                      url: source.link,
+                    router.push({
+                      pathname: '/browser',
+                      params: {
+                        url: source.link,
+                      },
                     })
                   }
                 }}>
@@ -146,9 +154,12 @@ export default function TopicRow(props: XnaFeedRowProps) {
                 className="active:opacity-60"
                 hitSlop={5}
                 onPress={() => {
-                  navigation.navigate('member', {
-                    username: member.username,
-                    brief: member,
+                  router.push({
+                    pathname: '/member/[username]',
+                    params: {
+                      username: member.username,
+                      // brief: member,
+                    },
                   })
                 }}>
                 <Text
@@ -161,7 +172,7 @@ export default function TopicRow(props: XnaFeedRowProps) {
           </View>
           <View>
             <Text
-              className={classNames({
+              className={cn({
                 'font-[500]': titleStyle === 'emphasized',
               })}
               style={[styles.text, styles.text_base]}>

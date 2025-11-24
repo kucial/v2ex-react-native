@@ -1,9 +1,9 @@
 import { ScrollView, View } from 'react-native'
 
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { useImgurService } from '@/containers/ImgurService'
 import { ImgurAlbum } from '@/containers/ImgurService/types'
-import { useTheme } from '@/containers/ThemeService'
 
 import Loader from '../Loader'
 import AlbumAdd from './AlbumAdd'
@@ -18,16 +18,16 @@ export default function Albums(props: AlbumsProps) {
   let content = null
   if (albumsQuery.isLoading) {
     content = (
-      <View className="py-6 items-center justify-center">
+      <View className='py-6 items-center justify-center'>
         <Loader />
       </View>
     )
   } else if (albumsQuery.data) {
     content = (
-      <View className="py-2 px-[2px]">
-        <View className="flex flex-row flex-wrap">
+      <View className='py-2 px-[2px]'>
+        <View className='flex flex-row flex-wrap'>
           {albumsQuery.data?.map((album) => (
-            <View className="basis-1/3 p-[2px] mb-2" key={album.id}>
+            <View className='basis-1/3 p-[2px] mb-2' key={album.id}>
               <AlbumCard
                 data={album}
                 onPress={() => {
@@ -37,7 +37,7 @@ export default function Albums(props: AlbumsProps) {
             </View>
           ))}
 
-          <View className="basis-1/3 p-[2px]">
+          <View className='basis-1/3 p-[2px]'>
             <AlbumAdd />
           </View>
         </View>
@@ -51,7 +51,8 @@ export default function Albums(props: AlbumsProps) {
           refreshing={albumsQuery.isRefetching}
           onRefresh={albumsQuery.refetch}
         />
-      }>
+      }
+    >
       {content}
     </ScrollView>
   )

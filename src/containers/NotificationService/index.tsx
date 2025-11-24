@@ -1,23 +1,18 @@
 import { useEffect } from 'react'
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
-import { useNavigation } from '@react-navigation/native'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 import * as v2exClient from '@/utils/v2ex-client'
 
 import { useAlertService } from '../AlertService'
 import { useAuthService } from '../AuthService'
+import { useRouter } from 'expo-router'
 
 export default function NotificationService(props) {
-  const navigation = useNavigation<
-    NativeStackNavigationProp<AppStackParamList> &
-      BottomTabNavigationProp<MainTabParamList>
-  >()
   const alert = useAlertService()
   const { meta, composeAuthedNavigation } = useAuthService()
+  const router = useRouter()
 
   const onAlertPress = composeAuthedNavigation(() => {
-    navigation.navigate('notification')
+    router.push('/me/notification')
   })
 
   useEffect(() => {
@@ -32,7 +27,7 @@ export default function NotificationService(props) {
       }
     })
     return unsubscribe
-  }, [meta?.unread_count, navigation])
+  }, [meta?.unread_count, onAlertPress])
 
   return props.children
 }

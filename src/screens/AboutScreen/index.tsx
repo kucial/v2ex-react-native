@@ -3,7 +3,6 @@ import {
   Linking,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   View,
@@ -15,8 +14,8 @@ import {
 } from 'react-native-heroicons/outline'
 import Share from 'react-native-share'
 import { IOS_APP_ID } from '@env'
-import classNames from 'classnames'
 import Constants from 'expo-constants'
+import { useRouter } from 'expo-router'
 import { stringify } from 'qs'
 
 import AppBrandIcon from '@/components/AppBrandIcon'
@@ -24,16 +23,20 @@ import GithubIcon from '@/components/GithubIcon'
 import GroupWapper from '@/components/GroupWrapper'
 import { LineItem } from '@/components/LineItem'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import NavigationHeader from '@/components/NavigationHeader'
+
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { clearCache, reset } from '@/utils/app-state'
 
-export default function AboutScreen(props) {
+export default function AboutScreen() {
   const { theme, styles } = useTheme()
   const [count, setCount] = useState(0)
   const settings = useAppSettings()
   const alert = useAlertService()
+  const router = useRouter()
   useEffect(() => {
     if (count === 3) {
       settings.update((prev) => ({
@@ -44,47 +47,52 @@ export default function AboutScreen(props) {
     }
   }, [count])
   return (
-    <SafeAreaView className="flex-1">
-      <ScrollView className="flex-1 pt-5">
-        <MaxWidthWrapper className="px-2">
+    <View className='flex-1'>
+      <NavigationHeader canGoBack title='关于' />
+      <ScrollView className='flex-1 pt-5'>
+        <MaxWidthWrapper className='px-2'>
           <GroupWapper>
             <Pressable
-              className="pt-6 active:opacity-80"
+              className='pt-6 active:opacity-80'
               style={styles.grouped_secondary}
               onPress={() => {
                 setCount((prev) => prev + 1)
-              }}>
-              <View className="mb-3">
-                <View className="flex-1 flex flex-row justify-center">
-                  <View className="">
+              }}
+            >
+              <View className='mb-3'>
+                <View className='flex-1 flex flex-row justify-center'>
+                  <View className=''>
                     <AppBrandIcon width={72} />
                   </View>
                 </View>
               </View>
-              <View className="mb-2">
+              <View className='mb-2'>
                 <View>
                   <Text
-                    className="font-medium text-center"
-                    style={[styles.text, styles.text_base]}>
+                    className='font-medium text-center'
+                    style={[styles.text, styles.text_base]}
+                  >
                     R2V
                   </Text>
                 </View>
                 <View>
                   <Text
-                    className="text-center"
-                    style={[styles.text, styles.text_xs]}>
+                    className='text-center'
+                    style={[styles.text, styles.text_xs]}
+                  >
                     V2EX 第三方客户端 ({Constants.expoConfig?.version})
                   </Text>
                 </View>
-                <View className="mt-1">
+                <View className='mt-1'>
                   <Text
-                    className="text-center"
-                    style={[styles.text_meta, styles.text_xs]}>
+                    className='text-center'
+                    style={[styles.text_meta, styles.text_xs]}
+                  >
                     {Constants.expoConfig?.extra.buildTag}
                   </Text>
                 </View>
               </View>
-              <View className="ml-4 h-2" style={styles.border_b} />
+              <View className='ml-4 h-2' style={styles.border_b} />
             </Pressable>
 
             <LineItem
@@ -93,9 +101,9 @@ export default function AboutScreen(props) {
                 Linking.openURL('https://github.com/kucial/v2ex-react-native')
               }}
               icon={<GithubIcon color={theme.colors.primary} />}
-              title="Github"
+              title='Github'
             />
-            {Platform.OS == 'ios' && IOS_APP_ID && (
+            {Platform.OS === 'ios' && IOS_APP_ID && (
               <>
                 <LineItem
                   style={styles.grouped_secondary}
@@ -111,7 +119,7 @@ export default function AboutScreen(props) {
                     }
                   }}
                   icon={<ArrowUpOnSquareIcon color={theme.colors.primary} />}
-                  title="分享"
+                  title='分享'
                 />
                 <LineItem
                   style={styles.grouped_secondary}
@@ -121,7 +129,7 @@ export default function AboutScreen(props) {
                     )
                   }}
                   icon={<StarIcon size={22} color={theme.colors.primary} />}
-                  title="五星好评"
+                  title='五星好评'
                 />
               </>
             )}
@@ -137,7 +145,8 @@ export default function AboutScreen(props) {
                     `mailto:kongkx.yang@gmail.com?${stringify(params)}`,
                   )
                 } catch (err) {
-                  props.navigation.push('feedback')
+                  console.log(err)
+                  router.push('/feedback')
                 }
               }}
               icon={
@@ -146,34 +155,36 @@ export default function AboutScreen(props) {
                   color={theme.colors.primary}
                 />
               }
-              title="意见反馈"
+              title='意见反馈'
               isLast
             />
           </GroupWapper>
 
-          <View className="py-2 w-full flex flex-row">
-            <View className="basis-1/2 pr-2">
+          <View className='py-2 w-full flex flex-row'>
+            <View className='basis-1/2 pr-2'>
               <GroupWapper>
                 <Pressable
-                  className={classNames(
+                  className={cn(
                     'h-[50px] rounded-md flex items-center justify-center mt-4',
                     'active:opacity-60',
                   )}
                   style={[styles.grouped_secondary]}
-                  onPress={clearCache}>
+                  onPress={clearCache}
+                >
                   <Text style={styles.text}>清除缓存</Text>
                 </Pressable>
               </GroupWapper>
             </View>
-            <View className="basis-1/2 pl-2">
+            <View className='basis-1/2 pl-2'>
               <GroupWapper>
                 <Pressable
-                  className={classNames(
+                  className={cn(
                     'h-[50px] rounded-md flex items-center justify-center mt-4',
                     'active:opacity-60',
                   )}
                   style={[styles.grouped_secondary]}
-                  onPress={reset}>
+                  onPress={reset}
+                >
                   <Text style={styles.text_danger}>重置</Text>
                 </Pressable>
               </GroupWapper>
@@ -181,6 +192,6 @@ export default function AboutScreen(props) {
           </View>
         </MaxWidthWrapper>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }

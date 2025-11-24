@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 import RNRestart from 'react-native-restart'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import classNames from 'classnames'
+import { EventArg } from '@react-navigation/native'
+import { useNavigation } from 'expo-router'
 
 import GroupWapper from '@/components/GroupWrapper'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MySwitch from '@/components/MySwitch'
+import NavigationHeader from '@/components/NavigationHeader'
 import SectionHeader from '@/components/SectionHeader'
+
 import { useAppSettings } from '@/containers/AppSettingsService'
 import {
   FeedLayoutStyle,
@@ -16,24 +18,25 @@ import {
   SearchProvider,
 } from '@/containers/AppSettingsService/types'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 import { topic } from './mock'
 import NormalTopicRowDemo from './NormalTopicRowDemo'
 import TideTopicRowDemo from './TideTopicRowDemo'
 import { DemoRowProps } from './types'
 
-const feedLayoutOptions: Array<{
+const feedLayoutOptions: {
   value: FeedLayoutStyle
   label: string
-}> = [
+}[] = [
   { value: 'normal', label: '默认' },
   { value: 'tide', label: '紧凑' },
 ]
 
-const titleStyleOptions: Array<{
+const titleStyleOptions: {
   value: FeedTitleStyle
   label: string
-}> = [
+}[] = [
   { value: 'normal', label: '默认' },
   { value: 'emphasized', label: '强调' },
 ]
@@ -44,47 +47,47 @@ const refreshDurationOptions = [
   { value: 30, label: '30 分钟' },
 ]
 
-const searchProviderOptions: Array<{
+const searchProviderOptions: {
   value: SearchProvider
   label: string
-}> = [
+}[] = [
   { value: 'google', label: 'Google' },
   { value: 'sov2ex', label: 'sov2ex' },
 ]
 
-const historyRecordLimitOptions: Array<{
+const historyRecordLimitOptions: {
   value: number | null
   label: string
-}> = [
+}[] = [
   { value: 100, label: '100条' },
   { value: 300, label: '300条' },
   { value: 500, label: '500条' },
   { value: null, label: '不限' },
 ]
 
-type ScreenProps = NativeStackScreenProps<
-  AppStackParamList,
-  'preference-settings'
->
-export default function PreferenceSettings({ navigation }: ScreenProps) {
+export default function PreferenceSettings() {
   const { data, update, staticUpdate } = useAppSettings()
   const [state, setState] = useState(data)
   const [viewedStatus, setViewedStatus] =
     useState<DemoRowProps['viewedStatus']>(undefined)
   const { styles, colorScheme } = useTheme()
+  const navigation = useNavigation()
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      if (state !== data) {
-        if (state.payLayoutEnabled !== data.payLayoutEnabled) {
-          e.preventDefault()
-          staticUpdate(state)
-          RNRestart.Restart()
-        } else {
-          update(state)
+    const unsubscribe = navigation.addListener(
+      'beforeRemove',
+      (e: EventArg<'beforeRemove', true>) => {
+        if (state !== data) {
+          if (state.payLayoutEnabled !== data.payLayoutEnabled) {
+            e.preventDefault()
+            staticUpdate(state)
+            RNRestart.Restart()
+          } else {
+            update(state)
+          }
         }
-      }
-    })
+      },
+    )
     return unsubscribe
   }, [navigation, data, state])
 
@@ -96,12 +99,13 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
   }, [])
 
   return (
-    <SafeAreaView className="flex-1">
-      <ScrollView className="flex-1 px-2">
+    <View className='flex-1'>
+      <NavigationHeader canGoBack title='功能设置' />
+      <ScrollView className='flex-1 px-2'>
         <MaxWidthWrapper>
-          <SectionHeader title="显示" />
+          <SectionHeader title='显示' />
           <GroupWapper>
-            <View className="">
+            <View className=''>
               {state.feedLayout === 'normal' && (
                 <NormalTopicRowDemo
                   data={topic}
@@ -122,16 +126,15 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               )}
             </View>
 
-            <View className={classNames('pl-4')} style={styles.layer1}>
+            <View className={cn('pl-4')} style={styles.layer1}>
               <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}
-                style={[styles.border_b]}>
-                <View className="flex-1">
+                className={cn('min-h-[52px] flex flex-row items-center')}
+                style={[styles.border_b]}
+              >
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>列表布局</Text>
                 </View>
-                <View className="w-[140] mr-1 px-2">
+                <View className='w-[140] mr-1 px-2'>
                   <SegmentedControl
                     values={feedLayoutOptions.map((o) => o.label)}
                     selectedIndex={feedLayoutOptions.findIndex(
@@ -152,16 +155,15 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 </View>
               </View>
             </View>
-            <View className={classNames('pl-4')} style={styles.layer1}>
+            <View className={cn('pl-4')} style={styles.layer1}>
               <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}
-                style={[styles.border_b]}>
-                <View className="flex-1">
+                className={cn('min-h-[52px] flex flex-row items-center')}
+                style={[styles.border_b]}
+              >
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>标题样式</Text>
                 </View>
-                <View className="w-[140] mr-1 px-2">
+                <View className='w-[140] mr-1 px-2'>
                   <SegmentedControl
                     values={titleStyleOptions.map((o) => o.label)}
                     selectedIndex={titleStyleOptions.findIndex(
@@ -182,16 +184,15 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 </View>
               </View>
             </View>
-            <View className={classNames('pl-4')} style={styles.layer1}>
+            <View className={cn('pl-4')} style={styles.layer1}>
               <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}
-                style={styles.border_b}>
-                <View className="flex-1">
+                className={cn('min-h-[52px] flex flex-row items-center')}
+                style={styles.border_b}
+              >
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>显示头像</Text>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <MySwitch
                     value={state.feedShowAvatar}
                     onValueChange={(val) =>
@@ -204,18 +205,17 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 </View>
               </View>
             </View>
-            <View className={classNames('pl-4')} style={styles.layer1}>
+            <View className={cn('pl-4')} style={styles.layer1}>
               <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}
-                style={styles.border_b}>
-                <View className="flex-1">
+                className={cn('min-h-[52px] flex flex-row items-center')}
+                style={styles.border_b}
+              >
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>
                     显示最后回复用户
                   </Text>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <MySwitch
                     value={state.feedShowLastReplyMember}
                     onValueChange={(val) =>
@@ -228,16 +228,15 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 </View>
               </View>
             </View>
-            <View className={classNames('pl-4')} style={styles.layer1}>
+            <View className={cn('pl-4')} style={styles.layer1}>
               <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}
-                style={styles.border_b}>
-                <View className="flex-1">
+                className={cn('min-h-[52px] flex flex-row items-center')}
+                style={styles.border_b}
+              >
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>已读提示</Text>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <MySwitch
                     value={state.showHasViewed}
                     onValueChange={(val) => {
@@ -259,17 +258,14 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                 </View>
               </View>
             </View>
-            <View className={classNames('pl-4')} style={styles.layer1}>
-              <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}>
-                <View className="flex-1">
+            <View className={cn('pl-4')} style={styles.layer1}>
+              <View className={cn('min-h-[52px] flex flex-row items-center')}>
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>
                     帖子新回复提示
                   </Text>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <MySwitch
                     value={state.showHasNewReply}
                     onValueChange={(val) => {
@@ -292,21 +288,21 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               </View>
             </View>
           </GroupWapper>
-          <SectionHeader title="内容刷新" />
+          <SectionHeader title='内容刷新' />
           <GroupWapper>
             <View
-              sentry-label="AutoRefrehLineItem"
-              className={classNames('pl-4')}
-              style={styles.layer1}>
+              sentry-label='AutoRefrehLineItem'
+              className={cn('pl-4')}
+              style={styles.layer1}
+            >
               <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}
-                style={styles.border_b}>
-                <View className="flex-1">
+                className={cn('min-h-[52px] flex flex-row items-center')}
+                style={styles.border_b}
+              >
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>自动刷新</Text>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <MySwitch
                     value={state.autoRefresh}
                     onValueChange={(val) =>
@@ -321,7 +317,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
             </View>
 
             <Pressable
-              className={classNames('pl-4', 'active:opacity-50')}
+              className={cn('pl-4', 'active:opacity-50')}
               style={styles.layer1}
               onPress={() => {
                 const index = refreshDurationOptions.findIndex(
@@ -334,16 +330,16 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   ...prev,
                   autoRefreshDuration: next.value,
                 }))
-              }}>
+              }}
+            >
               <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}
-                style={styles.border_b}>
-                <View className="flex-1">
+                className={cn('min-h-[52px] flex flex-row items-center')}
+                style={styles.border_b}
+              >
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>刷新间隔</Text>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <Text style={styles.text_desc}>
                     {state.autoRefreshDuration} 分钟
                   </Text>
@@ -351,17 +347,15 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               </View>
             </Pressable>
             <View
-              sentry-label="AutoRefrehLineItem"
-              className={classNames('pl-4')}
-              style={styles.layer1}>
-              <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}>
-                <View className="flex-1">
+              sentry-label='AutoRefrehLineItem'
+              className={cn('pl-4')}
+              style={styles.layer1}
+            >
+              <View className={cn('min-h-[52px] flex flex-row items-center')}>
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>震动反馈</Text>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <MySwitch
                     value={state.refreshHaptics}
                     onValueChange={(val) =>
@@ -375,18 +369,17 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               </View>
             </View>
           </GroupWapper>
-          <SectionHeader title="其他" />
+          <SectionHeader title='其他' />
           <GroupWapper>
-            <View className={classNames('pl-4')} style={styles.layer1}>
+            <View className={cn('pl-4')} style={styles.layer1}>
               <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}
-                style={styles.border_b}>
-                <View className="flex-1">
+                className={cn('min-h-[52px] flex flex-row items-center')}
+                style={styles.border_b}
+              >
+                <View className='flex-1'>
                   <Text style={[styles.text, styles.text_base]}>搜索服务</Text>
                 </View>
-                <View className="w-[140] mr-1 px-2">
+                <View className='w-[140] mr-1 px-2'>
                   <SegmentedControl
                     values={searchProviderOptions.map((o) => o.label)}
                     selectedIndex={searchProviderOptions.findIndex(
@@ -408,7 +401,7 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               </View>
             </View>
             <Pressable
-              className={classNames('pl-4', 'active:opacity-50')}
+              className={cn('pl-4', 'active:opacity-50')}
               style={styles.layer1}
               onPress={() => {
                 const index = historyRecordLimitOptions.findIndex((o) => {
@@ -420,22 +413,20 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
                   ...prev,
                   historyRecordLimit: next.value,
                 }))
-              }}>
-              <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}>
-                <View className="flex-1 flex flex-row items-center">
+              }}
+            >
+              <View className={cn('min-h-[52px] flex flex-row items-center')}>
+                <View className='flex-1 flex flex-row items-center'>
                   <Text style={[styles.text, styles.text_base]}>
                     本地历史保留
                   </Text>
-                  <View className="ml-1 mt-1">
+                  <View className='ml-1 mt-1'>
                     <Text style={[styles.text_desc, styles.text_xs]}>
                       自动清理过往记录
                     </Text>
                   </View>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <Text style={styles.text_desc}>
                     {
                       historyRecordLimitOptions.find(
@@ -447,24 +438,22 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
               </View>
             </Pressable>
             <View
-              sentry-label="AutoRefrehLineItem"
-              className={classNames('pl-4')}
-              style={styles.layer1}>
-              <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}>
-                <View className="flex-1 flex flex-row items-center">
+              sentry-label='AutoRefrehLineItem'
+              className={cn('pl-4')}
+              style={styles.layer1}
+            >
+              <View className={cn('min-h-[52px] flex flex-row items-center')}>
+                <View className='flex-1 flex flex-row items-center'>
                   <Text style={[styles.text, styles.text_base]}>
                     启用多用户回复
                   </Text>
-                  <View className="ml-1 mt-1">
+                  <View className='ml-1 mt-1'>
                     <Text style={[styles.text_desc, styles.text_xs]}>
                       一次回复多个用户
                     </Text>
                   </View>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <MySwitch
                     value={state.enableMultiMention}
                     onValueChange={(val) =>
@@ -479,22 +468,20 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
             </View>
           </GroupWapper>
 
-          <SectionHeader title="布局" desc="修改此项时会重新启动应用" />
-          <GroupWapper className="mb-8">
+          <SectionHeader title='布局' desc='修改此项时会重新启动应用' />
+          <GroupWapper className='mb-8'>
             <View
-              sentry-label="AutoRefrehLineItem"
-              className={classNames('pl-4')}
-              style={styles.layer1}>
-              <View
-                className={classNames(
-                  'min-h-[52px] flex flex-row items-center',
-                )}>
-                <View className="flex-1 flex flex-row items-center">
+              sentry-label='AutoRefrehLineItem'
+              className={cn('pl-4')}
+              style={styles.layer1}
+            >
+              <View className={cn('min-h-[52px] flex flex-row items-center')}>
+                <View className='flex-1 flex flex-row items-center'>
                   <Text style={[styles.text, styles.text_base]}>
                     启用平板布局
                   </Text>
                 </View>
-                <View className="mr-2 px-2">
+                <View className='mr-2 px-2'>
                   <MySwitch
                     value={state.payLayoutEnabled}
                     onValueChange={(val) =>
@@ -510,6 +497,6 @@ export default function PreferenceSettings({ navigation }: ScreenProps) {
           </GroupWapper>
         </MaxWidthWrapper>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   )
 }

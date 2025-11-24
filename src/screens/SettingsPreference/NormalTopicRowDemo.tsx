@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native'
-import classNames from 'classnames'
+import { cn } from '@/lib/utils'
 import { Image } from 'expo-image'
 
 import TriangleCorner from '@/components/TriangleCorner'
@@ -14,7 +14,7 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
   const { styles } = useTheme()
   return (
     <View
-      className={classNames('flex flex-row items-center')}
+      className={cn('flex flex-row items-center')}
       style={[styles.layer1, !isLast && styles.border_b_light]}>
       {showAvatar ? (
         <View className="px-2 py-2 self-start">
@@ -30,7 +30,7 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
         <View className="pl-3"></View>
       )}
       <View
-        className={classNames(
+        className={cn(
           'flex-1 py-2',
           viewedStatus === 'viewed' && 'opacity-70',
         )}>
@@ -55,7 +55,7 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
         </View>
         <View>
           <Text
-            className={classNames({
+            className={cn({
               'font-[500]': props.titleStyle === 'emphasized',
             })}
             style={[styles.text, styles.text_base]}>

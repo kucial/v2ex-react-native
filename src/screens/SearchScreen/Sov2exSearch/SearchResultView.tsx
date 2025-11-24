@@ -7,6 +7,7 @@ import { stringify } from 'qs'
 import CommonListFooter from '@/components/CommonListFooter'
 import Loader from '@/components/Loader'
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { useTheme } from '@/containers/ThemeService'
 import * as v2exClient from '@/utils/v2ex-client'
 import { SearchHit } from '@/utils/v2ex-client/types'
@@ -79,26 +80,26 @@ export default function SearchResultView(props: { params: SearchParams }) {
 
   return (
     <FlashList
-      className="flex-1"
+      className='flex-1'
       key={stringify(props.params)}
       data={items}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      estimatedItemSize={140}
       onEndReachedThreshold={0.4}
       onEndReached={handleReachEnd}
       ListHeaderComponent={() => {
         if (total !== undefined) {
           return (
             <View
-              className="px-3 py-2"
-              style={[styles.layer1, styles.border_b_light]}>
+              className='px-3 py-2'
+              style={[styles.layer1, styles.border_b_light]}
+            >
               <Text style={styles.text_meta}>共计 {total} 个结果</Text>
             </View>
           )
         }
         return (
-          <View className="py-3 w-full flex flex-row items-center justify-center">
+          <View className='py-3 w-full flex flex-row items-center justify-center'>
             <Loader />
           </View>
         )

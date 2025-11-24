@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import {
   ClockIcon,
@@ -10,34 +10,25 @@ import {
   PhotoIcon,
   StarIcon,
 } from 'react-native-heroicons/outline'
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
-import { CompositeScreenProps } from '@react-navigation/native'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import classNames from 'classnames'
 import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 
 import GroupWapper from '@/components/GroupWrapper'
 import { LineItem, LineItemGroup } from '@/components/LineItem'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
 import { Box, InlineText } from '@/components/Skeleton/Elements'
+
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 import BalanceArea from './BalanceArea'
 
-type ScreenProps = CompositeScreenProps<
-  BottomTabScreenProps<MainTabParamList, 'my'>,
-  NativeStackScreenProps<AppStackParamList>
->
-export default function MyScreen({ navigation }: ScreenProps) {
+export default function MyScreen() {
+  const router = useRouter()
   const { theme, styles } = useTheme()
-  useEffect(() => {
-    navigation.setOptions({
-      title: '我的',
-    })
-  }, [])
   const {
     user: currentUser,
     meta: currentUserMeta,
@@ -50,8 +41,10 @@ export default function MyScreen({ navigation }: ScreenProps) {
   const handleCreatedTopicsPressed = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        navigation.push('created-topics')
-      }, []),
+        router.push({
+          pathname: '/me/created-topics',
+        })
+      }, [router]),
     ),
     {
       message: 'MyScreen `created-topics` button pressed',
@@ -61,19 +54,19 @@ export default function MyScreen({ navigation }: ScreenProps) {
   const handleCollectedTopicsPressed = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        navigation.push('collected-topics')
-      }, []),
+        router.push('/me/collected-topics')
+      }, [router]),
     ),
     {
-      message: 'MyScreen `collected-topics` button preseed',
+      message: 'MyScreen `collected-topics` button pressed',
     },
   )
 
   const handleRepliedTopicsPressed = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        navigation.push('replied-topics')
-      }, []),
+        router.push('/me/replied-topics')
+      }, [router]),
     ),
     {
       message: 'MyScreen `replied-topics` button pressed',
@@ -84,19 +77,21 @@ export default function MyScreen({ navigation }: ScreenProps) {
   if (currentUser) {
     header = (
       <Pressable
-        className="flex flex-row py-3 px-4 active:opacity-60"
+        className='flex flex-row py-3 px-4 active:opacity-60'
         style={styles.grouped_secondary}
         onPress={() => {
-          navigation.push('profile')
-        }}>
+          router.push('/me')
+        }}
+      >
         <Image
           source={{ uri: currentUser.avatar_normal }}
-          className="w-[40px] h-[40px] rounded bg-neutral-100 mr-3"
+          className='w-[40px] h-[40px] rounded bg-neutral-100 mr-3'
         />
-        <View className="flex-1">
+        <View className='flex-1'>
           <Text
-            className="font-semibold mt-[-1px] mb-[1px]"
-            style={[styles.text, styles.text_base]}>
+            className='font-semibold mt-[-1px] mb-[1px]'
+            style={[styles.text, styles.text_base]}
+          >
             {currentUser.username}
           </Text>
           <View>
@@ -107,13 +102,17 @@ export default function MyScreen({ navigation }: ScreenProps) {
         </View>
         {currentUserMeta?.balance && (
           <Pressable
-            className="-mr-2 pl-2 justify-center active:opacity-50"
+            className='-mr-2 pl-2 justify-center active:opacity-50'
             onPress={(e) => {
               e.stopPropagation()
-              navigation.push('balance', {
-                username: currentUser.username,
+              router.push({
+                pathname: '/me/balance',
+                params: {
+                  username: currentUser.username,
+                },
               })
-            }}>
+            }}
+          >
             <BalanceArea data={currentUserMeta.balance} />
           </Pressable>
         )}
@@ -127,16 +126,18 @@ export default function MyScreen({ navigation }: ScreenProps) {
   ) {
     header = (
       <Pressable
-        className="flex flex-row py-3 px-4 items-center active:opacity-60"
+        className='flex flex-row py-3 px-4 items-center active:opacity-60'
         style={styles.grouped_secondary}
         onPress={() => {
           goToSigninSreen()
-        }}>
-        <Box key={authStatus} className="w-[40px] h-[40px] mr-3" />
-        <View className="flex-1">
+        }}
+      >
+        <Box key={authStatus} className='w-[40px] h-[40px] rounded mr-3' />
+        <View className='flex-1'>
           <Text
-            className="font-semibold mb-1"
-            style={[styles.text, styles.text_base]}>
+            className='font-semibold'
+            style={[styles.text, styles.text_base]}
+          >
             未登录
           </Text>
         </View>
@@ -145,14 +146,16 @@ export default function MyScreen({ navigation }: ScreenProps) {
   } else {
     header = (
       <View
-        className="flex flex-row py-3 px-4"
-        style={styles.grouped_secondary}>
-        <Box className="w-[40px] h-[40px] mr-3" />
-        <View className="flex-1">
+        className='flex flex-row py-3 px-4'
+        style={styles.grouped_secondary}
+      >
+        <Box className='w-[40px] h-[40px] mr-3' />
+        <View className='flex-1'>
           <InlineText
-            className="font-semibold mb-1"
+            className='font-semibold mb-1'
             style={styles.text_base}
-            width={[120, 180]}></InlineText>
+            width={[120, 180]}
+          ></InlineText>
           <View>
             <InlineText style={styles.text_xs} width={[100, 140]}></InlineText>
           </View>
@@ -164,16 +167,16 @@ export default function MyScreen({ navigation }: ScreenProps) {
   const iconColor = theme.colors.primary
 
   return (
-    <ScrollView className="flex-1 py-3">
-      <MaxWidthWrapper className="flex-1">
-        <LineItemGroup className="mx-2 my-2">{header}</LineItemGroup>
+    <ScrollView className='flex-1 py-3'>
+      <MaxWidthWrapper className='flex-1'>
+        <LineItemGroup className='mx-2 my-2'>{header}</LineItemGroup>
 
-        <View className="flex flex-wrap flex-row flex-1 mx-1">
-          <View className="w-1/2 px-1 my-2">
+        <View className='flex flex-wrap flex-row flex-1 mx-1'>
+          <View className='w-1/2 px-1 my-2'>
             <GroupWapper>
               <LineItem
                 style={styles.grouped_secondary}
-                title="创建的主题"
+                title='创建的主题'
                 isLast
                 icon={<DocumentPlusIcon size={22} color={iconColor} />}
                 disabled={authStatus === 'loading'}
@@ -181,11 +184,11 @@ export default function MyScreen({ navigation }: ScreenProps) {
               />
             </GroupWapper>
           </View>
-          <View className="w-1/2 px-1 my-2">
+          <View className='w-1/2 px-1 my-2'>
             <GroupWapper>
               <LineItem
                 style={styles.grouped_secondary}
-                title="收藏的主题"
+                title='收藏的主题'
                 isLast
                 icon={<StarIcon size={22} color={iconColor} />}
                 disabled={authStatus === 'loading'}
@@ -193,11 +196,11 @@ export default function MyScreen({ navigation }: ScreenProps) {
               />
             </GroupWapper>
           </View>
-          <View className="w-1/2 px-1 my-2">
+          <View className='w-1/2 px-1 my-2'>
             <GroupWapper>
               <LineItem
                 style={styles.grouped_secondary}
-                title="回复的主题"
+                title='回复的主题'
                 isLast
                 icon={<ReplyIcon size={22} color={iconColor} />}
                 disabled={authStatus === 'loading'}
@@ -205,73 +208,73 @@ export default function MyScreen({ navigation }: ScreenProps) {
               />
             </GroupWapper>
           </View>
-          <View className="w-1/2 px-1 my-2">
+          <View className='w-1/2 px-1 my-2'>
             <GroupWapper>
               <LineItem
                 style={styles.grouped_secondary}
-                title="浏览的主题"
+                title='浏览的主题'
                 isLast
                 icon={<ClockIcon size={22} color={iconColor} />}
                 disabled={authStatus === 'loading'}
                 onPress={() => {
-                  navigation.push('viewed-topics')
+                  router.push('/me/viewed-topics')
                 }}
               />
             </GroupWapper>
           </View>
         </View>
 
-        <LineItemGroup className="mx-2 my-2">
+        <LineItemGroup className='mx-2 my-2'>
           <LineItem
             style={styles.grouped_secondary}
-            title="首页 Tab 设置"
+            title='首页 Tab 设置'
             icon={<HomeIcon size={22} color={iconColor} />}
             onPress={() => {
-              navigation.push('home-tab-settings')
+              router.push('/home-tab-settings')
             }}
           />
           <LineItem
             style={styles.grouped_secondary}
-            title="Imgur 图床"
+            title='Imgur 图床'
             onPress={() => {
-              navigation.push('imgur-settings')
+              router.push('/imgur-settings')
             }}
             icon={<PhotoIcon size={22} color={iconColor} />}
           />
           <LineItem
             style={styles.grouped_secondary}
-            title="主题样式"
+            title='主题样式'
             icon={<PaintBrushIcon size={22} color={iconColor} />}
             onPress={() => {
-              navigation.push('theme-settings')
+              router.push('/theme-settings')
             }}
           />
           <LineItem
             style={styles.grouped_secondary}
-            title="功能设置"
+            title='功能设置'
             icon={<Cog6ToothIcon size={22} color={iconColor} />}
             onPress={() => {
-              navigation.push('preference-settings')
+              router.push('/preference-settings')
             }}
             isLast
           />
         </LineItemGroup>
 
-        <LineItemGroup className="mx-2 my-2">
+        <LineItemGroup className='mx-2 my-2'>
           <LineItem
             style={styles.grouped_secondary}
             onPress={() => {
-              navigation.push('about')
+              router.push('/about')
             }}
             icon={<InformationCircleIcon size={22} color={iconColor} />}
-            title="关于"
+            title='关于'
             isLast
           />
         </LineItemGroup>
-        <View className="mx-2 py-7 mb-4 mt-8 flex-1 justify-end">
+        <View className='mx-2 py-7 mb-4 mt-8 flex-1 justify-end'>
           {currentUser && (
             <Pressable
-              className={classNames(
+              className={cn(
                 'flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60',
               )}
               style={{ backgroundColor: theme.colors.bg_danger_mask }}
@@ -286,7 +289,8 @@ export default function MyScreen({ navigation }: ScreenProps) {
                     style: 'cancel',
                   },
                 ])
-              }}>
+              }}
+            >
               <Text style={styles.text_danger}>退出登录</Text>
             </Pressable>
           )}

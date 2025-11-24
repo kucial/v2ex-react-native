@@ -1,6 +1,11 @@
-import { ReactNode, useMemo, useRef, useState } from 'react'
-import { forwardRef } from 'react'
-import { useImperativeHandle } from 'react'
+import {
+  forwardRef,
+  ReactNode,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import WebView from 'react-native-webview'
 import { captureMessage } from '@sentry/react-native'
 
@@ -24,7 +29,7 @@ type EditorProviderProps = {
 }
 const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
   (props, ref) => {
-    const webviewRef = useRef<WebView>()
+    const webviewRef = useRef<WebView>(null)
     const requests = useRef({})
     const setInitialConfig = useRef({})
     const [state, setState] = useState<SlateEditorState>({

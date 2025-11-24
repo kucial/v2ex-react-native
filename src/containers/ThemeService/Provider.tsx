@@ -3,6 +3,7 @@ import { Platform } from 'react-native'
 import { getAppIcon, setAppIcon } from 'expo-dynamic-app-icon'
 import * as NavigationBar from 'expo-navigation-bar'
 import * as SystemUI from 'expo-system-ui'
+import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native'
 
 import { useAppSettings } from '../AppSettingsService'
 import { ThemeContext } from './context'
@@ -46,9 +47,24 @@ export const ThemeProvider = (props: {
     }
   }, [service, themeName])
 
+  const theme = useMemo(() => {
+    if (colorScheme === 'dark') {
+      return {
+        ...DarkTheme,
+        ...service.theme
+      }
+    }
+    return {
+      ...DefaultTheme,
+      ...service.theme
+    }
+  }, [service.theme, colorScheme])
+
   return (
     <ThemeContext.Provider value={service}>
-      {props.children}
+      <NavigationThemeProvider value={theme}>
+        {props.children}
+      </NavigationThemeProvider>
     </ThemeContext.Provider>
   )
 }

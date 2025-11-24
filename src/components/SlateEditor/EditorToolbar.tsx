@@ -1,12 +1,13 @@
 import {
   GestureResponderEvent,
+  Keyboard,
   Pressable,
   ScrollView,
   View,
 } from 'react-native'
-import classNames from 'classnames'
 
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 import { useEditor } from './context'
 import {
@@ -51,22 +52,26 @@ function ToolbarButton({
   return (
     <Pressable
       disabled={disabled}
-      className={classNames(
-        'w-[42px] h-[42px] rounded-md flex items-center justify-center',
-        {
-          'active:opacity-60': !disabled,
-          'opacity-50': disabled,
-        },
-      )}
-      style={[
-        {
-          backgroundColor: active
-            ? theme.colors.primary
-            : theme.colors.bg_overlay,
-        },
-      ]}
-      onPress={onPress}>
-      <Icon size={22} color={color} {...iconProps} />
+      className={cn('w-[38px] h-[42px] py-1 px-[2px]', {
+        'active:opacity-60': !disabled,
+        'opacity-50': disabled,
+      })}
+      onPress={onPress}
+    >
+      <View
+        className='rounded-md flex items-center justify-center'
+        style={[
+          {
+            width: 34,
+            height: 34,
+            backgroundColor: active
+              ? theme.colors.primary
+              : theme.colors.bg_overlay,
+          },
+        ]}
+      >
+        <Icon size={22} color={color} {...iconProps} />
+      </View>
     </Pressable>
   )
 }
@@ -74,10 +79,11 @@ function ToolbarButton({
 function Divider({ margin = true, color }) {
   return (
     <View
-      className={classNames('h-[18px] w-[1px]', margin && 'mx-1')}
+      className={cn('h-[18px] w-[1px]', margin && 'mx-1')}
       style={{
         backgroundColor: color,
-      }}></View>
+      }}
+    ></View>
   )
 }
 
@@ -90,15 +96,16 @@ export default function EditorToolbar(props) {
   }
   return (
     <View
-      sentry-label="EditorToolbar"
-      className="flex flex-row"
+      sentry-label='EditorToolbar'
+      className='flex flex-row'
       style={[
         props.style,
         styles.border_t_light,
         {
           backgroundColor: theme.colors.bg_overlay,
         },
-      ]}>
+      ]}
+    >
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -106,7 +113,8 @@ export default function EditorToolbar(props) {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-        }}>
+        }}
+      >
         <ToolbarButton
           disabled={!editor.canUndo()}
           onPress={() => {
@@ -215,11 +223,12 @@ export default function EditorToolbar(props) {
         />
       </ScrollView>
 
-      <View className="flex flex-row items-center flex-shrink-0">
+      <View className='flex flex-row items-center flex-shrink-0'>
         <Divider margin={false} color={theme.colors.border} />
         <ToolbarButton
           onPress={() => {
             editor.blur()
+            Keyboard.dismiss()
           }}
           Icon={KeyboardDismissIcon}
         />

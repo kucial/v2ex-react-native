@@ -1,9 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Pressable, Text, View, ViewStyle } from 'react-native'
-import classNames from 'classnames'
 
 import { useImgurService } from '@/containers/ImgurService'
+import { ImgurAlbum, ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
+import { useCachedState } from '@/utils/hooks'
 
 import Album from './AlbumImages'
 import { PickerContext } from './context'
@@ -11,8 +13,6 @@ import Landing from './LandingView'
 import SubmitButton from './SubmitButton'
 
 const CACHE_KEY = '$app$/ui/imgur-picker-stack'
-import { ImgurAlbum, ImgurImage } from '@/containers/ImgurService/types'
-import { useCachedState } from '@/utils/hooks'
 
 export type ImgurPickerProps = {
   onSubmit: (images: ImgurImage[]) => void
@@ -71,21 +71,23 @@ export default function ImgurPicker(props: ImgurPickerProps) {
   if (!imgur.credentials) {
     return (
       <View
-        className="flex flex-1 p-8 items-center justify-center w-full"
-        style={props.style}>
-        <View className="my-5">
+        className='flex flex-1 p-8 items-center justify-center w-full'
+        style={props.style}
+      >
+        <View className='my-5'>
           <Text style={[styles.text, styles.text_base]}>
             Imgur 服务还未设置
           </Text>
         </View>
         {props.onConfigSettings && (
           <Pressable
-            className={classNames(
+            className={cn(
               'h-[44px] w-[200px] rounded-md flex items-center justify-center mt-4',
               'active:opacity-60',
             )}
             style={styles.btn_primary__bg}
-            onPress={props.onConfigSettings}>
+            onPress={props.onConfigSettings}
+          >
             <Text style={styles.btn_primary__text}>前往设置</Text>
           </Pressable>
         )}
@@ -137,7 +139,7 @@ export default function ImgurPicker(props: ImgurPickerProps) {
 
   return (
     <PickerContext.Provider value={context}>
-      <View className="relative flex-1 w-full" style={props.style}>
+      <View className='relative flex-1 w-full' style={props.style}>
         {view}
         <SubmitButton />
       </View>

@@ -1,12 +1,11 @@
 import { ReactNode, useMemo } from 'react'
-import { Platform, PressableProps, Text } from 'react-native'
-import { PlatformPressable } from '@react-navigation/elements'
-import classNames from 'classnames'
+import { Platform, Pressable, PressableProps, Text } from 'react-native'
 import Color from 'color'
-import { styled } from 'nativewind'
 
 import Loader from '@/components/Loader'
+
 import { getSemanticStyle, useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 type ButtonVariant =
   | 'primary'
@@ -18,8 +17,6 @@ type ButtonVariant =
   | 'info'
   | 'icon'
   | 'default'
-
-export const StyledPressable = styled(PlatformPressable)
 
 const radiusMap = {
   md: 'rounded-md',
@@ -54,7 +51,7 @@ function Button(props: {
       return props.children
     }
     return <Text style={[styles.text_base, textStyle]}>{props.label}</Text>
-  }, [props.children, props.label, styles, variant])
+  }, [props.children, props.label, styles, textStyle])
 
   const android_ripple = useMemo(() => {
     return {
@@ -64,16 +61,16 @@ function Button(props: {
           ? radiusNum[props.radius]
           : props.radius,
     }
-  }, [props.radius])
+  }, [props.radius, theme.colors.text])
 
   return (
-    <StyledPressable
+    <Pressable
       disabled={props.disabled}
-      className={classNames(
+      className={cn(
         'flex items-center justify-center',
         Platform.OS === 'ios' && 'active:opacity-60',
         Platform.OS === 'ios' &&
-          variant == 'icon' &&
+          variant === 'icon' &&
           'active:bg-neutral-100 dark:active:bg-neutral-600',
         radiusMap[radius],
         size === 'md' && 'h-[44] px-3',
@@ -85,13 +82,14 @@ function Button(props: {
       )}
       style={[bgStyle, bdStyle, props.style]}
       onPress={props.onPress}
-      android_ripple={android_ripple}>
+      android_ripple={android_ripple}
+    >
       {props.loading ? (
         <Loader size={20} color={textStyle.color as string} />
       ) : (
         children
       )}
-    </StyledPressable>
+    </Pressable>
   )
 }
 

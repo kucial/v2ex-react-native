@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Alert, Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, View } from 'react-native'
 import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'expo-image-picker'
@@ -40,9 +40,9 @@ export default function UploadButton(props) {
     return null
   }
   return (
-    <View className="absolute bottom-[56px] right-[16px]">
+    <View className='absolute bottom-[56px] right-[16px]'>
       <Pressable
-        className="opacity-70 h-[56px] w-[56px] flex-row items-center justify-center rounded-full bg-blue-700 dark:bg-blue-300 active:opacity-50"
+        className='opacity-70 h-[56px] w-[56px] flex-row items-center justify-center rounded-full bg-blue-700 dark:bg-blue-300 active:opacity-50'
         onPress={async () => {
           const permissionRes =
             await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -93,7 +93,8 @@ export default function UploadButton(props) {
           } finally {
             alert.hide(indicator)
           }
-        }}>
+        }}
+      >
         <ArrowUpTrayIcon size={22} color={props.tintColor} />
         {/* <View className="ml-1 w-[60px]">
           <Text style={{ color: props.tintColor, fontSize: 10 }}>

@@ -5,6 +5,7 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import Button from '@/components/Button'
+
 import { useTheme } from '@/containers/ThemeService'
 
 export default function TopBottomNav(props: {
@@ -37,21 +38,24 @@ export default function TopBottomNav(props: {
           flexDirection: 'row',
         },
         style,
-      ]}>
+      ]}
+    >
       <Button
-        variant="default"
+        variant='default'
         style={{ width: 40, height: 40, marginRight: 6 }}
         onPress={() => {
           props.onNavTo(0)
-        }}>
+        }}
+      >
         <ChevronUpIcon size={20} color={styles.text_desc.color} />
       </Button>
       <Button
-        variant="default"
+        variant='default'
         style={{ width: 40, height: 40 }}
         onPress={() => {
           props.onNavTo(props.repliesCount)
-        }}>
+        }}
+      >
         <ChevronDownIcon size={20} color={styles.text_desc.color} />
       </Button>
     </Animated.View>

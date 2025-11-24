@@ -19,6 +19,7 @@ import * as Haptics from 'expo-haptics'
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
@@ -204,12 +205,11 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     <AnimatedFlashList
       scrollToOverflowEnabled
       ref={listViewRef}
-      className="flex-1"
+      className='flex-1'
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      estimatedItemSize={settings.feedLayout === 'tide' ? 65 : 80}
       onEndReached={() => {
         if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
           listQuery.fetchNextPage()

@@ -1,12 +1,11 @@
 import { ReactNode, useState } from 'react'
 import { Text, TextInputProps, View, ViewStyle } from 'react-native'
 import DatePicker from 'react-native-date-picker'
-import classNames from 'classnames'
 import { useField } from 'formik'
 import { padStart } from 'lodash'
-import { styled } from 'nativewind'
 
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 import Button from '../Button'
 import MyClearButton from '../MyClearButton'
@@ -50,30 +49,32 @@ function DateField({
   return (
     <View style={style}>
       {label !== false && (
-        <View className="flex flex-row">
+        <View className='flex flex-row'>
           <Text
-            className={classNames('pl-2 pb-[2px]', {
+            className={cn('pl-2 pb-[2px]', {
               'opacity-0': !field.value,
             })}
-            style={[styles.text, styles.text_xs]}>
+            style={[styles.text, styles.text_xs]}
+          >
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className="ml-2" style={[styles.text_danger, styles.text_xs]}>
+            <Text className='ml-2' style={[styles.text_danger, styles.text_xs]}>
               {meta.error}
             </Text>
           )}
         </View>
       )}
-      <View className="relative">
+      <View className='relative'>
         <Button
-          size="md"
-          variant="input"
+          size='md'
+          variant='input'
           onPress={() => {
             setOpen(true)
-          }}>
-          <View className="w-full">
+          }}
+        >
+          <View className='w-full'>
             {field.value ? (
               <Text style={[styles.text, styles.text_base]}>
                 {formatDate(field.value, props.pickerMode)}
@@ -86,7 +87,7 @@ function DateField({
           </View>
         </Button>
         {canClear && field.value && (
-          <View className="absolute right-0 h-full flex flex-row items-center justify-center">
+          <View className='absolute right-0 h-full flex flex-row items-center justify-center'>
             <MyClearButton
               onPress={() => {
                 helpers.setValue(undefined)
@@ -102,9 +103,9 @@ function DateField({
         mode={props.pickerMode}
         minimumDate={props.minDate}
         maximumDate={props.maxDate}
-        locale="zh"
-        confirmText="确认"
-        cancelText="取消"
+        locale='zh'
+        confirmText='确认'
+        cancelText='取消'
         title={props.pickerTitle || '选择日期'}
         date={field.value || new Date()}
         onConfirm={(date) => {
@@ -120,4 +121,4 @@ function DateField({
   )
 }
 
-export default styled(DateField)
+export default DateField

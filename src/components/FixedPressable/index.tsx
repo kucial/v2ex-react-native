@@ -1,20 +1,22 @@
 import { useCallback, useRef } from 'react'
 import { GestureResponderEvent, Pressable, PressableProps } from 'react-native'
-import { styled } from 'nativewind'
 
 function FixedPressable({ onPress, onPressIn, ...props }: PressableProps) {
   const _touchActivatePositionRef = useRef(null)
 
-  const _onPressIn = useCallback((e: GestureResponderEvent) => {
-    const { pageX, pageY } = e.nativeEvent
+  const _onPressIn = useCallback(
+    (e: GestureResponderEvent) => {
+      const { pageX, pageY } = e.nativeEvent
 
-    _touchActivatePositionRef.current = {
-      pageX,
-      pageY,
-    }
+      _touchActivatePositionRef.current = {
+        pageX,
+        pageY,
+      }
 
-    onPressIn?.(e)
-  }, [])
+      onPressIn?.(e)
+    },
+    [onPressIn],
+  )
 
   const _onPress = useCallback(
     (e: GestureResponderEvent) => {
@@ -38,4 +40,4 @@ function FixedPressable({ onPress, onPressIn, ...props }: PressableProps) {
   )
 }
 
-export default styled(FixedPressable)
+export default FixedPressable

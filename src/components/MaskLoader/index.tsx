@@ -17,7 +17,8 @@ export default function MaskLoader(props: { style?: ViewStyle }) {
           justifyContent: 'center',
         },
         props.style,
-      ]}>
+      ]}
+    >
       <Loader />
     </View>
   )
