@@ -95,10 +95,14 @@ export default function MemberReplies(
       ListFooterComponent={() => {
         return <CommonListFooter data={listQuery} />
       }}
-      onScroll={props.onScroll}
-      onScrollEndDrag={props.onScrollEndDrag}
-      onMomentumScrollBegin={props.onMomentumScrollBegin}
-      onMomentumScrollEnd={props.onMomentumScrollEnd}
+      onScroll={props.isFocused ? props.onScroll : undefined}
+      onScrollEndDrag={props.isFocused ? props.onScrollEndDrag : undefined}
+      onMomentumScrollBegin={
+        props.isFocused ? props.onMomentumScrollBegin : undefined
+      }
+      onMomentumScrollEnd={
+        props.isFocused ? props.onMomentumScrollEnd : undefined
+      }
       contentContainerStyle={props.contentContainerStyle}
       ref={props.onGetRef}
     />
