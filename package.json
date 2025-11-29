@@ -1,12 +1,12 @@
 {
   "name": "v2ex-react-native",
   "main": "expo-router/entry",
-  "version": "1.9.7",
+  "version": "1.10.0",
   "scripts": {
     "start": "expo start --dev-client -c",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "build:ios": "eas build --platform ios --local --profile staging",
+    "build:ios": "eas build --platform ios --profile production",
     "submit:ios": "eas submit --platform ios",
     "test": "jest",
     "test:watch": "jest --watch",

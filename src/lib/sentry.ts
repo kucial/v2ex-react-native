@@ -1,9 +1,8 @@
-
-import * as Sentry from '@sentry/react-native'
-import * as Updates from 'expo-updates'
-import * as Device from 'expo-device'
-import Constants from 'expo-constants'
 import { SENTRY_DSN } from '@env'
+import * as Sentry from '@sentry/react-native'
+import Constants from 'expo-constants'
+import * as Device from 'expo-device'
+import * as Updates from 'expo-updates'
 let inited = false
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
