@@ -2,39 +2,31 @@ import { useEffect, useRef, useState } from 'react'
 import {
   InteractionManager,
   Platform,
+  ScrollView,
   Text,
   TextInput,
   View,
 } from 'react-native'
 import { FunnelIcon } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 import KeyboardDismiss from '@/components/KeyboardDismiss'
-import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MyClearButton from '@/components/MyClearButton'
 import NodeLabel from '@/components/NodeLabel'
 
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
-import { useCachedState } from '@/utils/hooks'
 import { formatDate } from '@/utils/time'
 
-import { CACHE_KEY } from '../constants'
 import { useSearchHistory } from '../hooks'
 import SearchHistory from '../SearchHistory'
 import { SearchParams } from '../types'
 import AdvancedSearchForm from './AdvancedSearchForm'
 import SearchResultView from './SearchResultView'
-
-const snapPoints = Platform.select({
-  ios: ['54%'],
-  android: ['54%', '80%'],
-})
 
 const hasAdvancedOption = (params: SearchParams) => {
   return (
@@ -46,12 +38,12 @@ const hasAdvancedOption = (params: SearchParams) => {
   )
 }
 
-export default function GoogleSearch() {
+export default function Sov2exSearch() {
   const { theme, styles } = useTheme()
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const searchInput = useRef<TextInput>(null)
-  const advancedSearchModalRef = useRef<BottomSheetModal>(null)
+  const advancedSearchModalRef = useRef<TrueSheet>(null)
   const [searchParams, setSearchParams] = useState<SearchParams>({ q: '' })
   const searchHistory = useSearchHistory()
   useEffect(() => {
@@ -238,11 +230,13 @@ export default function GoogleSearch() {
             <SearchHistory onSelect={setSearchParams} />
           )}
         </View>
-        <MyBottomSheetModal
+        <TrueSheet
           ref={advancedSearchModalRef}
-          snapPoints={snapPoints}
+          detents={['auto']}
+          scrollable
+          backgroundColor={styles.overlay.backgroundColor}
         >
-          <BottomSheetScrollView style={{ height: '100%' }}>
+          <View className='pt-4 h-[400]'>
             <AdvancedSearchForm
               initialValues={searchParams}
               onSubmit={(values) => {
@@ -250,8 +244,8 @@ export default function GoogleSearch() {
                 advancedSearchModalRef.current?.dismiss()
               }}
             />
-          </BottomSheetScrollView>
-        </MyBottomSheetModal>
+          </View>
+        </TrueSheet>
       </View>
     </KeyboardDismiss>
   )

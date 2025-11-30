@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { InteractionManager, Text, View } from 'react-native'
+import { InteractionManager, ScrollView, Text, View } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
   useAnimatedScrollHandler,
@@ -8,12 +8,7 @@ import {
 import Share from 'react-native-share'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import {
-  BottomSheetModal,
-  BottomSheetScrollView,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet'
-import { FlashList } from '@shopify/flash-list'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import {
   useInfiniteQuery,
   useQuery,
@@ -25,7 +20,6 @@ import AnimatedFlashList from '@/components/AnimatedFlashList'
 import AnimatedHeader from '@/components/AnimatedHeader'
 import Button from '@/components/Button'
 import CommonListFooter from '@/components/CommonListFooter'
-import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 
@@ -60,9 +54,9 @@ const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
 
-const replyModalSnapPoints = [220]
-const moveModalSnapPoints = [280]
-const conversationSnapPoints = ['60%', '90%']
+const replyModalDetents = [220]
+const moveModalDetents = [280]
+const conversationDetents = [0.6, 0.9]
 
 const hasRelatedMessages = (reply, replyList) => {
   if (!reply) {
@@ -173,10 +167,10 @@ function TopicScreen() {
   const padLayout = usePadLayout()
 
   const listRef = useRef<FlashList<TopicReply>>(null)
-  const replyModalRef = useRef<BottomSheetModal>(null)
-  const conversationModalRef = useRef<BottomSheetModal>(null)
-  const userInfoModalRef = useRef<BottomSheetModal>(null)
-  const changeNodeModalRef = useRef<BottomSheetModal>(null)
+  const replyModalRef = useRef<TrueSheet>(null)
+  const conversationModalRef = useRef<TrueSheet>(null)
+  const userInfoModalRef = useRef<TrueSheet>(null)
+  const changeNodeModalRef = useRef<TrueSheet>(null)
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
   const [myReplies, setMyReplies] = useCachedState<TopicReply[]>(
@@ -707,7 +701,7 @@ function TopicScreen() {
 
   const scrollY = useSharedValue(0)
   const lastOffsetY = useSharedValue(0)
-  const scrollDirection = useSharedValue('')
+  const scrollDirection = useSharedValue<'up' | 'down' | ''>('')
 
   const handleScroll = useAnimatedScrollHandler({
     onScroll: (e) => {
@@ -834,13 +828,13 @@ function TopicScreen() {
         scrollDirection={scrollDirection}
       />
 
-      <MyBottomSheetModal
+      <TrueSheet
         ref={conversationModalRef}
-        index={0}
-        snapPoints={conversationSnapPoints}
+        detents={conversationDetents}
+        backgroundColor={styles.overlay.backgroundColor}
       >
         {conversationContext && (
-          <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
+          <ScrollView className='pt-4' contentContainerClassName='pb-safe'>
             <ReplyList
               showAvatar={settings.feedShowAvatar}
               data={conversation}
@@ -849,16 +843,16 @@ function TopicScreen() {
               onThank={handleThankToReply}
               onShowUserInfo={showUserInfo}
             />
-          </BottomSheetScrollView>
+          </ScrollView>
         )}
-      </MyBottomSheetModal>
-      <MyBottomSheetModal
+      </TrueSheet>
+      <TrueSheet
         ref={userInfoModalRef}
-        index={0}
-        snapPoints={conversationSnapPoints}
+        detents={conversationDetents}
+        backgroundColor={styles.overlay.backgroundColor}
       >
         {userInfoContext && (
-          <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 44 }}>
+          <ScrollView className='pt-4' contentContainerClassName='pb-safe'>
             <ReplyList
               showAvatar={settings.feedShowAvatar}
               data={userPostedMessages}
@@ -871,16 +865,16 @@ function TopicScreen() {
               onReply={initReply}
               onThank={handleThankToReply}
             />
-          </BottomSheetScrollView>
+          </ScrollView>
         )}
-      </MyBottomSheetModal>
+      </TrueSheet>
 
-      <MyBottomSheetModal
+      <TrueSheet
         ref={replyModalRef}
-        index={0}
-        snapPoints={replyModalSnapPoints}
+        detents={['auto']}
+        backgroundColor={styles.overlay.backgroundColor}
       >
-        <BottomSheetView>
+        <View className='h-[220px] pt-4'>
           {replyContext && (
             <TopicReplyForm
               cacheKey={getReplyFormCacheKey(replyContext)}
@@ -897,15 +891,15 @@ function TopicScreen() {
               }}
             />
           )}
-        </BottomSheetView>
-      </MyBottomSheetModal>
+        </View>
+      </TrueSheet>
       {topicQuery.data?.canMove && (
-        <MyBottomSheetModal
+        <TrueSheet
           ref={changeNodeModalRef}
-          index={0}
-          snapPoints={moveModalSnapPoints}
+          detents={moveModalDetents}
+          backgroundColor={styles.overlay.backgroundColor}
         >
-          <BottomSheetView>
+          <View className='h-[280px] pt-4'>
             <TopicMovePanel
               topicId={topicQuery.data.id}
               node={topicQuery.data.node}
@@ -919,8 +913,8 @@ function TopicScreen() {
                 )
               }}
             />
-          </BottomSheetView>
-        </MyBottomSheetModal>
+          </View>
+        </TrueSheet>
       )}
     </>
   )

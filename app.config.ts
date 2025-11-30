@@ -1,5 +1,7 @@
 import { ConfigContext, ExpoConfig } from 'expo/config'
 
+import packageJson from './package.json'
+
 const themes = [
   'r2v',
   'gin_blue',
@@ -52,7 +54,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.kucial.v2ex',
-      runtimeVersion: '1.9',
+      runtimeVersion: packageJson.version.split('.').slice(0, -1).join('.'),
       splash: {
         image: './src/assets/splash.png',
         backgroundColor: '#ffffff',
@@ -63,6 +65,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
       infoPlist: {
         CFBundleDevelopmentRegion: 'zh-hans',
+        ITSAppUsesNonExemptEncryption: false,
       },
     },
     android: {
@@ -94,7 +97,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       typedRoutes: true,
     },
     plugins: [
-      'expo-router',
       [
         'expo-asset',
         {
@@ -104,6 +106,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ['expo-dynamic-app-icon', icons],
       '@sentry/react-native/expo',
       'expo-image-picker',
+      'expo-router',
       [
         'expo-build-properties',
         {

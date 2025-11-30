@@ -110,7 +110,6 @@ export default function AdvancedSearchForm(props: {
                 label={false}
                 placeholder='请输入查询的关键词'
                 canClear
-                bottomSheet
               />
             </View>
             <View className='flex-row gap-3'>
@@ -139,7 +138,6 @@ export default function AdvancedSearchForm(props: {
                   label={false}
                   placeholder='为空时，查询所有作者'
                   canClear
-                  bottomSheet
                 />
               </View>
             </View>

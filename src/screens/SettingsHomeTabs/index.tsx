@@ -27,7 +27,6 @@ import {
   RectangleStackIcon,
 } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import type { EventArg } from '@react-navigation/native'
 import { Stack, useNavigation, useRouter } from 'expo-router'
 
@@ -42,7 +41,7 @@ import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
-import AddTabPanelSheet from './AddTabPanelSheet'
+import AddTabPanelSheet, { AddTabPanelSheetRef } from './AddTabPanelSheet'
 
 const LineItem = (props: {
   disabled?: boolean
@@ -98,7 +97,7 @@ export default function HomeTabs() {
     initHomeTabs,
   } = useAppSettings()
   const [tabs, setTabs] = useState<HomeTabOption[]>(homeTabs || [])
-  const sheetRef = useRef<BottomSheetModal>(null)
+  const sheetRef = useRef<AddTabPanelSheetRef>(null)
   const { showActionSheetWithOptions } = useActionSheet()
   const alert = useAlertService()
 

@@ -1,13 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { Platform, Text, TextInput, View } from 'react-native'
-import {
-  BottomSheetModal,
-  BottomSheetTextInput,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 
 import Button from '@/components/Button'
-import MyBottomSheetModal from '@/components/MyBottomSheetModal'
+
 import { logout, subscribe, verify2faCode } from '@/utils/v2ex-client'
 import ApiError from '@/utils/v2ex-client/ApiError'
 import { TFA_Error } from '@/utils/v2ex-client/types'
@@ -45,7 +41,7 @@ function TwoFAWatcher() {
 
 export function TwoFAServiceProvider({ children }) {
   const { styles, theme } = useTheme()
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null)
+  const bottomSheetModalRef = useRef<TrueSheet>(null)
   const visible = useRef(false)
   const promise = useRef(null)
   const [modalState, setModalState] = useState({
@@ -54,7 +50,6 @@ export function TwoFAServiceProvider({ children }) {
     resolve: null,
   })
   const [input, setInput] = useState('')
-  const snapPoints = [270] // Adjust the height of the bottom sheet
   const alert = useAlertService()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -72,7 +67,7 @@ export function TwoFAServiceProvider({ children }) {
   }
 
   const hideModal = () => {
-    bottomSheetModalRef.current?.close()
+    bottomSheetModalRef.current?.dismiss()
     visible.current = false
     promise.current = null
     setInput('')
@@ -114,29 +109,27 @@ export function TwoFAServiceProvider({ children }) {
     }
   }
 
-  const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
-
   return (
     <TwoFAModalContext.Provider value={{ showModal, hideModal, modalState }}>
       {children}
-      <MyBottomSheetModal
+      <TrueSheet
         ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={snapPoints}
-        enablePanDownToClose
-        onDismiss={handleModalDismiss}>
-        <BottomSheetView>
-          <View className="px-4 flex-col gap-4">
-            <View className="flex flex-row justify-center py-2">
+        detents={['auto']}
+        onDidDismiss={handleModalDismiss}
+        backgroundColor={styles.overlay.backgroundColor}
+      >
+        <View className='pt-4 h-[280]'>
+          <View className='px-4 flex-col gap-4'>
+            <View className='flex flex-row justify-center py-2'>
               <Text style={[styles.text]}>{modalState.message}</Text>
             </View>
             <View>
-              <View className="rounded-lg" style={[styles.overlay_input__bg]}>
-                <Input
-                  placeholder="Enter 2FA Code"
+              <View className='rounded-lg' style={[styles.overlay_input__bg]}>
+                <TextInput
+                  placeholder='Enter 2FA Code'
                   value={input}
                   onChangeText={setInput}
-                  keyboardType="numeric"
+                  keyboardType='numeric'
                   autoFocus
                   style={[
                     {
@@ -158,23 +151,23 @@ export function TwoFAServiceProvider({ children }) {
               </View>
             </View>
             <Button
-              size="md"
-              variant="primary"
-              label="提交"
+              size='md'
+              variant='primary'
+              label='提交'
               onPress={handleSubmit}
               loading={isSubmitting}
               disabled={isSubmitting}
             />
             <Button
-              size="md"
-              variant="secondary"
-              label="退出登录"
+              size='md'
+              variant='secondary'
+              label='退出登录'
               onPress={handleLogout}
               disabled={isSubmitting}
             />
           </View>
-        </BottomSheetView>
-      </MyBottomSheetModal>
+        </View>
+      </TrueSheet>
       <TwoFAWatcher />
     </TwoFAModalContext.Provider>
   )

@@ -7,21 +7,9 @@ import {
   useRef,
   useState,
 } from 'react'
-import {
-  Keyboard,
-  Platform,
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native'
-import {
-  BottomSheetModal,
-  BottomSheetTextInput,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet'
+import { Keyboard, Pressable, Text, TextInput, View } from 'react-native'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 
-import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import ToBottomIcon from '@/components/ToBottomIcon'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -39,7 +27,6 @@ export type ScrollControlProps = {
 }
 
 type Action = 'to_top' | 'to_bottom' | ''
-const conversationSnapPoints = [80]
 
 export type ScrollControlApi = {
   setAction(action: Action): void
@@ -48,7 +35,7 @@ export type ScrollControlApi = {
 const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
   (props, ref) => {
     const [action, setAction] = useState<Action>('')
-    const inputModalRef = useRef<BottomSheetModal>(null)
+    const inputModalRef = useRef<TrueSheet>(null)
     const [target, setTarget] = useState('')
 
     const { styles, theme } = useTheme()
@@ -77,18 +64,19 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
       [],
     )
 
-    const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
-
     return (
       <>
         {props.renderButton({ action, onPress: handlePress })}
 
-        <MyBottomSheetModal
-          index={0}
-          snapPoints={conversationSnapPoints}
+        <TrueSheet
           ref={inputModalRef}
+          detents={['auto']}
+          backgroundColor={styles.overlay.backgroundColor}
         >
-          <BottomSheetView className='pl-3 pr-3 flex flex-col flex-1'>
+          <View
+            className='px-4 py-4 flex flex-col flex-1'
+            style={styles.overlay}
+          >
             <View className='flex flex-row'>
               <View
                 className='rounded-lg flex flex-row items-center flex-1'
@@ -98,7 +86,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                   <Text style={styles.text_desc}>#</Text>
                 </View>
                 <View className='flex-1'>
-                  <Input
+                  <TextInput
                     autoFocus
                     keyboardType='number-pad'
                     placeholder={`最大: ${props.max}`}
@@ -162,8 +150,8 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                 </Pressable>
               </View>
             </View>
-          </BottomSheetView>
-        </MyBottomSheetModal>
+          </View>
+        </TrueSheet>
       </>
     )
   },

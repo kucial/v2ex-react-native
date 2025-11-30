@@ -9,20 +9,17 @@ import {
   View,
 } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/outline'
-import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { encode } from 'js-base64'
 import colors from 'tailwindcss/colors'
 
 import ImgurPicker from '@/components/ImgurPicker'
-import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
 
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import { useCachedState } from '@/utils/hooks'
 import { TopicReply } from '@/utils/v2ex-client/types'
-
-const pickerSnapPoints = ['90%']
 
 type TextSelection = {
   start: number
@@ -48,7 +45,6 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
   const { theme, styles } = useTheme()
   const [imagePickerOpened, showImagePicker] = useState(false)
 
-  const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
   const inputRef = useRef<TextInput>(null)
 
   const [cache, setCache] = useCachedState<ReplyCache>(
@@ -73,7 +69,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
     },
   )
 
-  const pickerRef = useRef<BottomSheetModal>(null)
+  const pickerRef = useRef<TrueSheet>(null)
   const inputSelection = useRef<TextSelection>(null)
   const { handleSubmit, control, getValues, setValue, watch } =
     useForm<ReplyCache>({
@@ -118,12 +114,12 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                   },
               ]}
             >
-              <BottomSheetTextInput
+              <TextInput
                 ref={inputRef}
                 style={[
                   {
                     width: '100%',
-                    height: Platform.OS === 'android' ? 200 : '100%',
+                    height: Platform.OS === 'android' ? 180 : '100%',
                     borderRadius: 8,
                     paddingHorizontal: 8,
                     paddingVertical: Platform.OS === 'android' ? 8 : 4,
@@ -204,13 +200,13 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
             </Text>
           </Pressable>
         </View>
-        <MyBottomSheetModal
+        <TrueSheet
           ref={pickerRef}
-          index={0}
-          snapPoints={pickerSnapPoints}
-          onDismiss={() => {
+          detents={[0.5]}
+          onDidDismiss={() => {
             showImagePicker(false)
           }}
+          backgroundColor={styles.overlay.backgroundColor}
         >
           {imagePickerOpened && (
             <ImgurPicker
@@ -230,7 +226,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
               }}
             />
           )}
-        </MyBottomSheetModal>
+        </TrueSheet>
       </View>
     </View>
   )

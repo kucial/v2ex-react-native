@@ -4,6 +4,7 @@ import {
   Linking,
   Platform,
   Pressable,
+  ScrollView,
   Text,
   TextInput,
   View,
@@ -14,7 +15,7 @@ import BaseRender, {
   RenderHTMLProps,
 } from 'react-native-render-html'
 import WebView from 'react-native-webview'
-import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import IframeRenderer, { iframeModel } from '@native-html/iframe-plugin'
 import * as Sentry from '@sentry/react-native'
 import Color from 'color'
@@ -38,7 +39,6 @@ import {
   isURL,
 } from '@/utils/url'
 
-import MyBottomSheetModal from '../MyBottomSheetModal'
 import AnchorRenderer from './AnchorRenderer'
 import { RenderContext } from './context'
 import HorizontalScrollRenderer from './HorizontalScrollRenderer'
@@ -53,7 +53,6 @@ const renderers = {
   a: AnchorRenderer,
   pre: HorizontalScrollRenderer,
 }
-const snapPoints = ['90%']
 
 const customHTMLElementModels = {
   iframe: iframeModel,
@@ -73,8 +72,8 @@ function HtmlRender({
   const { theme, colorScheme, styles: themeStyles } = useTheme()
   const alert = useAlertService()
   const viewingRef = useRef<ImageViewingService>(null)
-  const selectModalRef = useRef<BottomSheetModal>(null)
-  const base64ModalRef = useRef<BottomSheetModal>(null)
+  const selectModalRef = useRef<TrueSheet>(null)
+  const base64ModalRef = useRef<TrueSheet>(null)
   const router = useRouter()
 
   const renderersProps = useMemo(
@@ -150,10 +149,12 @@ function HtmlRender({
       },
       pre: {
         backgroundColor: theme.colors.html_pre_bg,
-        paddingHorizontal: (12 / 16) * baseFontSize,
-        paddingTop: baseFontSize * 0.8,
+        paddingVertical: baseFontSize * 0.8,
         lineHeight: 1.25 * baseFontSize,
         borderRadius: 4,
+      },
+      br: {
+        backgroundColor: 'orange',
       },
       code: {
         fontSize: 14,
@@ -175,9 +176,17 @@ function HtmlRender({
         borderLeftWidth: 3,
         borderLeftColor: theme.colors.text,
       },
+      tr: {
+        flexDirection: 'row',
+        width: '100%',
+      },
+      td: {
+        flex: 1,
+      },
       th: {
         borderBottomWidth: 1,
         borderBottomColor: theme.colors.text_meta,
+        flex: 1,
       },
       ...(tagsStyles || {}),
     }
@@ -218,7 +227,7 @@ function HtmlRender({
           Linking.openURL(url)
           return
         }
-        if (Platform.OS == 'ios') {
+        if (Platform.OS === 'ios') {
           WebBrowser.openBrowserAsync(url, {
             controlsColor: theme.colors.primary,
             dismissButtonStyle: 'close',
@@ -351,6 +360,7 @@ function HtmlRender({
               }
             }}
             previewBackgroundColor={themeStyles.layer1.backgroundColor}
+            preview={<View></View>}
           >
             <View style={[{ padding: 6, borderRadius: 8 }]}>
               <BaseRender
@@ -368,19 +378,12 @@ function HtmlRender({
           </ContextMenu>
         </View>
       </RenderContext.Provider>
-      <MyBottomSheetModal
-        ref={selectModalRef}
-        index={0}
-        snapPoints={snapPoints}
-      >
-        <BottomSheetScrollView
-          contentContainerStyle={{
-            paddingBottom: 44,
-            paddingTop: 16,
-            paddingHorizontal: 16,
-          }}
+      <TrueSheet ref={selectModalRef} detents={[0.5, 0.8]} scrollable>
+        <ScrollView
+          contentContainerClassName='pb-safe px-4 pt-3'
+          style={themeStyles.overlay}
         >
-          {Platform.OS == 'ios' ? (
+          {Platform.OS === 'ios' ? (
             <TextInput
               style={styles.body}
               value={textToSelect}
@@ -399,19 +402,12 @@ function HtmlRender({
               {textToSelect}
             </Text>
           )}
-        </BottomSheetScrollView>
-      </MyBottomSheetModal>
-      <MyBottomSheetModal
-        ref={base64ModalRef}
-        index={0}
-        snapPoints={['50%', '90%']}
-      >
-        <BottomSheetScrollView
-          contentContainerStyle={{
-            paddingBottom: 44,
-            paddingTop: 16,
-            paddingHorizontal: 16,
-          }}
+        </ScrollView>
+      </TrueSheet>
+      <TrueSheet ref={base64ModalRef} detents={['auto']}>
+        <ScrollView
+          style={themeStyles.overlay}
+          contentContainerClassName='pb-safe px-4 pt-3'
         >
           <View className='flex-row w-full'>
             <View className='flex-1 py-2' style={themeStyles.border_b}>
@@ -463,8 +459,8 @@ function HtmlRender({
               点击选择复制
             </Text>
           </View>
-        </BottomSheetScrollView>
-      </MyBottomSheetModal>
+        </ScrollView>
+      </TrueSheet>
     </ImageViewingServiceProvider>
   )
 }

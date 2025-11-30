@@ -7,7 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import type { BottomSheetModal } from '@gorhom/bottom-sheet'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { debounce } from 'lodash'
@@ -16,7 +16,6 @@ import Button from '@/components/Button'
 import KeyboardAwareView from '@/components/KeyboardAwareView'
 import KeyboardDismiss from '@/components/KeyboardDismiss'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import NavigationHeader from '@/components/NavigationHeader'
 import {
   EditorImagePicker,
@@ -45,7 +44,7 @@ export default function NewTopicScreen() {
 
   const titleInput = useRef<TextInput>(null)
   const editorRef = useRef<SlateEditorService>(null)
-  const pickerModalRef = useRef<BottomSheetModal>(null)
+  const pickerModalRef = useRef<TrueSheet>(null)
   const alert = useAlertService()
   const scrollViewRef = useRef<ScrollView>(null)
   const scrollViewInfo = useRef({
@@ -235,7 +234,7 @@ export default function NewTopicScreen() {
                           onChange={(node) => {
                             setValues((prev) => ({
                               ...prev,
-                              node,
+                              node: node.name,
                             }))
                           }}
                         />
@@ -296,11 +295,10 @@ export default function NewTopicScreen() {
                   />
                 </View>
               </MaxWidthWrapper>
-              <MyBottomSheetModal
+              <TrueSheet
                 ref={pickerModalRef}
-                index={0}
-                snapPoints={pickerSnapPoints}
-                onDismiss={() => {
+                detents={[0.9]}
+                onDidDismiss={() => {
                   showImagePicker(false)
                   editorRef.current?.focus()
                 }}
@@ -322,7 +320,7 @@ export default function NewTopicScreen() {
                     }}
                   />
                 )}
-              </MyBottomSheetModal>
+              </TrueSheet>
             </EditorProvider>
           </View>
         </KeyboardAwareView>

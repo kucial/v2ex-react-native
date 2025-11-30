@@ -15,8 +15,6 @@ import Share from 'react-native-share'
 import { BarcodeScanningResult, Camera } from 'expo-camera'
 import colors from 'tailwindcss/colors'
 
-import { getImageContentUri } from '@/utils/image'
-
 import CheckIcon from '../CheckIcon'
 import Loader from '../Loader'
 
@@ -81,10 +79,9 @@ const ImageViewingFooter = (props: {
           onPress={async () => {
             try {
               setSaveStatus('loading')
-              const contentUri = await getImageContentUri(displayUri)
               setSaveStatus('')
               await Share.open({
-                url: contentUri,
+                url: displayUri,
               })
               setSaveStatus('success')
             } catch (err) {

@@ -13,15 +13,142 @@ import { useRouter } from 'expo-router'
 import { useCachedState } from '@/utils/hooks'
 import { getJSON, setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
-import {
-  BalanceBrief,
-  MemberDetail,
-  TFA_Error,
-} from '@/utils/v2ex-client/types'
+import { BalanceBrief, MemberDetail } from '@/utils/v2ex-client/types'
 
 import { useAlertService } from '../AlertService'
 import { TwoFAServiceProvider } from './2fa'
 import { AuthService, AuthState } from './types'
+
+// Custom hooks for better organization
+function useDailySignIn(user: MemberDetail | null) {
+  const dailySigning = useRef(false)
+  const alert = useAlertService()
+
+  const dailySignIn = useCallback(
+    async (u: MemberDetail) => {
+      if (u && !dailySigning.current) {
+        const key = `$app$/daily_sign_in/${u.username}/${getUTCDateString()}`
+        if (!getJSON(key)) {
+          try {
+            dailySigning.current = true
+            await v2exClient.dailySignin()
+            setJSON(key, 1)
+            alert.show({ type: 'success', message: '签到成功' })
+          } catch (err) {
+            if (err.code === 'DAILY_SIGNED') {
+              setJSON(key, 1)
+              alert.show({
+                type: 'info',
+                message: err.message,
+              })
+            } else {
+              alert.show({ type: 'error', message: err.message })
+            }
+          } finally {
+            dailySigning.current = false
+          }
+        }
+      }
+    },
+    [alert],
+  )
+
+  // Auto sign-in on app becoming active
+  useEffect(() => {
+    if (!user) return
+
+    let appState = AppState.currentState
+    let timer: NodeJS.Timeout
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (appState.match(/background/) && nextAppState === 'active') {
+        timer = setTimeout(() => {
+          InteractionManager.runAfterInteractions(async () => {
+            try {
+              await dailySignIn(user)
+              // fetch index
+              v2exClient.getHomeFeeds({ tab: 'recent' }).catch((err) => {
+                // do nothing.
+              })
+            } catch (err) {}
+          })
+        }, CHECK_STATUS_DELAY)
+      } else {
+        clearTimeout(timer)
+        timer = undefined
+      }
+      appState = nextAppState
+    })
+
+    return () => {
+      subscription.remove()
+    }
+  }, [user, dailySignIn])
+
+  return dailySignIn
+}
+
+function useAuthSubscriptions(
+  user: MemberDetail | null,
+  fetchCurrentUser: () => Promise<MemberDetail | undefined>,
+  setState: (updater: (prev: AuthState) => AuthState) => void,
+  isFetchingUserRef: React.MutableRefObject<boolean>,
+) {
+  // Handle current user mismatch
+  useEffect(() => {
+    const unsubscribe = v2exClient.subscribe(
+      'current_user',
+      async (username) => {
+        if (isFetchingUserRef.current) return
+        if (user?.username !== username) {
+          isFetchingUserRef.current = true
+          fetchCurrentUser()
+            .then(() => {
+              isFetchingUserRef.current = false
+            })
+            .catch(() => {
+              isFetchingUserRef.current = false
+            })
+        }
+      },
+    )
+    return unsubscribe
+  }, [user, fetchCurrentUser, isFetchingUserRef])
+
+  // Handle unread count updates
+  useEffect(() => {
+    const unsubscribe = v2exClient.subscribe('unread_count', (val: number) => {
+      setState((prev) => {
+        const current_unread_count = prev.meta?.unread_count
+        if (current_unread_count === val) return prev
+        return {
+          ...prev,
+          meta: {
+            ...prev.meta,
+            unread_count: val,
+          },
+        }
+      })
+    })
+    return unsubscribe
+  }, [setState])
+
+  // Handle balance updates
+  useEffect(() => {
+    const unsubscribe = v2exClient.subscribe(
+      'balance_brief',
+      (balanceBrief: BalanceBrief) => {
+        setState((prev) => ({
+          ...prev,
+          meta: {
+            ...prev.meta,
+            balance: balanceBrief,
+          },
+        }))
+      },
+    )
+    return unsubscribe
+  }, [setState])
+}
 
 const CACHE_KEY = '$app$/current-user'
 const INIT_STATE = {
@@ -48,17 +175,15 @@ const getUTCDateString = () => {
 
 export const AuthServiceContext = createContext<AuthService>({
   composeAuthedNavigation: (callback) => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     return function () {}
   },
 } as AuthService)
 
-let isFetchingUser = false
 export default function AuthServiceProvider(props: { children: ReactElement }) {
   const router = useRouter()
 
   const nextAction = useRef<VoidFunction>(null)
-  const dailySigning = useRef(false)
+  const isFetchingUserRef = useRef(false)
   const alert = useAlertService()
 
   const [state, setState] = useCachedState<AuthState>(
@@ -72,30 +197,40 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     },
   )
 
-  const service: AuthService = useMemo(() => {
-    const fetchCurrentUser = async () => {
+  // Define fetchCurrentUser function
+  const fetchCurrentUser = useCallback(async () => {
+    setState((prev) => ({
+      ...prev,
+      status: 'loading',
+    }))
+    try {
+      const res = await v2exClient.getCurrentUser(true)
+      setState(() => ({
+        user: res.data,
+        meta: res.meta,
+        status: res.data ? 'authed' : 'visitor',
+        fetchedAt: Date.now(),
+      }))
+      return res.data
+    } catch (err) {
+      console.log('.....AUTH_ERROR......', err)
       setState((prev) => ({
         ...prev,
-        status: 'loading',
+        status: 'failed',
       }))
-      try {
-        const res = await v2exClient.getCurrentUser(true)
-        setState(() => ({
-          user: res.data,
-          meta: res.meta,
-          status: res.data ? 'authed' : 'visitor',
-          fetchedAt: Date.now(),
-        }))
-        return res.data
-      } catch (err) {
-        console.log('.....AUTH_ERROR......', err)
-        setState((prev) => ({
-          ...prev,
-          // error: err,
-          status: 'failed',
-        }))
-      }
     }
+  }, [setState])
+
+  // Initialize hooks
+  const dailySignIn = useDailySignIn(state.user)
+  useAuthSubscriptions(
+    state.user,
+    fetchCurrentUser,
+    setState,
+    isFetchingUserRef,
+  )
+
+  const service: AuthService = useMemo(() => {
     const logout = async () => {
       let prevStatus
       try {
@@ -130,28 +265,25 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
         router.push('/signin')
       },
       composeAuthedNavigation: function <T>(callback) {
-        return useCallback(
-          (params?: T) => {
-            if (state.status === 'loading') {
-              alert.show({
-                type: 'info',
-                message: '提示 正在验证登录状态，请稍候',
-              })
-              return
-            }
-            if (!state.user) {
-              router.push('/signin')
-              if (callback) {
-                nextAction.current = () => {
-                  callback(params)
-                }
+        return (params?: T) => {
+          if (state.status === 'loading') {
+            alert.show({
+              type: 'info',
+              message: '提示 正在验证登录状态，请稍候',
+            })
+            return
+          }
+          if (!state.user) {
+            router.push('/signin')
+            if (callback) {
+              nextAction.current = () => {
+                callback(params)
               }
-              return
             }
-            callback?.(params)
-          },
-          [callback, router],
-        )
+            return
+          }
+          callback?.(params)
+        }
       },
       getNextAction: () => {
         if (nextAction) {
@@ -171,145 +303,20 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
         }))
       },
     }
-  }, [state])
+  }, [state, fetchCurrentUser])
 
-  const dailySignIn = useCallback(async (user: MemberDetail) => {
-    if (user && !dailySigning.current) {
-      const key = `$app$/daily_sign_in/${user.username}/${getUTCDateString()}`
-      if (!getJSON(key)) {
-        try {
-          dailySigning.current = true
-          await v2exClient.dailySignin()
-          setJSON(key, 1)
-          alert.show({ type: 'success', message: '签到成功' })
-        } catch (err) {
-          if (err.code === 'DAILY_SIGNED') {
-            setJSON(key, 1)
-            alert.show({
-              type: 'info',
-              message: err.message,
-            })
-          } else {
-            alert.show({ type: 'error', message: err.message })
-          }
-        } finally {
-          dailySigning.current = false
-        }
-      }
-    }
-  }, [])
-
+  // Initial user fetch
   useEffect(() => {
     service.fetchCurrentUser().then((res) => {
       console.log(res)
-    })
-  }, [])
-
-  // 已登陆用户的初始化行为
-  useEffect(() => {
-    if (service.user) {
-      if (shouldCheck(service.fetchedAt)) {
-        service.fetchCurrentUser().then(dailySignIn)
-      } else {
-        dailySignIn(service.user)
+      // Perform initial daily sign-in check
+      if (res && shouldCheck(state.fetchedAt)) {
+        dailySignIn(res)
+      } else if (res) {
+        dailySignIn(res)
       }
-    }
-  }, [])
-
-  // 已登陆用户，“自动签到” 检测行为
-  useEffect(() => {
-    if (!service.user) {
-      return
-    }
-    let appState = AppState.currentState
-    let timer: NodeJS.Timeout
-    const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (appState.match(/background/) && nextAppState === 'active') {
-        timer = setTimeout(() => {
-          InteractionManager.runAfterInteractions(async () => {
-            try {
-              await dailySignIn(service.user)
-              // fetch index
-              v2exClient.getHomeFeeds({ tab: 'recent' }).catch((err) => {
-                // do nothing.
-              })
-            } catch (err) {}
-          })
-        }, CHECK_STATUS_DELAY)
-      } else {
-        clearTimeout(timer)
-        timer = undefined
-      }
-      appState = nextAppState
     })
-
-    return () => {
-      subscription.remove()
-    }
-  }, [service.user, dailySignIn])
-
-  // 处理登录状态不匹配的问题
-  useEffect(() => {
-    const unsubscribe = v2exClient.subscribe(
-      'current_user',
-      async (username) => {
-        if (isFetchingUser) {
-          return
-        }
-        if (service?.user?.username !== username) {
-          service
-            .fetchCurrentUser()
-            .then(() => {
-              isFetchingUser = false
-            })
-            .catch(() => {
-              isFetchingUser = false
-            })
-        }
-      },
-    )
-
-    return unsubscribe
-  }, [service.user])
-
-  // 处理未读消息更新
-  useEffect(() => {
-    const unsubscribe = v2exClient.subscribe('unread_count', (val: number) => {
-      setState((prev) => {
-        const current_unread_count = prev.meta?.unread_count
-        if (current_unread_count === val) {
-          return prev
-        }
-        return {
-          ...prev,
-          meta: {
-            ...prev.meta,
-            unread_count: val,
-          },
-        }
-      })
-    })
-    return unsubscribe
-  }, [])
-
-  // 处理 钱包信息
-  useEffect(() => {
-    const unsubscribe = v2exClient.subscribe(
-      'balance_brief',
-      (balanceBrief: BalanceBrief) => {
-        setState((prev) => {
-          return {
-            ...prev,
-            meta: {
-              ...prev.meta,
-              balance: balanceBrief,
-            },
-          }
-        })
-      },
-    )
-    return unsubscribe
-  }, [])
+  }, []) // Only run once on mount
 
   return (
     <AuthServiceContext.Provider value={service}>

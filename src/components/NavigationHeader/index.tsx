@@ -109,7 +109,7 @@ export default function NavigationHeader({
         {renderHeaderLeft()}
         <View
           className={cn(
-            'absolute items-center left-20 right-20 z-0',
+            'absolute items-center left-20 right-20 z-0 b-1',
             titleWrappClassName,
           )}
           pointerEvents='none'

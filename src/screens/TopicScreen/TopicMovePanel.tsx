@@ -69,12 +69,7 @@ export default function TopicMovePanel(props: {
               label='节点'
               placeholder={`当前节点: ${props.node.name}`}
             />
-            <TextField
-              name='memo'
-              label='备注'
-              placeholder='备注'
-              bottomSheet
-            />
+            <TextField name='memo' label='备注' placeholder='备注' />
             <View className='mt-7 mb-2'>
               <Button
                 variant='primary'

@@ -1,28 +1,27 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Image, Pressable, View } from 'react-native'
+import { useEffect, useMemo } from 'react'
+import { Image as RNImage, Pressable, View } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
   CustomBlockRenderer,
   useInternalRenderer,
 } from 'react-native-render-html'
 import { useQuery } from '@tanstack/react-query'
+import { Image } from 'expo-image'
 
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
-import { downloadImage } from '@/utils/image'
 
 import { useImageViewing } from './ImageViewingService'
 
 async function loadImage(
   uri: string,
 ): Promise<{ uri: string; width: number; height: number }> {
-  const fileUri = await downloadImage(uri)
   return new Promise((resolve, reject) => {
-    Image.getSize(
-      fileUri,
+    RNImage.getSize(
+      uri,
       (width, height) => {
         resolve({
-          uri: fileUri,
+          uri: uri,
           width,
           height,
         })
@@ -39,8 +38,6 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
     queryFn: () => loadImage(rendererProps.source.uri),
     refetchOnMount: 'always',
   })
-  const [containerWidth, setContainerWidth] = useState(Infinity)
-  const containerWidthRef = useRef(0)
 
   const service = useImageViewing()
   const { theme } = useTheme()
@@ -64,45 +61,35 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   const contentWidth = rendererProps.contentWidth || 320
   const imageStyle = useMemo(() => {
     if (imageQuery.data) {
-      const width = Math.min(
-        imageQuery.data.width,
-        containerWidth,
-        contentWidth,
-      )
+      const width = Math.min(imageQuery.data.width, contentWidth)
       const height = (imageQuery.data.height / imageQuery.data.width) * width
       return {
         width,
         height,
       }
     } else {
-      const width = Math.min(containerWidth, contentWidth)
+      const width = contentWidth
       return {
         width: width,
         height: width * 0.66667,
       }
     }
-  }, [imageQuery.data, contentWidth, containerWidth])
-
-  const handleContainerLayout = useCallback((event) => {
-    const { width } = event.nativeEvent.layout
-    if (width === containerWidthRef.current) {
-      return
-    }
-    containerWidthRef.current = width
-    setContainerWidth(width)
-  }, [])
+  }, [imageQuery.data, contentWidth])
 
   if (imageQuery.data) {
     return (
       <Pressable
         className={cn(
           'py-1 active:opacity-50 w-full items-center overflow-hidden',
-          containerWidth === Infinity ? 'opacity-0' : 'opacity-100',
+          'opacity-100',
         )}
+        style={{
+          width: imageStyle.width,
+          alignSelf: 'flex-start',
+        }}
         onPress={() => {
           service.open(rendererProps.source.uri)
         }}
-        onLayout={handleContainerLayout}
       >
         <Image
           style={[
@@ -111,9 +98,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
               borderRadius: 4,
             },
           ]}
-          source={{
-            uri: imageQuery.data.uri,
-          }}
+          source={imageQuery.data}
         />
       </Pressable>
     )
@@ -125,7 +110,6 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
       onPress={() => {
         service.open(rendererProps.source.uri)
       }}
-      onLayout={handleContainerLayout}
     >
       <View
         style={[

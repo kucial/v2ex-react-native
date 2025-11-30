@@ -44,7 +44,10 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
         methods.forEach((method) => {
           output[method] = (...args) => {
             if (!webviewRef.current) {
-              return Promise.reject(new Error('EditorWebView not ref...'))
+              if (method !== 'blur') {
+                return Promise.reject(new Error('EditorWebView not ref...'))
+              }
+              return Promise.resolve()
             }
             return new Promise((resolve, reject) => {
               const requestId = `${method}-${uniqId()}`

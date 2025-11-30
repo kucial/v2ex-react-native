@@ -20,7 +20,7 @@ function AnimatedHeader(props: {
   headerRight?: ReactElement
   animatedTitle?: boolean
 }) {
-  const { styles } = useTheme()
+  const { styles, theme } = useTheme()
   const { scrollY } = props
   const router = useRouter()
   const insets = useSafeAreaInsets()
@@ -50,7 +50,7 @@ function AnimatedHeader(props: {
       <View
         style={{
           position: 'absolute',
-          left: 6,
+          left: 4,
           top: Platform.OS === 'android' ? 4 : insets.top,
           zIndex: 10,
         }}
@@ -90,7 +90,7 @@ function AnimatedHeader(props: {
         <View
           style={{
             position: 'absolute',
-            right: 6,
+            right: 4,
             top: Platform.OS === 'android' ? 4 : insets.top,
             zIndex: 10,
           }}

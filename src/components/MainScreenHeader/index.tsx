@@ -16,49 +16,57 @@ import { usePressBreadcrumb } from '@/utils/hooks'
 
 import Button from '../Button'
 
+export const useNavigationWithBreadcrumb = (
+  component: string,
+  action: string,
+  route: string,
+  requiresAuth = false,
+) => {
+  const router = useRouter()
+  const { composeAuthedNavigation } = useAuthService()
+
+  const navigationCallback = useCallback(() => {
+    router.push(route)
+  }, [route])
+
+  const wrapped = requiresAuth
+    ? composeAuthedNavigation(navigationCallback)
+    : navigationCallback
+
+  return usePressBreadcrumb(wrapped, {
+    message: 'Button pressed',
+    data: { component, action, route },
+  })
+}
+
 export default function MainScreenHeader(props) {
   const { options } = props
-  const { composeAuthedNavigation, meta } = useAuthService()
+  const { meta } = useAuthService()
   const { theme, styles } = useTheme()
   const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()
-  const router = useRouter()
 
-  const handleNewTopicPress = usePressBreadcrumb(
-    composeAuthedNavigation(
-      useCallback(() => {
-        router.push('/new-topic')
-      }, []),
-    ),
-    {
-      message: '[MainScreenHeader] `New-Topic` button pressed',
-    },
+  const handleNewTopicPress = useNavigationWithBreadcrumb(
+    'MainScreenHeader',
+    'new-topic',
+    '/new-topic',
+    true,
   )
-  const handleNotificationPress = usePressBreadcrumb(
-    composeAuthedNavigation(
-      useCallback(() => {
-        router.push('/me/notification')
-      }, []),
-    ),
-    {
-      message: '[MainScreenHeader] `Notification` button pressed',
-    },
+  const handleNotificationPress = useNavigationWithBreadcrumb(
+    'MainScreenHeader',
+    'notification',
+    '/me/notification',
+    true,
   )
-  const handleSearchButtonPress = usePressBreadcrumb(
-    useCallback(() => {
-      router.push('/search')
-    }, []),
-    {
-      message: '[MainScreenHeader] `Search` button pressed',
-    },
+  const handleSearchButtonPress = useNavigationWithBreadcrumb(
+    'MainScreenHeader',
+    'search',
+    '/search',
   )
-  const handleViewedTopicButtonPress = usePressBreadcrumb(
-    useCallback(() => {
-      router.push('/me/viewed-topics')
-    }, []),
-    {
-      message: '[MainScreenHeader] `Viewed-Topic` button pressed',
-    },
+  const handleViewedTopicButtonPress = useNavigationWithBreadcrumb(
+    'MainScreenHeader',
+    'viewed-topics',
+    '/me/viewed-topics',
   )
 
   const iconColor = theme.colors.text_desc
@@ -99,10 +107,7 @@ export default function MainScreenHeader(props) {
             className='w-[44px] h-[44px] rounded-full'
             variant='icon'
             radius={22}
-            // onPress={handleNewTopicPress}
-            onPress={() => {
-              router.push('/new-topic')
-            }}
+            onPress={handleNewTopicPress}
           >
             <DocumentPlusIcon size={24} color={iconColor} />
           </Button>

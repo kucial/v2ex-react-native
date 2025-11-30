@@ -7,11 +7,10 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
-import { cn } from '@/lib/utils'
 import { useField } from 'formik'
 
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 import MyClearButton from '../MyClearButton'
 
@@ -20,7 +19,6 @@ function TextField({
   className,
   inputStyle,
   name,
-  bottomSheet,
   canClear,
   ...props
 }: {
@@ -33,31 +31,28 @@ function TextField({
   const { styles, theme } = useTheme()
   const [field, meta, helpers] = useField(name)
 
-  const Component = bottomSheet
-    ? Platform.OS === 'android'
-      ? TextInput
-      : BottomSheetTextInput
-    : TextInput
+  const Component = TextInput
   return (
     <View className={className}>
       {label !== false && (
-        <View className="flex flex-row">
+        <View className='flex flex-row'>
           <Text
             className={cn('pl-2 pb-[2px]', {
               'opacity-0': !field.value,
             })}
-            style={[styles.text, styles.text_xs]}>
+            style={[styles.text, styles.text_xs]}
+          >
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className="ml-2" style={[styles.text_danger, styles.text_xs]}>
+            <Text className='ml-2' style={[styles.text_danger, styles.text_xs]}>
               {meta.error}
             </Text>
           )}
         </View>
       )}
-      <View className="relative">
+      <View className='relative'>
         <Component
           className={cn(
             'px-2 rounded-md',
@@ -85,7 +80,7 @@ function TextField({
           }}
         />
         {canClear && field.value && (
-          <View className="absolute right-0 h-full flex flex-row items-center justify-center">
+          <View className='absolute right-0 h-full flex flex-row items-center justify-center'>
             <MyClearButton
               onPress={() => {
                 helpers.setValue(undefined)

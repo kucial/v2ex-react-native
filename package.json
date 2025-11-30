@@ -3,20 +3,20 @@
   "main": "expo-router/entry",
   "version": "1.10.0",
   "scripts": {
-    "start": "expo start --dev-client -c",
+    "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "build:ios": "eas build --platform ios --profile production",
-    "submit:ios": "eas submit --platform ios",
+    "build:ios": "NODE_ENV=production eas build --platform ios --profile production",
+    "submit:ios": "NODE_ENV=production eas submit --platform ios",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}' --rule 'unused-imports/no-unused-imports: error'",
-    "eas-build-pre-install": "node --version && npm config set legacy-peer-deps true"
+    "lint": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}' --rule 'unused-imports/no-unused-imports: error'"
   },
   "dependencies": {
+    "@expo/image-utils": "^0.8.7",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@georstat/react-native-image-gallery": "^1.1.0",
-    "@gorhom/bottom-sheet": "^5.2.6",
+    "@lodev09/react-native-true-sheet": "3.0.4",
     "@native-html/iframe-plugin": "^2.6.1",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-community/slider": "5.0.1",

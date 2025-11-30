@@ -27,7 +27,7 @@ export default function BackButton({
         size={28}
         color={tintColor || theme.colors.primary}
         style={{
-          marginLeft: -4,
+          marginLeft: -6,
         }}
       />
     </Button>

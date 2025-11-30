@@ -8,7 +8,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { Slot } from 'expo-router'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -52,19 +51,17 @@ export default function RootLayout() {
                     <QueryClientProvider>
                       <ActionSheetProvider>
                         <ImgurService>
-                          <BottomSheetModalProvider>
-                            <ClipboardWatcher>
-                              <AuthService>
-                                <ViewedTopicsService>
-                                  <NotificationService>
-                                    <Layout>
-                                      <Slot />
-                                    </Layout>
-                                  </NotificationService>
-                                </ViewedTopicsService>
-                              </AuthService>
-                            </ClipboardWatcher>
-                          </BottomSheetModalProvider>
+                          <ClipboardWatcher>
+                            <AuthService>
+                              <ViewedTopicsService>
+                                <NotificationService>
+                                  <Layout>
+                                    <Slot />
+                                  </Layout>
+                                </NotificationService>
+                              </ViewedTopicsService>
+                            </AuthService>
+                          </ClipboardWatcher>
                         </ImgurService>
                       </ActionSheetProvider>
                     </QueryClientProvider>

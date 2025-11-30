@@ -1,26 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   useWindowDimensions,
   View,
 } from 'react-native'
-import type { BottomSheetModal } from '@gorhom/bottom-sheet'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import Slider from '@react-native-community/slider'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
-import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { useRouter } from 'expo-router'
 
 import Button from '@/components/Button'
 import GroupWapper from '@/components/GroupWrapper'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 import MySwitch from '@/components/MySwitch'
 import SectionHeader from '@/components/SectionHeader'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
@@ -62,7 +59,7 @@ export default function ThemePreview(props: {
   const { width } = useWindowDimensions()
   const CONTAINER_WIDTH = Math.min(width, 600)
   const { styles, theme } = useTheme()
-  const sheetRef = useRef<BottomSheetModal>(null)
+  const sheetRef = useRef<TrueSheet>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const alert = useAlertService()
   const router = useRouter()
@@ -242,8 +239,12 @@ export default function ThemePreview(props: {
                 onPress={() => setLoading((prev) => !prev)}
               ></Button>
             </View>
-            <MyBottomSheetModal snapPoints={['50%', '75%']} ref={sheetRef}>
-              <View className='p-3'>
+            <TrueSheet
+              ref={sheetRef}
+              detents={[0.5, 0.75]}
+              backgroundColor={styles.overlay.backgroundColor}
+            >
+              <View className='p-4'>
                 <TextInput
                   className='h-[44px] px-2 my-2 rounded-md'
                   style={[styles.text, styles.overlay_input__bg]}
@@ -279,7 +280,7 @@ export default function ThemePreview(props: {
                   </Text>
                 </Pressable>
               </View>
-            </MyBottomSheetModal>
+            </TrueSheet>
           </GroupWapper>
           <SectionHeader title='消息提示' />
           <View className='flex flex-row gap-2 px-2'>
@@ -356,7 +357,7 @@ export default function ThemePreview(props: {
             <View className='px-2'>
               <HtmlRender
                 key={`${props.theme}-${props.colorScheme}-${props.fontScale}`}
-                contentWidth={CONTAINER_WIDTH - 16}
+                contentWidth={CONTAINER_WIDTH - 32}
                 source={{
                   html,
                   baseUrl: 'https://v2ex.com',

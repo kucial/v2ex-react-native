@@ -1,11 +1,9 @@
 import { ReactNode, useCallback, useMemo, useRef, useState } from 'react'
-import { Platform, Pressable, Text, TextInput, View } from 'react-native'
+import { Pressable, Text, TextInput, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
-import { BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet'
+import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { FlashList } from '@shopify/flash-list'
 import { useQuery } from '@tanstack/react-query'
-
-import MyBottomSheetModal from '@/components/MyBottomSheetModal'
 
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
@@ -14,11 +12,6 @@ import { NodeDetail } from '@/utils/v2ex-client/types'
 
 import Button from '../Button'
 import MyClearButton from '../MyClearButton'
-
-const pickerSnapPoints = Platform.select({
-  ios: ['50%'],
-  android: ['50%', '80%'],
-})
 
 type NodeSelectProps = {
   filterPlaceholder?: string
@@ -38,9 +31,7 @@ function NodeSelect(props: NodeSelectProps) {
   const { theme, styles } = useTheme()
   const [filter, setFilter] = useState('')
   const [open, setOpen] = useState(false)
-  const selectRef = useRef<BottomSheetModal>(null)
-
-  const Input = Platform.OS === 'android' ? TextInput : BottomSheetTextInput
+  const selectRef = useRef<TrueSheet>(null)
 
   const filtered = useMemo(() => {
     if (!nodesQuery.data) {
@@ -94,7 +85,7 @@ function NodeSelect(props: NodeSelectProps) {
           className='pl-3 active:opacity-50'
           onPress={() => {
             props.onChange(item)
-            selectRef.current?.close()
+            selectRef.current?.dismiss()
           }}
         >
           <View
@@ -106,7 +97,7 @@ function NodeSelect(props: NodeSelectProps) {
         </Pressable>
       )
     },
-    [renderLabel],
+    [renderLabel, props.onChange],
   )
   return (
     <>
@@ -139,19 +130,19 @@ function NodeSelect(props: NodeSelectProps) {
           </View>
         )}
       </View>
-      <MyBottomSheetModal
+      <TrueSheet
         ref={selectRef}
-        index={0}
-        snapPoints={pickerSnapPoints}
-        onDismiss={() => {
+        detents={[0.5]}
+        onDidDismiss={() => {
           props.onBlur?.()
           setOpen(false)
         }}
+        backgroundColor={styles.overlay.backgroundColor}
       >
         {open && (
           <View className='flex-1 w-full'>
             <View className='p-3'>
-              <Input
+              <TextInput
                 autoFocus={!props.value}
                 style={{
                   height: 36,
@@ -179,7 +170,7 @@ function NodeSelect(props: NodeSelectProps) {
             />
           </View>
         )}
-      </MyBottomSheetModal>
+      </TrueSheet>
     </>
   )
 }
