@@ -1,9 +1,13 @@
 import { ReactNode, useContext, useEffect, useMemo } from 'react'
 import { Platform } from 'react-native'
-import { getAppIcon, setAppIcon } from 'expo-dynamic-app-icon'
+import { setAppIcon } from '@howincodes/expo-dynamic-app-icon'
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider as NavigationThemeProvider,
+} from '@react-navigation/native'
 import * as NavigationBar from 'expo-navigation-bar'
 import * as SystemUI from 'expo-system-ui'
-import { DarkTheme, DefaultTheme, ThemeProvider as NavigationThemeProvider } from '@react-navigation/native'
 
 import { useAppSettings } from '../AppSettingsService'
 import { ThemeContext } from './context'
@@ -42,8 +46,8 @@ export const ThemeProvider = (props: {
       NavigationBar.setButtonStyleAsync(service.theme.dark ? 'light' : 'dark')
       SystemUI.setBackgroundColorAsync(service.theme.colors.bg_overlay)
     }
-    if (Platform.OS == 'ios') {
-      setAppIcon(themeName)
+    if (Platform.OS === 'ios') {
+      setAppIcon(themeName, true)
     }
   }, [service, themeName])
 
@@ -51,12 +55,12 @@ export const ThemeProvider = (props: {
     if (colorScheme === 'dark') {
       return {
         ...DarkTheme,
-        ...service.theme
+        ...service.theme,
       }
     }
     return {
       ...DefaultTheme,
-      ...service.theme
+      ...service.theme,
     }
   }, [service.theme, colorScheme])
 

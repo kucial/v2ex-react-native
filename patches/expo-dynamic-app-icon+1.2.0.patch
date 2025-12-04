@@ -1,7 +1,7 @@
-diff --git a/node_modules/expo-dynamic-app-icon/README.md b/node_modules/expo-dynamic-app-icon/README.md
+diff --git a/README.md b/README.md
 index 96b4770..f0d48f6 100644
---- a/node_modules/expo-dynamic-app-icon/README.md
-+++ b/node_modules/expo-dynamic-app-icon/README.md
+--- a/README.md
++++ b/README.md
 @@ -19,11 +19,13 @@ add plugins in `app.json`
          {
            "red": { // icon name
@@ -18,10 +18,10 @@ index 96b4770..f0d48f6 100644
            }
          }
        ]
-diff --git a/node_modules/expo-dynamic-app-icon/android/build.gradle b/node_modules/expo-dynamic-app-icon/android/build.gradle
+diff --git a/android/build.gradle b/android/build.gradle
 index a50832e..6566c7c 100644
---- a/node_modules/expo-dynamic-app-icon/android/build.gradle
-+++ b/node_modules/expo-dynamic-app-icon/android/build.gradle
+--- a/android/build.gradle
++++ b/android/build.gradle
 @@ -22,7 +22,7 @@ buildscript {
      if (ext.has("kotlinVersion")) {
        ext.kotlinVersion()
@@ -30,14 +30,14 @@ index a50832e..6566c7c 100644
 +      ext.safeExtGet("kotlinVersion", "1.8.10")
      }
    }
- 
+
 @@ -52,20 +52,23 @@ afterEvaluate {
- 
+
  android {
    namespace = "expo.modules.dynamicappicon"
 -  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 +  compileSdkVersion safeExtGet("compileSdkVersion", 33)
- 
+
 -  compileOptions {
 -    sourceCompatibility JavaVersion.VERSION_11
 -    targetCompatibility JavaVersion.VERSION_11
@@ -48,14 +48,14 @@ index a50832e..6566c7c 100644
 +      sourceCompatibility JavaVersion.VERSION_11
 +      targetCompatibility JavaVersion.VERSION_11
 +    }
- 
+
 -  kotlinOptions {
 -    jvmTarget = JavaVersion.VERSION_11.majorVersion
 +    kotlinOptions {
 +      jvmTarget = JavaVersion.VERSION_11.majorVersion
 +    }
    }
- 
+
    defaultConfig {
      minSdkVersion safeExtGet("minSdkVersion", 21)
 -    targetSdkVersion safeExtGet("targetSdkVersion", 31)
@@ -63,10 +63,10 @@ index a50832e..6566c7c 100644
      versionCode 1
      versionName "0.1.0"
    }
-diff --git a/node_modules/expo-dynamic-app-icon/plugin/build/withDynamicIcon.d.ts b/node_modules/expo-dynamic-app-icon/plugin/build/withDynamicIcon.d.ts
+diff --git a/plugin/build/withDynamicIcon.d.ts b/plugin/build/withDynamicIcon.d.ts
 index 0de104b..8b0c760 100644
---- a/node_modules/expo-dynamic-app-icon/plugin/build/withDynamicIcon.d.ts
-+++ b/node_modules/expo-dynamic-app-icon/plugin/build/withDynamicIcon.d.ts
+--- a/plugin/build/withDynamicIcon.d.ts
++++ b/plugin/build/withDynamicIcon.d.ts
 @@ -1,7 +1,10 @@
  import { ConfigPlugin } from "@expo/config-plugins";
 -type IconSet = Record<string, {
@@ -80,10 +80,10 @@ index 0de104b..8b0c760 100644
 +type IconSet = Record<string, Icon>;
  declare const withDynamicIcon: ConfigPlugin<string[] | IconSet | void>;
  export default withDynamicIcon;
-diff --git a/node_modules/expo-dynamic-app-icon/plugin/build/withDynamicIcon.js b/node_modules/expo-dynamic-app-icon/plugin/build/withDynamicIcon.js
+diff --git a/plugin/build/withDynamicIcon.js b/plugin/build/withDynamicIcon.js
 index a416495..2de6e96 100644
---- a/node_modules/expo-dynamic-app-icon/plugin/build/withDynamicIcon.js
-+++ b/node_modules/expo-dynamic-app-icon/plugin/build/withDynamicIcon.js
+--- a/plugin/build/withDynamicIcon.js
++++ b/plugin/build/withDynamicIcon.js
 @@ -9,7 +9,7 @@ const fs_1 = __importDefault(require("fs"));
  const path_1 = __importDefault(require("path"));
  // @ts-ignore
@@ -180,7 +180,7 @@ index a416495..2de6e96 100644
  // for ios
  function getIconName(name, size, scale) {
 -    const fileName = `${name}-Icon-${size}x${size}`;
-+    const fileName = `${name}-Icon-$${size}x${size}`;
++    const fileName = `${name}-Icon-${size}x${size}`;
      if (scale != null) {
 +        if (scale == ipad152Scale) {
 +            return `${fileName}@2x~ipad.png`;

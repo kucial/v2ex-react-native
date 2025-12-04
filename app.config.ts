@@ -18,22 +18,19 @@ const themes = [
 const icons: Record<
   string,
   {
-    image: string
-    prerendered: boolean
-    platforms: ('ios' | 'android')[]
+    ios: {
+      light: string
+      dark: string
+    }
   }
 > = {}
 
 themes.forEach((theme) => {
-  icons[`${theme}_light`] = {
-    image: `./src/assets/icons/icon-${theme}-light.png`, // icon path
-    prerendered: true, // for ios UIPrerenderedIcon option
-    platforms: ['ios'],
-  }
-  icons[`${theme}_dark`] = {
-    image: `./src/assets/icons/icon-${theme}-dark.png`, // icon path
-    prerendered: true, // for ios UIPrerenderedIcon option
-    platforms: ['ios'],
+  icons[theme] = {
+    ios: {
+      light: `./src/assets/icons/icon-${theme}-light.png`, // icon path
+      dark: `./src/assets/icons/icon-${theme}-dark.png`, // icon path
+    },
   }
 })
 
@@ -55,6 +52,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       supportsTablet: true,
       bundleIdentifier: 'com.kucial.v2ex',
       runtimeVersion: packageJson.version.split('.').slice(0, -1).join('.'),
+      icon: {
+        light: './src/assets/icons/icon-r2v-light.png',
+        dark: './src/assets/icons/icon-r2v-dark.png',
+      },
       splash: {
         image: './src/assets/splash.png',
         backgroundColor: '#ffffff',
@@ -103,7 +104,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           assets: ['./src/assets/images', './src/assets/brand_icons'],
         },
       ],
-      ['expo-dynamic-app-icon', icons],
+      ['@howincodes/expo-dynamic-app-icon', icons],
       '@sentry/react-native/expo',
       'expo-image-picker',
       'expo-router',
