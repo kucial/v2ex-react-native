@@ -1,11 +1,12 @@
 import { MutableRefObject, ReactNode, useMemo } from 'react'
 import { Text, View, ViewProps, ViewStyle } from 'react-native'
-import { cn } from '@/lib/utils'
 import { useField } from 'formik'
 import { marked } from 'marked'
 
 import { EditorRender } from '@/components/SlateEditor'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 function RichTextField({
   label,
@@ -39,26 +40,28 @@ function RichTextField({
   return (
     <View style={style}>
       {label !== false && (
-        <View className="flex flex-row">
+        <View className='flex flex-row'>
           <Text
             className={cn('pl-2 pb-[2px]', {
               'opacity-0': !field.value,
             })}
-            style={[styles.text, styles.text_xs]}>
+            style={[styles.text, styles.text_xs]}
+          >
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className="ml-2" style={[styles.text_danger, styles.text_xs]}>
+            <Text className='ml-2' style={[styles.text_danger, styles.text_xs]}>
               {meta.error}
             </Text>
           )}
         </View>
       )}
       <View
-        className="mb-2 rounded-md overflow-hidden px-2 py-[10px]"
+        className='mb-2 rounded-md overflow-hidden px-2 py-[10px]'
         style={styles.input__bg}
-        ref={editorRenderContainerRef}>
+        ref={editorRenderContainerRef}
+      >
         <EditorRender
           html={html}
           placeholder={placeholder}

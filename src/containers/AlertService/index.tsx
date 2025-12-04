@@ -11,8 +11,8 @@ import Toast from 'react-native-root-toast'
 import Loader from '@/components/Loader'
 
 import { getSemanticStyle, useTheme } from '../ThemeService'
-const AlertServiceContext = createContext<Partial<AlertService>>({})
 import { AlertService } from './types'
+const AlertServiceContext = createContext<Partial<AlertService>>({})
 
 const AlertServiceProvider = forwardRef<
   Partial<AlertService>,

@@ -1,10 +1,10 @@
 import { ReactNode, useMemo } from 'react'
 import { Text, View, ViewStyle } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
-import { cn } from '@/lib/utils'
 import { useField } from 'formik'
 
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 function SelectField({
   label,
@@ -16,7 +16,7 @@ function SelectField({
   label: ReactNode | false
   className?: string
   name: string
-  options: Array<{ label: string; value: string }>
+  options: { label: string; value: string }[]
 }) {
   const { styles, colorScheme } = useTheme()
   const [field, meta, helpers] = useField(name)
@@ -24,17 +24,18 @@ function SelectField({
   const labels = useMemo(() => options.map((o) => o.label), [options])
 
   return (
-    <View className={cn("flex flex-row w-full items-center py-3", className)} >
+    <View className={cn('flex flex-row w-full items-center py-3', className)}>
       {label && (
-        <View className="flex-1">
+        <View className='flex-1'>
           <Text
             className={cn('pl-2 pb-[2px]')}
-            style={[styles.text, styles.text_xs]}>
+            style={[styles.text, styles.text_xs]}
+          >
             {label}
           </Text>
         </View>
       )}
-      <View className="flex-1">
+      <View className='flex-1'>
         <SegmentedControl
           values={labels}
           selectedIndex={options.findIndex(

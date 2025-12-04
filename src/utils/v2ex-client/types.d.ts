@@ -120,7 +120,7 @@ export type TopicDetail = TopicBasic & {
   content_rendered: string
   created_time: string
   node: NodeBasic
-  subtles: Array<Subtle>
+  subtles: Subtle[]
   collected?: boolean
   thanked?: boolean
   blocked?: boolean

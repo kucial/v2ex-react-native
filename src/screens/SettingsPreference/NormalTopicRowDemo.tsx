@@ -1,9 +1,10 @@
 import { Text, View } from 'react-native'
-import { cn } from '@/lib/utils'
 import { Image } from 'expo-image'
 
 import TriangleCorner from '@/components/TriangleCorner'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 import { DemoRowProps } from './types'
 
@@ -15,40 +16,41 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
   return (
     <View
       className={cn('flex flex-row items-center')}
-      style={[styles.layer1, !isLast && styles.border_b_light]}>
+      style={[styles.layer1, !isLast && styles.border_b_light]}
+    >
       {showAvatar ? (
-        <View className="px-2 py-2 self-start">
+        <View className='px-2 py-2 self-start'>
           <Image
             recyclingKey={`user-avatar:${member.username}`}
             source={{
               uri: member.avatar_normal,
             }}
-            className="w-[24px] h-[24px] rounded"
+            className='w-[24px] h-[24px] rounded'
           />
         </View>
       ) : (
-        <View className="pl-3"></View>
+        <View className='pl-3'></View>
       )}
       <View
-        className={cn(
-          'flex-1 py-2',
-          viewedStatus === 'viewed' && 'opacity-70',
-        )}>
-        <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
+        className={cn('flex-1 py-2', viewedStatus === 'viewed' && 'opacity-70')}
+      >
+        <View className='flex flex-row items-center pt-[2px] space-x-1 mb-1'>
           <View>
             <View
-              className="py-[2px] px-[6px] rounded active:opacity-60"
-              style={styles.layer2}>
+              className='py-[2px] px-[6px] rounded active:opacity-60'
+              style={styles.layer2}
+            >
               <Text style={[styles.text_desc, styles.text_xs]}>
                 {node.title}
               </Text>
             </View>
           </View>
           <Text style={styles.text_meta}>·</Text>
-          <View className="relative top-[1px]">
+          <View className='relative top-[1px]'>
             <Text
-              className="font-[600]"
-              style={[styles.text_desc, styles.text_xs]}>
+              className='font-[600]'
+              style={[styles.text_desc, styles.text_xs]}
+            >
               {member.username}
             </Text>
           </View>
@@ -58,28 +60,31 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
             className={cn({
               'font-[500]': props.titleStyle === 'emphasized',
             })}
-            style={[styles.text, styles.text_base]}>
+            style={[styles.text, styles.text_base]}
+          >
             {title}
           </Text>
-          <View className="mt-2 flex flex-row items-center">
+          <View className='mt-2 flex flex-row items-center'>
             <Text style={[styles.text_meta, styles.text_xs]}>
               {last_reply_time}
             </Text>
             {showLastReplyMember && (
               <>
                 <Text
-                  className="px-2"
-                  style={[styles.text_meta, styles.text_xs]}>
+                  className='px-2'
+                  style={[styles.text_meta, styles.text_xs]}
+                >
                   •
                 </Text>
-                <View className="flex flex-row items-center">
+                <View className='flex flex-row items-center'>
                   <Text style={[styles.text_meta, styles.text_xs]}>
                     最后回复来自
                   </Text>
-                  <View className="px-1 active:opacity-60">
+                  <View className='px-1 active:opacity-60'>
                     <Text
-                      className="font-[600]"
-                      style={[styles.text_desc, styles.text_xs]}>
+                      className='font-[600]'
+                      style={[styles.text_desc, styles.text_xs]}
+                    >
                       {last_reply_by}
                     </Text>
                   </View>
@@ -89,16 +94,16 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
           </View>
         </View>
       </View>
-      <View className="w-[80px] flex flex-row justify-end pr-4">
+      <View className='w-[80px] flex flex-row justify-end pr-4'>
         {!!replies && (
-          <View className="rounded-full px-2" style={styles.tag__bg}>
+          <View className='rounded-full px-2' style={styles.tag__bg}>
             <Text style={styles.tag__text}>{replies}</Text>
           </View>
         )}
       </View>
       {viewedStatus === 'has_update' && (
         <TriangleCorner
-          corner="top-left"
+          corner='top-left'
           size={10}
           style={{
             position: 'absolute',

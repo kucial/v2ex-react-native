@@ -4,15 +4,13 @@ import { useCachedState } from '@/utils/hooks'
 import * as v2exClient from '@/utils/v2ex-client'
 
 import { useAlertService } from '../AlertService'
+// 用于处理 v2ex.com CF 认证的问题
+import { useTheme } from '../ThemeService'
 import PrepareWebview from './PrepareWebview'
 import Status from './Status'
+import { PrepareStatus } from './type'
 
 const CACHE_KEY = '$app$/fetch-ready'
-
-// 用于处理 v2ex.com CF 认证的问题
-
-import { useTheme } from '../ThemeService'
-import { PrepareStatus } from './type'
 
 export default function FetchPrepare(props) {
   const [tag, setTag] = useCachedState<PrepareStatus>(CACHE_KEY, 'none')

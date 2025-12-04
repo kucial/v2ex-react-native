@@ -1,10 +1,10 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { cn } from '@/lib/utils'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 import AppSidebar from '../AppSidebar'
 import { AppLayoutContext } from './context'
@@ -87,7 +87,8 @@ export default function Layout(props: { children: ReactNode }) {
           padLayout.orientation === 'PORTRAIT'
             ? 'flex-col'
             : 'flex-row-reverse',
-        )}>
+        )}
+      >
         <View
           style={[
             {
@@ -96,7 +97,8 @@ export default function Layout(props: { children: ReactNode }) {
               paddingRight: insets.right,
             },
             styles.layer1,
-          ]}>
+          ]}
+        >
           {props.children}
         </View>
         {padLayout.active && (
@@ -128,7 +130,8 @@ export default function Layout(props: { children: ReactNode }) {
                         paddingBottom: 1,
                         transform: [{ translateX: translateXAnim }],
                       },
-                ]}>
+                ]}
+              >
                 {nav}
               </Animated.View>
             }

@@ -1,6 +1,9 @@
-import { useContext, useMemo } from 'react'
-import { createContext } from 'react'
+import { createContext, useContext, useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { useCachedState } from '@/utils/hooks'
+
+import client from './ImgurClient'
 import {
   ImgurCredentials,
   ImgurImage,
@@ -15,12 +18,6 @@ export const ImgurServiceContext = createContext<ImgurService>(
 export const useImgurService = () => useContext(ImgurServiceContext)
 
 const SERVICE_KEY = '$app$/services/imgur'
-
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-
-import { useCachedState } from '@/utils/hooks'
-
-import client from './ImgurClient'
 
 export default function ImgurServiceProvider(props) {
   const [credentials, setCredentials] = useCachedState<

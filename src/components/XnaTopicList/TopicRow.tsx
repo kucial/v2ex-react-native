@@ -1,16 +1,16 @@
 import { Platform, Text, View } from 'react-native'
-
 import * as Sentry from '@sentry/react-native'
-import { cn } from '@/lib/utils'
 import { Image } from 'expo-image'
+import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 
 import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
+
 import { useTheme } from '@/containers/ThemeService'
+import { cn } from '@/lib/utils'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
-import { useRouter } from 'expo-router'
 
 export default function TopicRow(props: XnaFeedRowProps) {
   const { data, showAvatar, titleStyle } = props
@@ -22,33 +22,36 @@ export default function TopicRow(props: XnaFeedRowProps) {
       <MaxWidthWrapper style={styles.layer1}>
         <View
           className={cn('flex flex-row items-center')}
-          style={[styles.border_b_light]}>
-          <View className="flex-1 py-2 pl-1">
-            <View className="flex flex-row items-center space-x-2 pl-1 mb-1">
-              {showAvatar && <Box className="w-[24px] h-[24px] rounded" />}
+          style={[styles.border_b_light]}
+        >
+          <View className='flex-1 py-2 pl-1'>
+            <View className='flex flex-row items-center space-x-2 pl-1 mb-1'>
+              {showAvatar && <Box className='w-[24px] h-[24px] rounded' />}
               <View>
-                <View className="py-[2px] rounded w-[50px]">
+                <View className='py-[2px] rounded w-[50px]'>
                   <InlineText style={styles.text_xs}></InlineText>
                 </View>
               </View>
               <Text style={styles.text_meta}>·</Text>
-              <View className="relative">
+              <View className='relative'>
                 <InlineText
                   width={[56, 80]}
-                  style={styles.text_xs}></InlineText>
+                  style={styles.text_xs}
+                ></InlineText>
               </View>
             </View>
-            <View className="pl-[34px]">
+            <View className='pl-[34px]'>
               <BlockText lines={[1, 3]} style={styles.text_base}></BlockText>
-              <View className="mt-2">
+              <View className='mt-2'>
                 <InlineText
                   width={[80, 120]}
-                  style={styles.text_xs}></InlineText>
+                  style={styles.text_xs}
+                ></InlineText>
               </View>
             </View>
           </View>
-          <View className="w-[80px] flex flex-row justify-end pr-4">
-            <Box className="rounded-full px-2">
+          <View className='w-[80px] flex flex-row justify-end pr-4'>
+            <Box className='rounded-full px-2'>
               <InlineText width={8} style={styles.text_xs} />
             </Box>
           </View>
@@ -62,11 +65,8 @@ export default function TopicRow(props: XnaFeedRowProps) {
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
-        sentry-label="TopicRow"
-        className={cn(
-          'flex flex-row items-center',
-          'active:opacity-50',
-        )}
+        sentry-label='TopicRow'
+        className={cn('flex flex-row items-center', 'active:opacity-50')}
         style={[styles.layer1, styles.border_b_light]}
         onPress={() => {
           props.onView(url)
@@ -87,9 +87,10 @@ export default function TopicRow(props: XnaFeedRowProps) {
               },
             })
           }
-        }}>
+        }}
+      >
         {showAvatar ? (
-          <View className="px-2 py-2 self-start">
+          <View className='px-2 py-2 self-start'>
             <FixedPressable
               onPress={() => {
                 router.push({
@@ -99,30 +100,32 @@ export default function TopicRow(props: XnaFeedRowProps) {
                     // brief: member,
                   },
                 })
-              }}>
+              }}
+            >
               <Image
                 recyclingKey={`user-avatar:${member.username}`}
                 source={{
                   uri: member.avatar_normal,
                 }}
-                className="w-[24px] h-[24px] rounded"
+                className='w-[24px] h-[24px] rounded'
               />
             </FixedPressable>
           </View>
         ) : (
-          <View className="pl-3"></View>
+          <View className='pl-3'></View>
         )}
 
         <View
           className={cn(
             'flex-1 py-2',
             props.viewedStatus === 'viewed' && 'opacity-70',
-          )}>
-          <View className="flex flex-row items-center pt-[2px] space-x-1 mb-1">
+          )}
+        >
+          <View className='flex flex-row items-center pt-[2px] space-x-1 mb-1'>
             <View>
               <FixedPressable
                 hitSlop={4}
-                className="py-[2px] px-[6px] rounded active:opacity-60"
+                className='py-[2px] px-[6px] rounded active:opacity-60'
                 style={styles.layer2}
                 onPress={() => {
                   if (Platform.OS == 'ios') {
@@ -142,16 +145,17 @@ export default function TopicRow(props: XnaFeedRowProps) {
                       },
                     })
                   }
-                }}>
+                }}
+              >
                 <Text style={[styles.text_desc, styles.text_xs]}>
                   {source.name}
                 </Text>
               </FixedPressable>
             </View>
             <Text style={styles.text_meta}>·</Text>
-            <View className="relative top-[1px]">
+            <View className='relative top-[1px]'>
               <FixedPressable
-                className="active:opacity-60"
+                className='active:opacity-60'
                 hitSlop={5}
                 onPress={() => {
                   router.push({
@@ -161,10 +165,12 @@ export default function TopicRow(props: XnaFeedRowProps) {
                       // brief: member,
                     },
                   })
-                }}>
+                }}
+              >
                 <Text
-                  className="font-[600]"
-                  style={[styles.text_desc, styles.text_xs]}>
+                  className='font-[600]'
+                  style={[styles.text_desc, styles.text_xs]}
+                >
                   {member.username}
                 </Text>
               </FixedPressable>
@@ -175,17 +181,18 @@ export default function TopicRow(props: XnaFeedRowProps) {
               className={cn({
                 'font-[500]': titleStyle === 'emphasized',
               })}
-              style={[styles.text, styles.text_base]}>
+              style={[styles.text, styles.text_base]}
+            >
               {title}
             </Text>
-            <View className="mt-2 flex flex-row items-center">
+            <View className='mt-2 flex flex-row items-center'>
               <Text style={[styles.text_meta, styles.text_xs]}>
                 {data?.updated_at}
               </Text>
             </View>
           </View>
         </View>
-        <View className="w-[80px] flex flex-row justify-end pr-4"></View>
+        <View className='w-[80px] flex flex-row justify-end pr-4'></View>
       </FixedPressable>
     </MaxWidthWrapper>
   )

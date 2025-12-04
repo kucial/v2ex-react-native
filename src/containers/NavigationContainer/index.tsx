@@ -82,7 +82,8 @@ export default function WrappedNavigationContainer(props: {
       theme={theme}
       linking={linking}
       onReady={onReady}
-      onStateChange={onStateChange}>
+      onStateChange={onStateChange}
+    >
       <CurrentRoute.Provider value={currentRoute}>
         {props.children}
       </CurrentRoute.Provider>

@@ -15,7 +15,6 @@ export const stateStorage = {
   },
 }
 
-
 export const getJSON = (key: string, fallback?: any) => {
   const str = storage.getString(key)
   if (typeof str !== 'string') {

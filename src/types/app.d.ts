@@ -1,12 +1,11 @@
-import { XnaFeed } from '@/utils/v2ex-client/types'
-
 import {
   CollectedTopicFeed,
   HomeTopicFeed,
   MemberTopicFeed,
   NodeTopicFeed,
   RepliedTopicFeed,
-} from './v2ex'
+  XnaFeed,
+} from '@/utils/v2ex-client/types'
 
 declare global {
   type FeedRowProps<T> = {

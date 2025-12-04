@@ -1,11 +1,12 @@
 import { ReactElement } from 'react'
 import { Platform, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
 import SearchInput from '@/components/SearchInput'
+
 import { useTheme } from '@/containers/ThemeService'
-import { useRouter } from 'expo-router'
 
 const HEADER_HEIGHT = 48
 
@@ -23,7 +24,7 @@ export default function Header(props: {
   return (
     <View style={styles.layer1}>
       <View
-        className="w-full flex-row items-center pl-4"
+        className='w-full flex-row items-center pl-4'
         style={[
           {
             height:
@@ -32,14 +33,16 @@ export default function Header(props: {
                 : HEADER_HEIGHT + insets.top,
             paddingTop: Platform.OS === 'android' ? 0 : insets.top,
           },
-        ]}>
+        ]}
+      >
         <View
           style={{
             position: 'absolute',
             left: 6,
             top: Platform.OS === 'android' ? 4 : insets.top,
             zIndex: 10,
-          }}>
+          }}
+        >
           <BackButton
             tintColor={styles.text.color}
             onPress={() => {
@@ -58,14 +61,16 @@ export default function Header(props: {
               bottom: 0,
               justifyContent: 'center',
             },
-          ]}>
+          ]}
+        >
           <Text
             style={[
               styles.text,
               { textAlign: 'center', fontSize: 17, fontWeight: '500' },
             ]}
-            ellipsizeMode="tail"
-            numberOfLines={1}>
+            ellipsizeMode='tail'
+            numberOfLines={1}
+          >
             {props.title}
           </Text>
         </View>
@@ -77,14 +82,15 @@ export default function Header(props: {
               right: 6,
               top: Platform.OS === 'android' ? 4 : insets.top,
               zIndex: 10,
-            }}>
+            }}
+          >
             {props.headerRight}
           </View>
         )}
       </View>
       <View style={{ height: 50, width: '100%', marginTop: -6 }}>
         <SearchInput
-          placeholder="查询"
+          placeholder='查询'
           initialValue={props.initialFilter}
           onReset={props.onResetFilter}
           onSubmit={props.onSubmitFilter}

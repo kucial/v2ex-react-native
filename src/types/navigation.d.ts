@@ -1,6 +1,10 @@
-import { NodeDetail } from '@/utils/v2ex-client/types'
+import {
+  MemberBasic,
+  NodeBasic,
+  NodeDetail,
+  TopicBasic,
+} from '@/utils/v2ex-client/types'
 
-import { MemberBasic, NodeBasic, TopicBasic } from './v2ex'
 declare global {
   type AppStackParamList = {
     my: null

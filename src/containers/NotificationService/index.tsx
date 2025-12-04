@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
+import { useRouter } from 'expo-router'
 
 import * as v2exClient from '@/utils/v2ex-client'
 
 import { useAlertService } from '../AlertService'
 import { useAuthService } from '../AuthService'
-import { useRouter } from 'expo-router'
 
 export default function NotificationService(props) {
   const alert = useAlertService()

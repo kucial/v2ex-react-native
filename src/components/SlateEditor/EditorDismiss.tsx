@@ -16,7 +16,8 @@ export default function EditorDismiss(props: Props) {
         if (editor.hasFocus()) {
           editor.blur()
         }
-      }}>
+      }}
+    >
       {props.children}
     </Pressable>
   )

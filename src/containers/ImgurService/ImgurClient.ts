@@ -1,7 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
 
-const IMGUR_API_PREFIX = 'https://api.imgur.com'
-
 import {
   ImgurAlbum,
   ImgurCreateAlbumPayload,
@@ -10,6 +8,8 @@ import {
   ImgurResponse,
   ImgurUploadImagePayload,
 } from './types'
+
+const IMGUR_API_PREFIX = 'https://api.imgur.com'
 
 export class ImgurClient {
   fetcher: AxiosInstance

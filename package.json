@@ -10,7 +10,7 @@
     "submit:ios": "NODE_ENV=production eas submit --platform ios",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}' --rule 'unused-imports/no-unused-imports: error'"
+    "lint": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
     "@expo/image-utils": "^0.8.7",

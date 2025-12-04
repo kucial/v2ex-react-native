@@ -1,14 +1,13 @@
 import { createContext, useContext, useMemo } from 'react'
 
 import { useCachedState } from '@/utils/hooks'
-import { TopicDetail, ViewedTopic } from '@/utils/v2ex-client/types'
-import { TopicId } from '@/utils/v2ex-client/types'
+import { TopicDetail, TopicId, ViewedTopic } from '@/utils/v2ex-client/types'
 
 import { useAppSettings } from '../AppSettingsService'
 
 type ViewedTopicState = {
   version: string
-  ids: Array<TopicId>
+  ids: TopicId[]
   data: Record<TopicId, ViewedTopic>
 }
 const CACHE_KEY = '$app$/viewed-topics'

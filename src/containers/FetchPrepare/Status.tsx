@@ -22,14 +22,16 @@ export default function Status(props: {
 
   return (
     <View
-      className="flex-1 items-center justify-center"
+      className='flex-1 items-center justify-center'
       style={{
         backgroundColor: colorScheme === 'light' ? 'white' : '#111111',
-      }}>
+      }}
+    >
       <View
         style={{
           marginTop: -20 * ratio,
-        }}>
+        }}
+      >
         <AppBrandIcon width={imageWidth} />
       </View>
       <View
@@ -39,10 +41,11 @@ export default function Status(props: {
           position: 'absolute',
           bottom: 0,
           height: '35%',
-        }}>
+        }}
+      >
         {props.status == 'error' ? (
-          <View className="items-center">
-            <View className="py-6">
+          <View className='items-center'>
+            <View className='py-6'>
               <Text style={styles.text_danger}>{props.error?.message}</Text>
             </View>
 
@@ -50,9 +53,9 @@ export default function Status(props: {
               style={{
                 width: 200,
               }}
-              size="md"
-              variant="primary"
-              label="重试"
+              size='md'
+              variant='primary'
+              label='重试'
               onPress={props.onRetry}
             />
           </View>
@@ -63,16 +66,17 @@ export default function Status(props: {
               height: 50,
               display: 'flex',
               alignItems: 'center',
-            }}>
+            }}
+          >
             <Loader />
             <View style={{ marginTop: 12 }}>
               {props.status === 'checking' && (
-                <Text style={styles.text} className="text-center">
+                <Text style={styles.text} className='text-center'>
                   正在等待 Cloudflare 检测
                 </Text>
               )}
               {props.status === 'checked' && (
-                <Text style={styles.text} className="text-center">
+                <Text style={styles.text} className='text-center'>
                   Cloudflare 检测完成，完成最后初始化
                 </Text>
               )}
