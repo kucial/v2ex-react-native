@@ -362,7 +362,10 @@ function HtmlRender({
             previewBackgroundColor={themeStyles.layer1.backgroundColor}
             preview={<View></View>}
           >
-            <View style={[{ padding: 6, borderRadius: 8 }]}>
+            <View
+              nativeID='CONTEXT_WORK_ARROUND'
+              style={[{ padding: 6, borderRadius: 8 }]}
+            >
               <BaseRender
                 WebView={WebView}
                 tagsStyles={styles}
