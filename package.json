@@ -6,8 +6,8 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "build:ios": "NODE_ENV=production eas build --platform ios --profile production",
-    "submit:ios": "NODE_ENV=production eas submit --platform ios",
+    "build:ios": "eas build --platform ios --profile production",
+    "submit:ios": "eas submit --platform ios",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
@@ -126,6 +126,7 @@
     "@types/react": "~19.1.17",
     "@types/react-test-renderer": "^18.3.1",
     "@typescript-eslint/parser": "^8.41.0",
+    "eas-local-cache": "^1.0.3",
     "eslint": "^9.34.0",
     "eslint-config-expo": "~10.0.0",
     "eslint-config-prettier": "^10.1.8",
