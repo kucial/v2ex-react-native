@@ -1,6 +1,5 @@
 import { ReactNode, useContext, useEffect, useMemo } from 'react'
 import { Platform } from 'react-native'
-import { setAppIcon } from '@howincodes/expo-dynamic-app-icon'
 import {
   DarkTheme,
   DefaultTheme,
@@ -45,9 +44,6 @@ export const ThemeProvider = (props: {
       NavigationBar.setBackgroundColorAsync(service.theme.colors.bg_overlay)
       NavigationBar.setButtonStyleAsync(service.theme.dark ? 'light' : 'dark')
       SystemUI.setBackgroundColorAsync(service.theme.colors.bg_overlay)
-    }
-    if (Platform.OS === 'ios') {
-      setAppIcon(themeName, true)
     }
   }, [service, themeName])
 

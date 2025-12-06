@@ -2,38 +2,6 @@ import { ConfigContext, ExpoConfig } from 'expo/config'
 
 import packageJson from './package.json'
 
-const themes = [
-  'r2v',
-  'gin_blue',
-  'gin_dark_purple',
-  'gin_purple',
-  'gin_green',
-  'gin_teal',
-  'gin_red',
-  'gin_orange',
-  'gin_yellow',
-  'gin_pink',
-]
-
-const icons: Record<
-  string,
-  {
-    ios: {
-      light: string
-      dark: string
-    }
-  }
-> = {}
-
-themes.forEach((theme) => {
-  icons[theme] = {
-    ios: {
-      light: `./src/assets/icons/icon-${theme}-light.png`, // icon path
-      dark: `./src/assets/icons/icon-${theme}-dark.png`, // icon path
-    },
-  }
-})
-
 export default ({ config }: ConfigContext): ExpoConfig => {
   const merged = {
     ...config,
@@ -52,10 +20,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       supportsTablet: true,
       bundleIdentifier: 'com.kucial.v2ex',
       runtimeVersion: packageJson.version.split('.').slice(0, -1).join('.'),
-      icon: {
-        light: './src/assets/icons/icon-r2v-light.png',
-        dark: './src/assets/icons/icon-r2v-dark.png',
-      },
+      icon: './src/assets/r2v-icon.icon',
       splash: {
         image: './src/assets/splash.png',
         backgroundColor: '#ffffff',
@@ -107,24 +72,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           assets: ['./src/assets/images', './src/assets/brand_icons'],
         },
       ],
-      ['@howincodes/expo-dynamic-app-icon', icons],
       '@sentry/react-native/expo',
       'expo-image-picker',
       'expo-router',
-      [
-        'expo-build-properties',
-        {
-          android: {
-            // zeego targetSdkVersion: 33
-            compileSdkVersion: 34,
-            targetSdkVersion: 34,
-            minSdkVersion: 23,
-            buildToolsVersion: '34.0.0',
-            kotlinVersion: '1.6.20',
-            // kotlinVersion: '1.6.10',
-          },
-        },
-      ],
+      'expo-build-properties',
+      'expo-web-browser',
     ],
   }
 
