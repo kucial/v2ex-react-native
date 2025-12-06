@@ -26,6 +26,7 @@ import {
   PlusIcon,
   RectangleStackIcon,
 } from 'react-native-heroicons/outline'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import type { EventArg } from '@react-navigation/native'
 import { Stack, useNavigation, useRouter } from 'expo-router'
@@ -100,12 +101,7 @@ export default function HomeTabs() {
   const sheetRef = useRef<AddTabPanelSheetRef>(null)
   const { showActionSheetWithOptions } = useActionSheet()
   const alert = useAlertService()
-
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight:
-  //   })
-  // }, [])
+  const insets = useSafeAreaInsets()
 
   const [enabledTabs, disabledTabs] = useMemo(() => {
     const a = []
@@ -244,7 +240,10 @@ export default function HomeTabs() {
                   destructiveButtonIndex: 1,
                   tintColor: theme.colors.primary,
                   userInterfaceStyle: colorScheme,
-                  containerStyle: styles.layer1,
+                  containerStyle: {
+                    ...styles.layer1,
+                    paddingBottom: insets.bottom,
+                  },
                 },
                 (buttonIndex) => {
                   if (buttonIndex === 1) {

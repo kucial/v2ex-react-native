@@ -74,15 +74,10 @@ export default function MainScreenHeader(props) {
   const title = options.title
   return (
     <View
-      className='w-full flex-row items-center pl-4'
+      className='w-full flex-row items-center pl-4 pt-safe'
       style={[
         {
-          height: padLayout.active
-            ? insets.top
-            : Platform.OS === 'android'
-              ? 48
-              : 48 + insets.top,
-          paddingTop: Platform.OS === 'android' ? 0 : insets.top,
+          height: padLayout.active ? insets.top : 48 + insets.top,
           backgroundColor: theme.colors.bg_layer1,
         },
         props.hasBorder && styles.border_b_light,

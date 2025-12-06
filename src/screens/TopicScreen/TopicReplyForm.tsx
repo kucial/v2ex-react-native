@@ -95,7 +95,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
   const iconColor = theme.colors.text
 
   return (
-    <View className='px-3 flex flex-col flex-1' style={{ height: 220 }}>
+    <View className='px-3 flex flex-col flex-1 h-full'>
       <Controller
         control={control}
         render={({
@@ -119,7 +119,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                 style={[
                   {
                     width: '100%',
-                    height: Platform.OS === 'android' ? 180 : '100%',
+                    height: '100%',
                     borderRadius: 8,
                     paddingHorizontal: 8,
                     paddingVertical: Platform.OS === 'android' ? 8 : 4,

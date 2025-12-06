@@ -40,8 +40,8 @@ function AnimatedHeader(props: {
       className='w-full flex-row items-center'
       style={[
         {
-          height: Platform.OS === 'android' ? 48 : 48 + insets.top,
-          paddingTop: Platform.OS === 'android' ? 0 : insets.top,
+          height: 48 + insets.top,
+          paddingTop: insets.top,
         },
         styles.layer1,
         props.hasBorder && styles.border_b_light,
@@ -51,7 +51,7 @@ function AnimatedHeader(props: {
         style={{
           position: 'absolute',
           left: 4,
-          top: Platform.OS === 'android' ? 4 : insets.top,
+          top: insets.top,
           zIndex: 10,
         }}
       >
@@ -91,7 +91,7 @@ function AnimatedHeader(props: {
           style={{
             position: 'absolute',
             right: 4,
-            top: Platform.OS === 'android' ? 4 : insets.top,
+            top: insets.top,
             zIndex: 10,
           }}
         >

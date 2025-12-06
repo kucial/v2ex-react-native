@@ -1,10 +1,17 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { InteractionManager, ScrollView, Text, View } from 'react-native'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  InteractionManager,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Share from 'react-native-share'
 // import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
@@ -28,6 +35,7 @@ import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { cn } from '@/lib/utils'
 import { getRelatedReplies } from '@/utils/content'
 import { useCachedState } from '@/utils/hooks'
 import { isLoading, shouldLoadMore } from '@/utils/react-query'
@@ -82,6 +90,7 @@ function TopicScreen() {
   const params = useLocalSearchParams()
   const router = useRouter()
   const navigation = useNavigation()
+  const insets = useSafeAreaInsets()
 
   const { id: rawId, brief: rawBrief } = params
   const id = Array.isArray(rawId) ? rawId[0] : rawId // Ensure string
@@ -424,7 +433,10 @@ function TopicScreen() {
               destructiveButtonIndex: 3,
               tintColor: styles.text_primary.color as string,
               userInterfaceStyle: colorScheme,
-              containerStyle: styles.layer1,
+              containerStyle: {
+                ...styles.layer1,
+                paddingBlock: insets.bottom,
+              },
               titleTextStyle: styles.text,
             },
             (buttonIndex) => {
@@ -873,8 +885,11 @@ function TopicScreen() {
         ref={replyModalRef}
         detents={['auto']}
         backgroundColor={styles.overlay.backgroundColor}
+        grabber={false}
       >
-        <View className='h-[220px] pt-4'>
+        <View
+          className={cn('h-[240px] pt-4', Platform.OS === 'android' && 'pb-7')}
+        >
           {replyContext && (
             <TopicReplyForm
               cacheKey={getReplyFormCacheKey(replyContext)}
@@ -920,4 +935,4 @@ function TopicScreen() {
   )
 }
 
-export default memo(TopicScreen)
+export default TopicScreen

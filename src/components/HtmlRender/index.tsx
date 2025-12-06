@@ -378,10 +378,15 @@ function HtmlRender({
           </ContextMenu>
         </View>
       </RenderContext.Provider>
-      <TrueSheet ref={selectModalRef} detents={[0.5, 0.8]} scrollable>
+      <TrueSheet
+        ref={selectModalRef}
+        scrollable
+        grabber={false}
+        backgroundColor={themeStyles.overlay.backgroundColor}
+      >
         <ScrollView
-          contentContainerClassName='pb-safe px-4 pt-3'
-          style={themeStyles.overlay}
+          nestedScrollEnabled
+          contentContainerClassName='pb-safe px-4 pt-3 rounded'
         >
           {Platform.OS === 'ios' ? (
             <TextInput
@@ -393,7 +398,12 @@ function HtmlRender({
             />
           ) : (
             <Text
-              style={styles.body}
+              style={[
+                styles.body,
+                {
+                  backgroundColor: 'transparent',
+                },
+              ]}
               selectable
               selectionColor={Color(theme.colors.primary)
                 .alpha(0.15)

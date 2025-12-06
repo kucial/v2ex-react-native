@@ -105,7 +105,9 @@ function PasswordSignin(props: PasswordSigninProps) {
       className='flex-1'
       style={Platform.OS === 'android' ? styles.layer1 : styles.overlay}
     >
-      <View className='u-absolute left-1 top-1'>
+      <View
+        className={cn('pl-1 pt-1 z-10', Platform.OS === 'android' && 'pt-safe')}
+      >
         <BackButton
           tintColor={theme.colors.text}
           onPress={() => {

@@ -54,52 +54,54 @@ const ImageViewingFooter = (props: {
   }, [displayUri])
 
   return (
-    <View className='flex flex-row justify-between items-center pb-8 px-8'>
-      <View>
-        <Text className='text-neutral-500'>
-          {imageIndex + 1} / {images.length}
-        </Text>
-      </View>
-      <View className='flex flex-row gap-x-2'>
-        {!!qrCodes?.length && (
+    <View className='pb-safe'>
+      <View className='flex flex-row justify-between items-center px-8'>
+        <View>
+          <Text className='text-neutral-500'>
+            {imageIndex + 1} / {images.length}
+          </Text>
+        </View>
+        <View className='flex flex-row gap-x-2'>
+          {!!qrCodes?.length && (
+            <Pressable
+              className='w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50'
+              hitSlop={6}
+              onPress={() => {
+                handleQrCode(qrCodes[0])
+              }}
+            >
+              <QrCodeIcon size={16} color={colors.neutral[300]} />
+            </Pressable>
+          )}
           <Pressable
             className='w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50'
             hitSlop={6}
-            onPress={() => {
-              handleQrCode(qrCodes[0])
+            disabled={saveStatus === 'loading'}
+            onPress={async () => {
+              try {
+                setSaveStatus('loading')
+                setSaveStatus('')
+                await Share.open({
+                  url: displayUri,
+                })
+                setSaveStatus('success')
+              } catch (err) {
+                console.log(err)
+                setSaveStatus('')
+              }
             }}
           >
-            <QrCodeIcon size={16} color={colors.neutral[300]} />
+            {saveStatus === '' && (
+              <ShareIcon size={14} color={colors.neutral[300]} />
+            )}
+            {saveStatus === 'loading' && (
+              <Loader size={14} color={colors.neutral[300]} />
+            )}
+            {saveStatus === 'success' && (
+              <CheckIcon size={16} color={colors.neutral[300]} />
+            )}
           </Pressable>
-        )}
-        <Pressable
-          className='w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50'
-          hitSlop={6}
-          disabled={saveStatus === 'loading'}
-          onPress={async () => {
-            try {
-              setSaveStatus('loading')
-              setSaveStatus('')
-              await Share.open({
-                url: displayUri,
-              })
-              setSaveStatus('success')
-            } catch (err) {
-              console.log(err)
-              setSaveStatus('')
-            }
-          }}
-        >
-          {saveStatus === '' && (
-            <ShareIcon size={14} color={colors.neutral[300]} />
-          )}
-          {saveStatus === 'loading' && (
-            <Loader size={14} color={colors.neutral[300]} />
-          )}
-          {saveStatus === 'success' && (
-            <CheckIcon size={16} color={colors.neutral[300]} />
-          )}
-        </Pressable>
+        </View>
       </View>
     </View>
   )

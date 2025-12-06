@@ -3,6 +3,7 @@ import Animated, {
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import Button from '@/components/Button'
 
@@ -16,6 +17,7 @@ export default function TopBottomNav(props: {
 }) {
   const { repliesCount, scrollDirection } = props
   const { styles } = useTheme()
+  const { bottom } = useSafeAreaInsets()
 
   const style = useAnimatedStyle(() => {
     if (scrollDirection.value === 'down') {
@@ -33,7 +35,7 @@ export default function TopBottomNav(props: {
         {
           position: 'absolute',
           right: 11,
-          bottom: 90,
+          bottom: bottom + 60,
           display: 'flex',
           flexDirection: 'row',
         },

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Platform, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import Animated, {
   Extrapolation,
   interpolate,
@@ -179,10 +179,7 @@ export default function MemberScreenHeader(props: {
       })
   }, [memberQuery.data, username])
 
-  const topBannerHeight =
-    Platform.OS === 'ios'
-      ? HEADER_CANVAS_HEIGHT + insets.top
-      : HEADER_CANVAS_HEIGHT + 6
+  const topBannerHeight = HEADER_CANVAS_HEIGHT + insets.top
 
   const topDelta = topBannerHeight - headerCollapsedHeight
 
@@ -257,8 +254,8 @@ export default function MemberScreenHeader(props: {
         style={{
           position: 'absolute',
           left: 12,
-          top: Platform.OS === 'ios' ? insets.top : 6,
-          zIndex: 10,
+          top: insets.top,
+          zIndex: 100,
         }}
       >
         <BackButton
@@ -392,7 +389,7 @@ export default function MemberScreenHeader(props: {
         style={[
           {
             position: 'absolute',
-            top: Platform.OS === 'ios' ? insets.top : 6,
+            top: insets.top,
             left: 64,
             zIndex: 6,
             height: 36,

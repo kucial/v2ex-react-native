@@ -30,8 +30,7 @@ export function useAnimatedTabs({
   const insets = useSafeAreaInsets()
 
   // Calculate collapsed header height
-  const defaultCollapsedHeight =
-    Platform.OS === 'ios' ? 44 + insets.top : 44 + 6
+  const defaultCollapsedHeight = 44 + insets.top
   const headerCollapsedHeight = headerCollapsedOffset ?? defaultCollapsedHeight
 
   // Shared values for scroll synchronization

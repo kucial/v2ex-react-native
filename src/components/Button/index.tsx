@@ -68,7 +68,7 @@ function Button(props: {
       disabled={props.disabled}
       className={cn(
         'flex items-center justify-center',
-        Platform.OS === 'ios' && 'active:opacity-60',
+        'active:opacity-60',
         Platform.OS === 'ios' &&
           variant === 'icon' &&
           'active:bg-neutral-100 dark:active:bg-neutral-600',

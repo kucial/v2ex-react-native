@@ -4,6 +4,7 @@ import {
   EllipsisHorizontalIcon,
   TrashIcon,
 } from 'react-native-heroicons/outline'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import SwipeableItem, {
   useSwipeableItemParams,
 } from 'react-native-swipeable-item'
@@ -52,6 +53,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   const { data: settings } = useAppSettings()
   const { styles, theme, colorScheme } = useTheme()
   const [filter, setFilter] = useState('')
+  const insets = useSafeAreaInsets()
 
   const data = useMemo(() => {
     const all = getItems()
@@ -119,7 +121,10 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
               destructiveButtonIndex: 1,
               tintColor: theme.colors.primary,
               userInterfaceStyle: colorScheme,
-              containerStyle: styles.layer1,
+              containerStyle: {
+                ...styles.layer1,
+                paddingBottom: insets.bottom,
+              },
             },
             (buttonIndex) => {
               if (buttonIndex === 1) {
