@@ -80,7 +80,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
     return (
       <Pressable
         className={cn(
-          'py-1 active:opacity-50 w-full items-center overflow-hidden',
+          'py-1 w-full items-center overflow-hidden',
           'opacity-100',
         )}
         style={{
@@ -106,7 +106,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   return (
     <Pressable
-      className='py-1 active:opacity-50 w-full overflow-hidden'
+      className='py-1 w-full overflow-hidden'
       onPress={() => {
         service.open(rendererProps.source.uri)
       }}

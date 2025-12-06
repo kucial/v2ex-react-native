@@ -13,6 +13,8 @@ import BackButton from '@/components/BackButton'
 
 import { useTheme } from '@/containers/ThemeService'
 
+const HEADER_BAR_HEIGHT = 48
+
 function AnimatedHeader(props: {
   title?: string
   scrollY: SharedValue<number>
@@ -40,7 +42,7 @@ function AnimatedHeader(props: {
       className='w-full flex-row items-center'
       style={[
         {
-          height: 48 + insets.top,
+          height: HEADER_BAR_HEIGHT + insets.top,
           paddingTop: insets.top,
         },
         styles.layer1,
@@ -53,6 +55,8 @@ function AnimatedHeader(props: {
           left: 4,
           top: insets.top,
           zIndex: 10,
+          height: HEADER_BAR_HEIGHT,
+          justifyContent: 'center',
         }}
       >
         <BackButton
@@ -68,7 +72,7 @@ function AnimatedHeader(props: {
             position: 'absolute',
             left: 55,
             right: 55,
-            height: 48,
+            height: HEADER_BAR_HEIGHT,
             bottom: 0,
             justifyContent: 'center',
           },
@@ -93,6 +97,8 @@ function AnimatedHeader(props: {
             right: 4,
             top: insets.top,
             zIndex: 10,
+            height: HEADER_BAR_HEIGHT,
+            justifyContent: 'center',
           }}
         >
           {props.headerRight}

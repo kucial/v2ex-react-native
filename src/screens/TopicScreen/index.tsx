@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   InteractionManager,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
@@ -887,26 +888,31 @@ function TopicScreen() {
         backgroundColor={styles.overlay.backgroundColor}
         grabber={false}
       >
-        <View
-          className={cn('h-[240px] pt-4', Platform.OS === 'android' && 'pb-7')}
-        >
-          {replyContext && (
-            <TopicReplyForm
-              cacheKey={getReplyFormCacheKey(replyContext)}
-              context={replyContext}
-              onSubmit={handleSubmitReply}
-              onInitImgurSettings={() => {
-                replyModalRef.current?.dismiss()
-                router.push({
-                  pathname: '/imgur-settings',
-                  params: {
-                    autoBack: '1',
-                  },
-                })
-              }}
-            />
-          )}
-        </View>
+        <KeyboardAvoidingView>
+          <View
+            className={cn(
+              'pt-4 h-[220px]',
+              Platform.OS === 'android' && 'pb-7',
+            )}
+          >
+            {replyContext && (
+              <TopicReplyForm
+                cacheKey={getReplyFormCacheKey(replyContext)}
+                context={replyContext}
+                onSubmit={handleSubmitReply}
+                onInitImgurSettings={() => {
+                  replyModalRef.current?.dismiss()
+                  router.push({
+                    pathname: '/imgur-settings',
+                    params: {
+                      autoBack: '1',
+                    },
+                  })
+                }}
+              />
+            )}
+          </View>
+        </KeyboardAvoidingView>
       </TrueSheet>
       {topicQuery.data?.canMove && (
         <TrueSheet
