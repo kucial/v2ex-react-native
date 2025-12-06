@@ -26,7 +26,7 @@ export default function TopicRow(props: HomeFeedRowProps) {
         >
           <View className='flex-1 py-2 pl-1'>
             <View className='flex flex-row items-center space-x-2 pl-1 mb-1'>
-              {showAvatar && <Box className='w-[24px] h-[24px] rounded' />}
+              {showAvatar && <Box className='w-[24px] h-[24px] rounded mr-2' />}
               <View>
                 <View className='py-[2px] rounded w-[50px]'>
                   <InlineText style={styles.text_xs}></InlineText>

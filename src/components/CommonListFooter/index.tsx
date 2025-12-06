@@ -23,6 +23,9 @@ export default function CommonListFooter(props: CommonListFooterProps) {
   const { data: listQuery, isEmpty = isEmptyList } = props
   const { styles } = useTheme()
   const insets = useSafeAreaInsets()
+  if (!listQuery.data && !listQuery.error) {
+    return null
+  }
   return (
     <View
       sentry-label='ListFooter'

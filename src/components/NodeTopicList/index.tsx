@@ -84,6 +84,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       }
       return undefined
     },
+    enabled: isFocused,
   })
 
   const handleRefresh = useCallback(() => {
@@ -159,7 +160,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (listQuery.isLoading && !listQuery.error) {
+    if (!listQuery.data && !listQuery.error) {
       // initial loading
       return new Array(20)
     }
@@ -170,7 +171,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       return combined
     }, [])
     return items || []
-  }, [listQuery])
+  }, [listQuery.data, listQuery.error])
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {

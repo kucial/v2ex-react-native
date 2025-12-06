@@ -12,8 +12,8 @@ export default function TopicRowSkeleton() {
       style={[styles.layer1, styles.border_b_light]}
     >
       <View className='flex-1 py-2 pl-1'>
-        <View className='flex flex-row items-center space-x-2 pl-1 mb-1'>
-          <Box className='w-[24px] h-[24px] rounded mr-1' />
+        <View className='flex flex-row items-center gap-x-2 pl-1 mb-1'>
+          <Box className='w-[24px] h-[24px] rounded' />
           <View>
             <View className='py-[2px] rounded w-[50px]'>
               <InlineText style={styles.text_xs}></InlineText>

@@ -25,7 +25,7 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
           style={!isLast && styles.border_b_light}
         >
           {showAvatar ? (
-            <View className='px-2 py-2 self-start'>
+            <View className='px-2 py-2 self-start mr-2'>
               <Box className='w-[24px] h-[24px] rounded' />
             </View>
           ) : (

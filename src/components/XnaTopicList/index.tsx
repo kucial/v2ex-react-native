@@ -66,6 +66,7 @@ function XnaTopicList(props: XnaTopicListProps) {
       }
       return undefined
     },
+    enabled: isFocused,
   })
 
   const handleRefresh = useCallback(() => {

@@ -65,6 +65,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       }
       return undefined
     },
+    enabled: isFocused,
   })
 
   const handleRefresh = useCallback(() => {
@@ -143,7 +144,7 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (listQuery.isLoading && !listQuery.error) {
+    if (isFocused && !listQuery.data && !listQuery.error) {
       // initial loading
       return new Array(20)
     }
@@ -154,7 +155,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       return combined
     }, [])
     return items || []
-  }, [listQuery.data, getViewedStatus])
+  }, [listQuery.data, isFocused, getViewedStatus])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
