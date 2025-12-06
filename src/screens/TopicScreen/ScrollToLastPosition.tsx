@@ -41,7 +41,7 @@ function ScrollToLastPosition(props: {
           setVisible(false)
         })
         timer.current = null
-      }, 3000)
+      }, 6000)
     })
     return () => {
       if (timer.current) {
