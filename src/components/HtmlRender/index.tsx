@@ -41,17 +41,18 @@ import {
 
 import AnchorRenderer from './AnchorRenderer'
 import { RenderContext } from './context'
-import HorizontalScrollRenderer from './HorizontalScrollRenderer'
+import htmlMinifier from './htmlMinifier'
 import ImageRenderer from './ImageRenderer'
 import type { ImageViewingService } from './ImageViewingService'
 import ImageViewingServiceProvider from './ImageViewingService'
+import PreRenderer from './PreRenderer'
 import { atomOne } from './styles'
 
 const renderers = {
   img: ImageRenderer,
   iframe: IframeRenderer,
   a: AnchorRenderer,
-  pre: HorizontalScrollRenderer,
+  pre: PreRenderer,
 }
 
 const customHTMLElementModels = {
@@ -161,9 +162,11 @@ function HtmlRender({
       },
       ul: {
         marginTop: 0,
+        marginBottom: baseFontSize,
       },
       p: {
         marginTop: 0,
+        marginBottom: baseFontSize,
       },
       a: {
         textDecorationLine: 'none',
@@ -339,6 +342,14 @@ function HtmlRender({
     selectModalRef.current.present()
   }, [props.source.html])
 
+  const source = useMemo(
+    () => ({
+      ...props.source,
+      html: htmlMinifier(props.source.html),
+    }),
+    [props.source.html],
+  )
+
   return (
     <ImageViewingServiceProvider ref={viewingRef} handleQrCode={handleQrCode}>
       <RenderContext.Provider value={renderContext}>
@@ -373,9 +384,10 @@ function HtmlRender({
                 renderersProps={renderersProps}
                 defaultTextProps={defaultTextProps}
                 customHTMLElementModels={customHTMLElementModels}
-                bypassAnonymousTPhrasingNodes={false}
                 classesStyles={atomOne[colorScheme]}
                 {...props}
+                source={source}
+                dangerouslyDisableWhitespaceCollapsing
               />
             </View>
           </ContextMenu>

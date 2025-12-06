@@ -63,29 +63,6 @@ export default function ThemePreview(props: {
   const [loading, setLoading] = useState<boolean>(false)
   const alert = useAlertService()
   const router = useRouter()
-  // useEffect(() => {
-  //   props.navigation.setOptions({
-  //     headerStyle: {
-  //       backgroundColor: theme.colors.card,
-  //     },
-  //     headerTintColor: theme.colors.text,
-  //     headerTitleStyle: { color: theme.colors.text },
-  //     headerBackground() {
-  //       return (
-  //         <View
-  //           style={[
-  //             {
-  //               backgroundColor: theme.colors.card,
-  //               height: '100%',
-  //               borderBottomColor: theme.colors.border_light,
-  //               borderBottomWidth: StyleSheet.hairlineWidth,
-  //             },
-  //           ]}
-  //         />
-  //       )
-  //     },
-  //   })
-  // }, [theme.colors.card])
 
   return (
     <KeyboardAvoidingView

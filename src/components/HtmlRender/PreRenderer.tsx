@@ -1,14 +1,15 @@
+// CodeBlock.tsx
+import React from 'react'
 import { ScrollView } from 'react-native'
 import {
-  CustomBlockRenderer,
+  CustomRendererProps,
   getNativePropsForTNode,
+  TBlock,
 } from 'react-native-render-html'
 
-const HorizontalScrollRenderer: CustomBlockRenderer = function ScrollRenderer(
-  props,
-) {
+export default function PreRenderer(props: CustomRendererProps<TBlock>) {
   const renderProps = getNativePropsForTNode(props)
-  // TODO: render it in webview.
+
   return (
     <ScrollView
       horizontal
@@ -20,5 +21,3 @@ const HorizontalScrollRenderer: CustomBlockRenderer = function ScrollRenderer(
     </ScrollView>
   )
 }
-
-export default HorizontalScrollRenderer
