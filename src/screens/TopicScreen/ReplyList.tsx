@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { View } from 'react-native'
+import { FlashList } from '@shopify/flash-list'
 
 import { TopicReply } from '@/utils/v2ex-client/types'
 
@@ -14,6 +14,8 @@ type ReplyListProps = {
   onReply: (reply: TopicReply) => void
   onThank: (reply: TopicReply) => void
   onShowUserInfo?: (context: UserInfoContext) => void
+  className?: string
+  contentContainerClassName?: string
 }
 
 export default function ReplyList({
@@ -24,21 +26,30 @@ export default function ReplyList({
   onShowUserInfo,
   showAvatar,
   header,
+  className,
+  contentContainerClassName,
 }: ReplyListProps) {
   return (
-    <View>
-      {header || null}
-      {data.map((reply) => (
+    <FlashList
+      data={data}
+      className={className}
+      contentContainerClassName={contentContainerClassName}
+      extraData={{
+        pivot,
+      }}
+      nestedScrollEnabled
+      ListHeaderComponent={header}
+      renderItem={({ item: reply, extraData }) => (
         <ReplyRow
           showAvatar={showAvatar}
           key={reply.id}
-          isPivot={reply.id === pivot?.id}
+          isPivot={reply.id === extraData.pivot?.id}
           data={reply}
           onReply={onReply}
           onThank={onThank}
           onShowUserInfo={onShowUserInfo}
         />
-      ))}
-    </View>
+      )}
+    />
   )
 }

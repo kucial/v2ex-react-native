@@ -63,7 +63,6 @@ const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
 
-const replyModalDetents = [220]
 const moveModalDetents = [280]
 const conversationDetents = [0.6, 0.9]
 
@@ -845,40 +844,42 @@ function TopicScreen() {
         ref={conversationModalRef}
         detents={conversationDetents}
         backgroundColor={styles.overlay.backgroundColor}
+        scrollable
       >
         {conversationContext && (
-          <ScrollView className='pt-4' contentContainerClassName='pb-safe'>
-            <ReplyList
-              showAvatar={settings.feedShowAvatar}
-              data={conversation}
-              pivot={conversationContext.data}
-              onReply={initReply}
-              onThank={handleThankToReply}
-              onShowUserInfo={showUserInfo}
-            />
-          </ScrollView>
+          <ReplyList
+            className='pt-4'
+            contentContainerClassName='pb-safe'
+            showAvatar={settings.feedShowAvatar}
+            data={conversation}
+            pivot={conversationContext.data}
+            onReply={initReply}
+            onThank={handleThankToReply}
+            onShowUserInfo={showUserInfo}
+          />
         )}
       </TrueSheet>
       <TrueSheet
         ref={userInfoModalRef}
         detents={conversationDetents}
         backgroundColor={styles.overlay.backgroundColor}
+        scrollable
       >
         {userInfoContext && (
-          <ScrollView className='pt-4' contentContainerClassName='pb-safe'>
-            <ReplyList
-              showAvatar={settings.feedShowAvatar}
-              data={userPostedMessages}
-              header={
-                <SimpleMemberInfo
-                  currentUser={currentUser}
-                  username={userInfoContext.data}
-                />
-              }
-              onReply={initReply}
-              onThank={handleThankToReply}
-            />
-          </ScrollView>
+          <ReplyList
+            className='pt-4'
+            contentContainerClassName='pb-safe'
+            showAvatar={settings.feedShowAvatar}
+            data={userPostedMessages}
+            header={
+              <SimpleMemberInfo
+                currentUser={currentUser}
+                username={userInfoContext.data}
+              />
+            }
+            onReply={initReply}
+            onThank={handleThankToReply}
+          />
         )}
       </TrueSheet>
 
