@@ -22,16 +22,19 @@ export default function Header(props: {
   const router = useRouter()
   const insets = useSafeAreaInsets()
   return (
-    <View style={styles.layer1}>
+    <View
+      style={[
+        styles.layer1,
+        {
+          paddingTop: insets.top,
+        },
+      ]}
+    >
       <View
-        className='w-full flex-row items-center pl-4'
+        className='w-full flex-row items-center pl-4 relative'
         style={[
           {
-            height:
-              Platform.OS === 'android'
-                ? HEADER_HEIGHT
-                : HEADER_HEIGHT + insets.top,
-            paddingTop: Platform.OS === 'android' ? 0 : insets.top,
+            height: HEADER_HEIGHT,
           },
         ]}
       >
@@ -39,7 +42,8 @@ export default function Header(props: {
           style={{
             position: 'absolute',
             left: 6,
-            top: Platform.OS === 'android' ? 4 : insets.top,
+            height: HEADER_HEIGHT,
+            justifyContent: 'center',
             zIndex: 10,
           }}
         >
@@ -80,7 +84,8 @@ export default function Header(props: {
             style={{
               position: 'absolute',
               right: 6,
-              top: Platform.OS === 'android' ? 4 : insets.top,
+              height: '100%',
+              justifyContent: 'center',
               zIndex: 10,
             }}
           >

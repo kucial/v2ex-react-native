@@ -6,6 +6,7 @@ import {
   ThemeProvider as NavigationThemeProvider,
 } from '@react-navigation/native'
 import * as NavigationBar from 'expo-navigation-bar'
+import { StatusBar } from 'expo-status-bar'
 import * as SystemUI from 'expo-system-ui'
 
 import { useAppSettings } from '../AppSettingsService'
@@ -64,6 +65,7 @@ export const ThemeProvider = (props: {
     <ThemeContext.Provider value={service}>
       <NavigationThemeProvider value={theme}>
         {props.children}
+        <StatusBar />
       </NavigationThemeProvider>
     </ThemeContext.Provider>
   )

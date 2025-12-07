@@ -1,4 +1,4 @@
-import { Platform, Text, View } from 'react-native'
+import { Platform, View } from 'react-native'
 import { Stack } from 'expo-router'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
