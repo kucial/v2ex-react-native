@@ -8,6 +8,8 @@
     "ios": "expo run:ios",
     "build:ios": "eas build --platform ios --profile production",
     "submit:ios": "eas submit --platform ios",
+    "build:android": "eas build --platform android --profile production",
+    "submit:android": "eas submit --platform android",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
