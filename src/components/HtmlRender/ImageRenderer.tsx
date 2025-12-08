@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Image as RNImage, Pressable, View } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
@@ -39,6 +39,8 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
     refetchOnMount: 'always',
   })
 
+  const [containerWidth, setContainerWidth] = useState(null)
+
   const service = useImageViewing()
   const { theme } = useTheme()
   useEffect(() => {
@@ -61,7 +63,11 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   const contentWidth = rendererProps.contentWidth || 320
   const imageStyle = useMemo(() => {
     if (imageQuery.data) {
-      const width = Math.min(imageQuery.data.width, contentWidth)
+      const width = Math.min(
+        imageQuery.data.width,
+        contentWidth,
+        containerWidth,
+      )
       const height = (imageQuery.data.height / imageQuery.data.width) * width
       return {
         width,
@@ -74,7 +80,18 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
         height: width * 0.66667,
       }
     }
-  }, [imageQuery.data, contentWidth])
+  }, [imageQuery.data, contentWidth, containerWidth])
+
+  if (!containerWidth) {
+    return (
+      <View
+        className='w-full'
+        onLayout={(e) => {
+          setContainerWidth(e.nativeEvent.layout.width)
+        }}
+      ></View>
+    )
+  }
 
   if (imageQuery.data) {
     return (
