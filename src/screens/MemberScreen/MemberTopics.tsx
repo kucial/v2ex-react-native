@@ -1,7 +1,6 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { SharedValue } from 'react-native-reanimated'
 import { FlashListProps } from '@shopify/flash-list'
-import { useInfiniteQuery } from '@tanstack/react-query'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
@@ -10,10 +9,10 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { useMemberTopics } from '@/hooks'
 import { shouldLoadMore } from '@/utils/react-query'
-import { getMemberTopics } from '@/utils/v2ex-client'
 
-import UserTopicRow from './MemberTopicRow'
+import MemberTopicRow from './MemberTopicRow'
 
 export default function MemberTopics(
   props: {
@@ -27,37 +26,7 @@ export default function MemberTopics(
   const { getViewedStatus } = useViewedTopics()
   const { data: settings } = useAppSettings()
 
-  const fetchItems = useCallback(
-    async ({ pageParam }) => {
-      try {
-        return getMemberTopics({ username: props.username, p: pageParam })
-      } catch (err) {
-        if (!err.code) {
-          alert.show({
-            type: 'error',
-            message: err.message || '请求资源失败',
-          })
-        }
-        throw err
-      }
-    },
-    [props.username, alert],
-  )
-
-  const listQuery = useInfiniteQuery({
-    queryKey: ['/page/member/:username/topics.json', props.username],
-    queryFn: fetchItems,
-    initialPageParam: 1,
-    getNextPageParam(lastPage) {
-      if (
-        lastPage.pagination &&
-        lastPage.pagination.total > lastPage.pagination.current
-      ) {
-        return lastPage.pagination.current + 1
-      }
-      return undefined
-    },
-  })
+  const listQuery = useMemberTopics(props.username, props.isFocused)
 
   const listItems = useMemo(() => {
     if (listQuery.isLoading && !listQuery.error) {
@@ -77,7 +46,7 @@ export default function MemberTopics(
     return {
       renderItem({ item, index }) {
         return (
-          <UserTopicRow
+          <MemberTopicRow
             data={item}
             isLast={index === listItems.length - 1}
             viewedStatus={getViewedStatus(item)}

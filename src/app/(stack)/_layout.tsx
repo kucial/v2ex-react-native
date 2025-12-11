@@ -15,6 +15,7 @@ const transparentHeaderBackground = () => (
 
 export default function StackLayout() {
   const { active } = usePadLayout()
+
   return (
     <Stack
       screenOptions={{

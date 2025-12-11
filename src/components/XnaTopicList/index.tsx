@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { AppState } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
 
@@ -16,10 +16,9 @@ import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
-import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
+import { useXnaFeed, XNA_LIST_KEY } from '@/hooks'
 import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
-import { getXnaFeeds } from '@/utils/v2ex-client'
 import { XnaFeed } from '@/utils/v2ex-client/types'
 
 import { useViewedLinks } from './hooks'
@@ -33,46 +32,18 @@ type XnaTopicListProps = {
 
 function XnaTopicList(props: XnaTopicListProps) {
   const { isFocused, currentListRef } = props
-  const alert = useAlertService()
   const listViewRef = useRef<FlashList<XnaFeed>>()
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const { setViewed, getViewedStatus } = useViewedLinks()
   const queryclient = useQueryClient()
 
-  const fetchItems = useCallback(async ({ pageParam }) => {
-    try {
-      return getXnaFeeds({ p: pageParam })
-    } catch (err) {
-      if (err.code !== '2FA_ENABLED') {
-        alert.show({
-          type: 'error',
-          message: err.message || '请求资源失败',
-        })
-      }
-      throw err
-    }
-  }, [])
-  const listQuery = useInfiniteQuery({
-    queryKey: ['/page/home/xna'],
-    queryFn: fetchItems,
-    initialPageParam: 1,
-    getNextPageParam(lastPage) {
-      if (
-        lastPage.pagination &&
-        lastPage.pagination.total > lastPage.pagination.current
-      ) {
-        return lastPage.pagination.current + 1
-      }
-      return undefined
-    },
-    enabled: isFocused,
-  })
+  const listQuery = useXnaFeed(isFocused)
 
   const handleRefresh = useCallback(() => {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
       queryclient.resetQueries({
-        queryKey: ['/page/home/xna'],
+        queryKey: [XNA_LIST_KEY],
         exact: true,
       })
     }

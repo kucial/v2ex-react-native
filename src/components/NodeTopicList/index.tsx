@@ -9,11 +9,7 @@ import {
 import { AppState } from 'react-native'
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
 import { FlashList } from '@shopify/flash-list'
-import {
-  useInfiniteQuery,
-  useQueryClient,
-  UseQueryResult,
-} from '@tanstack/react-query'
+import { useQueryClient, UseQueryResult } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
@@ -21,11 +17,10 @@ import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
-import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { NODE_TOPICS_KEY, useNodeTopics } from '@/hooks'
 import { shouldFetch } from '@/utils/react-query'
-import { getNodeFeeds } from '@/utils/v2ex-client'
 import { NodeTopicFeed } from '@/utils/v2ex-client/types'
 
 import NodeTopicRow from './NodeTopicRow'
@@ -43,7 +38,6 @@ type NodeTopicListProps = {
 export default function NodeTopicList(props: NodeTopicListProps) {
   const { header, name, isFocused, currentListRef, scrollY } = props
   const { getViewedStatus } = useViewedTopics()
-  const alert = useAlertService()
   const { data: settings } = useAppSettings()
   const queryclient = useQueryClient()
 
@@ -54,43 +48,12 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     },
   })
 
-  const fetchItems = useCallback(
-    async ({ pageParam }) => {
-      try {
-        return getNodeFeeds({ name, p: pageParam })
-      } catch (err) {
-        if (err.code !== '2FA_ENABLED') {
-          alert.show({
-            type: 'error',
-            message: err.message || '请求资源失败',
-          })
-        }
-        throw err
-      }
-    },
-    [name],
-  )
-
-  const listQuery = useInfiniteQuery({
-    queryKey: ['/page/go/:name/feed.json', name],
-    initialPageParam: 1,
-    queryFn: fetchItems,
-    getNextPageParam(lastPage) {
-      if (
-        lastPage.pagination &&
-        lastPage.pagination.total > lastPage.pagination.current
-      ) {
-        return lastPage.pagination.current + 1
-      }
-      return undefined
-    },
-    enabled: isFocused,
-  })
+  const listQuery = useNodeTopics(name, isFocused)
 
   const handleRefresh = useCallback(() => {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
       queryclient.resetQueries({
-        queryKey: ['/page/go/:name/feed.json', name],
+        queryKey: [NODE_TOPICS_KEY, name],
         exact: true,
       })
     }

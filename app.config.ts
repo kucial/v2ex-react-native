@@ -19,6 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.kucial.v2ex',
+      appleTeamId: 'HVCHYVPAAC',
       runtimeVersion: packageJson.version.split('.').slice(0, -1).join('.'),
       icon: './src/assets/r2v-icon.icon',
       splash: {
@@ -32,6 +33,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       infoPlist: {
         CFBundleDevelopmentRegion: 'zh-hans',
         ITSAppUsesNonExemptEncryption: false,
+      },
+      entitlements: {
+        'com.apple.security.application-groups': ['group.com.kucial.v2ex.data'],
       },
     },
     android: {
@@ -77,6 +81,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-router',
       'expo-build-properties',
       'expo-web-browser',
+      'expo-background-task',
+      '@bacons/apple-targets',
     ],
   }
 

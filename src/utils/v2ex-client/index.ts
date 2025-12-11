@@ -370,7 +370,7 @@ export async function getHomeTabs(): Promise<
       return {
         label: $(el).text().trim(),
         value: tab,
-        type: tab == 'xna' ? 'xna' : 'home',
+        type: tab === 'xna' ? 'xna' : 'home',
       } as HomeTabOption
     })
     .get()

@@ -3,7 +3,7 @@ import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabBar, TabView } from 'react-native-tab-view'
-import { useNavigation, usePathname } from 'expo-router'
+import { useLocalSearchParams, useNavigation, usePathname } from 'expo-router'
 
 import HomeTopicList from '@/components/HomeTopicList'
 import NodeTopicList from '@/components/NodeTopicList'
@@ -14,6 +14,8 @@ import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
+
+import HomeDataPrefetch from './HomeDataPrefetch'
 
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'
@@ -28,6 +30,7 @@ export default function HomeScreen(props) {
     initHomeTabs,
   } = useAppSettings()
   const { width, height } = useWindowDimensions()
+  const { tab: queryTab } = useLocalSearchParams<{ tab: string }>()
   const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()
   const [error, setError] = useState<Error>(null)
@@ -52,6 +55,18 @@ export default function HomeScreen(props) {
   }, [homeTabs])
 
   const [index, setIndex] = useCachedState<number>(CACHE_KEY, 0)
+
+  console.log('queryTab', queryTab)
+  useEffect(() => {
+    if (queryTab && homeTabs) {
+      const queryIndex = homeTabs.findIndex(
+        (val) => val.type === 'home' && val.value === queryTab,
+      )
+      if (queryIndex > -1) {
+        setIndex(queryIndex)
+      }
+    }
+  }, [])
 
   const pathname = usePathname()
   const navigation = useNavigation()
@@ -220,16 +235,19 @@ export default function HomeScreen(props) {
   }
 
   return (
-    <TabView
-      key={routes.map((r) => r.key).join(',')}
-      navigationState={{ index: normalizedIndex, routes }}
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      onIndexChange={setIndex}
-      initialLayout={{
-        width: viewWidth,
-        height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
-      }}
-    />
+    <>
+      <TabView
+        key={routes.map((r) => r.key).join(',')}
+        navigationState={{ index: normalizedIndex, routes }}
+        renderScene={renderScene}
+        renderTabBar={renderTabBar}
+        onIndexChange={setIndex}
+        initialLayout={{
+          width: viewWidth,
+          height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
+        }}
+      />
+      <HomeDataPrefetch index={normalizedIndex} routes={routes} />
+    </>
   )
 }

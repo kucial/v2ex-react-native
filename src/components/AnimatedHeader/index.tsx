@@ -62,7 +62,11 @@ function AnimatedHeader(props: {
         <BackButton
           tintColor={styles.text.color}
           onPress={() => {
-            router.back()
+            if (router.canGoBack()) {
+              router.back()
+            } else {
+              router.dismissTo('/')
+            }
           }}
         />
       </View>

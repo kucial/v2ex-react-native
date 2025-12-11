@@ -18,6 +18,12 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { useHomeTabFeed } from '@/hooks'
+import {
+  updateHomeFeedWidget,
+  updateHotsFeedWidget,
+  updateRecentWidgetFeedWidget,
+} from '@/lib/widget-background-task'
 import { shouldFetch } from '@/utils/react-query'
 import { getHomeFeeds, getHotTopics, getRecentFeeds } from '@/utils/v2ex-client'
 import { HomeTopicFeed } from '@/utils/v2ex-client/types'
@@ -39,34 +45,7 @@ function FeedTopicList(props: FeedTopicListProps) {
   const { getViewedStatus } = useViewedTopics()
   const queryclient = useQueryClient()
 
-  const fetchItems = useCallback(
-    ({ pageParam }) => {
-      if (tab === 'recent') {
-        return getRecentFeeds({ p: pageParam })
-      }
-      if (tab == 'today_hots') {
-        return getHotTopics()
-      }
-      return getHomeFeeds({ tab })
-    },
-    [tab],
-  )
-
-  const listQuery = useInfiniteQuery({
-    queryKey: ['/page/home/feed', tab],
-    queryFn: fetchItems,
-    initialPageParam: 1,
-    getNextPageParam(lastPage) {
-      if (
-        lastPage.pagination &&
-        lastPage.pagination.total > lastPage.pagination.current
-      ) {
-        return lastPage.pagination.current + 1
-      }
-      return undefined
-    },
-    enabled: isFocused,
-  })
+  const listQuery = useHomeTabFeed(tab, isFocused)
 
   const handleRefresh = useCallback(() => {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
@@ -156,6 +135,22 @@ function FeedTopicList(props: FeedTopicListProps) {
     }, [])
     return items || []
   }, [listQuery.data, isFocused, getViewedStatus])
+
+  useEffect(() => {
+    if (tab === 'today_hots') {
+      updateHotsFeedWidget(listItems.slice(0, 10)).catch((err) => {
+        // do nothing.
+      })
+    } else if (tab === 'recent') {
+      updateRecentWidgetFeedWidget(listItems.slice(0, 10)).catch((err) => {
+        // do nothing.
+      })
+    } else {
+      updateHomeFeedWidget(tab, listItems.slice(0, 10)).catch((err) => {
+        // do nothing.
+      })
+    }
+  }, [listItems])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({

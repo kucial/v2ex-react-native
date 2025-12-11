@@ -24,9 +24,14 @@ import QueryClientProvider from '@/containers/QueryClientProvider'
 import { getThemeService, ThemeProvider } from '@/containers/ThemeService'
 import ViewedTopicsService from '@/containers/ViewedTopicsService'
 import { initSentry } from '@/lib/sentry'
+import { registerBackgroundTaskAsync } from '@/lib/widget-background-task'
 import { handleDeepLink } from '@/utils/deeplink'
 
 initSentry()
+// Register background task for widget updates
+registerBackgroundTaskAsync().catch((error) => {
+  console.error('Failed to register background task:', error)
+})
 
 const { styles } = getThemeService()
 

@@ -14,5 +14,5 @@ export const USER_AGENT = Platform.select({
 export const CONTENT_CONTAINER_MAX_WIDTH = 600
 export const APP_SIDEBAR_SIZE = 68
 
-// Infinite 刷新是最大页数.
+// Infinite 刷新时最大页数.
 export const PAGE_RESET_LIMIT = 5
