@@ -158,7 +158,7 @@ struct HomeFeedProvider: AppIntentTimelineProvider {
       node: NodeInfo(name: configuration.node.id, title: configuration.node.displayName)
     )
     
-    let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
+    let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: Date())!
     return Timeline(entries: [entry], policy: .after(nextUpdate))
   }
   
@@ -253,7 +253,7 @@ struct HomeFeedWidgetView: View {
       let feedURL = URL(string: "r2v://feed?tab=\(entry.node.name)")!
       Link(destination: feedURL) {
         HStack {
-          Text("V2EX \(entry.node.title)")
+          Text("V2EX · \(entry.node.title)")
             .font(.system(size: 12))
             .fontWeight(.bold)
           

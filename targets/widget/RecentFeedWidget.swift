@@ -49,7 +49,7 @@ struct RecentFeedProvider: TimelineProvider {
         let maxItems = maxItems(for: context.family)
         Task {
             let entry = await loadRecentFeedEntry(maxItems: maxItems, family: context.family)
-            let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
+            let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: Date())!
             let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
             completion(timeline)
         }

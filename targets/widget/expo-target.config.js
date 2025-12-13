@@ -3,6 +3,8 @@ module.exports = (config) => ({
   type: 'widget',
   icon: '../../src/assets/icons/icon-r2v-light.png',
   entitlements: {
-    /* Add entitlements */
+    'com.apple.security.application-groups': config.ios.entitlements?.[
+      'com.apple.security.application-groups'
+    ] || ['group.com.kucial.v2ex.data'],
   },
 })

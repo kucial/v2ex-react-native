@@ -49,7 +49,7 @@ struct HotTopicsProvider: TimelineProvider {
         let maxItems = maxItems(for: context.family)
         Task {
             let entry = await loadHotTopicsEntry(maxItems: maxItems, family: context.family)
-            let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
+            let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: Date())!
             let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
             completion(timeline)
         }
@@ -118,7 +118,7 @@ struct HotTopicsWidgetView: View {
             Link(destination: feedURL) {
               HStack {
                 Text(
-                  "V2EX 今日热议"
+                  "V2EX · 今日热议"
                 )
                 .font(.system(size: 12))
                 .fontWeight(.bold)
