@@ -1,6 +1,6 @@
-import { MMKV } from 'react-native-mmkv'
+import { createMMKV } from 'react-native-mmkv'
 
-export const storage = new MMKV()
+export const storage = createMMKV()
 
 export const stateStorage = {
   setItem: (name: string, value: string) => {
@@ -11,7 +11,7 @@ export const stateStorage = {
     return value === undefined ? null : value
   },
   removeItem: (name: string) => {
-    storage.delete(name)
+    storage.remove(name)
   },
 }
 
@@ -25,7 +25,7 @@ export const getJSON = (key: string, fallback?: any) => {
 
 export const setJSON = (key: string, value: any) => {
   if (value === undefined) {
-    storage.delete(key)
+    storage.remove(key)
   } else {
     const str = JSON.stringify(value)
     storage.set(key, str)

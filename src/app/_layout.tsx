@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
+import { useMMKVDevTools } from '@rozenite/mmkv-plugin'
 import { Slot } from 'expo-router'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
@@ -26,6 +27,7 @@ import ViewedTopicsService from '@/containers/ViewedTopicsService'
 import { initSentry } from '@/lib/sentry'
 import { registerBackgroundTaskAsync } from '@/lib/widget-background-task'
 import { handleDeepLink } from '@/utils/deeplink'
+import { storage } from '@/utils/storage'
 
 initSentry()
 // Register background task for widget updates
@@ -43,6 +45,12 @@ export default function RootLayout() {
 
     return () => sub.remove()
   }, [])
+
+  useMMKVDevTools({
+    storages: {
+      state: storage,
+    },
+  })
 
   return (
     <SafeAreaProvider style={styles.layer1}>

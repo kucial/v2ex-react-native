@@ -1,6 +1,7 @@
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { persistQueryClient } from '@tanstack/react-query-persist-client'
+import { useTanStackQueryDevTools } from '@rozenite/tanstack-query-plugin'
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
+import { QueryClient } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 
 import { stateStorage } from '@/utils/storage'
 import ApiError from '@/utils/v2ex-client/ApiError'
@@ -28,19 +29,21 @@ export const queryClient = new QueryClient({
   },
 })
 
-const localStoragePersister = createSyncStoragePersister({
+const localStoragePersister = createAsyncStoragePersister({
   storage: stateStorage,
-})
-persistQueryClient({
-  queryClient,
-  persister: localStoragePersister,
-  maxAge: Infinity,
 })
 
 export default function Provider(props) {
+  useTanStackQueryDevTools(queryClient)
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister: localStoragePersister,
+        maxAge: Infinity,
+      }}
+    >
       {props.children}
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   )
 }

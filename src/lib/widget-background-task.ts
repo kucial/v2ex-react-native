@@ -8,10 +8,8 @@ import { HomeTopicFeed } from '@/utils/v2ex-client/types'
 
 export const BACKGROUND_TASK_IDENTIFIER = 'widget-background-task'
 
-const storage = new ExtensionStorage(
-  // Your app group identifier. Should match the values in the app.json and expo-target.config.json.
-  'group.com.kucial.v2ex.data',
-)
+const storage = new ExtensionStorage('group.com.kucial.v2ex.data')
+
 export const updateHotsFeedWidget = async (items: HomeTopicFeed[]) => {
   if (Platform.OS === 'ios') {
     try {
@@ -108,7 +106,10 @@ TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
 })
 
 export async function registerBackgroundTaskAsync() {
-  return BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER)
+  console.log('REGISTER BACKGROUND TASK')
+  return BackgroundTask.registerTaskAsync(BACKGROUND_TASK_IDENTIFIER, {
+    minimumInterval: 15, // every 15 minutes.
+  })
 }
 
 export async function unregisterBackgroundTaskAsync() {
