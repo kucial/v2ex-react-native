@@ -15,6 +15,11 @@ const TODAY_HOT_TAB: HomeTabOption = {
   type: 'home',
   disabled: true,
 }
+const PLANET_TAB: HomeTabOption = {
+  value: 'planet',
+  label: 'Planet',
+  type: 'planet',
+}
 
 export default function AppSettingsServiceProvider(props: {
   children: ReactElement
@@ -55,6 +60,7 @@ export default function AppSettingsServiceProvider(props: {
             type: 'home',
           } as HomeTabOption,
           TODAY_HOT_TAB,
+          PLANET_TAB,
           ...data,
         ].filter((item) => item.value !== 'nodes')
         setSettings((prev) => ({

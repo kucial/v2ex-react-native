@@ -19,6 +19,7 @@
     "@expo/image-utils": "^0.8.7",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@georstat/react-native-image-gallery": "^1.1.0",
+    "@gorhom/portal": "^1.0.14",
     "@lodev09/react-native-true-sheet": "3.0.4",
     "@native-html/iframe-plugin": "^2.6.1",
     "@react-native-community/netinfo": "11.4.1",
@@ -119,13 +120,13 @@
     "react-time-ago": "^7.3.5",
     "tailwind-merge": "^3.4.0",
     "undici": "^7.16.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@rozenite/metro": "^1.1.0",
     "@rozenite/mmkv-plugin": "^1.1.0",
-    "@rozenite/redux-devtools-plugin": "^1.1.0",
     "@rozenite/tanstack-query-plugin": "^1.1.0",
     "@types/color": "^3.0.6",
     "@types/jest": "29.5.14",

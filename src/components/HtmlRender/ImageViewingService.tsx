@@ -12,6 +12,7 @@ import { Pressable, Text, View } from 'react-native'
 import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
 import ImageView from 'react-native-image-viewing'
 import Share from 'react-native-share'
+import { Portal } from '@gorhom/portal'
 import { BarcodeScanningResult, Camera } from 'expo-camera'
 import colors from 'tailwindcss/colors'
 
@@ -155,20 +156,22 @@ const ImageViewingServiceProvider = forwardRef<
   return (
     <ServiceContext.Provider value={service}>
       {props.children}
-      <ImageView
-        images={renderImages}
-        imageIndex={viewIndex}
-        visible={viewIndex > -1}
-        onRequestClose={() => setViewIndex(-1)}
-        FooterComponent={({ imageIndex }) => (
-          <ImageViewingFooter
-            key={`index-${imageIndex}`}
-            images={images}
-            imageIndex={imageIndex}
-            handleQrCode={props.handleQrCode}
-          />
-        )}
-      />
+      <Portal hostName='overlay'>
+        <ImageView
+          images={renderImages}
+          imageIndex={viewIndex}
+          visible={viewIndex > -1}
+          onRequestClose={() => setViewIndex(-1)}
+          FooterComponent={({ imageIndex }) => (
+            <ImageViewingFooter
+              key={`index-${imageIndex}`}
+              images={images}
+              imageIndex={imageIndex}
+              handleQrCode={props.handleQrCode}
+            />
+          )}
+        />
+      </Portal>
     </ServiceContext.Provider>
   )
 })

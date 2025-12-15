@@ -6,7 +6,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { AppState } from 'react-native'
+import { AppState, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
@@ -17,44 +17,37 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { useHomeTabFeed } from '@/hooks'
-import {
-  updateHomeFeedWidget,
-  updateHotsFeedWidget,
-  updateRecentWidgetFeedWidget,
-} from '@/lib/widget-background-task'
-import { shouldFetch } from '@/utils/react-query'
-import { HomeTopicFeed } from '@/utils/v2ex-client/types'
+import { PLANET_FEED_LIST_KEY, usePlanetFeed } from '@/hooks'
+import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
+import { PlanetFeedItem } from '@/utils/v2ex-client/types'
 
-import TideTopicRow from './TideTopicRow'
-import TopicRow from './TopicRow'
+import { useViewedLinks } from './hooks'
+import TopicCard from './TopicCard'
 
-type FeedTopicListProps = {
-  tab: string
+type PlanetFeedListProps = {
   isFocused: boolean
   currentListRef: MutableRefObject<any>
 }
 
-function FeedTopicList(props: FeedTopicListProps) {
-  const { tab, isFocused, currentListRef } = props
-  const listViewRef = useRef<FlashList<HomeTopicFeed>>()
+function PlanetFeedList(props: PlanetFeedListProps) {
+  const { isFocused, currentListRef } = props
+  const listViewRef = useRef<FlashList<PlanetFeedItem>>(null)
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
-  const { getViewedStatus } = useViewedTopics()
+  const { setViewed, getViewedStatus } = useViewedLinks()
   const queryclient = useQueryClient()
 
-  const listQuery = useHomeTabFeed(tab, isFocused)
+  const listQuery = usePlanetFeed(isFocused)
 
   const handleRefresh = useCallback(() => {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
       queryclient.resetQueries({
-        queryKey: ['/page/home/feed', tab],
+        queryKey: [PLANET_FEED_LIST_KEY],
         exact: true,
       })
     }
     listQuery.refetch()
-  }, [listQuery.data, tab, queryclient])
+  }, [listQuery.data, queryclient])
 
   const scrollToRefresh = useCallback(() => {
     if (listQuery.isRefetching) {
@@ -65,14 +58,12 @@ function FeedTopicList(props: FeedTopicListProps) {
     }
 
     if (listQuery.data) {
-      // console.log(scrollY.current)
       listViewRef.current.scrollToOffset({
-        // offset: scrollY.current > 0 ? 0 : -60,
         offset: 0,
         animated: true,
       })
     }
-    handleRefresh()
+    listQuery.refetch()
   }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
 
   useEffect(() => {
@@ -122,59 +113,35 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (isFocused && !listQuery.data && !listQuery.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(20)
     }
-    const items = listQuery.data?.pages?.reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
-        return uniqBy([...combined, ...page.data], 'id')
+        return uniqBy([...combined, ...page.data], 'uuid')
       }
       return combined
     }, [])
     return items || []
-  }, [listQuery.data, isFocused, getViewedStatus])
-
-  useEffect(() => {
-    if (tab === 'today_hots') {
-      updateHotsFeedWidget(listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
-      })
-    } else if (tab === 'recent') {
-      updateRecentWidgetFeedWidget(listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
-      })
-    } else {
-      updateHomeFeedWidget(tab, listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
-      })
-    }
-  }, [listItems])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item, index }) =>
-        settings.feedLayout === 'tide' ? (
-          <TideTopicRow
+      renderItem: ({ item, index }) => (
+        <View className='py-1 px-2'>
+          <TopicCard
             data={item}
             isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
+            viewedStatus={getViewedStatus(item?.url)}
             showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
+            onView={setViewed}
             titleStyle={settings.feedTitleStyle}
           />
-        ) : (
-          <TopicRow
-            data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
-          />
-        ),
-      keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>
-        item ? `${item.id}` : `index-${index}`,
+        </View>
+      ),
+      keyExtractor: (item: PlanetFeedItem | undefined, index: number) =>
+        item ? `${item.uuid}` : `index-${index}`,
     }),
     [getViewedStatus, settings, listItems],
   )
@@ -187,8 +154,9 @@ function FeedTopicList(props: FeedTopicListProps) {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
+      contentContainerStyle={{ paddingVertical: 4 }}
       onEndReached={() => {
-        if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
+        if (shouldLoadMore(listQuery)) {
           listQuery.fetchNextPage()
         }
       }}
@@ -207,4 +175,4 @@ function FeedTopicList(props: FeedTopicListProps) {
     />
   )
 }
-export default memo(FeedTopicList)
+export default memo(PlanetFeedList)

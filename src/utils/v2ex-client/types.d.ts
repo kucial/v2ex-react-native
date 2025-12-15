@@ -7,7 +7,7 @@ type UrlString = string
 export type HomeTabOption = {
   value: string
   label: string
-  type?: 'node' | 'user' | 'home' | 'xna'
+  type?: 'node' | 'user' | 'home' | 'xna' | 'planet'
   disabled?: boolean
 }
 
@@ -244,4 +244,26 @@ type XnaFeed = {
   }
   url: string
   updated_at: string
+}
+
+type PlanetSiteBasic = {
+  avatar: string
+  site_title: string
+  site_address: string
+}
+type PlanetFeedItem = {
+  uuid: string
+  title: string
+  content: HtmlString
+  expand_label: string
+  audio?: { src: string }
+  updated_at?: string
+  planet: PlanetSiteBasic
+  comment_count: number
+  liked_count: number
+  stats_num: number
+}
+
+type PlanetInfo = PlanetSiteBasic & {
+  links: { text: string; href: string }[]
 }

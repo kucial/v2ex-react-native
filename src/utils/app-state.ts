@@ -13,7 +13,7 @@ export const clearCache = async () => {
     if (/\$app\$/.test(key)) {
       return
     }
-    storage.delete(key)
+    storage.remove(key)
   })
   RNRestart.Restart()
 }

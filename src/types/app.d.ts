@@ -3,6 +3,7 @@ import {
   HomeTopicFeed,
   MemberTopicFeed,
   NodeTopicFeed,
+  PlanetFeedItem,
   RepliedTopicFeed,
   XnaFeed,
 } from '@/utils/v2ex-client/types'
@@ -33,6 +34,14 @@ declare global {
   }
   type XnaFeedRowProps = {
     data: XnaFeed
+    isLast?: boolean
+    showAvatar: boolean
+    titleStyle: 'normal' | 'emphasized'
+    viewedStatus?: 'viewed' | 'has_update' | undefined
+    onView?: (url: string) => void
+  }
+  type PlanetFeedRowProps = {
+    data: PlanetFeedItem
     isLast?: boolean
     showAvatar: boolean
     titleStyle: 'normal' | 'emphasized'

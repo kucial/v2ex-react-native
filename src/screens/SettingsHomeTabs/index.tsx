@@ -39,6 +39,7 @@ import SectionHeader from '@/components/SectionHeader'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { useTabOptions } from '@/hooks'
 import { cn } from '@/lib/utils'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
@@ -98,6 +99,8 @@ export default function HomeTabs() {
     initHomeTabs,
   } = useAppSettings()
   const [tabs, setTabs] = useState<HomeTabOption[]>(homeTabs || [])
+  const tabOptions = useTabOptions()
+
   const sheetRef = useRef<AddTabPanelSheetRef>(null)
   const { showActionSheetWithOptions } = useActionSheet()
   const alert = useAlertService()

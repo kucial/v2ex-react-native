@@ -26,6 +26,8 @@ import {
   NodeTopicFeed,
   Notification,
   PaginatedResponse,
+  PlanetFeedItem,
+  PlanetInfo,
   RepliedTopicFeed,
   ReplyId,
   SearchHit,
@@ -525,6 +527,77 @@ export async function getXnaFeeds({
       total: Math.max(total, current),
       current,
     },
+    fetchedAt: Date.now(),
+  }
+}
+
+export async function getPlanetFeeds({
+  p = 1,
+}: {
+  p: number
+}): Promise<PaginatedResponse<PlanetFeedItem>> {
+  const res = await request({
+    url: '/planet',
+    params: {
+      p,
+    },
+  })
+  const $ = res.$ || cheerioDoc(res.data)
+
+  const data = $('#Wrapper .content .planet-post')
+    .map(function (i, el) {
+      const $img = $(el).find('.planet-post-avatar-container img')
+      let avatar = $img.attr('src')
+      // TODO: avatar from style. example value: `background-image: url('https://bafybeifipumqnug66mpxbjeko3234nyza7q3lisppjapdtirqp3uqyew5q.sol.build/avatar.png')`
+      if (!avatar) {
+        const style = $img.attr('style') || ''
+        const match = style.match(
+          /background-image:\s*url\(['"]?([^'"]+)['"]?\)/,
+        )
+        avatar = match ? match[1] : undefined
+      }
+      const planet = {
+        avatar,
+        site_address: $(el).data('siteAddress') as string,
+        site_title: $(el).find('.planet-site-title').text()?.trim(),
+      }
+      return {
+        uuid: $(el).data('postUuid') as string,
+        title: $(el).find('.planet-post-title').text()?.trim(),
+        content: $(el)
+          .find('.planet-post-content .markdown_body')
+          .html()
+          ?.trim(),
+        expand_label: $(el)
+          .find('.planet-post-content-toggle')
+          .data('expandLabel') as string,
+        planet,
+        updated_at: $(el).find('.planet-post-time a').text()?.trim(),
+        comment_count: Number(
+          $(el)
+            .find('.planet-post-footer .planet-post-footer-part')
+            .eq(0)
+            .text(),
+        ),
+        liked_count: Number(
+          $(el)
+            .find('.planet-post-footer .planet-post-footer-part')
+            .eq(1)
+            .text(),
+        ),
+        stats_num: Number($(el).find('.planet-post-footer .stats').text()),
+      }
+    })
+    .get()
+
+  const paginationText = $(
+    '#Wrapper .content .ps_container:last-child [align=center]',
+  ).text()
+  const pagination = paginationFromText(paginationText)
+
+  return {
+    data,
+    pagination,
     fetchedAt: Date.now(),
   }
 }
@@ -2186,4 +2259,113 @@ export async function search(params) {
     params,
   })
   return data.data as SearchResponse
+}
+
+export async function getPlanetInfo(
+  address: string,
+): Promise<EntityResponse<PlanetInfo>> {
+  const res = await request({
+    url: `/planet/${address}`,
+  })
+  const $ = res.$ || cheerioDoc(res.data)
+  if ($('.site-header').length) {
+    const avatarBg = $('.site-header .site-avatar').attr('style')
+    const match = (avatarBg || '').match(
+      /background-image:\s*url\(['"]?([^'"]+)['"]?\)/,
+    )
+    const avatar = match ? match[1] : undefined
+    const links = $('.site-header .site-address a[target="_blank"]')
+      .map((i, el) => {
+        return {
+          text: $(el).text().trim(),
+          href: $(el).attr('href'),
+        }
+      })
+      .get()
+    return {
+      data: {
+        avatar,
+        site_title: $('.site-header .site-title').text().trim(),
+        site_address: address,
+        links,
+      },
+      fetchedAt: Date.now(),
+    }
+  }
+  throw new ApiError({
+    code: 'NOT_FOUND',
+    message: '',
+  })
+}
+
+export async function getPlanetSiteFeeds({
+  address,
+  p = 1,
+}: {
+  address: string
+  p: number
+}): Promise<PaginatedResponse<PlanetFeedItem>> {
+  const res = await request({
+    url: `/planet/${address}`,
+    params: {
+      p,
+    },
+  })
+  const $ = res.$ || cheerioDoc(res.data)
+
+  const data = $('#Wrapper .content .planet-post')
+    .map(function (i, el) {
+      const $img = $(el).find('.planet-post-avatar-container img')
+      let avatar = $img.attr('src')
+      if (!avatar) {
+        const style = $img.attr('style') || ''
+        const match = style.match(
+          /background-image:\s*url\(['"]?([^'"]+)['"]?\)/,
+        )
+        avatar = match ? match[1] : undefined
+      }
+      const planet = {
+        avatar,
+        site_address: $(el).data('siteAddress') as string,
+        site_title: $(el).find('.planet-site-title').text()?.trim(),
+      }
+      return {
+        uuid: $(el).data('postUuid') as string,
+        title: $(el).find('.planet-post-title').text()?.trim(),
+        content: $(el)
+          .find('.planet-post-content .markdown_body')
+          .html()
+          ?.trim(),
+        expand_label: $(el)
+          .find('.planet-post-content-toggle')
+          .data('expandLabel') as string,
+        planet,
+        updated_at: $(el).find('.planet-post-time a').text()?.trim(),
+        comment_count: Number(
+          $(el)
+            .find('.planet-post-footer .planet-post-footer-part')
+            .eq(0)
+            .text(),
+        ),
+        liked_count: Number(
+          $(el)
+            .find('.planet-post-footer .planet-post-footer-part')
+            .eq(1)
+            .text(),
+        ),
+        stats_num: Number($(el).find('.planet-post-footer .stats').text()),
+      }
+    })
+    .get()
+
+  const paginationText = $(
+    '#Wrapper .content .ps_container:last-child [align=center]',
+  ).text()
+  const pagination = paginationFromText(paginationText)
+
+  return {
+    data,
+    pagination,
+    fetchedAt: Date.now(),
+  }
 }

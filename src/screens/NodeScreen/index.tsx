@@ -130,7 +130,7 @@ export default function NodeScreen() {
       message: '[NodeScreen] `New topic` button pressed',
     },
   )
-  console.log(node.avatar_large)
+
   const header = (
     <MaxWidthWrapper style={styles.layer1}>
       <View className='p-2' style={[styles.border_b_light]}>

@@ -8,10 +8,12 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
+import { PortalHost, PortalProvider } from '@gorhom/portal'
 import { useMMKVDevTools } from '@rozenite/mmkv-plugin'
 import { Slot } from 'expo-router'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
+import FeedPanelSheet from '@/components/FeedPanelSheet'
 import Layout from '@/components/Layout'
 
 import AlertService from '@/containers/AlertService'
@@ -62,21 +64,25 @@ export default function RootLayout() {
                 <AlertService>
                   <FetchPrepare>
                     <QueryClientProvider>
-                      <ActionSheetProvider>
-                        <ImgurService>
-                          <ClipboardWatcher>
-                            <AuthService>
-                              <ViewedTopicsService>
-                                <NotificationService>
-                                  <Layout>
-                                    <Slot />
-                                  </Layout>
-                                </NotificationService>
-                              </ViewedTopicsService>
-                            </AuthService>
-                          </ClipboardWatcher>
-                        </ImgurService>
-                      </ActionSheetProvider>
+                      <PortalProvider>
+                        <ActionSheetProvider>
+                          <ImgurService>
+                            <ClipboardWatcher>
+                              <AuthService>
+                                <ViewedTopicsService>
+                                  <NotificationService>
+                                    <Layout>
+                                      <Slot />
+                                      <PortalHost name='overlay' />
+                                      <FeedPanelSheet />
+                                    </Layout>
+                                  </NotificationService>
+                                </ViewedTopicsService>
+                              </AuthService>
+                            </ClipboardWatcher>
+                          </ImgurService>
+                        </ActionSheetProvider>
+                      </PortalProvider>
                     </QueryClientProvider>
                   </FetchPrepare>
                 </AlertService>

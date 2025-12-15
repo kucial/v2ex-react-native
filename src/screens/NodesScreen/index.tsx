@@ -11,6 +11,7 @@ import SearchInput from '@/components/SearchInput'
 
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { useCollectedNodesQuery } from '@/hooks'
 import { useCachedState } from '@/utils/hooks'
 import { isRefreshing } from '@/utils/react-query'
 import { getMyCollectedNodes, getNodeGroups } from '@/utils/v2ex-client'
@@ -29,11 +30,7 @@ export default function NodesScreen() {
   const [filter, setFilter] = useCachedState<string>(CACHE_KEY, '')
 
   const hasAuthed = status === 'authed'
-  const collectedNodesQuery = useQuery({
-    queryKey: ['/page/my/nodes.json'],
-    queryFn: getMyCollectedNodes,
-    enabled: hasAuthed,
-  })
+  const collectedNodesQuery = useCollectedNodesQuery(hasAuthed)
   const commonNodesQuery = useQuery({
     queryKey: ['/page/planes/node-groups.json'],
     queryFn: getNodeGroups,

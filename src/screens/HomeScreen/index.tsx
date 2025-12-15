@@ -7,12 +7,14 @@ import { useLocalSearchParams, useNavigation, usePathname } from 'expo-router'
 
 import HomeTopicList from '@/components/HomeTopicList'
 import NodeTopicList from '@/components/NodeTopicList'
+import PlanetFeedList from '@/components/PlanetFeedList'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
 import XnaTopicList from '@/components/XnaTopicList'
 
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { useTabOptions } from '@/hooks'
 import { useCachedState } from '@/utils/hooks'
 
 import HomeDataPrefetch from './HomeDataPrefetch'
@@ -56,7 +58,6 @@ export default function HomeScreen(props) {
 
   const [index, setIndex] = useCachedState<number>(CACHE_KEY, 0)
 
-  console.log('queryTab', queryTab)
   useEffect(() => {
     if (queryTab && homeTabs) {
       const queryIndex = homeTabs.findIndex(
@@ -118,6 +119,14 @@ export default function HomeScreen(props) {
             return (
               <XnaTopicList
                 key='xna'
+                isFocused={isActive}
+                currentListRef={isActive && currentListRef}
+              />
+            )
+          case 'planet':
+            return (
+              <PlanetFeedList
+                key='planet'
                 isFocused={isActive}
                 currentListRef={isActive && currentListRef}
               />

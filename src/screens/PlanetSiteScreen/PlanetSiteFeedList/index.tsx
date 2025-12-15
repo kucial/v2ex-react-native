@@ -1,60 +1,65 @@
 import {
   memo,
   MutableRefObject,
+  ReactElement,
   useCallback,
   useEffect,
   useMemo,
   useRef,
 } from 'react'
-import { AppState } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
+import { AppState, View } from 'react-native'
+import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
 
+import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+import { useViewedLinks } from '@/components/PlanetFeedList//hooks'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { useHomeTabFeed } from '@/hooks'
-import {
-  updateHomeFeedWidget,
-  updateHotsFeedWidget,
-  updateRecentWidgetFeedWidget,
-} from '@/lib/widget-background-task'
-import { shouldFetch } from '@/utils/react-query'
-import { HomeTopicFeed } from '@/utils/v2ex-client/types'
+import { useTheme } from '@/containers/ThemeService'
+import { usePlanetSiteFeed } from '@/hooks'
+import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
+import { PlanetFeedItem } from '@/utils/v2ex-client/types'
 
-import TideTopicRow from './TideTopicRow'
-import TopicRow from './TopicRow'
+import TopicCard from './TopicCard'
 
-type FeedTopicListProps = {
-  tab: string
+type PlanetSiteFeedListProps = {
+  address: string
   isFocused: boolean
-  currentListRef: MutableRefObject<any>
+  currentListRef?: MutableRefObject<any>
+  header?: ReactElement
+  scrollY: SharedValue<number>
 }
 
-function FeedTopicList(props: FeedTopicListProps) {
-  const { tab, isFocused, currentListRef } = props
-  const listViewRef = useRef<FlashList<HomeTopicFeed>>()
-  const scrollY = useRef(0)
+function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
+  const { address, isFocused, currentListRef, header, scrollY } = props
+  const listViewRef = useRef<FlashList<PlanetFeedItem>>(null)
   const { data: settings } = useAppSettings()
-  const { getViewedStatus } = useViewedTopics()
+  const { setViewed, getViewedStatus } = useViewedLinks()
   const queryclient = useQueryClient()
+  const { styles } = useTheme()
 
-  const listQuery = useHomeTabFeed(tab, isFocused)
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (e) => {
+      scrollY.value = e.contentOffset.y
+    },
+  })
+
+  const listQuery = usePlanetSiteFeed(address)
 
   const handleRefresh = useCallback(() => {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
       queryclient.resetQueries({
-        queryKey: ['/page/home/feed', tab],
+        queryKey: ['/page/planet/:address/feed.json', address],
         exact: true,
       })
     }
     listQuery.refetch()
-  }, [listQuery.data, tab, queryclient])
+  }, [listQuery.data, address, queryclient])
 
   const scrollToRefresh = useCallback(() => {
     if (listQuery.isRefetching) {
@@ -65,15 +70,13 @@ function FeedTopicList(props: FeedTopicListProps) {
     }
 
     if (listQuery.data) {
-      // console.log(scrollY.current)
-      listViewRef.current.scrollToOffset({
-        // offset: scrollY.current > 0 ? 0 : -60,
-        offset: 0,
+      listViewRef.current?.scrollToOffset({
+        offset: scrollY.value > 0 ? 0 : -60,
         animated: true,
       })
     }
-    handleRefresh()
-  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
+    listQuery.refetch()
+  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics, scrollY])
 
   useEffect(() => {
     if (
@@ -122,73 +125,50 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (isFocused && !listQuery.data && !listQuery.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading
       return new Array(20)
     }
-    const items = listQuery.data?.pages?.reduce((combined, page) => {
+    const items = listQuery.data?.pages.reduce((combined, page) => {
       if (page.data) {
-        return uniqBy([...combined, ...page.data], 'id')
+        return uniqBy([...combined, ...page.data], 'uuid')
       }
       return combined
     }, [])
     return items || []
-  }, [listQuery.data, isFocused, getViewedStatus])
-
-  useEffect(() => {
-    if (tab === 'today_hots') {
-      updateHotsFeedWidget(listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
-      })
-    } else if (tab === 'recent') {
-      updateRecentWidgetFeedWidget(listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
-      })
-    } else {
-      updateHomeFeedWidget(tab, listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
-      })
-    }
-  }, [listItems])
+  }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item, index }) =>
-        settings.feedLayout === 'tide' ? (
-          <TideTopicRow
+      renderItem: ({ item, index }) => (
+        <View className='px-2 py-1'>
+          <TopicCard
             data={item}
             isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
+            viewedStatus={getViewedStatus(item?.url)}
             showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
+            onView={setViewed}
             titleStyle={settings.feedTitleStyle}
           />
-        ) : (
-          <TopicRow
-            data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
-          />
-        ),
-      keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>
-        item ? `${item.id}` : `index-${index}`,
+        </View>
+      ),
+      keyExtractor: (item: PlanetFeedItem | undefined, index: number) =>
+        item ? `${item.uuid}` : `index-${index}`,
     }),
     [getViewedStatus, settings, listItems],
   )
 
   return (
-    <FlashList
+    <AnimatedFlashList
       scrollToOverflowEnabled
       ref={listViewRef}
+      className='flex-1'
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
       onEndReached={() => {
-        if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
+        if (shouldLoadMore(listQuery)) {
           listQuery.fetchNextPage()
         }
       }}
@@ -198,13 +178,12 @@ function FeedTopicList(props: FeedTopicListProps) {
           onRefresh={handleRefresh}
         />
       }
+      ListHeaderComponent={header}
       ListFooterComponent={() => {
         return <CommonListFooter data={listQuery} />
       }}
-      onScroll={(e) => {
-        scrollY.current = e.nativeEvent.contentOffset.y
-      }}
+      onScroll={scrollHandler}
     />
   )
 }
-export default memo(FeedTopicList)
+export default memo(PlanetSiteFeedList)

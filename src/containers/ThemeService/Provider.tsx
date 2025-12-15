@@ -65,7 +65,7 @@ export const ThemeProvider = (props: {
     <ThemeContext.Provider value={service}>
       <NavigationThemeProvider value={theme}>
         {props.children}
-        <StatusBar />
+        <StatusBar style='auto' />
       </NavigationThemeProvider>
     </ThemeContext.Provider>
   )
