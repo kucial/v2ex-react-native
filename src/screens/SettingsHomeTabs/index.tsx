@@ -2,7 +2,6 @@ import {
   ReactElement,
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -29,7 +28,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import type { EventArg } from '@react-navigation/native'
-import { Stack, useNavigation, useRouter } from 'expo-router'
+import { useNavigation, useRouter } from 'expo-router'
 
 import Button from '@/components/Button'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'

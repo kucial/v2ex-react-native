@@ -8,7 +8,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
 
   theme: 'r2v',
   pureDarkTheme: false,
-  fontScale: 1,
+  fontScale: 1.1,
   // themeColor: '', // 主题强调色
   feedLayout: 'normal', // normal | tide
   feedShowAvatar: true,

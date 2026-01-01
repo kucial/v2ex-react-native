@@ -6,8 +6,8 @@ export interface MemberMeta {
 
 export interface AuthState {
   error?: Error
-  user: MemberDetail
-  meta?: MemberMeta
+  user: MemberDetail | null
+  meta?: MemberMeta | null
   status: string
   fetchedAt?: number
 }

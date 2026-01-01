@@ -30,7 +30,7 @@ export default function NotificationScreen() {
       })
       return res
     },
-    [user.username],
+    [updateMeta],
   )
 
   const listQuery = useInfiniteQuery({

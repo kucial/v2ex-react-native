@@ -10,7 +10,7 @@ import {
 import { AppState, InteractionManager } from 'react-native'
 import { useRouter } from 'expo-router'
 
-import { useCachedState } from '@/utils/hooks'
+import { useAuthStore } from '@/stores/auth'
 import { getJSON, setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import { BalanceBrief, MemberDetail } from '@/utils/v2ex-client/types'
@@ -90,7 +90,7 @@ function useDailySignIn(user: MemberDetail | null) {
 function useAuthSubscriptions(
   user: MemberDetail | null,
   fetchCurrentUser: () => Promise<MemberDetail | undefined>,
-  setState: (updater: (prev: AuthState) => AuthState) => void,
+  setAuthState: (updater: (prev: AuthState) => AuthState) => void,
   isFetchingUserRef: React.MutableRefObject<boolean>,
 ) {
   // Handle current user mismatch
@@ -117,7 +117,7 @@ function useAuthSubscriptions(
   // Handle unread count updates
   useEffect(() => {
     const unsubscribe = v2exClient.subscribe('unread_count', (val: number) => {
-      setState((prev) => {
+      setAuthState((prev) => {
         const current_unread_count = prev.meta?.unread_count
         if (current_unread_count === val) return prev
         return {
@@ -130,14 +130,14 @@ function useAuthSubscriptions(
       })
     })
     return unsubscribe
-  }, [setState])
+  }, [setAuthState])
 
   // Handle balance updates
   useEffect(() => {
     const unsubscribe = v2exClient.subscribe(
       'balance_brief',
       (balanceBrief: BalanceBrief) => {
-        setState((prev) => ({
+        setAuthState((prev) => ({
           ...prev,
           meta: {
             ...prev.meta,
@@ -147,15 +147,9 @@ function useAuthSubscriptions(
       },
     )
     return unsubscribe
-  }, [setState])
+  }, [setAuthState])
 }
 
-const CACHE_KEY = '$app$/current-user'
-const INIT_STATE = {
-  user: null,
-  meta: null,
-  status: 'none', // 'loading' | 'authed' | 'visitor' | failed' | 'logout' | 'none',
-}
 const CHECK_STATUS_DELAY = 10000
 
 const CHECK_DURATION = 1000 * 60 * 60 * 6 // 6 小时
@@ -186,94 +180,45 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
   const isFetchingUserRef = useRef(false)
   const alert = useAlertService()
 
-  const [state, setState] = useCachedState<AuthState>(
-    CACHE_KEY,
-    INIT_STATE,
-    (pre) => {
-      if (pre.status === 'loading') {
-        pre.status = 'none'
-      }
-      return pre
-    },
-  )
-
-  // Define fetchCurrentUser function
-  const fetchCurrentUser = useCallback(async () => {
-    setState((prev) => ({
-      ...prev,
-      status: 'loading',
-    }))
-    try {
-      const res = await v2exClient.getCurrentUser(true)
-      setState(() => ({
-        user: res.data,
-        meta: res.meta,
-        status: res.data ? 'authed' : 'visitor',
-        fetchedAt: Date.now(),
-      }))
-      return res.data
-    } catch (err) {
-      console.log('.....AUTH_ERROR......', err)
-      setState((prev) => ({
-        ...prev,
-        status: 'failed',
-      }))
-    }
-  }, [setState])
+  const {
+    user,
+    meta,
+    status,
+    fetchedAt,
+    fetchCurrentUser,
+    logout,
+    updateMeta,
+    setAuthState,
+  } = useAuthStore()
 
   // Initialize hooks
-  const dailySignIn = useDailySignIn(state.user)
-  useAuthSubscriptions(
-    state.user,
-    fetchCurrentUser,
-    setState,
-    isFetchingUserRef,
-  )
+  const dailySignIn = useDailySignIn(user)
+  useAuthSubscriptions(user, fetchCurrentUser, setAuthState, isFetchingUserRef)
 
   const service: AuthService = useMemo(() => {
-    const logout = async () => {
-      let prevStatus
-      try {
-        setState((prev) => {
-          prevStatus = prev.status
-          return {
-            ...prev,
-            status: 'logingout',
-          }
-        })
-        const res = await v2exClient.logout()
-        if (res.success) {
-          setState(() => ({
-            ...INIT_STATE,
-            status: 'logout',
-          }))
-        }
-      } catch (err) {
-        alert.show({ type: 'error', message: err.message })
-        setState((prev) => ({
-          ...prev,
-          status: prevStatus,
-        }))
-      }
-    }
-
     return {
-      ...state,
+      user,
+      meta,
+      status,
+      fetchedAt,
       fetchCurrentUser,
-      logout,
+      logout: () =>
+        logout((err) => {
+          alert.show({ type: 'error', message: err.message })
+        }),
       goToSigninSreen() {
         router.push('/signin')
       },
       composeAuthedNavigation: function <T>(callback) {
         return (params?: T) => {
-          if (state.status === 'loading') {
+          if (status === 'loading') {
             alert.show({
               type: 'info',
               message: '提示 正在验证登录状态，请稍候',
             })
             return
           }
-          if (!state.user) {
+          if (!user) {
             router.push('/signin')
             if (callback) {
               nextAction.current = () => {
@@ -293,24 +238,26 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
         }
         return undefined
       },
-      updateMeta: (patch) => {
-        setState((prev) => ({
-          ...prev,
-          meta: {
-            ...prev.meta,
-            ...patch,
-          },
-        }))
-      },
+      updateMeta,
     }
-  }, [state, fetchCurrentUser])
+  }, [
+    alert,
+    fetchedAt,
+    fetchCurrentUser,
+    logout,
+    meta,
+    router,
+    status,
+    updateMeta,
+    user,
+  ])
 
   // Initial user fetch
   useEffect(() => {
     service.fetchCurrentUser().then((res) => {
       console.log(res)
       // Perform initial daily sign-in check
-      if (res && shouldCheck(state.fetchedAt)) {
+      if (res && shouldCheck(fetchedAt)) {
         dailySignIn(res)
       } else if (res) {
         dailySignIn(res)
