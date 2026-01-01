@@ -1,3 +1,4 @@
+import { ViewedTopicSummary } from '@/stores/viewedTopics'
 import {
   CollectedTopicFeed,
   HomeTopicFeed,
@@ -27,7 +28,7 @@ declare global {
     isLast?: boolean
   }
   type ViewedTopicRowProps = {
-    data: ViewedTopic
+    data: ViewedTopicSummary
     showAvatar: boolean
     titleStyle: 'normal' | 'emphasized'
     isLast?: boolean

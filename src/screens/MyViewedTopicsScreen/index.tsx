@@ -61,9 +61,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
       return all
     }
     const regex = new RegExp(filter, 'i')
-    return all.filter(
-      (item) => regex.test(item.title) || regex.test(item.content_rendered),
-    )
+    return all.filter((item) => regex.test(item.title))
   }, [filter, getItems])
 
   const { renderItem, keyExtractor } = useMemo(
