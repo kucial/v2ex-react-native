@@ -7,7 +7,6 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import { IMGUR_CLIENT_ID } from '@env'
 import * as Clipboard from 'expo-clipboard'
 import * as Linking from 'expo-linking'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -22,6 +21,7 @@ import { useAlertService } from '@/containers/AlertService'
 import { useImgurService } from '@/containers/ImgurService'
 import { ImgurCredentials } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
+import { IMGUR_CLIENT_ID } from '@/env'
 import { cn } from '@/lib/utils'
 
 export default function ImgurSettings() {

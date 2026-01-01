@@ -13,7 +13,6 @@ import {
   StarIcon,
 } from 'react-native-heroicons/outline'
 import Share from 'react-native-share'
-import { IOS_APP_ID } from '@env'
 import Constants from 'expo-constants'
 import { useRouter } from 'expo-router'
 import { stringify } from 'qs'
@@ -28,6 +27,7 @@ import NavigationHeader from '@/components/NavigationHeader'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
+import { IOS_APP_ID } from '@/env'
 import { cn } from '@/lib/utils'
 import { clearCache, reset } from '@/utils/app-state'
 

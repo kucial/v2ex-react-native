@@ -59,6 +59,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       eas: {
         projectId: '5c24d369-c0ba-41e3-8679-8b8cee82fc13',
       },
+      IOS_APP_ID: process.env.IOS_APP_ID,
+      SENTRY_DSN: process.env.SENTRY_DSN,
+      IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID,
     },
     appRouter: {
       root: './src/app',

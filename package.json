@@ -91,7 +91,6 @@
     "react-native-context-menu-view": "^1.20.0",
     "react-native-css-interop": "^0.2.1",
     "react-native-date-picker": "^4.4.2",
-    "react-native-dotenv": "^3.4.11",
     "react-native-draggable-flatlist": "^4.0.3",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-get-random-values": "~1.11.0",
@@ -127,6 +126,7 @@
     "@babel/core": "^7.28.5",
     "@rozenite/metro": "^1.1.0",
     "@rozenite/mmkv-plugin": "^1.1.0",
+    "@rozenite/redux-devtools-plugin": "^1.1.0",
     "@rozenite/tanstack-query-plugin": "^1.1.0",
     "@types/color": "^3.0.6",
     "@types/jest": "29.5.14",
@@ -156,10 +156,20 @@
     ]
   },
   "private": true,
-  "packageManager": "pnpm@9.12.3",
+  "packageManager": "pnpm@10.26.0",
   "pnpm": {
     "patchedDependencies": {
       "@thebeka/react-native-get-pixel-color": "patches/@thebeka__react-native-get-pixel-color.patch"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "@apollo/protobufjs",
+      "@sentry/cli",
+      "electron",
+      "unrs-resolver"
+    ],
+    "onlyBuiltDependencies": [
+      "react-native-nitro-modules",
+      "sqlite3"
+    ]
   }
 }

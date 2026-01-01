@@ -153,14 +153,11 @@ React Native + Tailwindcss + SWR
 - ~~react-native-image-modal -- 图片预览~~
 - ~~react-hook-form -- 表单~~ formik
 - slatejs + webview -- 富文本编辑
-- @gorhom/bottom-sheet -- 底部弹出层
+- ~~@gorhom/bottom-sheet -- 底部弹出层~~ react-native-truesheet
 - react-native-image-viewing -- imgur 图片预览
 - ~~react-native-dropdownalert~~ react-native-root-toast -- 信息提示
 - ~~react-native-selectable-text -- 可选择文本~~ 使用 context menu 替代
 
-## ENV 参数
-
-- 本地开发，依赖 `module:react-native-dotenv` + `.env` 来进行设置。 修改 `.env` 后需要注意清理缓存： `expo start -c --dev-client`
 
 ## AE & Lottie
 

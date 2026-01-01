@@ -1,0 +1,6 @@
+ignoredBuiltDependencies:
+  - '@apollo/protobufjs'
+  - electron
+
+onlyBuiltDependencies:
+  - sqlite3
