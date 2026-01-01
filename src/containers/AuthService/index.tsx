@@ -11,7 +11,7 @@ import { AppState, InteractionManager } from 'react-native'
 import { useRouter } from 'expo-router'
 
 import { useAuthStore } from '@/stores/auth'
-import { getJSON, setJSON } from '@/utils/storage'
+import { getJSON, setJSON, storage } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import { BalanceBrief, MemberDetail } from '@/utils/v2ex-client/types'
 
@@ -27,16 +27,24 @@ function useDailySignIn(user: MemberDetail | null) {
   const dailySignIn = useCallback(
     async (u: MemberDetail) => {
       if (u && !dailySigning.current) {
-        const key = `$app$/daily_sign_in/${u.username}/${getUTCDateString()}`
-        if (!getJSON(key)) {
+        const todayKey = `$app$/daily_sign_in/${u.username}/${getUTCDateString()}`
+        if (typeof storage.getAllKeys === 'function') {
+          const prefix = `$app$/daily_sign_in/${u.username}/`
+          storage.getAllKeys().forEach((key) => {
+            if (key.startsWith(prefix) && key !== todayKey) {
+              storage.remove(key)
+            }
+          })
+        }
+        if (!getJSON(todayKey)) {
           try {
             dailySigning.current = true
             await v2exClient.dailySignin()
-            setJSON(key, 1)
+            setJSON(todayKey, 1)
             alert.show({ type: 'success', message: '签到成功' })
           } catch (err) {
             if (err.code === 'DAILY_SIGNED') {
-              setJSON(key, 1)
+              setJSON(todayKey, 1)
               alert.show({
                 type: 'info',
                 message: err.message,
