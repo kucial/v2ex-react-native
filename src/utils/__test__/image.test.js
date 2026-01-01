@@ -1,4 +1,19 @@
-import { getImagePath, getImgXtension } from '../image'
+jest.mock('@thebeka/react-native-get-pixel-color', () => ({
+  init: jest.fn(),
+  pickColorAt: jest.fn(),
+}))
+
+jest.mock('expo-file-system', () => ({
+  File: {
+    downloadFileAsync: jest.fn(),
+  },
+  Paths: {
+    cache: 'cache',
+  },
+  readAsStringAsync: jest.fn(),
+}))
+
+import { getBasename, getFilename, getImgXtension } from '../image'
 
 describe('image utils', () => {
   describe('getImgXtension', () => {
@@ -16,10 +31,14 @@ describe('image utils', () => {
       )
     })
   })
-  it('getImagePath', async () => {
-    const link =
-      'https://pbs.twimg.com/media/FppS3KwaQAA_MDX?format=jpg&name=medium'
-    const string = await getImagePath(link)
-    console.log(link, string)
+  it('getBasename', () => {
+    expect(getBasename('https://i.imgur.com/hulrFFq.png')).toBe('hulrFFq.png')
+  })
+  it('getFilename', () => {
+    expect(
+      getFilename(
+        'https://pbs.twimg.com/media/FppS3KwaQAA_MDX?format=jpg&name=medium',
+      ),
+    ).toBe('FppS3KwaQAA_MDX')
   })
 })

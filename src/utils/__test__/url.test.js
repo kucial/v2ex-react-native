@@ -1,10 +1,12 @@
 import {
   getImgurResourceImageLink,
   getScreenInfo,
+  getYoutubeVideoId,
   isAppLink,
   isImgurResourceLink,
   tailingFix,
 } from '../url'
+
 describe('url utils', () => {
   describe('getScreenInfo', () => {
     it('[topic link] https://www.v2ex.com/t/871066', () => {
@@ -112,6 +114,29 @@ describe('url utils', () => {
     it('https://i.imgur.com/OforKLX.png', () => {
       const link = getImgurResourceImageLink('https://i.imgur.com/OforKLX.png')
       expect(link).toEqual('https://i.imgur.com/OforKLX.png')
+    })
+  })
+
+  describe('getYoutubeVideoId', () => {
+    it('watch url', () => {
+      const id = getYoutubeVideoId(
+        'https://www.youtube.com/watch?v=6uGimDYZPMw',
+      )
+      expect(id).toBe('6uGimDYZPMw')
+    })
+    it('embed url', () => {
+      const id = getYoutubeVideoId('https://www.youtube.com/embed/6uGimDYZPMw')
+      expect(id).toBe('6uGimDYZPMw')
+    })
+    it('short url', () => {
+      const id = getYoutubeVideoId('https://youtu.be/6uGimDYZPMw')
+      expect(id).toBe('6uGimDYZPMw')
+    })
+    it('nocookie url', () => {
+      const id = getYoutubeVideoId(
+        'https://www.youtube-nocookie.com/embed/6uGimDYZPMw',
+      )
+      expect(id).toBe('6uGimDYZPMw')
     })
   })
 

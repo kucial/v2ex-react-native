@@ -78,6 +78,34 @@ export const getImgurResourceImageLink = (href: string) => {
   )
 }
 
+export function getYoutubeVideoId(url: string) {
+  try {
+    const parsed = new URL(url)
+    const host = parsed.hostname.replace(/^www\./, '')
+    if (host === 'youtu.be') {
+      const id = parsed.pathname.replace('/', '')
+      return id || null
+    }
+    if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+      if (parsed.pathname === '/watch') {
+        return parsed.searchParams.get('v')
+      }
+      const match = parsed.pathname.match(/^\/(embed|v|shorts)\/([^/?#]+)/)
+      return match?.[2] ?? null
+    }
+  } catch {
+    // fall through to regex matching
+  }
+  const watchMatch = url.match(/[?&]v=([^&#]+)/)
+  if (watchMatch?.[1]) {
+    return watchMatch[1]
+  }
+  const pathMatch = url.match(
+    /(?:youtube(?:-nocookie)?\.com\/(?:embed|v|shorts)\/|youtu\.be\/)([^?&#/]+)/,
+  )
+  return pathMatch?.[1] ?? null
+}
+
 export function isURL(str: string) {
   const pattern = new RegExp(
     '^(https?:\\/\\/)?' + // protocol
