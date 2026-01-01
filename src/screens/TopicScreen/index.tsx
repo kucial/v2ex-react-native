@@ -3,7 +3,6 @@ import {
   InteractionManager,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Text,
   View,
 } from 'react-native'
@@ -63,8 +62,7 @@ const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
 
-const moveModalDetents = [280]
-const conversationDetents = [0.6, 0.9]
+const conversationDetents = [0.8]
 
 const hasRelatedMessages = (reply, replyList) => {
   if (!reply) {
@@ -918,7 +916,7 @@ function TopicScreen() {
       {topicQuery.data?.canMove && (
         <TrueSheet
           ref={changeNodeModalRef}
-          detents={moveModalDetents}
+          detents={['auto']}
           backgroundColor={styles.overlay.backgroundColor}
         >
           <View className='h-[280px] pt-4'>
