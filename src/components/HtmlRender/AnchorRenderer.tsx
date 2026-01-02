@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react'
-import { Text } from 'react-native'
+import { Pressable, Text } from 'react-native'
 import {
   CustomTextualRenderer,
   getNativePropsForTNode,
@@ -20,6 +20,9 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
   const url = tailingFix(useNormalizedUrl(props.tnode.attributes.href))
   const { handleUrlPress } = useContext(RenderContext)
   const service = useImageViewing()
+  const hasImageChild = props.tnode.children?.some(
+    (child) => child.tagName === 'img',
+  )
   useEffect(() => {
     if (isImgurResourceLink(url)) {
       const imageUri = getImgurResourceImageLink(url)
@@ -31,6 +34,11 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
       }
     }
   }, [url])
+
+  if (hasImageChild) {
+    const { TNodeChildrenRenderer } = props
+    return <TNodeChildrenRenderer tnode={props.tnode} />
+  }
 
   return (
     <Text
