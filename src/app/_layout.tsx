@@ -25,7 +25,6 @@ import NotificationService from '@/containers/NotificationService'
 import QueryClientProvider from '@/containers/QueryClientProvider'
 import { getThemeService, ThemeProvider } from '@/containers/ThemeService'
 import TopicSheetService from '@/containers/TopicSheetService'
-import ViewedTopicsService from '@/containers/ViewedTopicsService'
 import { initSentry } from '@/lib/sentry'
 import { registerBackgroundTaskAsync } from '@/lib/widget-background-task'
 import { handleDeepLink } from '@/utils/deeplink'
@@ -68,17 +67,15 @@ export default function RootLayout() {
                         <ImgurService>
                           <ClipboardWatcher>
                             <AuthService>
-                              <ViewedTopicsService>
-                                <NotificationService>
-                                  <TopicSheetService>
-                                    <Layout>
-                                      <Slot />
-                                      <PortalHost name='overlay' />
-                                      <FeedPanelSheet />
-                                    </Layout>
-                                  </TopicSheetService>
-                                </NotificationService>
-                              </ViewedTopicsService>
+                              <NotificationService>
+                                <TopicSheetService>
+                                  <Layout>
+                                    <Slot />
+                                    <PortalHost name='overlay' />
+                                    <FeedPanelSheet />
+                                  </Layout>
+                                </TopicSheetService>
+                              </NotificationService>
                             </AuthService>
                           </ClipboardWatcher>
                         </ImgurService>

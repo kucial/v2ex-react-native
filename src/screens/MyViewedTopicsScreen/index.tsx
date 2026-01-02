@@ -17,7 +17,11 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import {
+  useClearViewedTopics,
+  useRemoveViewedTopic,
+  useViewedItems,
+} from '@/containers/ViewedTopicsService'
 import { cn } from '@/lib/utils'
 
 import Header from './Header'
@@ -48,7 +52,9 @@ const Actions = (props) => {
 
 type ScreenProps = NativeStackScreenProps<AppStackParamList, 'viewed-topics'>
 export default function ViewedTopicsScreen(props: ScreenProps) {
-  const { getItems, clear, removeItem } = useViewedTopics()
+  const items = useViewedItems()
+  const clear = useClearViewedTopics()
+  const removeItem = useRemoveViewedTopic()
   const { showActionSheetWithOptions } = useActionSheet()
   const { data: settings } = useAppSettings()
   const { styles, theme, colorScheme } = useTheme()
@@ -56,13 +62,12 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   const insets = useSafeAreaInsets()
 
   const data = useMemo(() => {
-    const all = getItems()
     if (!filter) {
-      return all
+      return items
     }
     const regex = new RegExp(filter, 'i')
-    return all.filter((item) => regex.test(item.title))
-  }, [filter, getItems])
+    return items.filter((item) => regex.test(item.title))
+  }, [filter, items])
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({

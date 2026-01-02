@@ -1,74 +1,70 @@
-import { createContext, useContext, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 
-import { useViewedTopicsStore, ViewedTopicSummary } from '@/stores/viewedTopics'
+import { useAppSettingsStore } from '@/stores/appSettings'
+import { useViewedTopicsStore } from '@/stores/viewedTopics'
 import { TopicDetail } from '@/utils/v2ex-client/types'
 
-import { useAppSettings } from '../AppSettingsService'
-
-interface ViewedTopicsService {
-  hasViewed: (id: string | number) => boolean
-  getViewedStatus(
-    topic: Pick<TopicDetail, 'id' | 'replies'>,
-  ): 'viewed' | 'has_update' | undefined
-  getItems: () => ViewedTopicSummary[]
-  clear: () => void
-  touchViewed: (item: TopicDetail) => void
-  removeItem: (item: ViewedTopicSummary) => void
-}
-
-export const ViewedTopicsContext = createContext<ViewedTopicsService>(null)
-
-export default function ViewedTopicsServiceProvider(props) {
+export const useViewedItems = () => {
   const ids = useViewedTopicsStore((state) => state.ids)
   const data = useViewedTopicsStore((state) => state.data)
-  const clear = useViewedTopicsStore((state) => state.clear)
-  const touchViewed = useViewedTopicsStore((state) => state.touchViewed)
-  const removeItem = useViewedTopicsStore((state) => state.removeItem)
-  const {
-    data: { showHasViewed, showHasNewReply, historyRecordLimit },
-  } = useAppSettings()
 
-  const service: ViewedTopicsService = useMemo(() => {
-    return {
-      getItems: () => ids.map((id) => data[id]),
-      hasViewed: (id) => showHasViewed && !!data[id],
-      getViewedStatus: (params) => {
-        if (!showHasViewed || !params) {
-          return undefined
-        }
-        if (!showHasNewReply) {
-          return data[params.id] ? 'viewed' : undefined
-        }
-        if (!data[params.id]) {
-          return undefined
-        }
-        if (data[params.id].replies < params.replies) {
-          return 'has_update'
-        }
-        if (data[params.id].replies === params.replies) {
-          return 'viewed'
-        }
-      },
-      clear,
-      touchViewed: (topic) => touchViewed(topic, historyRecordLimit),
-      removeItem,
-    }
-  }, [
-    ids,
-    data,
-    clear,
-    touchViewed,
-    removeItem,
-    showHasViewed,
-    showHasNewReply,
-    historyRecordLimit,
-  ])
+  return useMemo(() => ids.map((id) => data[id]), [ids, data])
+}
 
-  return (
-    <ViewedTopicsContext.Provider value={service}>
-      {props.children}
-    </ViewedTopicsContext.Provider>
+export const useHasViewed = () => {
+  const showHasViewed = useAppSettingsStore((state) => state.data.showHasViewed)
+  const data = useViewedTopicsStore((state) => state.data)
+
+  return useCallback(
+    (id: string | number) => showHasViewed && !!data[id],
+    [showHasViewed, data],
   )
 }
 
-export const useViewedTopics = () => useContext(ViewedTopicsContext)
+export const useViewedStatus = () => {
+  const showHasViewed = useAppSettingsStore((state) => state.data.showHasViewed)
+  const showHasNewReply = useAppSettingsStore(
+    (state) => state.data.showHasNewReply,
+  )
+  const data = useViewedTopicsStore((state) => state.data)
+
+  return useCallback(
+    (params?: Pick<TopicDetail, 'id' | 'replies'>) => {
+      if (!showHasViewed || !params) {
+        return undefined
+      }
+      if (!showHasNewReply) {
+        return data[params.id] ? 'viewed' : undefined
+      }
+      if (!data[params.id]) {
+        return undefined
+      }
+      if (data[params.id].replies < params.replies) {
+        return 'has_update'
+      }
+      if (data[params.id].replies === params.replies) {
+        return 'viewed'
+      }
+      return undefined
+    },
+    [showHasViewed, showHasNewReply, data],
+  )
+}
+
+export const useClearViewedTopics = () =>
+  useViewedTopicsStore((state) => state.clear)
+
+export const useRemoveViewedTopic = () =>
+  useViewedTopicsStore((state) => state.removeItem)
+
+export const useTouchViewedTopic = () => {
+  const touchViewed = useViewedTopicsStore((state) => state.touchViewed)
+  const historyRecordLimit = useAppSettingsStore(
+    (state) => state.data.historyRecordLimit,
+  )
+
+  return useCallback(
+    (topic: TopicDetail) => touchViewed(topic, historyRecordLimit),
+    [touchViewed, historyRecordLimit],
+  )
+}

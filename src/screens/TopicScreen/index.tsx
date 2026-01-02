@@ -29,7 +29,7 @@ import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useTopicSheetService } from '@/containers/TopicSheetService'
-import { useViewedTopics } from '@/containers/ViewedTopicsService'
+import { useTouchViewedTopic } from '@/containers/ViewedTopicsService'
 import { getRelatedReplies } from '@/utils/content'
 import { useCachedState } from '@/utils/hooks'
 import { isLoading, shouldLoadMore } from '@/utils/react-query'
@@ -48,7 +48,6 @@ import SimpleMemberInfo from './SimpleMemberInfo'
 import TopBottomNav from './TopBottomNav'
 import TopicBaseInfo from './TopicBaseInfo'
 import TopicMovePanel from './TopicMovePanel'
-import TopicReplyForm from './TopicReplyForm'
 import { ConversationContext, ReplyContext, UserInfoContext } from './types'
 
 const REPLY_PAGE_SIZE = 100
@@ -98,7 +97,7 @@ function TopicScreen() {
 
   const topic = topicQuery.data || (brief as TopicDetail | undefined)
 
-  const { touchViewed } = useViewedTopics()
+  const touchViewed = useTouchViewedTopic()
   const [lastIndex, setLastIndex] = useCachedState(
     `$app$/topic/${id}/last-position`,
     null,
