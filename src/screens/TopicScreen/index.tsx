@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  InteractionManager,
-  KeyboardAvoidingView,
-  Platform,
-  Text,
-  View,
-} from 'react-native'
+import { InteractionManager, Text, View } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
   useAnimatedScrollHandler,
@@ -34,8 +28,8 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { useTopicSheetService } from '@/containers/TopicSheetService'
 import { useViewedTopics } from '@/containers/ViewedTopicsService'
-import { cn } from '@/lib/utils'
 import { getRelatedReplies } from '@/utils/content'
 import { useCachedState } from '@/utils/hooks'
 import { isLoading, shouldLoadMore } from '@/utils/react-query'
@@ -47,7 +41,6 @@ import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
 
 import BottomBar from './BottomBar'
 import PadSidebar from './PadSidebar'
-import ReplyList from './ReplyList'
 import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
 import ScrollToLastPosition from './ScrollToLastPosition'
@@ -56,13 +49,11 @@ import TopBottomNav from './TopBottomNav'
 import TopicBaseInfo from './TopicBaseInfo'
 import TopicMovePanel from './TopicMovePanel'
 import TopicReplyForm from './TopicReplyForm'
-import { ConversationContext, UserInfoContext } from './types'
+import { ConversationContext, ReplyContext, UserInfoContext } from './types'
 
 const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
-
-const conversationDetents = [0.8]
 
 const hasRelatedMessages = (reply, replyList) => {
   if (!reply) {
@@ -77,11 +68,6 @@ const hasRelatedMessages = (reply, replyList) => {
 
 const getMemberReplies = (pivot: string, replyList: TopicReply[]) => {
   return replyList.filter((item) => item.member.username === pivot)
-}
-
-type ReplyContext = {
-  type: 'reply' | 'append'
-  target?: TopicReply
 }
 
 function TopicScreen() {
@@ -166,17 +152,10 @@ function TopicScreen() {
     }
   }, [topicQuery.data])
 
-  const [conversationContext, setConversationContext] =
-    useState<ConversationContext>(null)
-  const [userInfoContext, setUserInfoContext] = useState<UserInfoContext>(null)
-
   const { data: settings } = useAppSettings()
   const padLayout = usePadLayout()
 
   const listRef = useRef<FlashList<TopicReply>>(null)
-  const replyModalRef = useRef<TrueSheet>(null)
-  const conversationModalRef = useRef<TrueSheet>(null)
-  const userInfoModalRef = useRef<TrueSheet>(null)
   const changeNodeModalRef = useRef<TrueSheet>(null)
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
@@ -186,6 +165,13 @@ function TopicScreen() {
   )
 
   const { composeAuthedNavigation, user: currentUser } = useAuthService()
+  const {
+    showConversation,
+    showUserInfo,
+    showReplyForm,
+    dismissReplyForm,
+    dismissAll,
+  } = useTopicSheetService()
 
   const { styles, colorScheme } = useTheme()
 
@@ -470,11 +456,6 @@ function TopicScreen() {
     ],
   )
 
-  const [replyContext, setReplyContext] = useState<ReplyContext>(null)
-  const initReply = useCallback((reply = null) => {
-    setReplyContext({ target: reply, type: 'reply' })
-    replyModalRef.current?.present()
-  }, [])
   const getReplyFormCacheKey = useCallback(
     (context: ReplyContext) => {
       if (settings.enableMultiMention) {
@@ -483,6 +464,89 @@ function TopicScreen() {
       return `$app$/topic-${context.type}:${id}/${context.target?.id || 'root'}`
     },
     [id, settings],
+  )
+  const submitReply = useCallback(
+    async (context: ReplyContext, values: { content: string }) => {
+      dismissReplyForm()
+      const indicator = alert.show({
+        type: 'default',
+        message: '正在提交...',
+        loading: true,
+        duration: 0,
+      })
+      try {
+        switch (context.type) {
+          case 'reply':
+            try {
+              const { data: reply } = await v2exClient.postReply({
+                id,
+                content: values.content,
+              })
+              setMyReplies((prev) => [...prev, reply])
+              // clear cached for reply form.
+              const cacheKey = getReplyFormCacheKey(context)
+              setJSON(cacheKey, undefined)
+              alert.show({ type: 'success', message: '回复成功' })
+            } catch (err) {
+              alert.show({ type: 'error', message: err.message })
+            }
+            break
+          case 'append':
+            try {
+              const { data: topic } = await v2exClient.appendTopic({
+                id: topicId,
+                content: values.content,
+              })
+              queryClient.setQueryData(
+                [`/page/t/:id/topic.json`, id.toString()],
+                topic,
+              )
+              const cacheKey = getReplyFormCacheKey(context)
+              setJSON(cacheKey, undefined)
+              alert.show({ type: 'success', message: '附言成功' })
+            } catch (err) {
+              alert.show({ type: 'error', message: err.message })
+            }
+        }
+      } finally {
+        alert.hide(indicator)
+      }
+    },
+    [
+      alert,
+      dismissReplyForm,
+      getReplyFormCacheKey,
+      id,
+      queryClient,
+      setMyReplies,
+      topicId,
+    ],
+  )
+  const initReply = useCallback(
+    (reply = null) => {
+      const context = { target: reply, type: 'reply' } as ReplyContext
+      showReplyForm({
+        context,
+        cacheKey: getReplyFormCacheKey(context),
+        onSubmit: (values) => submitReply(context, values),
+        onInitImgurSettings: () => {
+          dismissReplyForm()
+          router.push({
+            pathname: '/imgur-settings',
+            params: {
+              autoBack: '1',
+            },
+          })
+        },
+      })
+    },
+    [
+      showReplyForm,
+      getReplyFormCacheKey,
+      submitReply,
+      dismissReplyForm,
+      router,
+    ],
   )
 
   const handleThankToReply = useCallback(
@@ -543,63 +607,29 @@ function TopicScreen() {
     [id],
   )
 
-  const handleSubmitReply = useCallback(
-    async (values: { content: string }) => {
-      replyModalRef.current?.dismiss()
-      setReplyContext(null)
-      const indicator = alert.show({
-        type: 'default',
-        message: '正在提交...',
-        loading: true,
-        duration: 0,
-      })
-      try {
-        switch (replyContext.type) {
-          case 'reply':
-            try {
-              const { data: reply } = await v2exClient.postReply({
-                id,
-                content: values.content,
-              })
-              setMyReplies((prev) => [...prev, reply])
-              // clear cached for reply form.
-              const cacheKey = getReplyFormCacheKey(replyContext)
-              setJSON(cacheKey, undefined)
-              alert.show({ type: 'success', message: '回复成功' })
-            } catch (err) {
-              alert.show({ type: 'error', message: err.message })
-            }
-            break
-          case 'append':
-            try {
-              const { data: topic } = await v2exClient.appendTopic({
-                id: topicId,
-                content: values.content,
-              })
-              queryClient.setQueryData(
-                [`/page/t/:id/topic.json`, id.toString()],
-                topic,
-              )
-              const cacheKey = getReplyFormCacheKey(replyContext)
-              setJSON(cacheKey, undefined)
-              alert.show({ type: 'success', message: '附言成功' })
-            } catch (err) {
-              alert.show({ type: 'error', message: err.message })
-            }
-        }
-      } finally {
-        alert.hide(indicator)
-      }
-    },
-    [id, replyContext],
-  )
-
   const handleAppend = useCallback(() => {
-    setReplyContext({
-      type: 'append',
+    const context = { type: 'append' } as ReplyContext
+    showReplyForm({
+      context,
+      cacheKey: getReplyFormCacheKey(context),
+      onSubmit: (values) => submitReply(context, values),
+      onInitImgurSettings: () => {
+        dismissReplyForm()
+        router.push({
+          pathname: '/imgur-settings',
+          params: {
+            autoBack: '1',
+          },
+        })
+      },
     })
-    replyModalRef.current?.present()
-  }, [])
+  }, [
+    showReplyForm,
+    getReplyFormCacheKey,
+    submitReply,
+    dismissReplyForm,
+    router,
+  ])
 
   const handleEdit = useCallback(() => {
     if (topic) {
@@ -620,23 +650,55 @@ function TopicScreen() {
     topicQuery.refetch()
   }, [])
 
-  const showConversation = useCallback((context: ConversationContext) => {
-    setConversationContext(context)
-    conversationModalRef.current?.present()
-  }, [])
+  const openUserInfo = useCallback(
+    (context: UserInfoContext) => {
+      showUserInfo({
+        data: getMemberReplies(context.data, replyItems),
+        header: (
+          <SimpleMemberInfo currentUser={currentUser} username={context.data} />
+        ),
+        showAvatar: settings.feedShowAvatar,
+        onReply: initReply,
+        onThank: handleThankToReply,
+      })
+    },
+    [
+      showUserInfo,
+      replyItems,
+      currentUser,
+      settings.feedShowAvatar,
+      initReply,
+      handleThankToReply,
+    ],
+  )
 
-  const showUserInfo = useCallback((context: UserInfoContext) => {
-    setUserInfoContext(context)
-    userInfoModalRef.current?.present()
-  }, [])
+  const openConversation = useCallback(
+    (context: ConversationContext) => {
+      showConversation({
+        data: getRelatedReplies(context.data, replyItems),
+        pivot: context.data,
+        showAvatar: settings.feedShowAvatar,
+        onReply: initReply,
+        onThank: handleThankToReply,
+        onShowUserInfo: openUserInfo,
+      })
+    },
+    [
+      showConversation,
+      replyItems,
+      settings.feedShowAvatar,
+      initReply,
+      handleThankToReply,
+      openUserInfo,
+    ],
+  )
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
-      conversationModalRef.current?.dismiss()
-      userInfoModalRef.current?.dismiss()
+      dismissAll()
     })
     return unsubscribe
-  }, [navigation])
+  }, [navigation, dismissAll])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', function () {
@@ -661,8 +723,8 @@ function TopicScreen() {
             onReply={initReply}
             onThank={handleThankToReply}
             hasConversation={hasRelatedMessages(item, replyItems)}
-            onShowConversation={showConversation}
-            onShowUserInfo={showUserInfo}
+            onShowConversation={openConversation}
+            onShowUserInfo={openUserInfo}
           />
         )
       },
@@ -694,20 +756,6 @@ function TopicScreen() {
     },
     [replyItems?.length],
   )
-
-  const conversation = useMemo(() => {
-    if (!conversationContext) {
-      return null
-    }
-    return getRelatedReplies(conversationContext.data, replyItems)
-  }, [conversationContext, replyItems])
-
-  const userPostedMessages = useMemo(() => {
-    if (!userInfoContext) {
-      return null
-    }
-    return getMemberReplies(userInfoContext.data, replyItems)
-  }, [userInfoContext, replyItems])
 
   const scrollY = useSharedValue(0)
   const lastOffsetY = useSharedValue(0)
@@ -838,81 +886,6 @@ function TopicScreen() {
         scrollDirection={scrollDirection}
       />
 
-      <TrueSheet
-        ref={conversationModalRef}
-        detents={conversationDetents}
-        backgroundColor={styles.overlay.backgroundColor}
-        scrollable
-      >
-        {conversationContext && (
-          <ReplyList
-            className='pt-4'
-            contentContainerClassName='pb-safe'
-            showAvatar={settings.feedShowAvatar}
-            data={conversation}
-            pivot={conversationContext.data}
-            onReply={initReply}
-            onThank={handleThankToReply}
-            onShowUserInfo={showUserInfo}
-          />
-        )}
-      </TrueSheet>
-      <TrueSheet
-        ref={userInfoModalRef}
-        detents={conversationDetents}
-        backgroundColor={styles.overlay.backgroundColor}
-        scrollable
-      >
-        {userInfoContext && (
-          <ReplyList
-            className='pt-4'
-            contentContainerClassName='pb-safe'
-            showAvatar={settings.feedShowAvatar}
-            data={userPostedMessages}
-            header={
-              <SimpleMemberInfo
-                currentUser={currentUser}
-                username={userInfoContext.data}
-              />
-            }
-            onReply={initReply}
-            onThank={handleThankToReply}
-          />
-        )}
-      </TrueSheet>
-
-      <TrueSheet
-        ref={replyModalRef}
-        detents={['auto']}
-        backgroundColor={styles.overlay.backgroundColor}
-        grabber={false}
-      >
-        <KeyboardAvoidingView>
-          <View
-            className={cn(
-              'pt-4 h-[220px]',
-              Platform.OS === 'android' && 'pb-7',
-            )}
-          >
-            {replyContext && (
-              <TopicReplyForm
-                cacheKey={getReplyFormCacheKey(replyContext)}
-                context={replyContext}
-                onSubmit={handleSubmitReply}
-                onInitImgurSettings={() => {
-                  replyModalRef.current?.dismiss()
-                  router.push({
-                    pathname: '/imgur-settings',
-                    params: {
-                      autoBack: '1',
-                    },
-                  })
-                }}
-              />
-            )}
-          </View>
-        </KeyboardAvoidingView>
-      </TrueSheet>
       {topicQuery.data?.canMove && (
         <TrueSheet
           ref={changeNodeModalRef}

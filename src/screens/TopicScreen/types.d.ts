@@ -26,3 +26,8 @@ export type UserInfoContext = {
   type: 'member'
   data: string
 }
+
+export type ReplyContext = {
+  type: 'reply' | 'append'
+  target?: TopicReply
+}
