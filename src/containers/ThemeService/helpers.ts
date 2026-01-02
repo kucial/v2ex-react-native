@@ -22,9 +22,9 @@ export function getThemeService(
   fontScale?: number,
   pureDarkTheme?: boolean,
 ): ThemeService {
-  const name = themeName || getActiveTheme()
   const scale = fontScale || getActiveFontScale()
   const scheme = colorScheme || Appearance.getColorScheme()
+  const name = themeName || getActiveTheme(scheme)
   const usePureDark = pureDarkTheme ?? getUsePureDarkTheme()
 
   let subkey

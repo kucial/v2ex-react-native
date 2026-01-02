@@ -48,9 +48,11 @@ const options: {
 ]
 
 export default function ThemePreview(props: {
-  theme: string
+  lightTheme: string
+  darkTheme: string
   fontScale: number
-  setTheme(theme: string): void
+  setLightTheme(theme: string): void
+  setDarkTheme(theme: string): void
   setFontScale(scale: number): void
   colorScheme: 'dark' | 'light'
   setColorScheme(scheme: 'dark' | 'light'): void
@@ -64,6 +66,8 @@ export default function ThemePreview(props: {
   const [loading, setLoading] = useState<boolean>(false)
   const alert = useAlertService()
   const router = useRouter()
+  const activeTheme =
+    props.colorScheme === 'dark' ? props.darkTheme : props.lightTheme
 
   return (
     <KeyboardAvoidingView
@@ -120,9 +124,13 @@ export default function ThemePreview(props: {
                 styles={styles}
                 key={item.name}
                 colorScheme={props.colorScheme}
-                active={item.name === props.theme}
+                active={item.name === activeTheme}
                 onSelect={() => {
-                  props.setTheme(item.name)
+                  if (props.colorScheme === 'dark') {
+                    props.setDarkTheme(item.name)
+                  } else {
+                    props.setLightTheme(item.name)
+                  }
                 }}
               />
             ))}

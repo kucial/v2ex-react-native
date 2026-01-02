@@ -13,25 +13,33 @@ import ThemePreview from './ThemePreview'
 export default function SettingsTheme() {
   const navigation = useNavigation()
   const {
-    data: { theme, fontScale, pureDarkTheme },
+    data: { theme, lightTheme, darkTheme, fontScale, pureDarkTheme },
     update,
   } = useAppSettings()
-  const [preview, setPreview] = useState(theme)
+  const [previewLightTheme, setPreviewLightTheme] = useState(
+    lightTheme || theme,
+  )
+  const [previewDarkTheme, setPreviewDarkTheme] = useState(darkTheme || theme)
   const [scale, setScale] = useState(fontScale)
   const { colorScheme: currentScheme } = useColorScheme()
   const [colorScheme, setColorScheme] = useState(currentScheme)
   const [pureDark, setPureDark] = useState(pureDarkTheme)
+  const previewTheme =
+    colorScheme === 'dark' ? previewDarkTheme : previewLightTheme
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', () => {
       if (
-        preview !== theme ||
+        previewLightTheme !== lightTheme ||
+        previewDarkTheme !== darkTheme ||
         scale !== fontScale ||
         pureDark !== pureDarkTheme
       ) {
         update((prev) => ({
           ...prev,
-          theme: preview,
+          theme: previewLightTheme,
+          lightTheme: previewLightTheme,
+          darkTheme: previewDarkTheme,
           fontScale: scale,
           pureDarkTheme: pureDark,
         }))
@@ -41,9 +49,12 @@ export default function SettingsTheme() {
   }, [
     navigation,
     theme,
-    preview,
+    previewLightTheme,
+    previewDarkTheme,
     scale,
     pureDark,
+    lightTheme,
+    darkTheme,
     fontScale,
     pureDarkTheme,
     update,
@@ -51,7 +62,7 @@ export default function SettingsTheme() {
 
   return (
     <ThemeProvider
-      theme={preview}
+      theme={previewTheme}
       fontScale={scale}
       colorScheme={colorScheme}
       pureDarkTheme={pureDark}
@@ -60,10 +71,12 @@ export default function SettingsTheme() {
         <View className='flex-1'>
           <NavigationHeader canGoBack title='主题样式' />
           <ThemePreview
-            theme={preview}
+            lightTheme={previewLightTheme}
+            darkTheme={previewDarkTheme}
             fontScale={scale}
             pureDarkTheme={pureDark}
-            setTheme={setPreview}
+            setLightTheme={setPreviewLightTheme}
+            setDarkTheme={setPreviewDarkTheme}
             setFontScale={setScale}
             setPureDarkTheme={setPureDark}
             colorScheme={colorScheme}

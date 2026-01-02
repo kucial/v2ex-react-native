@@ -6,6 +6,8 @@ export type AppSettings = {
   showHasNewReply: boolean
   colorScheme?: 'light' | 'dark' | 'system'
   theme: string
+  lightTheme?: string
+  darkTheme?: string
   pureDarkTheme: boolean
   fontScale: number
   // themeColor: '',

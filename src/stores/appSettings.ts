@@ -52,8 +52,12 @@ const normalizeSettings = (data?: Partial<AppSettings>) => {
     ...DEFAULT_SETTINGS,
     ...(data ?? {}),
   }
+  const lightTheme = merged.lightTheme || merged.theme || DEFAULT_SETTINGS.theme
+  const darkTheme = merged.darkTheme || merged.theme || DEFAULT_SETTINGS.theme
   return {
     ...merged,
+    lightTheme,
+    darkTheme,
     homeTabs: ensureHomeTabs(merged.homeTabs),
   }
 }

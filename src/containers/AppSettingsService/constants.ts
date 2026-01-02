@@ -7,6 +7,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showHasNewReply: true,
 
   theme: 'r2v',
+  lightTheme: 'r2v',
+  darkTheme: 'r2v',
   pureDarkTheme: false,
   fontScale: 1.1,
   // themeColor: '', // 主题强调色

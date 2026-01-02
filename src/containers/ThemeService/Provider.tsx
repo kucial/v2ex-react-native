@@ -25,13 +25,18 @@ export const ThemeProvider = (props: {
   const {
     data: {
       theme: themeName,
+      lightTheme,
+      darkTheme,
       fontScale: defaultFontScale,
       pureDarkTheme: defaultPureDarkTheme,
     },
   } = useAppSettings()
 
-  const activeTheme = props.theme ?? themeName
   const activeScheme = props.colorScheme || colorScheme
+  const activeTheme =
+    props.theme ??
+    (activeScheme === 'dark' ? darkTheme : lightTheme) ??
+    themeName
   const fontScale = props.fontScale ?? defaultFontScale
   const pureDarkTheme = props.pureDarkTheme ?? defaultPureDarkTheme
 
@@ -39,7 +44,6 @@ export const ThemeProvider = (props: {
     () => getThemeService(activeTheme, activeScheme, fontScale, pureDarkTheme),
     [activeScheme, activeTheme, fontScale, pureDarkTheme],
   )
-
   useEffect(() => {
     if (Platform.OS == 'android') {
       NavigationBar.setBackgroundColorAsync(service.theme.colors.bg_overlay)
