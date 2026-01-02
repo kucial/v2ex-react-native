@@ -1,8 +1,6 @@
-import { SetStateAction } from 'react'
-
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
-type AppSettings = {
+export type AppSettings = {
   homeTabs?: HomeTabOption[]
   showHasViewed: boolean
   showHasNewReply: boolean
@@ -29,13 +27,6 @@ type AppSettings = {
 
   searchProvider: SearchProvider
   historyRecordLimit: number
-}
-
-type AppSettingsService = {
-  data: AppSettings
-  update: (value: SetStateAction<AppSettings>) => void
-  staticUpdate: (value: AppSettings) => void
-  initHomeTabs: () => Promise<HomeTabOption[]>
 }
 
 export type SearchProvider = 'google' | 'sov2ex'

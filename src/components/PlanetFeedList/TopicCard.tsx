@@ -11,7 +11,7 @@ import { useRouter } from 'expo-router'
 import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
-import { useAppSettings } from '@/containers/AppSettingsService'
+import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import { usePanelSheet } from '@/stores/panelSheet'
@@ -21,9 +21,7 @@ import MaxWidthWrapper from '../MaxWidthWrapper'
 
 export default function TopicCard(props: PlanetFeedRowProps) {
   const { width } = useWindowDimensions()
-  const {
-    data: { maxContainerWidth },
-  } = useAppSettings()
+  const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
   const { data, showAvatar, titleStyle } = props
   const router = useRouter()

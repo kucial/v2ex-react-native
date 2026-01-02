@@ -6,7 +6,7 @@ import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NodeLabel from '@/components/NodeLabel'
 
-import { useAppSettings } from '@/containers/AppSettingsService'
+import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import { localTime } from '@/utils/time'
@@ -14,9 +14,7 @@ import { SearchHit } from '@/utils/v2ex-client/types'
 
 export default function ResultRow(props: { data: SearchHit }) {
   const { width } = useWindowDimensions()
-  const {
-    data: { maxContainerWidth },
-  } = useAppSettings()
+  const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
 
   const { styles } = useTheme()

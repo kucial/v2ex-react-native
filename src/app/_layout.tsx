@@ -17,7 +17,6 @@ import FeedPanelSheet from '@/components/FeedPanelSheet'
 import Layout from '@/components/Layout'
 
 import AlertService from '@/containers/AlertService'
-import AppSettingsService from '@/containers/AppSettingsService'
 import AuthService from '@/containers/AuthService'
 import ClipboardWatcher from '@/containers/ClipboardWatcher'
 import FetchPrepare from '@/containers/FetchPrepare'
@@ -58,41 +57,39 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider style={styles.layer1}>
       <RootSiblingParent>
-        <AppSettingsService>
-          <ThemeProvider>
-            <ErrorBoundary>
-              <GestureHandlerRootView>
-                <AlertService>
-                  <FetchPrepare>
-                    <QueryClientProvider>
-                      <PortalProvider>
-                        <ActionSheetProvider>
-                          <ImgurService>
-                            <ClipboardWatcher>
-                              <AuthService>
-                                <ViewedTopicsService>
-                                  <NotificationService>
-                                    <TopicSheetService>
-                                      <Layout>
-                                        <Slot />
-                                        <PortalHost name='overlay' />
-                                        <FeedPanelSheet />
-                                      </Layout>
-                                    </TopicSheetService>
-                                  </NotificationService>
-                                </ViewedTopicsService>
-                              </AuthService>
-                            </ClipboardWatcher>
-                          </ImgurService>
-                        </ActionSheetProvider>
-                      </PortalProvider>
-                    </QueryClientProvider>
-                  </FetchPrepare>
-                </AlertService>
-              </GestureHandlerRootView>
-            </ErrorBoundary>
-          </ThemeProvider>
-        </AppSettingsService>
+        <ThemeProvider>
+          <ErrorBoundary>
+            <GestureHandlerRootView>
+              <AlertService>
+                <FetchPrepare>
+                  <QueryClientProvider>
+                    <PortalProvider>
+                      <ActionSheetProvider>
+                        <ImgurService>
+                          <ClipboardWatcher>
+                            <AuthService>
+                              <ViewedTopicsService>
+                                <NotificationService>
+                                  <TopicSheetService>
+                                    <Layout>
+                                      <Slot />
+                                      <PortalHost name='overlay' />
+                                      <FeedPanelSheet />
+                                    </Layout>
+                                  </TopicSheetService>
+                                </NotificationService>
+                              </ViewedTopicsService>
+                            </AuthService>
+                          </ClipboardWatcher>
+                        </ImgurService>
+                      </ActionSheetProvider>
+                    </PortalProvider>
+                  </QueryClientProvider>
+                </FetchPrepare>
+              </AlertService>
+            </GestureHandlerRootView>
+          </ErrorBoundary>
+        </ThemeProvider>
       </RootSiblingParent>
     </SafeAreaProvider>
   )

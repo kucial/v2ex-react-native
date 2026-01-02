@@ -10,16 +10,14 @@ import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
 
-import { useAppSettings } from '@/containers/AppSettingsService'
+import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import { usePanelSheet } from '@/stores/panelSheet'
 
 export default function TopicCard(props: PlanetFeedRowProps) {
   const { width } = useWindowDimensions()
-  const {
-    data: { maxContainerWidth },
-  } = useAppSettings()
+  const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
   const { data, titleStyle } = props
   const { styles, theme } = useTheme()

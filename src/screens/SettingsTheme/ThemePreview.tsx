@@ -13,6 +13,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import Slider from '@react-native-community/slider'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { useRouter } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 
 import Button from '@/components/Button'
 import GroupWapper from '@/components/GroupWrapper'
@@ -70,6 +71,7 @@ export default function ThemePreview(props: {
       style={{ flex: 1 }}
     >
       <ScrollView style={{ backgroundColor: theme.colors.background }}>
+        <StatusBar style={props.colorScheme === 'dark' ? 'light' : 'dark'} />
         <MaxWidthWrapper>
           <View className='flex flex-row px-3 py-3 items-center'>
             <View className='flex-1'>

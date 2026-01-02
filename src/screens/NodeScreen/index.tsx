@@ -12,7 +12,7 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NodeTopicList from '@/components/NodeTopicList'
 
 import { useAlertService } from '@/containers/AlertService'
-import { useAppSettings } from '@/containers/AppSettingsService'
+import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
@@ -34,9 +34,7 @@ export default function NodeScreen() {
   const [collecting, setCollecting] = useState(false)
 
   const { width } = useWindowDimensions()
-  const {
-    data: { maxContainerWidth },
-  } = useAppSettings()
+  const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
   const alert = useAlertService()
   const { composeAuthedNavigation } = useAuthService()

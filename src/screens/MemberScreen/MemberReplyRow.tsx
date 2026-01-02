@@ -6,14 +6,12 @@ import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
 
-import { useAppSettings } from '@/containers/AppSettingsService'
+import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 
 const MemberReplyRow = (props: RepliedFeedRowProps) => {
   const { width } = useWindowDimensions()
-  const {
-    data: { maxContainerWidth },
-  } = useAppSettings()
+  const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
   const router = useRouter()
 

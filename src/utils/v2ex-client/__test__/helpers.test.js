@@ -1,10 +1,10 @@
+import { getMarkdown } from '../helpers'
+
 jest.mock('@react-native-cookies/cookies', () => ({
   get: jest.fn().mockResolvedValue({}),
   set: jest.fn(),
   clearAll: jest.fn(),
 }))
-
-import { getMarkdown } from '../helpers'
 
 describe('getMarkdown', () => {
   it('example 01', () => {

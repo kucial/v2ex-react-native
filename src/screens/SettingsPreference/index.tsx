@@ -66,7 +66,7 @@ const historyRecordLimitOptions: {
 ]
 
 export default function PreferenceSettings() {
-  const { data, update, staticUpdate } = useAppSettings()
+  const { data, update } = useAppSettings()
   const [state, setState] = useState(data)
   const [viewedStatus, setViewedStatus] =
     useState<DemoRowProps['viewedStatus']>(undefined)
@@ -80,7 +80,7 @@ export default function PreferenceSettings() {
         if (state !== data) {
           if (state.payLayoutEnabled !== data.payLayoutEnabled) {
             e.preventDefault()
-            staticUpdate(state)
+            update(state)
             RNRestart.Restart()
           } else {
             update(state)

@@ -1,3 +1,5 @@
+import { getBasename, getFilename, getImgXtension } from '../image'
+
 jest.mock('@thebeka/react-native-get-pixel-color', () => ({
   init: jest.fn(),
   pickColorAt: jest.fn(),
@@ -12,8 +14,6 @@ jest.mock('expo-file-system', () => ({
   },
   readAsStringAsync: jest.fn(),
 }))
-
-import { getBasename, getFilename, getImgXtension } from '../image'
 
 describe('image utils', () => {
   describe('getImgXtension', () => {

@@ -21,7 +21,7 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
-import { useAppSettings } from '@/containers/AppSettingsService'
+import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
@@ -45,9 +45,7 @@ type ReplyRowProps = {
 
 function ReplyRow(props: ReplyRowProps) {
   const { width } = useWindowDimensions()
-  const {
-    data: { maxContainerWidth },
-  } = useAppSettings()
+  const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
   const { data, isPivot, isLast, showAvatar = true } = props
   const { composeAuthedNavigation } = useAuthService()

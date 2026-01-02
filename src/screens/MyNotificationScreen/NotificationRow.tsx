@@ -6,7 +6,7 @@ import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 
-import { useAppSettings } from '@/containers/AppSettingsService'
+import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import { Notification } from '@/utils/v2ex-client/types'
@@ -19,9 +19,7 @@ const NotificationRow = (props: { data: Notification }) => {
   const { data } = props
   const router = useRouter()
   const { width } = useWindowDimensions()
-  const {
-    data: { maxContainerWidth },
-  } = useAppSettings()
+  const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
   const { styles, colorScheme } = useTheme()
   if (!data) {
