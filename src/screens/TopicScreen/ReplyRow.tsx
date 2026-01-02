@@ -255,6 +255,26 @@ function ReplyRow(props: ReplyRowProps) {
                     </Text>
                   </View>
                 )}
+                {data.member_is_pro && (
+                  <View
+                    className='ml-2 px-1 rounded-full'
+                    style={[
+                      styles.border,
+                      styles.badge__bg,
+                      {
+                        borderColor: theme.colors.badge_bg,
+                        backgroundColor: theme.colors.badge_border,
+                      },
+                    ]}
+                  >
+                    <Text
+                      className='text-[10px] font-medium leading-[17px]'
+                      style={styles.badge__text}
+                    >
+                      PRO
+                    </Text>
+                  </View>
+                )}
                 <View className='ml-2'>
                   <Text style={[styles.text_meta, styles.text_xs]}>
                     {data.reply_time}

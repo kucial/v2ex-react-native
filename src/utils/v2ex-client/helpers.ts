@@ -256,6 +256,7 @@ export function topicReplyFromCell(
     num: Number($el.find('.no').text()),
     member_is_op: !!$el.find('.badge.op').length,
     member_is_mod: !!$el.find('.badge.mod').length,
+    member_is_pro: !!$el.find('.badge.pro').length,
     members_mentioned,
     replied_to,
   }
