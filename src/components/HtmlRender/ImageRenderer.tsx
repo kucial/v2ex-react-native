@@ -16,14 +16,25 @@ import { useImageViewing } from './ImageViewingService'
 async function loadImage(
   uri: string,
 ): Promise<{ uri: string; width: number; height: number }> {
+  if (
+    uri.startsWith(
+      'https://api.producthunt.com/widgets/embed-image/v1/featured.svg',
+    )
+  ) {
+    return Promise.resolve({
+      uri,
+      width: 250,
+      height: 54,
+    })
+  }
   return new Promise((resolve, reject) => {
     RNImage.getSize(
       uri,
       (width, height) => {
         resolve({
           uri: uri,
-          width,
-          height,
+          width: width,
+          height: height,
         })
       },
       reject,
