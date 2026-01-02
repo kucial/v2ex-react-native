@@ -7,11 +7,17 @@ import {
   DEFAULT_SETTINGS,
 } from '@/containers/AppSettingsService/constants'
 import { AppSettings } from '@/containers/AppSettingsService/types'
+import { useAuthStore } from '@/stores/auth'
 import { remoteDevtools } from '@/utils/remoteDevtools'
 import { stateStorage } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
+const RECENT_TAB: HomeTabOption = {
+  value: 'recent',
+  label: '最近',
+  type: 'home',
+}
 const TODAY_HOT_TAB: HomeTabOption = {
   value: 'today_hots',
   label: '今日热议',
@@ -52,6 +58,19 @@ const normalizeSettings = (data?: Partial<AppSettings>) => {
   }
 }
 
+const uniqueTabs = (tabs: HomeTabOption[]) => {
+  const seen = new Set<string>()
+  const deduped: HomeTabOption[] = []
+  tabs.forEach((tab) => {
+    const key = `${tab.type ?? ''}:${tab.value}`
+    if (!seen.has(key)) {
+      seen.add(key)
+      deduped.push(tab)
+    }
+  })
+  return deduped
+}
+
 const getPersistedSettings = (persistedState: unknown) => {
   if (!persistedState || typeof persistedState !== 'object') {
     return undefined
@@ -81,16 +100,29 @@ export const useAppSettingsStore = create<AppSettingsStore>()(
           ),
         initHomeTabs: async () => {
           const { data } = await v2exClient.getHomeTabs()
-          const mapped: HomeTabOption[] = [
-            {
-              value: 'recent',
-              label: '最近',
-              type: 'home',
-            } as HomeTabOption,
-            TODAY_HOT_TAB,
-            PLANET_TAB,
-            ...data,
-          ].filter((item) => item.value !== 'nodes')
+          let collectedTabs: HomeTabOption[] = []
+          const authUser = useAuthStore.getState().user
+          if (authUser) {
+            try {
+              const collected = await v2exClient.getMyCollectedNodes()
+              collectedTabs = collected.data.map((node) => ({
+                value: node.name,
+                label: node.title,
+                type: 'node',
+              }))
+            } catch (err) {
+              console.log('Failed to load collected nodes', err)
+            }
+          }
+          const mapped = uniqueTabs(
+            [
+              RECENT_TAB,
+              TODAY_HOT_TAB,
+              PLANET_TAB,
+              ...data,
+              ...collectedTabs,
+            ].filter((item) => item.value !== 'nodes'),
+          )
           set(
             (state) => ({
               data: normalizeSettings({
@@ -121,3 +153,25 @@ export const useAppSettingsStore = create<AppSettingsStore>()(
     },
   ),
 )
+
+let authSubscriptionInitialized = false
+const initAuthSubscription = () => {
+  if (authSubscriptionInitialized) {
+    return
+  }
+  authSubscriptionInitialized = true
+  useAuthStore.subscribe((state, prevState) => {
+    const nextUserId = state.user?.id ?? null
+    const prevUserId = prevState.user?.id ?? null
+    if (nextUserId && nextUserId !== prevUserId) {
+      useAppSettingsStore
+        .getState()
+        .initHomeTabs()
+        .catch((err) => {
+          console.log('Failed to init home tabs after login', err)
+        })
+    }
+  })
+}
+
+initAuthSubscription()
