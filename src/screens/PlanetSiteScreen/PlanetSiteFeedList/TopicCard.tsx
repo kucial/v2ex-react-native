@@ -6,6 +6,7 @@ import {
   HeartIcon,
 } from 'react-native-heroicons/outline'
 
+import AudioPlayer from '@/components/AudioPlayer'
 import HtmlRender from '@/components/HtmlRender'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, InlineText } from '@/components/Skeleton/Elements'
@@ -118,6 +119,11 @@ export default function TopicCard(props: PlanetFeedRowProps) {
                 source={{ html: data.content }}
                 contentWidth={CONTAINER_WIDTH - 40}
               />
+            )}
+            {data.audio && (
+              <View className='my-1'>
+                <AudioPlayer audioUrl={data.audio} />
+              </View>
             )}
             <View className='mt-2 flex flex-row justify-between gap-x-3 pr-12'>
               <View className='flex-1 flex-row gap-1 items-center'>

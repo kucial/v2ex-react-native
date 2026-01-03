@@ -46,6 +46,7 @@
     "expo": "^54.0.27",
     "expo-application": "~7.0.8",
     "expo-asset": "~12.0.11",
+    "expo-audio": "^1.1.1",
     "expo-background-task": "~1.0.10",
     "expo-blur": "~15.0.8",
     "expo-build-properties": "~1.0.10",

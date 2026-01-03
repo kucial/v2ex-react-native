@@ -572,6 +572,7 @@ export async function getPlanetFeeds({
           .find('.planet-post-content-toggle')
           .data('expandLabel') as string,
         planet,
+        audio: $(el).find('.planet-post-audio audio').attr('src'),
         updated_at: $(el).find('.planet-post-time a').text()?.trim(),
         comment_count: Number(
           $(el)
@@ -2340,6 +2341,7 @@ export async function getPlanetSiteFeeds({
           .find('.planet-post-content-toggle')
           .data('expandLabel') as string,
         planet,
+        audio: $(el).find('.planet-post-audio audio').attr('src'),
         updated_at: $(el).find('.planet-post-time a').text()?.trim(),
         comment_count: Number(
           $(el)

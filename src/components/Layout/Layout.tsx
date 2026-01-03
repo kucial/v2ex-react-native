@@ -7,6 +7,7 @@ import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 
 import AppSidebar from '../AppSidebar'
+import FloatingAudioButton from '../FloatingAudioButton'
 import { AppLayoutContext } from './context'
 
 const ANIMATE_DURATION = 300
@@ -100,6 +101,7 @@ export default function Layout(props: { children: ReactNode }) {
           ]}
         >
           {props.children}
+          <FloatingAudioButton />
         </View>
         {padLayout.active && (
           <AppSidebar

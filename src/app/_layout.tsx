@@ -24,7 +24,7 @@ import ImgurService from '@/containers/ImgurService'
 import NotificationService from '@/containers/NotificationService'
 import QueryClientProvider from '@/containers/QueryClientProvider'
 import { getThemeService, ThemeProvider } from '@/containers/ThemeService'
-import TopicSheetService from '@/containers/TopicSheetService'
+import { AudioProvider } from '@/contexts/AudioContext'
 import { initSentry } from '@/lib/sentry'
 import { registerBackgroundTaskAsync } from '@/lib/widget-background-task'
 import { handleDeepLink } from '@/utils/deeplink'
@@ -54,40 +54,40 @@ export default function RootLayout() {
   })
 
   return (
-    <SafeAreaProvider style={styles.layer1}>
-      <RootSiblingParent>
-        <ThemeProvider>
-          <ErrorBoundary>
-            <GestureHandlerRootView>
-              <AlertService>
-                <FetchPrepare>
-                  <QueryClientProvider>
-                    <PortalProvider>
-                      <ActionSheetProvider>
-                        <ImgurService>
-                          <ClipboardWatcher>
-                            <AuthService>
-                              <NotificationService>
-                                <TopicSheetService>
+    <AudioProvider>
+      <SafeAreaProvider style={styles.layer1}>
+        <RootSiblingParent>
+          <ThemeProvider>
+            <ErrorBoundary>
+              <GestureHandlerRootView>
+                <AlertService>
+                  <FetchPrepare>
+                    <QueryClientProvider>
+                      <PortalProvider>
+                        <ActionSheetProvider>
+                          <ImgurService>
+                            <ClipboardWatcher>
+                              <AuthService>
+                                <NotificationService>
                                   <Layout>
                                     <Slot />
                                     <PortalHost name='overlay' />
                                     <FeedPanelSheet />
                                   </Layout>
-                                </TopicSheetService>
-                              </NotificationService>
-                            </AuthService>
-                          </ClipboardWatcher>
-                        </ImgurService>
-                      </ActionSheetProvider>
-                    </PortalProvider>
-                  </QueryClientProvider>
-                </FetchPrepare>
-              </AlertService>
-            </GestureHandlerRootView>
-          </ErrorBoundary>
-        </ThemeProvider>
-      </RootSiblingParent>
-    </SafeAreaProvider>
+                                </NotificationService>
+                              </AuthService>
+                            </ClipboardWatcher>
+                          </ImgurService>
+                        </ActionSheetProvider>
+                      </PortalProvider>
+                    </QueryClientProvider>
+                  </FetchPrepare>
+                </AlertService>
+              </GestureHandlerRootView>
+            </ErrorBoundary>
+          </ThemeProvider>
+        </RootSiblingParent>
+      </SafeAreaProvider>
+    </AudioProvider>
   )
 }
