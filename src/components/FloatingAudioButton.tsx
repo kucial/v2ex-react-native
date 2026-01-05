@@ -15,7 +15,7 @@ import { useAudioContext } from '@/contexts/AudioContext'
 
 export default function FloatingAudioButton() {
   const { styles, theme } = useTheme()
-  const { isPlaying, togglePlayPause, currentAudioUrl, clearCurrentAudio } =
+  const { isPlaying, togglePlayPause, currentAudio, clearCurrentAudio } =
     useAudioContext()
 
   const translateX = useSharedValue(0)
@@ -23,11 +23,11 @@ export default function FloatingAudioButton() {
 
   // Reset animation values when new audio starts
   useEffect(() => {
-    if (currentAudioUrl) {
+    if (currentAudio) {
       translateX.value = 0
       opacity.value = 1
     }
-  }, [currentAudioUrl, translateX, opacity])
+  }, [currentAudio, translateX, opacity])
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -35,7 +35,7 @@ export default function FloatingAudioButton() {
   }))
 
   // Only show if there's audio loaded
-  if (!currentAudioUrl) {
+  if (!currentAudio) {
     return null
   }
 
@@ -44,7 +44,7 @@ export default function FloatingAudioButton() {
       translateX.value = event.translationX
     })
     .onEnd((event) => {
-      if (translateX.value > 40) {
+      if (translateX.value > 30) {
         translateX.value = withSpring(200)
         opacity.value = withTiming(0, { duration: 200 })
         runOnJS(clearCurrentAudio)()
@@ -62,19 +62,21 @@ export default function FloatingAudioButton() {
           <Pressable
             onPress={() => togglePlayPause()}
             className='w-[58px] h-[58px] rounded-full items-center justify-center shadow-lg active:opacity-80'
-            style={{
-              backgroundColor: theme.colors.primary,
-              shadowColor: theme.colors.text,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 4,
-              elevation: 8,
-            }}
+            style={[
+              styles.btn_primary__bg,
+              {
+                shadowColor: theme.colors.text,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 8,
+              },
+            ]}
           >
             {isPlaying ? (
-              <PauseIcon size={24} color={theme.colors.text_primary_inverse} />
+              <PauseIcon size={24} color={styles.btn_primary__text.color} />
             ) : (
-              <PlayIcon size={24} color={theme.colors.text_primary_inverse} />
+              <PlayIcon size={24} color={styles.btn_primary__text.color} />
             )}
           </Pressable>
         </Animated.View>

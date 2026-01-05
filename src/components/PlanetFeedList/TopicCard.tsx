@@ -179,7 +179,12 @@ export default function TopicCard(props: PlanetFeedRowProps) {
             )}
             {data.audio && (
               <View className='my-1'>
-                <AudioPlayer audioUrl={data.audio} />
+                <AudioPlayer
+                  audio={{
+                    title: title || 'Audio',
+                    url: data.audio,
+                  }}
+                />
               </View>
             )}
             <View className='mt-2 flex flex-row justify-between gap-x-3 pr-12'>
