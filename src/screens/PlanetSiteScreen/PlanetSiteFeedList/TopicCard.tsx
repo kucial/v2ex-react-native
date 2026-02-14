@@ -62,7 +62,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
     )
   }
 
-  const { title, uuid, planet } = props.data
+  const { title } = props.data
 
   return (
     <MaxWidthWrapper className='rounded-lg overflow-hidden'>
@@ -101,6 +101,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
                 style={styles.layer2}
                 className='p-1 rounded flex-row items-center active:opacity-50'
                 onPress={() => {
+                  props.onView?.(data.url || data.uuid)
                   openPanelSheet(data)
                 }}
               >

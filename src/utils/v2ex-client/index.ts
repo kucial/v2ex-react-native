@@ -563,6 +563,7 @@ export async function getPlanetFeeds({
       }
       return {
         uuid: $(el).data('postUuid') as string,
+        url: resolveUrl($(el).find('.planet-post-title a').attr('href')),
         title: $(el).find('.planet-post-title').text()?.trim(),
         content: $(el)
           .find('.planet-post-content .markdown_body')
@@ -572,7 +573,7 @@ export async function getPlanetFeeds({
           .find('.planet-post-content-toggle')
           .data('expandLabel') as string,
         planet,
-        audio: $(el).find('.planet-post-audio audio').attr('src'),
+        audio: resolveUrl($(el).find('.planet-post-audio audio').attr('src')),
         updated_at: $(el).find('.planet-post-time a').text()?.trim(),
         comment_count: Number(
           $(el)
@@ -1188,7 +1189,7 @@ export async function thankReply({
     success: json.success,
     message: json.success ? '感谢已发送' : json.message,
     data: {
-      thanked: true, // TODO: BUG: success....
+      thanked: !!json.success,
     },
   }
 }
@@ -2332,6 +2333,7 @@ export async function getPlanetSiteFeeds({
       }
       return {
         uuid: $(el).data('postUuid') as string,
+        url: resolveUrl($(el).find('.planet-post-title a').attr('href')),
         title: $(el).find('.planet-post-title').text()?.trim(),
         content: $(el)
           .find('.planet-post-content .markdown_body')
@@ -2341,7 +2343,7 @@ export async function getPlanetSiteFeeds({
           .find('.planet-post-content-toggle')
           .data('expandLabel') as string,
         planet,
-        audio: $(el).find('.planet-post-audio audio').attr('src'),
+        audio: resolveUrl($(el).find('.planet-post-audio audio').attr('src')),
         updated_at: $(el).find('.planet-post-time a').text()?.trim(),
         comment_count: Number(
           $(el)

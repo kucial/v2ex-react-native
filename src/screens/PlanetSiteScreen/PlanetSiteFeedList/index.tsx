@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { AppState, View } from 'react-native'
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
+import { FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
@@ -16,11 +17,10 @@ import { uniqBy } from 'lodash'
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
-import { useViewedLinks } from '@/components/PlanetFeedList//hooks'
+import { useViewedLinks } from '@/components/PlanetFeedList/hooks'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useTheme } from '@/containers/ThemeService'
 import { usePlanetSiteFeed } from '@/hooks'
 import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
 import { PlanetFeedItem } from '@/utils/v2ex-client/types'
@@ -30,18 +30,19 @@ import TopicCard from './TopicCard'
 type PlanetSiteFeedListProps = {
   address: string
   isFocused: boolean
-  currentListRef?: MutableRefObject<any>
+  currentListRef?: MutableRefObject<{
+    scrollToRefresh: () => void
+  } | null>
   header?: ReactElement
   scrollY: SharedValue<number>
 }
 
 function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
   const { address, isFocused, currentListRef, header, scrollY } = props
-  const listViewRef = useRef<FlashList<PlanetFeedItem>>(null)
+  const listViewRef = useRef<FlashListRef<PlanetFeedItem> | null>(null)
   const { data: settings } = useAppSettings()
   const { setViewed, getViewedStatus } = useViewedLinks()
   const queryclient = useQueryClient()
-  const { styles } = useTheme()
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
@@ -145,7 +146,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
           <TopicCard
             data={item}
             isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item?.url)}
+            viewedStatus={getViewedStatus(item?.url || item?.uuid)}
             showAvatar={settings.feedShowAvatar}
             onView={setViewed}
             titleStyle={settings.feedTitleStyle}

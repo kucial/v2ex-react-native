@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View, ViewStyle } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { PauseIcon, PlayIcon } from 'react-native-heroicons/outline'
 import Animated, {
@@ -165,14 +165,14 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
 
   const composedGesture = Gesture.Race(panGesture, tapGesture)
 
-  const progressBarAnimatedStyle = useAnimatedStyle(
+  const progressBarAnimatedStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       width: trackWidthValue.value * progressValue.value,
     }),
     [trackWidthValue],
   )
 
-  const thumbAnimatedStyle = useAnimatedStyle(() => {
+  const thumbAnimatedStyle = useAnimatedStyle<ViewStyle>(() => {
     const rawOffset =
       trackWidthValue.value * progressValue.value - THUMB_SIZE / 2
     // Clamp to prevent overflow at edges
@@ -181,7 +181,10 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
       Math.max(0, rawOffset),
     )
     return {
-      transform: [{ translateX: thumbOffset }, { scale: thumbScale.value }],
+      transform: [
+        { translateX: thumbOffset },
+        { scale: thumbScale.value },
+      ] as ViewStyle['transform'],
     }
   }, [trackWidthValue])
 

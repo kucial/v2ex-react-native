@@ -14,7 +14,7 @@ import {
 interface AudioItem {
   title: string
   url: string
-  artist: string
+  artist?: string
 }
 
 interface AudioContextType {
@@ -146,6 +146,13 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   }
 
   const clearCurrentAudio = () => {
+    try {
+      player.pause()
+      player.setActiveForLockScreen(false)
+      player.clearLockScreenControls()
+    } catch (error) {
+      console.error('Audio clear error:', error)
+    }
     setCurrentAudio(null)
     setIsPlaying(false)
     setIsLoading(false)

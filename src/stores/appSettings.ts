@@ -44,7 +44,12 @@ const ensureHomeTabs = (tabs?: HomeTabOption[]) => {
     (item) =>
       item.type === TODAY_HOT_TAB.type && item.value === TODAY_HOT_TAB.value,
   )
-  return hasTodayHot ? tabs : [...tabs, TODAY_HOT_TAB]
+  const hasPlanet = tabs.some(
+    (item) => item.type === PLANET_TAB.type && item.value === PLANET_TAB.value,
+  )
+  let normalized = hasTodayHot ? tabs : [...tabs, TODAY_HOT_TAB]
+  normalized = hasPlanet ? normalized : [...normalized, PLANET_TAB]
+  return normalized
 }
 
 const normalizeSettings = (data?: Partial<AppSettings>) => {

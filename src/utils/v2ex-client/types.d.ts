@@ -254,8 +254,9 @@ type PlanetSiteBasic = {
 }
 type PlanetFeedItem = {
   uuid: string
+  url?: string
   title: string
-  content: HtmlString
+  content: HTMLString
   expand_label: string
   audio?: string // src
   updated_at?: string

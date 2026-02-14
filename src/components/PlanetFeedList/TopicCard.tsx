@@ -65,7 +65,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
     )
   }
 
-  const { title, uuid, planet } = props.data
+  const { title, planet } = props.data
 
   return (
     <MaxWidthWrapper
@@ -83,7 +83,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
               className='active:opacity-50'
               onPress={() => {
                 router.push({
-                  pathname: '/planet/[site_address]',
+                  pathname: '/planet/[site_address]' as never,
                   params: {
                     site_address: planet.site_address,
                   },
@@ -117,7 +117,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
                 style={styles.layer2}
                 onPress={() => {
                   router.push({
-                    pathname: '/planet/[site_address]',
+                    pathname: '/planet/[site_address]' as never,
                     params: {
                       site_address: planet.site_address,
                     },
@@ -142,6 +142,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
             {title && (
               <Pressable
                 onPress={() => {
+                  props.onView?.(data.url || data.uuid)
                   openPanelSheet(data)
                 }}
               >
@@ -160,6 +161,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
                 style={styles.layer2}
                 className='py-1 px-[6px] rounded flex-row items-center active:opacity-50'
                 onPress={() => {
+                  props.onView?.(data.url || data.uuid)
                   openPanelSheet(data)
                 }}
               >

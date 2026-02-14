@@ -16,7 +16,7 @@ export default function PlanetSiteHeader({ siteInfo }: PlanetSiteHeaderProps) {
   const { styles } = useTheme()
 
   return (
-    <MaxWidthWrapper style={[styles.layer1, { marginBottom: 4 }]}>
+    <MaxWidthWrapper style={{ ...styles.layer1, marginBottom: 4 }}>
       <View className='p-2' style={[styles.border_b_light]}>
         <View className='rounded-lg'>
           <View className='flex flex-row'>

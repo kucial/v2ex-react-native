@@ -7,7 +7,7 @@ import {
   useRef,
 } from 'react'
 import { AppState, View } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
 import { uniqBy } from 'lodash'
@@ -26,12 +26,14 @@ import TopicCard from './TopicCard'
 
 type PlanetFeedListProps = {
   isFocused: boolean
-  currentListRef: MutableRefObject<any>
+  currentListRef: MutableRefObject<{
+    scrollToRefresh: () => void
+  } | null>
 }
 
 function PlanetFeedList(props: PlanetFeedListProps) {
   const { isFocused, currentListRef } = props
-  const listViewRef = useRef<FlashList<PlanetFeedItem>>(null)
+  const listViewRef = useRef<FlashListRef<PlanetFeedItem> | null>(null)
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const { setViewed, getViewedStatus } = useViewedLinks()
@@ -133,7 +135,7 @@ function PlanetFeedList(props: PlanetFeedListProps) {
           <TopicCard
             data={item}
             isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item?.url)}
+            viewedStatus={getViewedStatus(item?.url || item?.uuid)}
             showAvatar={settings.feedShowAvatar}
             onView={setViewed}
             titleStyle={settings.feedTitleStyle}

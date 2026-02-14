@@ -24,6 +24,7 @@ import ImgurService from '@/containers/ImgurService'
 import NotificationService from '@/containers/NotificationService'
 import QueryClientProvider from '@/containers/QueryClientProvider'
 import { getThemeService, ThemeProvider } from '@/containers/ThemeService'
+import TopicSheetServiceProvider from '@/containers/TopicSheetService'
 import { AudioProvider } from '@/contexts/AudioContext'
 import { initSentry } from '@/lib/sentry'
 import { registerBackgroundTaskAsync } from '@/lib/widget-background-task'
@@ -69,11 +70,13 @@ export default function RootLayout() {
                             <ClipboardWatcher>
                               <AuthService>
                                 <NotificationService>
-                                  <Layout>
-                                    <Slot />
-                                    <PortalHost name='overlay' />
-                                    <FeedPanelSheet />
-                                  </Layout>
+                                  <TopicSheetServiceProvider>
+                                    <Layout>
+                                      <Slot />
+                                      <PortalHost name='overlay' />
+                                      <FeedPanelSheet />
+                                    </Layout>
+                                  </TopicSheetServiceProvider>
                                 </NotificationService>
                               </AuthService>
                             </ClipboardWatcher>

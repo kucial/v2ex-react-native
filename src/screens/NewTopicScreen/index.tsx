@@ -125,7 +125,7 @@ export default function NewTopicScreen() {
       const { data: newTopic } = await createTopic({
         title: values.title,
         content,
-        node_name: nodeName as string,
+        node_name: values.node,
         syntax: 'markdown',
         once: '000000',
       })

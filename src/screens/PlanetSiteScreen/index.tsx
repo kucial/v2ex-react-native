@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { Text, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
+import { useIsFocused } from '@react-navigation/native'
 import { useLocalSearchParams } from 'expo-router'
 
 import AnimatedHeader from '@/components/AnimatedHeader'
@@ -16,8 +17,7 @@ export default function PlanetSiteScreen() {
   const { data: siteInfo, isLoading, error } = usePlanetInfo(site_address)
   const currentListRef = useRef<any>(null)
   const scrollY = useSharedValue(0)
-
-  const [isFocused] = useState(true) // TODO: handle focus state properly
+  const isFocused = useIsFocused()
 
   if (error) {
     return (

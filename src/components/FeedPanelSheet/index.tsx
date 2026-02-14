@@ -13,15 +13,18 @@ export default function FeedPanelSheet() {
   const { isOpen, data, closePanelSheet } = usePanelSheet()
   const { width } = useWindowDimensions()
 
-  if (!isOpen || !data) {
-    return null
-  }
+  useEffect(() => {
+    if (isOpen && data) {
+      sheetRef.current?.present()
+    } else {
+      sheetRef.current?.dismiss()
+    }
+  }, [isOpen, data])
 
   return (
     <TrueSheet
       ref={sheetRef}
       detents={[1]}
-      initialDetentIndex={0}
       onDidDismiss={closePanelSheet}
       backgroundColor={styles.overlay.backgroundColor}
       scrollable
