@@ -5,11 +5,16 @@ import {
   useEffect,
   useState,
 } from 'react'
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio'
+import {
+  setAudioModeAsync,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+} from 'expo-audio'
 
 interface AudioItem {
   title: string
   url: string
+  artist: string
 }
 
 interface AudioContextType {
@@ -52,6 +57,38 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
 
   const player = useAudioPlayer(currentAudio?.url || '')
   const status = useAudioPlayerStatus(player)
+
+  useEffect(() => {
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+    })
+  }, [])
+
+  useEffect(() => {
+    const syncLockScreen = async () => {
+      if (!currentAudio) {
+        try {
+          await player.setActiveForLockScreen(false)
+          player.clearLockScreenControls()
+        } catch (error) {
+          console.error('Audio lock screen clear error:', error)
+        }
+        return
+      }
+
+      try {
+        await player.setActiveForLockScreen(true, {
+          title: currentAudio.title,
+          artist: currentAudio.artist,
+        })
+      } catch (error) {
+        console.error('Audio lock screen update error:', error)
+      }
+    }
+
+    syncLockScreen()
+  }, [currentAudio, player])
 
   useEffect(() => {
     const handlePlayback = async () => {

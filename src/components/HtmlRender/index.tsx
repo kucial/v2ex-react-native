@@ -66,10 +66,12 @@ function HtmlRender({
   tagsStyles,
   baseStyle,
   onOpenMemberInfo,
+  isModalView,
   ...props
 }: RenderHTMLProps & {
   source: HTMLSourceInline
   onOpenMemberInfo?: (data) => void
+  isModalView?: boolean
 }) {
   const { theme, colorScheme, styles: themeStyles } = useTheme()
   const alert = useAlertService()
@@ -216,6 +218,10 @@ function HtmlRender({
               })
               return
             }
+            if (isModalView) {
+              // TODO: open screen in sheet
+              return
+            }
             router.push({
               pathname: screen.pathname,
               params: screen.params,
@@ -250,7 +256,7 @@ function HtmlRender({
         }
       },
     }),
-    [router, onOpenMemberInfo],
+    [onOpenMemberInfo, router, theme.colors.primary, isModalView],
   )
 
   const handleQrCode = useCallback((result: BarcodeScanningResult) => {

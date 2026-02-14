@@ -1,5 +1,6 @@
 import { SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import * as Sentry from '@sentry/react-native'
+import { setAudioModeAsync } from 'expo-audio'
 import { debounce } from 'lodash'
 
 import { getJSON, setJSON } from './storage'

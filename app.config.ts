@@ -33,6 +33,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       infoPlist: {
         CFBundleDevelopmentRegion: 'zh-hans',
         ITSAppUsesNonExemptEncryption: false,
+        UIBackgroundModes: ['audio'],
       },
       entitlements: {
         'com.apple.security.application-groups': ['group.com.kucial.v2ex.data'],
@@ -81,6 +82,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
       '@sentry/react-native/expo',
       'expo-image-picker',
+      'expo-audio',
       'expo-router',
       'expo-build-properties',
       'expo-web-browser',

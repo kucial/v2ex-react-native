@@ -126,6 +126,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
                   audio={{
                     title: title || 'Audio',
                     url: data.audio,
+                    artist: data.planet.site_title,
                   }}
                 />
               </View>

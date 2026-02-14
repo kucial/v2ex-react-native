@@ -4,6 +4,7 @@ import { useSharedValue } from 'react-native-reanimated'
 import { useLocalSearchParams } from 'expo-router'
 
 import AnimatedHeader from '@/components/AnimatedHeader'
+import Loader from '@/components/Loader'
 import PlanetSiteHeader from '@/components/PlanetSiteHeader'
 
 import { usePlanetInfo } from '@/hooks'
@@ -40,7 +41,7 @@ export default function PlanetSiteScreen() {
           scrollY={scrollY}
         />
         <View className='flex-1 items-center justify-center'>
-          <Text>Loading...</Text>
+          <Loader />
         </View>
       </View>
     )

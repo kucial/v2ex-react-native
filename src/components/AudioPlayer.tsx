@@ -17,6 +17,7 @@ interface AudioPlayerProps {
   audio: {
     title: string
     url: string
+    artist?: string
   }
 }
 
