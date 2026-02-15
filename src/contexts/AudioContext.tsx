@@ -3,6 +3,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react'
 import {
@@ -52,11 +53,12 @@ interface AudioProviderProps {
 export const AudioProvider = ({ children }: AudioProviderProps) => {
   const [currentAudio, setCurrentAudio] = useState<AudioItem | null>(null)
   const [history, setHistory] = useState<AudioItem[]>([])
-  const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const shouldAutoPlayRef = useRef(false)
 
   const player = useAudioPlayer(currentAudio?.url || '')
   const status = useAudioPlayerStatus(player)
+  const isPlaying = status.playing
 
   useEffect(() => {
     setAudioModeAsync({
@@ -91,33 +93,35 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   }, [currentAudio, player])
 
   useEffect(() => {
-    const handlePlayback = async () => {
-      if (!currentAudio?.url) return
-
-      if (isPlaying) {
-        setIsLoading(true)
-        try {
-          await player.play()
-        } catch (error) {
-          console.error('Audio play error:', error)
-          setIsPlaying(false)
-        } finally {
-          setIsLoading(false)
-        }
-      } else {
-        await player.pause()
+    const playAfterSourceChange = async () => {
+      if (!currentAudio?.url || !shouldAutoPlayRef.current) return
+      shouldAutoPlayRef.current = false
+      setIsLoading(true)
+      try {
+        player.play()
+      } catch (error) {
+        console.error('Audio play error:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    handlePlayback()
-  }, [isPlaying, currentAudio?.url, player])
+    playAfterSourceChange()
+  }, [currentAudio?.url, player])
 
   const playAudio = async (item: AudioItem) => {
     if (currentAudio?.url !== item.url) {
+      shouldAutoPlayRef.current = true
       setCurrentAudio(item)
-      setIsPlaying(true)
     } else {
-      setIsPlaying(true)
+      try {
+        setIsLoading(true)
+        player.play()
+      } catch (error) {
+        console.error('Audio play error:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
 
     setHistory((prev) => {
@@ -127,12 +131,19 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   }
 
   const pauseAudio = async () => {
-    setIsPlaying(false)
+    try {
+      player.pause()
+    } catch (error) {
+      console.error('Audio pause error:', error)
+    }
   }
 
   const togglePlayPause = async () => {
-    if (currentAudio) {
-      setIsPlaying(!isPlaying)
+    if (!currentAudio) return
+    if (status.playing) {
+      await pauseAudio()
+    } else {
+      await playAudio(currentAudio)
     }
   }
 
@@ -154,8 +165,8 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
       console.error('Audio clear error:', error)
     }
     setCurrentAudio(null)
-    setIsPlaying(false)
     setIsLoading(false)
+    shouldAutoPlayRef.current = false
   }
 
   const value: AudioContextType = {
