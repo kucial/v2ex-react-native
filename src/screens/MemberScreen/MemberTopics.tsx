@@ -8,7 +8,7 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useViewedStatus } from '@/containers/ViewedTopicsService'
+import { useGetViewedStatus } from '@/containers/ViewedTopicsService'
 import { useMemberTopics } from '@/hooks'
 import { shouldLoadMore } from '@/utils/react-query'
 
@@ -23,7 +23,7 @@ export default function MemberTopics(
   } & Omit<FlashListProps<any>, 'data' | 'renderItem' | 'estimatedItemSize'>,
 ) {
   const alert = useAlertService()
-  const getViewedStatus = useViewedStatus()
+  const getViewedStatus = useGetViewedStatus()
   const { data: settings } = useAppSettings()
 
   const listQuery = useMemberTopics(props.username, props.isFocused)

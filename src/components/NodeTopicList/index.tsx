@@ -18,7 +18,7 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useViewedStatus } from '@/containers/ViewedTopicsService'
+import { useGetViewedStatus } from '@/containers/ViewedTopicsService'
 import { NODE_TOPICS_KEY, useNodeTopics } from '@/hooks'
 import { shouldFetch } from '@/utils/react-query'
 import { NodeTopicFeed } from '@/utils/v2ex-client/types'
@@ -37,7 +37,7 @@ type NodeTopicListProps = {
 
 export default function NodeTopicList(props: NodeTopicListProps) {
   const { header, name, isFocused, currentListRef, scrollY } = props
-  const getViewedStatus = useViewedStatus()
+  const getViewedStatus = useGetViewedStatus()
   const { data: settings } = useAppSettings()
   const queryclient = useQueryClient()
 

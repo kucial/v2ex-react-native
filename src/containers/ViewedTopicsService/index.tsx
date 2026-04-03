@@ -13,26 +13,28 @@ export const useViewedItems = () => {
 
 export const useHasViewed = () => {
   const showHasViewed = useAppSettingsStore((state) => state.data.showHasViewed)
-  const data = useViewedTopicsStore((state) => state.data)
 
   return useCallback(
-    (id: string | number) => showHasViewed && !!data[id],
-    [showHasViewed, data],
+    (id: string | number) => {
+      if (!showHasViewed) return false
+      return !!useViewedTopicsStore.getState().data[id]
+    },
+    [showHasViewed],
   )
 }
 
-export const useViewedStatus = () => {
+export const useGetViewedStatus = () => {
   const showHasViewed = useAppSettingsStore((state) => state.data.showHasViewed)
   const showHasNewReply = useAppSettingsStore(
     (state) => state.data.showHasNewReply,
   )
-  const data = useViewedTopicsStore((state) => state.data)
 
   return useCallback(
     (params?: Pick<TopicDetail, 'id' | 'replies'>) => {
       if (!showHasViewed || !params) {
         return undefined
       }
+      const data = useViewedTopicsStore.getState().data
       if (!showHasNewReply) {
         return data[params.id] ? 'viewed' : undefined
       }
@@ -47,7 +49,7 @@ export const useViewedStatus = () => {
       }
       return undefined
     },
-    [showHasViewed, showHasNewReply, data],
+    [showHasViewed, showHasNewReply],
   )
 }
 

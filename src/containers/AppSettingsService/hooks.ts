@@ -1,10 +1,18 @@
 import { useMemo } from 'react'
 import { useWindowDimensions } from 'react-native'
 import * as Device from 'expo-device'
+import { useShallow } from 'zustand/react/shallow'
 
 import { useAppSettingsStore } from '@/stores/appSettings'
 
-export const useAppSettings = () => useAppSettingsStore((state) => state)
+export const useAppSettings = () =>
+  useAppSettingsStore(
+    useShallow((state) => ({
+      data: state.data,
+      update: state.update,
+      initHomeTabs: state.initHomeTabs,
+    })),
+  )
 
 export const useSearchProvider = () =>
   useAppSettingsStore((state) => state.data.searchProvider)

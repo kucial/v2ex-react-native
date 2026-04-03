@@ -17,7 +17,7 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useViewedStatus } from '@/containers/ViewedTopicsService'
+import { useGetViewedStatus } from '@/containers/ViewedTopicsService'
 import { useHomeTabFeed } from '@/hooks'
 import {
   updateHomeFeedWidget,
@@ -41,7 +41,7 @@ function FeedTopicList(props: FeedTopicListProps) {
   const listViewRef = useRef<FlashList<HomeTopicFeed>>()
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
-  const getViewedStatus = useViewedStatus()
+  const getViewedStatus = useGetViewedStatus()
   const queryclient = useQueryClient()
 
   const listQuery = useHomeTabFeed(tab, isFocused)

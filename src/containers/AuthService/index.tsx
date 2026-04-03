@@ -9,6 +9,7 @@ import {
 } from 'react'
 import { AppState, InteractionManager } from 'react-native'
 import { useRouter } from 'expo-router'
+import { useShallow } from 'zustand/react/shallow'
 
 import { useAuthStore } from '@/stores/auth'
 import { getJSON, setJSON, storage } from '@/utils/storage'
@@ -197,7 +198,18 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     logout,
     updateMeta,
     setAuthState,
-  } = useAuthStore()
+  } = useAuthStore(
+    useShallow((state) => ({
+      user: state.user,
+      meta: state.meta,
+      status: state.status,
+      fetchedAt: state.fetchedAt,
+      fetchCurrentUser: state.fetchCurrentUser,
+      logout: state.logout,
+      updateMeta: state.updateMeta,
+      setAuthState: state.setAuthState,
+    })),
+  )
 
   // Initialize hooks
   const dailySignIn = useDailySignIn(user)
