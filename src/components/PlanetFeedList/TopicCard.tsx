@@ -24,11 +24,14 @@ export default function TopicCard(props: PlanetFeedRowProps) {
   const { width } = useWindowDimensions()
   const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
-  const { data, showAvatar, titleStyle } = props
+  const { data, showAvatar, titleStyle, variant = 'feed' } = props
   const router = useRouter()
   const { styles, theme } = useTheme()
   const iconColor = theme.colors.text_meta
   const { openPanelSheet } = usePanelSheet()
+
+  const showPlanetInfo = showAvatar && variant === 'feed'
+  const isTitlePressable = variant === 'feed'
 
   if (!data) {
     return (
@@ -36,7 +39,9 @@ export default function TopicCard(props: PlanetFeedRowProps) {
         <View className={cn('flex flex-row items-center')}>
           <View className='flex-1 py-2 pl-1'>
             <View className='flex flex-row items-center space-x-2 pl-1 mb-1'>
-              {showAvatar && <Box className='w-[24px] h-[24px] rounded mr-2' />}
+              {showPlanetInfo && (
+                <Box className='w-[24px] h-[24px] rounded mr-2' />
+              )}
               <View>
                 <View className='py-[2px] rounded w-[50px]'>
                   <InlineText style={styles.text_xs}></InlineText>
@@ -50,7 +55,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
                 ></InlineText>
               </View>
             </View>
-            <View className='pl-[34px] pr-4'>
+            <View className={cn(showPlanetInfo ? 'pl-[34px]' : '') + ' pr-4'}>
               <BlockText lines={[1, 3]} style={styles.text_base}></BlockText>
               <View className='mt-2'>
                 <InlineText
@@ -67,6 +72,20 @@ export default function TopicCard(props: PlanetFeedRowProps) {
 
   const { title, planet } = props.data
 
+  const handleTitlePress = () => {
+    props.onView?.(data.url || data.uuid)
+    openPanelSheet(data)
+  }
+
+  const handlePlanetPress = () => {
+    router.push({
+      pathname: '/planet/[site_address]' as never,
+      params: {
+        site_address: planet.site_address,
+      },
+    })
+  }
+
   return (
     <MaxWidthWrapper
       style={styles.layer1}
@@ -77,18 +96,11 @@ export default function TopicCard(props: PlanetFeedRowProps) {
         className={cn('flex flex-row items-center')}
         style={[styles.layer1]}
       >
-        {showAvatar ? (
+        {showPlanetInfo ? (
           <View className='px-2 py-2 self-start'>
             <FixedPressable
               className='active:opacity-50'
-              onPress={() => {
-                router.push({
-                  pathname: '/planet/[site_address]' as never,
-                  params: {
-                    site_address: planet.site_address,
-                  },
-                })
-              }}
+              onPress={handlePlanetPress}
             >
               <Image
                 recyclingKey={`site_avatar:${planet.site_address}`}
@@ -110,28 +122,25 @@ export default function TopicCard(props: PlanetFeedRowProps) {
           )}
         >
           <View className='flex flex-row items-center pt-[2px] space-x-1 mb-1'>
-            <View>
-              <FixedPressable
-                hitSlop={4}
-                className='py-[2px] px-[6px] rounded active:opacity-60'
-                style={styles.layer2}
-                onPress={() => {
-                  router.push({
-                    pathname: '/planet/[site_address]' as never,
-                    params: {
-                      site_address: planet.site_address,
-                    },
-                  })
-                }}
-              >
-                <Text style={[styles.text_desc, styles.text_xs]}>
-                  {planet.site_title}
-                </Text>
-              </FixedPressable>
-            </View>
-            <View className='mx-1'>
-              <Text>·</Text>
-            </View>
+            {showPlanetInfo && (
+              <View>
+                <FixedPressable
+                  hitSlop={4}
+                  className='py-[2px] px-[6px] rounded active:opacity-60'
+                  style={styles.layer2}
+                  onPress={handlePlanetPress}
+                >
+                  <Text style={[styles.text_desc, styles.text_xs]}>
+                    {planet.site_title}
+                  </Text>
+                </FixedPressable>
+              </View>
+            )}
+            {showPlanetInfo && (
+              <View className='mx-1'>
+                <Text>·</Text>
+              </View>
+            )}
             <View className=''>
               <Text style={[styles.text_desc, styles.text_xs]}>
                 {data.updated_at}
@@ -139,13 +148,19 @@ export default function TopicCard(props: PlanetFeedRowProps) {
             </View>
           </View>
           <View className='pr-4'>
-            {title && (
-              <Pressable
-                onPress={() => {
-                  props.onView?.(data.url || data.uuid)
-                  openPanelSheet(data)
-                }}
-              >
+            {title &&
+              (isTitlePressable ? (
+                <Pressable onPress={handleTitlePress}>
+                  <Text
+                    className={cn({
+                      'font-[500]': titleStyle === 'emphasized',
+                    })}
+                    style={[styles.text, styles.text_base]}
+                  >
+                    {title}
+                  </Text>
+                </Pressable>
+              ) : (
                 <Text
                   className={cn({
                     'font-[500]': titleStyle === 'emphasized',
@@ -154,16 +169,12 @@ export default function TopicCard(props: PlanetFeedRowProps) {
                 >
                   {title}
                 </Text>
-              </Pressable>
-            )}
+              ))}
             {data.expand_label ? (
               <Pressable
                 style={styles.layer2}
                 className='py-1 px-[6px] rounded flex-row items-center active:opacity-50'
-                onPress={() => {
-                  props.onView?.(data.url || data.uuid)
-                  openPanelSheet(data)
-                }}
+                onPress={handleTitlePress}
               >
                 <Text style={[styles.text_base, styles.text_meta]}>
                   {data.expand_label}

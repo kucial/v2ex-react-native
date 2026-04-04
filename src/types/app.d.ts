@@ -48,6 +48,7 @@ declare global {
     titleStyle: 'normal' | 'emphasized'
     viewedStatus?: 'viewed' | 'has_update' | undefined
     onView?: (url: string) => void
+    variant?: 'feed' | 'site'
   }
 }
 

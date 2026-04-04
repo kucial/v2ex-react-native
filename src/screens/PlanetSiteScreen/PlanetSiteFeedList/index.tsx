@@ -18,6 +18,7 @@ import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import { useViewedLinks } from '@/components/PlanetFeedList/hooks'
+import TopicCard from '@/components/PlanetFeedList/TopicCard'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
@@ -25,8 +26,6 @@ import { usePlanetSiteFeed } from '@/hooks'
 import { useAudioResourceInterceptor } from '@/stores/audio'
 import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
 import { PlanetFeedItem } from '@/utils/v2ex-client/types'
-
-import TopicCard from './TopicCard'
 
 type PlanetSiteFeedListProps = {
   address: string
@@ -153,6 +152,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
             showAvatar={settings.feedShowAvatar}
             onView={setViewed}
             titleStyle={settings.feedTitleStyle}
+            variant='site'
           />
         </View>
       ),
