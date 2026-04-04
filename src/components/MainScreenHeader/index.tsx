@@ -5,6 +5,7 @@ import {
   DocumentPlusIcon,
   EnvelopeIcon,
   MagnifyingGlassIcon,
+  MusicalNoteIcon,
 } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -26,7 +27,7 @@ export const useNavigationWithBreadcrumb = (
   const { composeAuthedNavigation } = useAuthService()
 
   const navigationCallback = useCallback(() => {
-    router.push(route)
+    router.push(route as any)
   }, [route])
 
   const wrapped = requiresAuth
@@ -67,6 +68,11 @@ export default function MainScreenHeader(props) {
     'MainScreenHeader',
     'viewed-topics',
     '/me/viewed-topics',
+  )
+  const handleAudioScreenPress = useNavigationWithBreadcrumb(
+    'MainScreenHeader',
+    'audio',
+    '/audio',
   )
 
   const iconColor = theme.colors.text_desc
@@ -140,6 +146,15 @@ export default function MainScreenHeader(props) {
             onPress={handleViewedTopicButtonPress}
           >
             <ClockIcon size={24} color={iconColor} />
+          </Button>
+
+          <Button
+            className='w-[44px] h-[44px] rounded-full'
+            variant='icon'
+            radius={22}
+            onPress={handleAudioScreenPress}
+          >
+            <MusicalNoteIcon size={24} color={iconColor} />
           </Button>
         </View>
       )}

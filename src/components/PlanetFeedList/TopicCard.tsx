@@ -183,9 +183,9 @@ export default function TopicCard(props: PlanetFeedRowProps) {
               <View className='my-1'>
                 <AudioPlayer
                   audio={{
-                    title: title || 'Audio',
-                    url: data.audio,
-                    artist: data.planet.site_title,
+                    title: data.audio.title || title || 'Audio',
+                    url: data.audio.url,
+                    artist: data.audio.author || data.planet.site_title,
                   }}
                 />
               </View>

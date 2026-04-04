@@ -258,7 +258,12 @@ type PlanetFeedItem = {
   title: string
   content: HTMLString
   expand_label: string
-  audio?: string // src
+  audio?: {
+    url: string
+    title?: string
+    author?: string
+    channel?: string
+  }
   updated_at?: string
   planet: PlanetSiteBasic
   comment_count: number

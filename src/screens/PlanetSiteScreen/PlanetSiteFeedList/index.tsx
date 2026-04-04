@@ -22,6 +22,7 @@ import { useViewedLinks } from '@/components/PlanetFeedList/hooks'
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { usePlanetSiteFeed } from '@/hooks'
+import { useAudioResourceInterceptor } from '@/stores/audio'
 import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
 import { PlanetFeedItem } from '@/utils/v2ex-client/types'
 
@@ -51,6 +52,8 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
   })
 
   const listQuery = usePlanetSiteFeed(address)
+
+  useAudioResourceInterceptor(listQuery.data?.pages)
 
   const handleRefresh = useCallback(() => {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {

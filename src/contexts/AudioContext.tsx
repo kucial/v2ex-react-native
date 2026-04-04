@@ -12,6 +12,8 @@ import {
   useAudioPlayerStatus,
 } from 'expo-audio'
 
+import { useAudioStore } from '@/stores/audio'
+
 interface AudioItem {
   title: string
   url: string
@@ -55,6 +57,8 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   const [history, setHistory] = useState<AudioItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const shouldAutoPlayRef = useRef(false)
+  const hasSeekedRef = useRef<string | null>(null)
+  const lastSaveTimeRef = useRef(0)
 
   const player = useAudioPlayer(currentAudio?.url || '')
   const status = useAudioPlayerStatus(player)
@@ -95,9 +99,22 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   useEffect(() => {
     const playAfterSourceChange = async () => {
       if (!currentAudio?.url || !shouldAutoPlayRef.current) return
+      if (!status.isLoaded) return // Wait until loaded to seek/play reliably
+
       shouldAutoPlayRef.current = false
       setIsLoading(true)
       try {
+        // Attempt to resume from last position
+        if (hasSeekedRef.current !== currentAudio.url && status.duration > 0) {
+          hasSeekedRef.current = currentAudio.url
+          const historyItem = useAudioStore.getState().history[currentAudio.url]
+          if (historyItem && historyItem.lastPosition > 0) {
+            // Only seek if we have at least 2 seconds left
+            if (historyItem.lastPosition < status.duration - 2) {
+              await player.seekTo(historyItem.lastPosition)
+            }
+          }
+        }
         player.play()
       } catch (error) {
         console.error('Audio play error:', error)
@@ -107,7 +124,37 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
     }
 
     playAfterSourceChange()
-  }, [currentAudio?.url, player])
+  }, [currentAudio?.url, player, status.isLoaded, status.duration])
+
+  // Track progress and save to store periodically
+  useEffect(() => {
+    if (!currentAudio || !status.isLoaded || status.duration <= 0) return
+
+    const now = Date.now()
+    // Save every 5 seconds
+    if (now - lastSaveTimeRef.current > 5000) {
+      useAudioStore
+        .getState()
+        .updateHistory(currentAudio, status.currentTime, status.duration)
+      lastSaveTimeRef.current = now
+    }
+  }, [currentAudio, status.currentTime, status.duration, status.isLoaded])
+
+  // Save history accurately when paused
+  useEffect(() => {
+    if (!isPlaying && currentAudio && status.isLoaded && status.duration > 0) {
+      useAudioStore
+        .getState()
+        .updateHistory(currentAudio, status.currentTime, status.duration)
+      lastSaveTimeRef.current = Date.now()
+    }
+  }, [
+    isPlaying,
+    currentAudio,
+    status.isLoaded,
+    status.duration,
+    status.currentTime,
+  ])
 
   const playAudio = async (item: AudioItem) => {
     if (currentAudio?.url !== item.url) {
@@ -132,6 +179,11 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
 
   const pauseAudio = async () => {
     try {
+      if (currentAudio && status.isLoaded && status.duration > 0) {
+        useAudioStore
+          .getState()
+          .updateHistory(currentAudio, status.currentTime, status.duration)
+      }
       player.pause()
     } catch (error) {
       console.error('Audio pause error:', error)
@@ -158,6 +210,11 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
 
   const clearCurrentAudio = () => {
     try {
+      if (currentAudio && status.isLoaded && status.duration > 0) {
+        useAudioStore
+          .getState()
+          .updateHistory(currentAudio, status.currentTime, status.duration)
+      }
       player.pause()
       player.setActiveForLockScreen(false)
       player.clearLockScreenControls()
@@ -167,6 +224,7 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
     setCurrentAudio(null)
     setIsLoading(false)
     shouldAutoPlayRef.current = false
+    hasSeekedRef.current = null
   }
 
   const value: AudioContextType = {

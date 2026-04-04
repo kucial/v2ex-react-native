@@ -18,6 +18,7 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { PLANET_FEED_LIST_KEY, usePlanetFeed } from '@/hooks'
+import { useAudioResourceInterceptor } from '@/stores/audio'
 import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
 import { PlanetFeedItem } from '@/utils/v2ex-client/types'
 
@@ -40,6 +41,8 @@ function PlanetFeedList(props: PlanetFeedListProps) {
   const queryclient = useQueryClient()
 
   const listQuery = usePlanetFeed(isFocused)
+
+  useAudioResourceInterceptor(listQuery.data?.pages)
 
   const handleRefresh = useCallback(() => {
     if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {

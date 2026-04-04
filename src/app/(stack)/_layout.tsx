@@ -165,6 +165,12 @@ export default function StackLayout() {
           title: '意见反馈',
         }}
       />
+      <Stack.Screen
+        name='audio'
+        options={{
+          title: '音频资源',
+        }}
+      />
     </Stack>
   )
 }

@@ -573,7 +573,22 @@ export async function getPlanetFeeds({
           .find('.planet-post-content-toggle')
           .data('expandLabel') as string,
         planet,
-        audio: resolveUrl($(el).find('.planet-post-audio audio').attr('src')),
+        audio: (() => {
+          const $audioContainer = $(el).find('.planet-post-audio')
+          const $audio = $audioContainer.find('audio')
+          const url = resolveUrl($audio.attr('src'))
+          if (!url) return undefined
+          return {
+            url,
+            title:
+              $audioContainer.attr('data-title') || $audio.attr('data-title'),
+            author:
+              $audioContainer.attr('data-author') || $audio.attr('data-author'),
+            channel:
+              $audioContainer.attr('data-channel') ||
+              $audio.attr('data-channel'),
+          }
+        })(),
         updated_at: $(el).find('.planet-post-time a').text()?.trim(),
         comment_count: Number(
           $(el)
@@ -2343,7 +2358,22 @@ export async function getPlanetSiteFeeds({
           .find('.planet-post-content-toggle')
           .data('expandLabel') as string,
         planet,
-        audio: resolveUrl($(el).find('.planet-post-audio audio').attr('src')),
+        audio: (() => {
+          const $audioContainer = $(el).find('.planet-post-audio')
+          const $audio = $audioContainer.find('audio')
+          const url = resolveUrl($audio.attr('src'))
+          if (!url) return undefined
+          return {
+            url,
+            title:
+              $audioContainer.attr('data-title') || $audio.attr('data-title'),
+            author:
+              $audioContainer.attr('data-author') || $audio.attr('data-author'),
+            channel:
+              $audioContainer.attr('data-channel') ||
+              $audio.attr('data-channel'),
+          }
+        })(),
         updated_at: $(el).find('.planet-post-time a').text()?.trim(),
         comment_count: Number(
           $(el)
