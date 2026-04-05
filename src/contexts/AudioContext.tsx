@@ -3,15 +3,12 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
-import {
-  setAudioModeAsync,
-  useAudioPlayer,
-  useAudioPlayerStatus,
-} from 'expo-audio'
 
+import { audioService } from '@/lib/AudioService'
 import { useAudioStore } from '@/stores/audio'
 
 interface AudioItem {
@@ -53,146 +50,105 @@ interface AudioProviderProps {
 }
 
 export const AudioProvider = ({ children }: AudioProviderProps) => {
-  const [currentAudio, setCurrentAudio] = useState<AudioItem | null>(null)
+  const [playerState, setPlayerState] = useState(audioService.state)
   const [history, setHistory] = useState<AudioItem[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const shouldAutoPlayRef = useRef(false)
-  const hasSeekedRef = useRef<string | null>(null)
   const lastSaveTimeRef = useRef(0)
 
-  const player = useAudioPlayer(currentAudio?.url || '')
-  const status = useAudioPlayerStatus(player)
-  const isPlaying = status.playing
-
   useEffect(() => {
-    setAudioModeAsync({
-      playsInSilentMode: true,
-      shouldPlayInBackground: true,
+    return audioService.subscribe((state) => {
+      setPlayerState(state)
     })
   }, [])
 
-  useEffect(() => {
-    const syncLockScreen = async () => {
-      if (!currentAudio) {
-        try {
-          await player.setActiveForLockScreen(false)
-          player.clearLockScreenControls()
-        } catch (error) {
-          console.error('Audio lock screen clear error:', error)
+  const currentAudio = useMemo(() => {
+    const track = playerState.queue[playerState.currentIndex]
+    return track
+      ? {
+          title: track.title,
+          url: track.url,
+          artist: track.artist,
         }
-        return
-      }
+      : null
+  }, [playerState.queue, playerState.currentIndex])
 
-      try {
-        await player.setActiveForLockScreen(true, {
-          title: currentAudio.title,
-          artist: currentAudio.artist,
-        })
-      } catch (error) {
-        console.error('Audio lock screen update error:', error)
-      }
-    }
-
-    syncLockScreen()
-  }, [currentAudio, player])
-
-  useEffect(() => {
-    const playAfterSourceChange = async () => {
-      if (!currentAudio?.url || !shouldAutoPlayRef.current) return
-      if (!status.isLoaded) return // Wait until loaded to seek/play reliably
-
-      shouldAutoPlayRef.current = false
-      setIsLoading(true)
-      try {
-        // Attempt to resume from last position
-        if (hasSeekedRef.current !== currentAudio.url && status.duration > 0) {
-          hasSeekedRef.current = currentAudio.url
-          const historyItem = useAudioStore.getState().history[currentAudio.url]
-          if (historyItem && historyItem.lastPosition > 0) {
-            // Only seek if we have at least 2 seconds left
-            if (historyItem.lastPosition < status.duration - 2) {
-              await player.seekTo(historyItem.lastPosition)
-            }
-          }
-        }
-        player.play()
-      } catch (error) {
-        console.error('Audio play error:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    playAfterSourceChange()
-  }, [currentAudio?.url, player, status.isLoaded, status.duration])
-
-  // Track progress and save to store periodically
-  useEffect(() => {
-    if (!currentAudio || !status.isLoaded || status.duration <= 0) return
-
-    const now = Date.now()
-    // Save every 5 seconds
-    if (now - lastSaveTimeRef.current > 5000) {
-      useAudioStore
-        .getState()
-        .updateHistory(currentAudio, status.currentTime, status.duration)
-      lastSaveTimeRef.current = now
-    }
-  }, [currentAudio, status.currentTime, status.duration, status.isLoaded])
-
-  // Save history accurately when paused
-  useEffect(() => {
-    if (!isPlaying && currentAudio && status.isLoaded && status.duration > 0) {
-      useAudioStore
-        .getState()
-        .updateHistory(currentAudio, status.currentTime, status.duration)
-      lastSaveTimeRef.current = Date.now()
-    }
-  }, [
-    isPlaying,
-    currentAudio,
-    status.isLoaded,
-    status.duration,
-    status.currentTime,
-  ])
-
-  const playAudio = async (item: AudioItem) => {
-    if (currentAudio?.url !== item.url) {
-      shouldAutoPlayRef.current = true
-      setCurrentAudio(item)
-    } else {
-      try {
-        setIsLoading(true)
-        player.play()
-      } catch (error) {
-        console.error('Audio play error:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
+  const syncHistory = (item: AudioItem) => {
     setHistory((prev) => {
       const next = [item, ...prev.filter((entry) => entry.url !== item.url)]
       return next.slice(0, 10)
     })
   }
 
-  const pauseAudio = async () => {
-    try {
-      if (currentAudio && status.isLoaded && status.duration > 0) {
-        useAudioStore
-          .getState()
-          .updateHistory(currentAudio, status.currentTime, status.duration)
-      }
-      player.pause()
-    } catch (error) {
-      console.error('Audio pause error:', error)
+  // Save history periodically
+  useEffect(() => {
+    if (!currentAudio || playerState.duration <= 0) return
+
+    const now = Date.now()
+    if (now - lastSaveTimeRef.current > 5000) {
+      useAudioStore
+        .getState()
+        .updateHistory(currentAudio, playerState.position, playerState.duration)
+      lastSaveTimeRef.current = now
     }
+  }, [currentAudio, playerState.position, playerState.duration])
+
+  // Save history when paused
+  useEffect(() => {
+    if (!playerState.playing && currentAudio && playerState.duration > 0) {
+      useAudioStore
+        .getState()
+        .updateHistory(currentAudio, playerState.position, playerState.duration)
+      lastSaveTimeRef.current = Date.now()
+    }
+  }, [
+    playerState.playing,
+    currentAudio,
+    playerState.duration,
+    playerState.position,
+  ])
+
+  const playAudio = async (item: AudioItem) => {
+    setIsLoading(true)
+    syncHistory(item)
+
+    if (currentAudio?.url !== item.url) {
+      const historyItem = useAudioStore.getState().history[item.url]
+
+      await audioService.loadQueue(
+        [
+          {
+            id: item.url,
+            url: item.url,
+            title: item.title,
+            artist: item.artist || '',
+          },
+        ],
+        0,
+      )
+
+      if (historyItem && historyItem.lastPosition > 0) {
+        // Only seek if we have at least 2 seconds left
+        audioService.seekTo(historyItem.lastPosition)
+      }
+    } else {
+      audioService.player.play()
+    }
+
+    setIsLoading(false)
+  }
+
+  const pauseAudio = async () => {
+    if (currentAudio && playerState.duration > 0) {
+      useAudioStore
+        .getState()
+        .updateHistory(currentAudio, playerState.position, playerState.duration)
+    }
+    audioService.player.pause()
   }
 
   const togglePlayPause = async () => {
     if (!currentAudio) return
-    if (status.playing) {
+    if (playerState.playing) {
       await pauseAudio()
     } else {
       await playAudio(currentAudio)
@@ -200,43 +156,28 @@ export const AudioProvider = ({ children }: AudioProviderProps) => {
   }
 
   const seekTo = async (seconds: number) => {
-    if (!currentAudio) return
-    try {
-      await player.seekTo(seconds)
-    } catch (error) {
-      console.error('Audio seek error:', error)
-    }
+    audioService.seekTo(seconds)
   }
 
   const clearCurrentAudio = () => {
-    try {
-      if (currentAudio && status.isLoaded && status.duration > 0) {
-        useAudioStore
-          .getState()
-          .updateHistory(currentAudio, status.currentTime, status.duration)
-      }
-      player.pause()
-      player.setActiveForLockScreen(false)
-      player.clearLockScreenControls()
-    } catch (error) {
-      console.error('Audio clear error:', error)
+    if (currentAudio && playerState.duration > 0) {
+      useAudioStore
+        .getState()
+        .updateHistory(currentAudio, playerState.position, playerState.duration)
     }
-    setCurrentAudio(null)
-    setIsLoading(false)
-    shouldAutoPlayRef.current = false
-    hasSeekedRef.current = null
+    audioService.clearQueue()
   }
 
   const value: AudioContextType = {
     currentAudio,
     history,
-    isPlaying,
+    isPlaying: playerState.playing,
     isLoading,
     status: {
-      currentTime: status.currentTime,
-      duration: status.duration,
-      isLoaded: status.isLoaded,
-      isBuffering: status.isBuffering,
+      currentTime: playerState.position,
+      duration: playerState.duration,
+      isLoaded: playerState.duration > 0,
+      isBuffering: playerState.buffering,
     },
     playAudio,
     pauseAudio,

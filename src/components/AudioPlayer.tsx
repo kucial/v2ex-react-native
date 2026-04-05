@@ -8,7 +8,6 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio'
 
 import { useTheme } from '@/containers/ThemeService'
 import { useAudioContext } from '@/contexts/AudioContext'
@@ -27,10 +26,6 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
   const { styles, theme } = useTheme()
   const { currentAudio, isPlaying, status, playAudio, pauseAudio, seekTo } =
     useAudioContext()
-
-  // Local player for duration info
-  const localPlayer = useAudioPlayer(audio.url)
-  const localStatus = useAudioPlayerStatus(localPlayer)
 
   const isCurrentAudio = currentAudio?.url === audio.url
 
@@ -63,9 +58,10 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
 
   // Validate duration and check if seeking is possible
   const isValidDuration =
-    localStatus.duration > 0 &&
-    isFinite(localStatus.duration) &&
-    !isNaN(localStatus.duration)
+    isCurrentAudio &&
+    status.duration > 0 &&
+    isFinite(status.duration) &&
+    !isNaN(status.duration)
 
   const canSeek = isCurrentAudio && isValidDuration && trackWidth > 0
 
@@ -74,14 +70,14 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
     if (!isValidDuration) return 0
     const currentTime = status.currentTime || 0
     if (!isFinite(currentTime) || isNaN(currentTime)) return 0
-    return clamp(currentTime / localStatus.duration, 0, 1)
-  }, [status.currentTime, localStatus.duration, isValidDuration])
+    return clamp(currentTime / status.duration, 0, 1)
+  }, [status.currentTime, status.duration, isValidDuration])
 
   // Update progress value when not seeking
   useEffect(() => {
     if (isSeeking) return
     if (optimisticProgress !== null && isValidDuration) {
-      const expectedTime = optimisticProgress * localStatus.duration
+      const expectedTime = optimisticProgress * status.duration
       const delta = Math.abs(status.currentTime - expectedTime)
       if (delta < 0.5) {
         setOptimisticProgress(null)
@@ -98,7 +94,7 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
     progressValue,
     optimisticProgress,
     isValidDuration,
-    localStatus.duration,
+    status.duration,
     status.currentTime,
   ])
 
@@ -113,7 +109,7 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
   const finishSeeking = async (ratio: number) => {
     setIsSeeking(false)
     try {
-      const seekTime = localStatus.duration * ratio
+      const seekTime = status.duration * ratio
       if (isFinite(seekTime) && !isNaN(seekTime)) {
         await seekTo(seekTime)
       }
@@ -195,8 +191,8 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
   )
 
   const durationFormatted = useMemo(
-    () => formatTime(isValidDuration ? localStatus.duration : 0),
-    [localStatus.duration, isValidDuration],
+    () => formatTime(isValidDuration ? status.duration : 0),
+    [status.duration, isValidDuration],
   )
 
   return (
