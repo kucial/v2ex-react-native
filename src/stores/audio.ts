@@ -9,6 +9,8 @@ export interface AudioItem {
   title: string
   url: string
   artist?: string
+  artworkUrl?: string
+  sourceUrl?: string
 }
 
 export interface AudioHistoryItem extends AudioItem {
@@ -74,12 +76,26 @@ export const useAudioStore = create<AudioStore>()(
             let hasChanges = false
             const now = Date.now()
             items.forEach((item) => {
-              if (!updatedResources[item.url]) {
+              const existing = updatedResources[item.url]
+              if (!existing) {
                 updatedResources[item.url] = {
                   ...item,
                   discoveredAt: now,
                 }
                 hasChanges = true
+              } else {
+                let changed = false
+                const merged = { ...existing }
+                for (const key of Object.keys(item) as (keyof AudioItem)[]) {
+                  if (item[key] !== undefined && item[key] !== existing[key]) {
+                    merged[key] = item[key] as any
+                    changed = true
+                  }
+                }
+                if (changed) {
+                  updatedResources[item.url] = merged
+                  hasChanges = true
+                }
               }
             })
             if (!hasChanges) return prev
