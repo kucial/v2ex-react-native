@@ -251,84 +251,92 @@ const remoteDevtoolsImpl = <T>(
     }
 
     // Remote inbound (zorro-style)
-    socket.invoke('login', 'master').then(async (channelName: string) => {
-      handleInit()
+    socket
+      .invoke('login', 'master')
+      .then(async (channelName: string) => {
+        handleInit()
 
-      for await (const msg of socket.subscribe(
-        channelName,
-      ) as AsyncIterable<any>) {
-        const type: string | undefined = msg?.type
-        const action: any = msg?.action
+        for await (const msg of socket.subscribe(
+          channelName,
+        ) as AsyncIterable<any>) {
+          const type: string | undefined = msg?.type
+          const action: any = msg?.action
 
-        switch (type) {
-          case 'DISPATCH': {
-            const actionType = action?.type
+          switch (type) {
+            case 'DISPATCH': {
+              const actionType = action?.type
 
-            // zorro: pause recording toggle
-            if (actionType === 'PAUSE_RECORDING') {
-              isPaused = !!action?.status
-              pushNewState(
-                get(),
-                isPaused ? ACTION_TYPES.PAUSED : ACTION_TYPES.RESUMED,
+              // zorro: pause recording toggle
+              if (actionType === 'PAUSE_RECORDING') {
+                isPaused = !!action?.status
+                pushNewState(
+                  get(),
+                  isPaused ? ACTION_TYPES.PAUSED : ACTION_TYPES.RESUMED,
+                )
+                sendActualState()
+                break
+              }
+
+              // (optional) redux-devtools-ish commands (if your server forwards them)
+              if (actionType === 'RESET') {
+                setStateFromDevtools(initialState as any, true)
+                sendMessage('INIT', get())
+                break
+              }
+
+              if (actionType === '__setState') {
+                // allow remote to replace state
+                setStateFromDevtools(action?.state as any, true)
+                pushNewState(get(), '__setState')
+                sendMessage('ACTION', get(), '__setState')
+                break
+              }
+
+              if (
+                actionType === 'ROLLBACK' ||
+                actionType === 'JUMP_TO_STATE' ||
+                actionType === 'JUMP_TO_ACTION'
+              ) {
+                if (typeof msg?.state === 'string') {
+                  const state = safeJsonParse<T>(
+                    msg.state,
+                    `${actionType} state`,
+                  )
+                  if (state) setStateFromDevtools(state as any, true)
+                }
+                break
+              }
+
+              console.log(
+                '[remoteDevtools] Unsupported dispatch type:',
+                actionType,
               )
+              break
+            }
+
+            case 'ACTION': {
+              // Some servers send ACTION with action as a JSON string (like expo-devtools client)
+              if (typeof msg?.action === 'string') {
+                const parsed = safeJsonParse<any>(msg.action, 'ACTION action')
+                if (parsed?.type === '__setState') {
+                  setStateFromDevtools(parsed.state as any, true)
+                }
+              }
+              break
+            }
+
+            case 'START':
               sendActualState()
               break
-            }
 
-            // (optional) redux-devtools-ish commands (if your server forwards them)
-            if (actionType === 'RESET') {
-              setStateFromDevtools(initialState as any, true)
-              sendMessage('INIT', get())
-              break
-            }
-
-            if (actionType === '__setState') {
-              // allow remote to replace state
-              setStateFromDevtools(action?.state as any, true)
-              pushNewState(get(), '__setState')
-              sendMessage('ACTION', get(), '__setState')
-              break
-            }
-
-            if (
-              actionType === 'ROLLBACK' ||
-              actionType === 'JUMP_TO_STATE' ||
-              actionType === 'JUMP_TO_ACTION'
-            ) {
-              if (typeof msg?.state === 'string') {
-                const state = safeJsonParse<T>(msg.state, `${actionType} state`)
-                if (state) setStateFromDevtools(state as any, true)
-              }
-              break
-            }
-
-            console.log(
-              '[remoteDevtools] Unsupported dispatch type:',
-              actionType,
-            )
-            break
+            default:
+              console.log('[remoteDevtools] Unsupported message type:', type)
           }
-
-          case 'ACTION': {
-            // Some servers send ACTION with action as a JSON string (like expo-devtools client)
-            if (typeof msg?.action === 'string') {
-              const parsed = safeJsonParse<any>(msg.action, 'ACTION action')
-              if (parsed?.type === '__setState') {
-                setStateFromDevtools(parsed.state as any, true)
-              }
-            }
-            break
-          }
-
-          case 'START':
-            sendActualState()
-            break
-
-          default:
-            console.log('[remoteDevtools] Unsupported message type:', type)
         }
-      }
-    })
+      })
+      .catch((error) => {
+        console.error('[remoteDevtools] Login failed:', error)
+      })
 
     // Patch setState (official devtools.ts approach)
     const originalSetState = api.setState
