@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { InteractionManager, Text, View } from 'react-native'
+import { InteractionManager, Text, useWindowDimensions, View } from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
   useAnimatedScrollHandler,
@@ -7,9 +7,9 @@ import {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Share from 'react-native-share'
-// import { TagIcon } from 'react-native-heroicons/outline'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
+import { FlashList } from '@shopify/flash-list'
 import {
   useInfiniteQuery,
   useQuery,
@@ -25,7 +25,7 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 
 import { useAlertService } from '@/containers/AlertService'
-import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
+import { useAppSettings, useMaxContainerWidth, usePadLayout } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useTopicSheetService } from '@/containers/TopicSheetService'
@@ -54,17 +54,6 @@ const REPLY_PAGE_SIZE = 100
 const getPageNum = (num: number) => Math.ceil(num / REPLY_PAGE_SIZE)
 const getTopicLink = (id: string | number) => `https://v2ex.com/t/${id}`
 
-const hasRelatedMessages = (reply, replyList) => {
-  if (!reply) {
-    return false
-  }
-  const memberName = reply.member.username
-  return (
-    !!reply.members_mentioned.length ||
-    replyList.some((r) => r.members_mentioned.includes(memberName))
-  )
-}
-
 const getMemberReplies = (pivot: string, replyList: TopicReply[]) => {
   return replyList.filter((item) => item.member.username === pivot)
 }
@@ -76,8 +65,8 @@ function TopicScreen() {
   const insets = useSafeAreaInsets()
 
   const { id: rawId, brief: rawBrief } = params
-  const id = Array.isArray(rawId) ? rawId[0] : rawId // Ensure string
-  const topicId = Number(id) // Convert to number for API
+  const id = Array.isArray(rawId) ? rawId[0] : rawId
+  const topicId = Number(id)
   const brief = Array.isArray(rawBrief)
     ? rawBrief[0]
     : rawBrief
@@ -108,7 +97,6 @@ function TopicScreen() {
   const fetchReplies = useCallback(
     async ({ pageParam }) => {
       const data = await v2exClient.getTopicReplies({ id, p: pageParam })
-      // side effects...
       if (data.meta?.topic) {
         queryClient.setQueryData(
           [`/page/t/:id/topic.json`, id.toString()],
@@ -139,7 +127,6 @@ function TopicScreen() {
   const { showActionSheetWithOptions } = useActionSheet()
   useEffect(() => {
     if (topicQuery.data) {
-      // trigger once.
       if (lastIndex && !showScrollToLastPosition) {
         setShowScrollToLastPosition(true)
       }
@@ -154,7 +141,18 @@ function TopicScreen() {
   const { data: settings } = useAppSettings()
   const padLayout = usePadLayout()
 
-  const listRef = useRef<FlashList<TopicReply>>(null)
+  // FIX: Calculate contentWidth once here so ReplyRow doesn't need to call
+  // useWindowDimensions() itself — that caused every visible row to re-render
+  // on orientation change. Now only TopicScreen re-renders, and only the rows
+  // whose contentWidth prop actually changed will follow.
+  const { width } = useWindowDimensions()
+  const maxContainerWidth = useMaxContainerWidth()
+  const contentWidth = useMemo(
+    () => Math.min(maxContainerWidth, width) - 24 - 8 - 8 - 16,
+    [maxContainerWidth, width],
+  )
+
+  const listRef = useRef<any>(null)
   const changeNodeModalRef = useRef<TrueSheet>(null)
   const scrollControlRef = useRef<ScrollControlApi>(null)
   const currentIndexRef = useRef(null)
@@ -176,7 +174,6 @@ function TopicScreen() {
 
   const replyItems = useMemo(() => {
     if (repliesQuery.isLoading && !repliesQuery.error) {
-      // initial loading
       return new Array(10)
     }
     const items =
@@ -187,11 +184,11 @@ function TopicScreen() {
         return combined
       }, myReplies) || []
 
-    items.sort((a, b) => a.num - b.num)
-    return items
+    // FIX: sort into a new array instead of mutating in place
+    return [...items].sort((a, b) => a.num - b.num)
   }, [repliesQuery, myReplies])
 
-  // cleanup replies.
+  // cleanup replies
   useEffect(() => {
     if (myReplies.length && repliesQuery.data) {
       for (let i = 0; i < myReplies.length; i += 1) {
@@ -216,7 +213,10 @@ function TopicScreen() {
         }
       }
     }
-  }, [repliesQuery.data?.pages, myReplies])
+    // FIX: removed myReplies from deps to avoid re-trigger loop.
+    // repliesQuery.data?.pages is sufficient — when a page loads we check
+    // whether any of the optimistic replies have been superseded.
+  }, [repliesQuery.data?.pages])
 
   const handleToggleBlock = composeAuthedNavigation(
     useCallback(() => {
@@ -230,17 +230,12 @@ function TopicScreen() {
         ? v2exClient.unblockTopic
         : v2exClient.blockTopic
 
-      request({
-        id,
-      })
+      request({ id })
         .then(({ data }) => {
           topicQuery.data &&
             queryClient.setQueryData(
               [`/page/t/:id/topic.json`, id.toString()],
-              {
-                ...topicQuery.data,
-                ...data,
-              },
+              { ...topicQuery.data, ...data },
             )
           alert.show({
             type: 'success',
@@ -270,18 +265,12 @@ function TopicScreen() {
           topicQuery.data &&
             queryClient.setQueryData(
               [`/page/t/:id/topic.json`, id.toString()],
-              {
-                ...topicQuery.data,
-                ...data,
-              },
+              { ...topicQuery.data, ...data },
             )
           if (data.reported) {
             alert.show({ type: 'success', message: '已举报主题' })
           } else {
-            alert.show({
-              type: 'error',
-              message: '未成功举报举报主题',
-            })
+            alert.show({ type: 'error', message: '未成功举报举报主题' })
           }
         })
         .catch((err) => {
@@ -293,7 +282,6 @@ function TopicScreen() {
     }, [id]),
   )
 
-  // TODO: rewrite with swr optimistic update
   const handleToggleCollect = composeAuthedNavigation(
     useCallback(() => {
       if (topic.collected) {
@@ -302,22 +290,14 @@ function TopicScreen() {
           collected: false,
         })
         v2exClient
-          .uncollectTopic({
-            id,
-          })
+          .uncollectTopic({ id })
           .then(() => {
-            alert.show({
-              type: 'success',
-              message: '已取消收藏',
-            })
+            alert.show({ type: 'success', message: '已取消收藏' })
           })
           .catch((err) => {
             queryClient.setQueryData(
               [`/page/t/:id/topic.json`, id.toString()],
-              {
-                ...topic,
-                collected: true,
-              },
+              { ...topic, collected: true },
             )
             alert.show({ type: 'error', message: err.message })
           })
@@ -327,22 +307,14 @@ function TopicScreen() {
           collected: true,
         })
         v2exClient
-          .collectTopic({
-            id,
-          })
+          .collectTopic({ id })
           .then(() => {
-            alert.show({
-              type: 'success',
-              message: '已加入收藏',
-            })
+            alert.show({ type: 'success', message: '已加入收藏' })
           })
           .catch((err) => {
             queryClient.setQueryData(
               [`/page/t/:id/topic.json`, id.toString()],
-              {
-                ...topic,
-                collected: false,
-              },
+              { ...topic, collected: false },
             )
             alert.show({ type: 'error', message: err.message })
           })
@@ -361,14 +333,9 @@ function TopicScreen() {
         thanked: true,
       })
       v2exClient
-        .thankTopic({
-          id,
-        })
+        .thankTopic({ id })
         .then(() => {
-          alert.show({
-            type: 'success',
-            message: '已感谢主题',
-          })
+          alert.show({ type: 'success', message: '已感谢主题' })
         })
         .catch((err) => {
           queryClient.setQueryData([`/page/t/:id/topic.json`, id.toString()], {
@@ -384,16 +351,13 @@ function TopicScreen() {
     try {
       const url = `https://v2ex.com/t/${topic.id}`
       const message = topic.title || url
-      await Share.open({
-        message,
-        url,
-      })
+      await Share.open({ message, url })
     } catch (error) {
       console.log(error.message)
     }
   }, [topic])
 
-  const isFocused = true // Expo-router handles focus automatically
+  const isFocused = true
 
   const headerRight = useMemo(
     () => (
@@ -402,7 +366,6 @@ function TopicScreen() {
         variant='icon'
         radius={22}
         onPress={() => {
-          // actionsheet
           showActionSheetWithOptions(
             {
               title: `#${id}`,
@@ -426,9 +389,7 @@ function TopicScreen() {
               if (buttonIndex === 1) {
                 router.push({
                   pathname: '/browser',
-                  params: {
-                    url: getTopicLink(topicId),
-                  },
+                  params: { url: getTopicLink(topicId) },
                 })
               } else if (buttonIndex === 2) {
                 handleToggleBlock()
@@ -464,6 +425,7 @@ function TopicScreen() {
     },
     [id, settings],
   )
+
   const submitReply = useCallback(
     async (context: ReplyContext, values: { content: string }) => {
       dismissReplyForm()
@@ -482,7 +444,6 @@ function TopicScreen() {
                 content: values.content,
               })
               setMyReplies((prev) => [...prev, reply])
-              // clear cached for reply form.
               const cacheKey = getReplyFormCacheKey(context)
               setJSON(cacheKey, undefined)
               alert.show({ type: 'success', message: '回复成功' })
@@ -511,16 +472,9 @@ function TopicScreen() {
         alert.hide(indicator)
       }
     },
-    [
-      alert,
-      dismissReplyForm,
-      getReplyFormCacheKey,
-      id,
-      queryClient,
-      setMyReplies,
-      topicId,
-    ],
+    [alert, dismissReplyForm, getReplyFormCacheKey, id, queryClient, setMyReplies, topicId],
   )
+
   const initReply = useCallback(
     (reply = null) => {
       const context = { target: reply, type: 'reply' } as ReplyContext
@@ -530,39 +484,23 @@ function TopicScreen() {
         onSubmit: (values) => submitReply(context, values),
         onInitImgurSettings: () => {
           dismissReplyForm()
-          router.push({
-            pathname: '/imgur-settings',
-            params: {
-              autoBack: '1',
-            },
-          })
+          router.push({ pathname: '/imgur-settings', params: { autoBack: '1' } })
         },
       })
     },
-    [
-      showReplyForm,
-      getReplyFormCacheKey,
-      submitReply,
-      dismissReplyForm,
-      router,
-    ],
+    [showReplyForm, getReplyFormCacheKey, submitReply, dismissReplyForm, router],
   )
 
   const handleThankToReply = useCallback(
     (reply: TopicReply) => {
       const p = getPageNum(reply.num)
       v2exClient
-        .thankReply({
-          id: reply.id,
-        })
+        .thankReply({ id: reply.id })
         .then(({ data, success, message }) => {
           if (success) {
-            alert.show({
-              type: 'success',
-              message,
-            })
+            alert.show({ type: 'success', message })
           } else {
-            alert.show({ type: 'error', message: message })
+            alert.show({ type: 'error', message })
           }
 
           queryClient.setQueryData(
@@ -597,10 +535,7 @@ function TopicScreen() {
           )
         })
         .catch((err) => {
-          alert.show({
-            type: 'error',
-            message: err.message,
-          })
+          alert.show({ type: 'error', message: err.message })
         })
     },
     [id],
@@ -614,30 +549,14 @@ function TopicScreen() {
       onSubmit: (values) => submitReply(context, values),
       onInitImgurSettings: () => {
         dismissReplyForm()
-        router.push({
-          pathname: '/imgur-settings',
-          params: {
-            autoBack: '1',
-          },
-        })
+        router.push({ pathname: '/imgur-settings', params: { autoBack: '1' } })
       },
     })
-  }, [
-    showReplyForm,
-    getReplyFormCacheKey,
-    submitReply,
-    dismissReplyForm,
-    router,
-  ])
+  }, [showReplyForm, getReplyFormCacheKey, submitReply, dismissReplyForm, router])
 
   const handleEdit = useCallback(() => {
     if (topic) {
-      router.push({
-        pathname: '/topic/[id]/edit',
-        params: {
-          id: topic.id,
-        },
-      })
+      router.push({ pathname: '/topic/[id]/edit', params: { id: topic.id } })
     }
   }, [topic, router])
 
@@ -661,14 +580,7 @@ function TopicScreen() {
         onThank: handleThankToReply,
       })
     },
-    [
-      showUserInfo,
-      replyItems,
-      currentUser,
-      settings.feedShowAvatar,
-      initReply,
-      handleThankToReply,
-    ],
+    [showUserInfo, replyItems, currentUser, settings.feedShowAvatar, initReply, handleThankToReply],
   )
 
   const openConversation = useCallback(
@@ -682,20 +594,11 @@ function TopicScreen() {
         onShowUserInfo: openUserInfo,
       })
     },
-    [
-      showConversation,
-      replyItems,
-      settings.feedShowAvatar,
-      initReply,
-      handleThankToReply,
-      openUserInfo,
-    ],
+    [showConversation, replyItems, settings.feedShowAvatar, initReply, handleThankToReply, openUserInfo],
   )
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => {
-      dismissAll()
-    })
+    const unsubscribe = navigation.addListener('blur', () => { dismissAll() })
     return unsubscribe
   }, [navigation, dismissAll])
 
@@ -710,28 +613,80 @@ function TopicScreen() {
     return unsubscribe
   }, [navigation, topicQuery.data])
 
+  // FIX: Stabilise mentionedUsers — derive a primitive key first so the Set
+  // object is only recreated when the actual contents change, not on every
+  // render caused by a new replyItems array reference.
+  const mentionedUsersKey = useMemo(() => {
+    const users = new Set<string>()
+    if (replyItems) {
+      for (const r of replyItems) {
+        if (r?.members_mentioned) {
+          for (const u of r.members_mentioned) {
+            users.add(u)
+          }
+        }
+      }
+    }
+    return [...users].sort().join(',')
+  }, [replyItems])
+
+  const mentionedUsers = useMemo(() => {
+    const users = new Set<string>(
+      mentionedUsersKey ? mentionedUsersKey.split(',') : [],
+    )
+    return users
+  }, [mentionedUsersKey])
+
+  const extraData = useMemo(
+    () => ({
+      repliesLength: replyItems.length,
+      mentionedUsers,
+      contentWidth,
+    }),
+    [replyItems.length, mentionedUsers, contentWidth],
+  )
+
+  // FIX: Use refs for callbacks passed into renderReply so that the memoized
+  // render function never needs to be recreated when these callbacks change,
+  // which would bypass ReplyRow's memo() wrapper.
+  const initReplyRef = useRef(initReply)
+  const handleThankToReplyRef = useRef(handleThankToReply)
+  const openConversationRef = useRef(openConversation)
+  const openUserInfoRef = useRef(openUserInfo)
+
+  useEffect(() => { initReplyRef.current = initReply }, [initReply])
+  useEffect(() => { handleThankToReplyRef.current = handleThankToReply }, [handleThankToReply])
+  useEffect(() => { openConversationRef.current = openConversation }, [openConversation])
+  useEffect(() => { openUserInfoRef.current = openUserInfo }, [openUserInfo])
+
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
-      renderReply({ item, index }) {
+      renderReply({ item, index, extraData }: { item: any; index: number; extraData?: any }) {
         return (
           <ReplyRow
-            isLast={index === replyItems.length - 1}
+            isLast={index === extraData?.repliesLength - 1}
             style={styles.layer1}
             showAvatar={settings.feedShowAvatar}
+            contentWidth={extraData?.contentWidth}
             data={item}
-            onReply={initReply}
-            onThank={handleThankToReply}
-            hasConversation={hasRelatedMessages(item, replyItems)}
-            onShowConversation={openConversation}
-            onShowUserInfo={openUserInfo}
+            onReply={(reply) => initReplyRef.current(reply)}
+            onThank={(reply) => handleThankToReplyRef.current(reply)}
+            hasConversation={
+              !!item?.members_mentioned?.length ||
+              !!(item?.member?.username && extraData?.mentionedUsers.has(item.member.username))
+            }
+            onShowConversation={(ctx) => openConversationRef.current(ctx)}
+            onShowUserInfo={(ctx) => openUserInfoRef.current(ctx)}
           />
         )
       },
-      keyExtractor(item, index: number) {
-        return item?.id || `index-${index}`
+      keyExtractor(item: any, index: number) {
+        return item?.id ? String(item.id) : `index-${index}`
       },
     }
-  }, [id, replyItems])
+    // FIX: deps are now only the truly stable values that affect how the row
+    // is rendered structurally (style, avatar). Callbacks are handled via refs.
+  }, [styles.layer1, settings.feedShowAvatar])
 
   const handleReachEnd = useCallback(() => {
     if (shouldLoadMore(repliesQuery)) {
@@ -742,10 +697,7 @@ function TopicScreen() {
   const handleNavTo = useCallback(
     (target: number) => {
       if (target === 0) {
-        listRef.current.scrollToOffset({
-          offset: 0,
-          animated: true,
-        })
+        listRef.current.scrollToOffset({ offset: 0, animated: true })
         return
       }
       listRef.current.scrollToIndex({
@@ -763,7 +715,6 @@ function TopicScreen() {
   const handleScroll = useAnimatedScrollHandler({
     onScroll: (e) => {
       scrollY.value = e.contentOffset.y
-
       if (isBouncingTop(e) || isBouncingBottom(e)) {
         return
       }
@@ -775,6 +726,13 @@ function TopicScreen() {
       }
     },
   })
+
+  // FIX: Stable callback — only writes to a ref so deps are [].
+  // Passing an inline arrow here caused FlashList to remount the entire list
+  // on every render.
+  const handleViewableItemsChanged = useCallback(({ viewableItems }) => {
+    currentIndexRef.current = viewableItems[0]?.index
+  }, [])
 
   if (topicQuery.error) {
     return (
@@ -819,6 +777,7 @@ function TopicScreen() {
         ref={listRef}
         className='flex-1'
         data={replyItems}
+        extraData={extraData}
         renderItem={renderReply}
         keyExtractor={keyExtractor}
         ListHeaderComponent={
@@ -841,10 +800,9 @@ function TopicScreen() {
         }
         onEndReachedThreshold={0.4}
         onEndReached={handleReachEnd}
-        onViewableItemsChanged={({ viewableItems }) => {
-          const item = viewableItems[0]
-          currentIndexRef.current = item?.index
-        }}
+        // FIX: was an inline arrow function — caused FlashList to remount all
+        // visible rows on every render. Now a stable useCallback with [] deps.
+        onViewableItemsChanged={handleViewableItemsChanged}
         refreshControl={
           <MyRefreshControl
             refreshing={repliesQuery.isRefetching}
@@ -895,9 +853,7 @@ function TopicScreen() {
             <TopicMovePanel
               topicId={topicQuery.data.id}
               node={topicQuery.data.node}
-              onExit={() => {
-                changeNodeModalRef.current?.dismiss()
-              }}
+              onExit={() => { changeNodeModalRef.current?.dismiss() }}
               onUpdated={(topic) => {
                 queryClient.setQueryData(
                   [`/page/t/:id/topic.json`, id.toString()],

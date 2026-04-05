@@ -2,7 +2,6 @@ import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import {
   Pressable,
   Text,
-  useWindowDimensions,
   View,
   ViewStyle,
 } from 'react-native'
@@ -21,7 +20,6 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
-import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
@@ -36,6 +34,11 @@ type ReplyRowProps = {
   isPivot?: boolean
   isLast?: boolean
   hasConversation?: boolean
+  // FIX: Accept pre-calculated contentWidth from the parent so that
+  // useWindowDimensions() is not called inside every row instance.
+  // Previously every ReplyRow subscribed to window dimension changes,
+  // causing every visible row to re-render on orientation change.
+  contentWidth: number
   onReply(data: TopicReply): void
   onShowConversation?: (data: ConversationContext) => void
   onShowUserInfo?: (data: UserInfoContext) => void
@@ -44,10 +47,9 @@ type ReplyRowProps = {
 }
 
 function ReplyRow(props: ReplyRowProps) {
-  const { width } = useWindowDimensions()
-  const maxContainerWidth = useMaxContainerWidth()
-  const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
-  const { data, isPivot, isLast, showAvatar = true } = props
+  // FIX: contentWidth is now a prop — see TopicScreen for where it is
+  // calculated once at the screen level and passed down.
+  const { data, isPivot, isLast, showAvatar = true, contentWidth } = props
   const { composeAuthedNavigation } = useAuthService()
   const [showMarkdown, setMarkdownVisible] = useState(false)
   const { theme, styles, colorScheme } = useTheme()
@@ -69,6 +71,7 @@ function ReplyRow(props: ReplyRowProps) {
       data: { target: data?.id },
     },
   )
+
   const toggleMarkdown = usePressBreadcrumb(
     useCallback(() => {
       setMarkdownVisible((prev) => !prev)
@@ -118,13 +121,7 @@ function ReplyRow(props: ReplyRowProps) {
         baseUrl: 'https://v2ex.com',
       },
     }),
-    [
-      data?.id,
-      data?.content,
-      data?.content_rendered,
-      colorScheme,
-      showMarkdown,
-    ],
+    [data?.id, data?.content, data?.content_rendered, colorScheme, showMarkdown],
   )
 
   if (!data) {
@@ -168,19 +165,14 @@ function ReplyRow(props: ReplyRowProps) {
                 hitSlop={3}
                 onPress={() => {
                   if (props.onShowUserInfo) {
-                    props.onShowUserInfo({
-                      type: 'member',
-                      data: member.username,
-                    })
+                    props.onShowUserInfo({ type: 'member', data: member.username })
                   } else {
                     router.push(`/member/${member.username}`)
                   }
                 }}
               >
                 <Image
-                  source={{
-                    uri: member.avatar_normal,
-                  }}
+                  source={{ uri: member.avatar_normal }}
                   priority='low'
                   recyclingKey={`user-avatar:${member.username}`}
                   className='w-[24px] h-[24px] rounded'
@@ -199,10 +191,7 @@ function ReplyRow(props: ReplyRowProps) {
                   className='active:opacity-60'
                   onPress={() => {
                     if (props.onShowUserInfo) {
-                      props.onShowUserInfo({
-                        type: 'member',
-                        data: member.username,
-                      })
+                      props.onShowUserInfo({ type: 'member', data: member.username })
                     } else {
                       router.push(`/member/${member.username}`)
                     }
@@ -218,12 +207,7 @@ function ReplyRow(props: ReplyRowProps) {
                 {data.member_is_op && (
                   <View
                     className='ml-2 px-1 rounded'
-                    style={[
-                      styles.border,
-                      {
-                        borderColor: theme.colors.badge_bg,
-                      },
-                    ]}
+                    style={[styles.border, { borderColor: theme.colors.badge_bg }]}
                   >
                     <Text
                       className='text-[10px] font-medium leading-[17px]'
@@ -239,10 +223,7 @@ function ReplyRow(props: ReplyRowProps) {
                     style={[
                       styles.border,
                       styles.badge__bg,
-                      {
-                        borderColor: theme.colors.badge_bg,
-                        backgroundColor: theme.colors.badge_border,
-                      },
+                      { borderColor: theme.colors.badge_bg, backgroundColor: theme.colors.badge_border },
                     ]}
                   >
                     <Text
@@ -259,10 +240,7 @@ function ReplyRow(props: ReplyRowProps) {
                     style={[
                       styles.border,
                       styles.badge__bg,
-                      {
-                        borderColor: theme.colors.badge_bg,
-                        backgroundColor: theme.colors.badge_border,
-                      },
+                      { borderColor: theme.colors.badge_bg, backgroundColor: theme.colors.badge_border },
                     ]}
                   >
                     <Text
@@ -279,10 +257,7 @@ function ReplyRow(props: ReplyRowProps) {
                   </Text>
                 </View>
                 {data.reply_device && (
-                  <Text
-                    className='ml-2'
-                    style={[styles.text_meta, styles.text_xs]}
-                  >
+                  <Text className='ml-2' style={[styles.text_meta, styles.text_xs]}>
                     {data.reply_device}
                   </Text>
                 )}
@@ -293,10 +268,7 @@ function ReplyRow(props: ReplyRowProps) {
                     </View>
                     <View className='flex flex-row items-center'>
                       <FilledHeartIcon size={14} color={likedActiveColor} />
-                      <Text
-                        className='ml-1'
-                        style={[styles.text_meta, styles.text_xs]}
-                      >
+                      <Text className='ml-1' style={[styles.text_meta, styles.text_xs]}>
                         {data.thanks_count}
                       </Text>
                     </View>
@@ -305,23 +277,21 @@ function ReplyRow(props: ReplyRowProps) {
               </View>
               <View className='pr-1 justify-center'>
                 <View className='px-[3px] rounded-full'>
-                  <Text style={[styles.text_meta, styles.text_xs]}>
-                    #{data.num}
-                  </Text>
+                  <Text style={[styles.text_meta, styles.text_xs]}>#{data.num}</Text>
                 </View>
               </View>
             </View>
             <View
               className='pr-2 pb-1 min-h-[28px]'
-              style={{
-                marginBottom: showMarkdown ? -14 : 0,
-              }}
+              style={{ marginBottom: showMarkdown ? -14 : 0 }}
             >
               <HtmlRender
                 key={htmlRenderProps.key}
                 source={htmlRenderProps.source}
                 onOpenMemberInfo={props.onShowUserInfo}
-                contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 16}
+                // FIX: contentWidth is pre-calculated by the parent once,
+                // rather than calling useWindowDimensions() in every row.
+                contentWidth={contentWidth}
               />
             </View>
             <View className='py-[10px] relative flex flex-row '>
@@ -352,20 +322,12 @@ function ReplyRow(props: ReplyRowProps) {
                   )}
                   onPress={handleThank}
                 >
-                  <HeartIcon
-                    size={14}
-                    liked={data.thanked}
-                    ref={heartIconRef}
-                  />
+                  <HeartIcon size={14} liked={data.thanked} ref={heartIconRef} />
                   <View className='ml-1'>
                     {data.thanked ? (
-                      <Text style={[styles.text_meta, styles.text_xs]}>
-                        已感谢
-                      </Text>
+                      <Text style={[styles.text_meta, styles.text_xs]}>已感谢</Text>
                     ) : (
-                      <Text style={[styles.text_meta, styles.text_xs]}>
-                        感谢
-                      </Text>
+                      <Text style={[styles.text_meta, styles.text_xs]}>感谢</Text>
                     )}
                   </View>
                 </Pressable>
@@ -384,9 +346,7 @@ function ReplyRow(props: ReplyRowProps) {
                   >
                     <ChatBubbleLeftRightIcon size={14} color={iconColor} />
                     <View className='ml-1'>
-                      <Text style={[styles.text_meta, styles.text_xs]}>
-                        会话
-                      </Text>
+                      <Text style={[styles.text_meta, styles.text_xs]}>会话</Text>
                     </View>
                   </Pressable>
                 )}
@@ -405,10 +365,7 @@ function ReplyRow(props: ReplyRowProps) {
                   onPress={toggleMarkdown}
                 >
                   {showMarkdown ? (
-                    <MarkdownFilledIcon
-                      size={20}
-                      color={theme.colors.icon_markdown_bg}
-                    />
+                    <MarkdownFilledIcon size={20} color={theme.colors.icon_markdown_bg} />
                   ) : (
                     <MarkdownIcon size={20} color={iconColor} />
                   )}
