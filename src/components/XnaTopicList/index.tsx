@@ -125,34 +125,63 @@ function XnaTopicList(props: XnaTopicListProps) {
       return combined
     }, [])
     return items || []
-  }, [listQuery])
+  }, [listQuery.data, listQuery.isLoading, listQuery.error])
+
+  const extraData = useMemo(
+    () => ({
+      listLength: listItems.length,
+      getViewedStatus,
+      settings,
+      setViewed,
+    }),
+    [listItems.length, getViewedStatus, settings, setViewed],
+  )
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item, index }) =>
-        settings.feedLayout === 'tide' ? (
+      renderItem: ({
+        item,
+        index,
+        extraData: extra,
+      }: {
+        item: any
+        index: any
+        extraData?: any
+      }) =>
+        extra?.settings?.feedLayout === 'tide' ? (
           <TideTopicRow
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item?.url)}
-            onView={setViewed}
-            showAvatar={settings.feedShowAvatar}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === extra?.listLength - 1}
+            viewedStatus={extra?.getViewedStatus(item?.url)}
+            onView={extra?.setViewed}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            titleStyle={extra?.settings?.feedTitleStyle}
           />
         ) : (
           <TopicRow
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item?.url)}
-            showAvatar={settings.feedShowAvatar}
-            onView={setViewed}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === extra?.listLength - 1}
+            viewedStatus={extra?.getViewedStatus(item?.url)}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            onView={extra?.setViewed}
+            titleStyle={extra?.settings?.feedTitleStyle}
           />
         ),
       keyExtractor: (item: XnaFeed | undefined, index: number) =>
         item ? `${item.url}` : `index-${index}`,
     }),
-    [getViewedStatus, settings, listItems],
+    [],
+  )
+
+  const handleEndReached = useCallback(() => {
+    if (shouldLoadMore(listQuery)) {
+      listQuery.fetchNextPage()
+    }
+  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+
+  const listFooter = useMemo(
+    () => <CommonListFooter data={listQuery} />,
+    [listQuery],
   )
 
   return (
@@ -160,24 +189,18 @@ function XnaTopicList(props: XnaTopicListProps) {
       scrollToOverflowEnabled
       ref={listViewRef}
       data={listItems}
+      extraData={extraData}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      estimatedItemSize={settings.feedLayout === 'tide' ? 80 : 120}
       onEndReachedThreshold={0.4}
-      onEndReached={() => {
-        if (shouldLoadMore(listQuery)) {
-          listQuery.fetchNextPage()
-        }
-      }}
+      onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
           onRefresh={handleRefresh}
         />
       }
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listQuery} />
-      }}
+      ListFooterComponent={listFooter}
       onScroll={(e) => {
         scrollY.current = e.nativeEvent.contentOffset.y
       }}

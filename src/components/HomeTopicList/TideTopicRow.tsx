@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
@@ -12,7 +13,7 @@ import { preloadTopicInfo } from '@/utils/preload'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
 
-export default function TideTopicRow(props: HomeFeedRowProps) {
+function TideTopicRow(props: HomeFeedRowProps) {
   const { data, showAvatar, showLastReplyMember, isLast } = props
   const router = useRouter()
   const { styles } = useTheme()
@@ -193,3 +194,5 @@ export default function TideTopicRow(props: HomeFeedRowProps) {
     </MaxWidthWrapper>
   )
 }
+
+export default memo(TideTopicRow)

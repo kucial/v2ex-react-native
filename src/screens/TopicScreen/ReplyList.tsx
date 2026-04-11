@@ -1,6 +1,8 @@
-import { ReactElement } from 'react'
+import { ReactElement, useCallback, useMemo } from 'react'
+import { useWindowDimensions } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 
+import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
 import ReplyRow from './ReplyRow'
@@ -29,27 +31,48 @@ export default function ReplyList({
   className,
   contentContainerClassName,
 }: ReplyListProps) {
+  const { width } = useWindowDimensions()
+  const maxContainerWidth = useMaxContainerWidth()
+  const contentWidth = useMemo(
+    () => Math.min(maxContainerWidth, width) - 24 - 8 - 8 - 16,
+    [maxContainerWidth, width],
+  )
+
+  const extraData = useMemo(
+    () => ({ pivot }),
+    [pivot?.id],
+  )
+
+  const renderItem = useCallback(
+    ({ item: reply, extraData: extra }: { item: TopicReply; extraData?: any }) => (
+      <ReplyRow
+        showAvatar={showAvatar}
+        isPivot={reply.id === extra?.pivot?.id}
+        data={reply}
+        contentWidth={contentWidth}
+        onReply={onReply}
+        onThank={onThank}
+        onShowUserInfo={onShowUserInfo}
+      />
+    ),
+    [showAvatar, contentWidth, onReply, onThank, onShowUserInfo],
+  )
+
+  const keyExtractor = useCallback(
+    (item: TopicReply) => String(item.id),
+    [],
+  )
+
   return (
     <FlashList
       data={data}
       className={className}
       contentContainerClassName={contentContainerClassName}
-      extraData={{
-        pivot,
-      }}
+      extraData={extraData}
       nestedScrollEnabled
       ListHeaderComponent={header}
-      renderItem={({ item: reply, extraData }) => (
-        <ReplyRow
-          showAvatar={showAvatar}
-          key={reply.id}
-          isPivot={reply.id === extraData.pivot?.id}
-          data={reply}
-          onReply={onReply}
-          onThank={onThank}
-          onShowUserInfo={onShowUserInfo}
-        />
-      )}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
     />
   )
 }

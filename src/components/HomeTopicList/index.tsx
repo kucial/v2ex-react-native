@@ -133,7 +133,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       return combined
     }, [])
     return items || []
-  }, [listQuery.data, isFocused, getViewedStatus])
+  }, [listQuery.data, isFocused])
 
   useEffect(() => {
     if (tab === 'today_hots') {
@@ -151,32 +151,52 @@ function FeedTopicList(props: FeedTopicListProps) {
     }
   }, [listItems])
 
+  const extraData = useMemo(
+    () => ({
+      listLength: listItems.length,
+      getViewedStatus,
+      settings,
+    }),
+    [listItems.length, getViewedStatus, settings],
+  )
+
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item, index }) =>
-        settings.feedLayout === 'tide' ? (
+      renderItem: ({ item, index, extraData: extra }: { item: any; index: any; extraData?: any }) =>
+        extra?.settings?.feedLayout === 'tide' ? (
           <TideTopicRow
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === extra?.listLength - 1}
+            viewedStatus={extra?.getViewedStatus(item)}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
+            titleStyle={extra?.settings?.feedTitleStyle}
           />
         ) : (
           <TopicRow
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === extra?.listLength - 1}
+            viewedStatus={extra?.getViewedStatus(item)}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
+            titleStyle={extra?.settings?.feedTitleStyle}
           />
         ),
       keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>
         item ? `${item.id}` : `index-${index}`,
     }),
-    [getViewedStatus, settings, listItems],
+    [],
+  )
+
+  const handleEndReached = useCallback(() => {
+    if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
+      listQuery.fetchNextPage()
+    }
+  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+
+  const listFooter = useMemo(
+    () => <CommonListFooter data={listQuery} />,
+    [listQuery],
   )
 
   return (
@@ -184,23 +204,18 @@ function FeedTopicList(props: FeedTopicListProps) {
       scrollToOverflowEnabled
       ref={listViewRef}
       data={listItems}
+      extraData={extraData}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      onEndReached={() => {
-        if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
-          listQuery.fetchNextPage()
-        }
-      }}
+      onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
           onRefresh={handleRefresh}
         />
       }
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listQuery} />
-      }}
+      ListFooterComponent={listFooter}
       onScroll={(e) => {
         scrollY.current = e.nativeEvent.contentOffset.y
       }}

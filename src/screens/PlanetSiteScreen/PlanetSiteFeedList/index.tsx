@@ -7,7 +7,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { AppState, View } from 'react-native'
+import { AppState, useWindowDimensions, View } from 'react-native'
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
 import { FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
@@ -21,7 +21,10 @@ import { useViewedLinks } from '@/components/PlanetFeedList/hooks'
 import TopicCard from '@/components/PlanetFeedList/TopicCard'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
-import { useAppSettings } from '@/containers/AppSettingsService'
+import {
+  useAppSettings,
+  useMaxContainerWidth,
+} from '@/containers/AppSettingsService'
 import { usePlanetSiteFeed } from '@/hooks'
 import { useAudioResourceInterceptor } from '@/stores/audio'
 import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
@@ -43,6 +46,13 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
   const { data: settings } = useAppSettings()
   const { setViewed, getViewedStatus } = useViewedLinks()
   const queryclient = useQueryClient()
+
+  const { width } = useWindowDimensions()
+  const maxContainerWidth = useMaxContainerWidth()
+  const contentWidth = useMemo(
+    () => Math.min(maxContainerWidth, width) - 24 - 8 - 8 - 16,
+    [maxContainerWidth, width],
+  )
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
@@ -139,27 +149,58 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
       return combined
     }, [])
     return items || []
-  }, [listQuery])
+  }, [listQuery.data, listQuery.isLoading, listQuery.error])
+
+  const extraData = useMemo(
+    () => ({
+      listLength: listItems.length,
+      getViewedStatus,
+      settings,
+      setViewed,
+      contentWidth,
+    }),
+    [listItems.length, getViewedStatus, settings, setViewed, contentWidth],
+  )
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item, index }) => (
+      renderItem: ({
+        item,
+        index,
+        extraData: extra,
+      }: {
+        item: any
+        index: any
+        extraData?: any
+      }) => (
         <View className='px-2 py-1'>
           <TopicCard
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item?.url || item?.uuid)}
-            showAvatar={settings.feedShowAvatar}
-            onView={setViewed}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === extra?.listLength - 1}
+            viewedStatus={extra?.getViewedStatus(item?.url || item?.uuid)}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            onView={extra?.setViewed}
+            titleStyle={extra?.settings?.feedTitleStyle}
             variant='site'
+            contentWidth={extra?.contentWidth}
           />
         </View>
       ),
       keyExtractor: (item: PlanetFeedItem | undefined, index: number) =>
         item ? `${item.uuid}` : `index-${index}`,
     }),
-    [getViewedStatus, settings, listItems],
+    [],
+  )
+
+  const handleEndReached = useCallback(() => {
+    if (shouldLoadMore(listQuery)) {
+      listQuery.fetchNextPage()
+    }
+  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+
+  const listFooter = useMemo(
+    () => <CommonListFooter data={listQuery} />,
+    [listQuery],
   )
 
   return (
@@ -168,14 +209,11 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
       ref={listViewRef}
       className='flex-1'
       data={listItems}
+      extraData={extraData}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      onEndReached={() => {
-        if (shouldLoadMore(listQuery)) {
-          listQuery.fetchNextPage()
-        }
-      }}
+      onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
@@ -183,9 +221,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
         />
       }
       ListHeaderComponent={header}
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listQuery} />
-      }}
+      ListFooterComponent={listFooter}
       onScroll={scrollHandler}
     />
   )

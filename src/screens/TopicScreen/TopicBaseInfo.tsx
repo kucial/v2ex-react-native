@@ -20,6 +20,7 @@ function TopicBaseInfo(props: {
   isLoading?: boolean
   hasReply?: boolean
   fallback?: TopicBasic
+  contentWidth: number
   onAppend(): void
   onEdit(): void
   onChangeNode(): void
@@ -78,7 +79,7 @@ function TopicBaseInfo(props: {
                 }
               />
             ) : (
-              <TopicInfo data={topic} />
+              <TopicInfo data={topic} contentWidth={props.contentWidth} />
             )}
             {isFallback && isLoading && (
               <View className='mt-1'>

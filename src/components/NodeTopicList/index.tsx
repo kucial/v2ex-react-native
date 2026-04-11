@@ -136,26 +136,43 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     return items || []
   }, [listQuery.data, listQuery.error])
 
+  const extraData = useMemo(
+    () => ({
+      listLength: listItems.length,
+      getViewedStatus,
+      settings,
+    }),
+    [listItems.length, getViewedStatus, settings],
+  )
+
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
-      renderItem({ item, index }) {
-        return settings.feedLayout === 'tide' ? (
+      renderItem({
+        item,
+        index,
+        extraData: extra,
+      }: {
+        item: any
+        index: any
+        extraData?: any
+      }) {
+        return extra?.settings?.feedLayout === 'tide' ? (
           <TideNodeTopicRow
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === extra?.listLength - 1}
+            viewedStatus={extra?.getViewedStatus(item)}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
+            titleStyle={extra?.settings?.feedTitleStyle}
           />
         ) : (
           <NodeTopicRow
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === extra?.listLength - 1}
+            viewedStatus={extra?.getViewedStatus(item)}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
+            titleStyle={extra?.settings?.feedTitleStyle}
           />
         )
       },
@@ -163,7 +180,18 @@ export default function NodeTopicList(props: NodeTopicListProps) {
         return item?.id || `index-${index}`
       },
     }
-  }, [getViewedStatus, settings, listItems])
+  }, [])
+
+  const handleEndReached = useCallback(() => {
+    if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
+      listQuery.fetchNextPage()
+    }
+  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+
+  const listFooter = useMemo(
+    () => <CommonListFooter data={listQuery} />,
+    [listQuery],
+  )
 
   return (
     <AnimatedFlashList
@@ -171,14 +199,11 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       ref={listViewRef}
       className='flex-1'
       data={listItems}
+      extraData={extraData}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      onEndReached={() => {
-        if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
-          listQuery.fetchNextPage()
-        }
-      }}
+      onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
@@ -186,9 +211,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
         />
       }
       ListHeaderComponent={header}
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listQuery} />
-      }}
+      ListFooterComponent={listFooter}
       onScroll={scrollHandler}
     />
   )

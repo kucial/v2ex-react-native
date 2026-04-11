@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Platform, Text, View } from 'react-native'
 import * as Sentry from '@sentry/react-native'
 import { Image } from 'expo-image'
@@ -12,7 +13,7 @@ import { cn } from '@/lib/utils'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
 
-export default function TopicRow(props: XnaFeedRowProps) {
+function TopicRow(props: XnaFeedRowProps) {
   const { data, showAvatar, titleStyle } = props
   const router = useRouter()
   const { styles, theme } = useTheme()
@@ -197,3 +198,5 @@ export default function TopicRow(props: XnaFeedRowProps) {
     </MaxWidthWrapper>
   )
 }
+
+export default memo(TopicRow)

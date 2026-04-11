@@ -6,7 +6,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { AppState, View } from 'react-native'
+import { AppState, useWindowDimensions, View } from 'react-native'
 import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
@@ -16,7 +16,10 @@ import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
-import { useAppSettings } from '@/containers/AppSettingsService'
+import {
+  useAppSettings,
+  useMaxContainerWidth,
+} from '@/containers/AppSettingsService'
 import { PLANET_FEED_LIST_KEY, usePlanetFeed } from '@/hooks'
 import { useAudioResourceInterceptor } from '@/stores/audio'
 import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
@@ -39,6 +42,13 @@ function PlanetFeedList(props: PlanetFeedListProps) {
   const { data: settings } = useAppSettings()
   const { setViewed, getViewedStatus } = useViewedLinks()
   const queryclient = useQueryClient()
+
+  const { width } = useWindowDimensions()
+  const maxContainerWidth = useMaxContainerWidth()
+  const contentWidth = useMemo(
+    () => Math.min(maxContainerWidth, width) - 24 - 8 - 8 - 16,
+    [maxContainerWidth, width],
+  )
 
   const listQuery = usePlanetFeed(isFocused)
 
@@ -129,26 +139,57 @@ function PlanetFeedList(props: PlanetFeedListProps) {
       return combined
     }, [])
     return items || []
-  }, [listQuery])
+  }, [listQuery.data, listQuery.isLoading, listQuery.error])
+
+  const extraData = useMemo(
+    () => ({
+      listLength: listItems.length,
+      getViewedStatus,
+      settings,
+      setViewed,
+      contentWidth,
+    }),
+    [listItems.length, getViewedStatus, settings, setViewed, contentWidth],
+  )
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item, index }) => (
+      renderItem: ({
+        item,
+        index,
+        extraData: extra,
+      }: {
+        item: any
+        index: any
+        extraData?: any
+      }) => (
         <View className='py-1 px-2'>
           <TopicCard
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item?.url || item?.uuid)}
-            showAvatar={settings.feedShowAvatar}
-            onView={setViewed}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === extra?.listLength - 1}
+            viewedStatus={extra?.getViewedStatus(item?.url || item?.uuid)}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            onView={extra?.setViewed}
+            titleStyle={extra?.settings?.feedTitleStyle}
+            contentWidth={extra?.contentWidth}
           />
         </View>
       ),
       keyExtractor: (item: PlanetFeedItem | undefined, index: number) =>
         item ? `${item.uuid}` : `index-${index}`,
     }),
-    [getViewedStatus, settings, listItems],
+    [],
+  )
+
+  const handleEndReached = useCallback(() => {
+    if (shouldLoadMore(listQuery)) {
+      listQuery.fetchNextPage()
+    }
+  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+
+  const listFooter = useMemo(
+    () => <CommonListFooter data={listQuery} />,
+    [listQuery],
   )
 
   return (
@@ -156,24 +197,19 @@ function PlanetFeedList(props: PlanetFeedListProps) {
       scrollToOverflowEnabled
       ref={listViewRef}
       data={listItems}
+      extraData={extraData}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
       contentContainerStyle={{ paddingVertical: 4 }}
-      onEndReached={() => {
-        if (shouldLoadMore(listQuery)) {
-          listQuery.fetchNextPage()
-        }
-      }}
+      onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
           onRefresh={handleRefresh}
         />
       }
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listQuery} />
-      }}
+      ListFooterComponent={listFooter}
       onScroll={(e) => {
         scrollY.current = e.nativeEvent.contentOffset.y
       }}

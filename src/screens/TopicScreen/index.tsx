@@ -186,7 +186,7 @@ function TopicScreen() {
 
     // FIX: sort into a new array instead of mutating in place
     return [...items].sort((a, b) => a.num - b.num)
-  }, [repliesQuery, myReplies])
+  }, [repliesQuery.data?.pages, repliesQuery.isLoading, repliesQuery.error, myReplies])
 
   // cleanup replies
   useEffect(() => {
@@ -789,6 +789,7 @@ function TopicScreen() {
             data={topicQuery.data}
             hasReply={!!replyItems.length}
             fallback={brief}
+            contentWidth={contentWidth}
             onAppend={handleAppend}
             onEdit={handleEdit}
             onChangeNode={handleChangeNode}

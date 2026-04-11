@@ -1,4 +1,5 @@
-import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import { memo } from 'react'
+import { Pressable, Text, View } from 'react-native'
 import {
   ArrowsPointingOutIcon,
   ChartBarIcon,
@@ -11,7 +12,6 @@ import { useRouter } from 'expo-router'
 import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
-import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import { usePanelSheet } from '@/stores/panelSheet'
@@ -20,11 +20,8 @@ import AudioPlayer from '../AudioPlayer'
 import HtmlRender from '../HtmlRender'
 import MaxWidthWrapper from '../MaxWidthWrapper'
 
-export default function TopicCard(props: PlanetFeedRowProps) {
-  const { width } = useWindowDimensions()
-  const maxContainerWidth = useMaxContainerWidth()
-  const CONTAINER_WIDTH = Math.min(maxContainerWidth, width)
-  const { data, showAvatar, titleStyle, variant = 'feed' } = props
+function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
+  const { data, showAvatar, titleStyle, variant = 'feed', contentWidth: propContentWidth } = props
   const router = useRouter()
   const { styles, theme } = useTheme()
   const iconColor = theme.colors.text_meta
@@ -187,7 +184,7 @@ export default function TopicCard(props: PlanetFeedRowProps) {
             ) : (
               <HtmlRender
                 source={{ html: data.content }}
-                contentWidth={CONTAINER_WIDTH - 24 - 8 - 8 - 16}
+                contentWidth={propContentWidth || 300}
               />
             )}
             {data.audio && (
@@ -227,3 +224,5 @@ export default function TopicCard(props: PlanetFeedRowProps) {
     </MaxWidthWrapper>
   )
 }
+
+export default memo(TopicCard)

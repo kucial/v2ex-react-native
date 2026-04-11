@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, Text, useWindowDimensions, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -21,6 +21,14 @@ import HomeDataPrefetch from './HomeDataPrefetch'
 
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'
+
+const TAB_STYLE = {
+  flexShrink: 0,
+  width: 'auto' as const,
+  minWidth: 56,
+  height: 42,
+  paddingTop: 3,
+}
 
 interface RefreshableView {
   scrollToRefresh(): void
@@ -73,6 +81,8 @@ export default function HomeScreen(props) {
   const navigation = useNavigation()
 
   const normalizedIndex = Math.min(index, routes ? routes.length - 1 : 0)
+  const normalizedIndexRef = useRef(normalizedIndex)
+  normalizedIndexRef.current = normalizedIndex
 
   const currentListRef = useRef<RefreshableView>(null)
   const tabIdleForRefresh = useRef<string>(null)
@@ -85,108 +95,117 @@ export default function HomeScreen(props) {
       ? width - APP_SIDEBAR_SIZE - insets.left - insets.right
       : width - insets.left - insets.right
 
-  const { renderScene, renderTabBar } = useMemo(() => {
-    if (!homeTabs) {
-      return {}
-    }
+  const indicatorStyle = useMemo(
+    () => ({
+      backgroundColor: theme.colors.primary,
+      height: 2,
+    }),
+    [theme.colors.primary],
+  )
 
-    return {
-      renderScene: ({ route }) => {
-        const { tab } = route
-        const isFocused = pathname === '/feed'
-        const isActive = isFocused && route.key === routes[normalizedIndex].key
-        switch (tab.type) {
-          case 'node':
-            return (
-              <NodeTopicList
-                key={`${tab.type}-${tab.value}`}
-                isFocused={isActive}
-                currentListRef={isActive && currentListRef}
-                name={tab.value}
-                scrollY={scrollY}
-              />
-            )
-          case 'home':
-            return (
-              <HomeTopicList
-                key={`${tab.type}-${tab.value}`}
-                isFocused={isActive}
-                currentListRef={isActive && currentListRef}
-                tab={tab.value}
-              />
-            )
-          case 'xna':
-            return (
-              <XnaTopicList
-                key='xna'
-                isFocused={isActive}
-                currentListRef={isActive && currentListRef}
-              />
-            )
-          case 'planet':
-            return (
-              <PlanetFeedList
-                key='planet'
-                isFocused={isActive}
-                currentListRef={isActive && currentListRef}
-              />
-            )
-          default:
-            return (
-              <View>
-                <Text>TO_HANDLE: {tab.type}</Text>
-              </View>
-            )
+  const contentContainerStyle = useMemo(
+    () => ({
+      display: 'flex' as const,
+      flexDirection: 'row' as const,
+      minWidth: viewWidth,
+      overflow: 'scroll' as const,
+    }),
+    [viewWidth],
+  )
+
+  const renderScene = useCallback(
+    ({ route }) => {
+      const { tab } = route
+      const isFocused = pathname === '/feed'
+      const isActive =
+        isFocused && route.key === routes?.[normalizedIndexRef.current]?.key
+      switch (tab.type) {
+        case 'node':
+          return (
+            <NodeTopicList
+              key={`${tab.type}-${tab.value}`}
+              isFocused={isActive}
+              currentListRef={isActive && currentListRef}
+              name={tab.value}
+              scrollY={scrollY}
+            />
+          )
+        case 'home':
+          return (
+            <HomeTopicList
+              key={`${tab.type}-${tab.value}`}
+              isFocused={isActive}
+              currentListRef={isActive && currentListRef}
+              tab={tab.value}
+            />
+          )
+        case 'xna':
+          return (
+            <XnaTopicList
+              key='xna'
+              isFocused={isActive}
+              currentListRef={isActive && currentListRef}
+            />
+          )
+        case 'planet':
+          return (
+            <PlanetFeedList
+              key='planet'
+              isFocused={isActive}
+              currentListRef={isActive && currentListRef}
+            />
+          )
+        default:
+          return (
+            <View>
+              <Text>TO_HANDLE: {tab.type}</Text>
+            </View>
+          )
+      }
+    },
+    [routes, pathname],
+  )
+
+  const handleTabPress = useCallback(
+    ({ route }) => {
+      const currentRoute = routes?.[normalizedIndexRef.current]
+      if (currentRoute?.key === route.key) {
+        if (tabIdleForRefresh.current === route.key) {
+          clearTimeout(tabIdleResetTimer.current)
+          if (currentListRef.current) {
+            currentListRef.current.scrollToRefresh()
+          }
+          tabIdleForRefresh.current = undefined
+        } else {
+          tabIdleForRefresh.current = route.key
+          tabIdleResetTimer.current = setTimeout(() => {
+            tabIdleForRefresh.current = undefined
+          }, REFRESH_IDLE_RESET_TIMEOUT)
         }
-      },
-      renderTabBar: (props) => {
-        return (
-          <TabBar
-            {...props}
-            scrollEnabled
-            pressColor={theme.colors.bg_layer3}
-            indicatorStyle={{
-              backgroundColor: theme.colors.primary,
-              height: 2,
-            }}
-            style={styles.layer1}
-            tabStyle={{
-              flexShrink: 0,
-              width: 'auto',
-              minWidth: 56,
-              height: 42,
-              paddingTop: 3,
-            }}
-            contentContainerStyle={{
-              display: 'flex',
-              flexDirection: 'row',
-              minWidth: viewWidth,
-              overflow: 'scroll',
-            }}
-            activeColor={theme.colors.primary}
-            inactiveColor={theme.colors.text}
-            onTabPress={({ route }) => {
-              const currentRoute = routes[normalizedIndex]
-              if (currentRoute.key === route.key) {
-                if (tabIdleForRefresh.current === route.key) {
-                  clearTimeout(tabIdleResetTimer.current)
-                  if (currentListRef.current) {
-                    currentListRef.current.scrollToRefresh()
-                  }
-                  tabIdleForRefresh.current = undefined
-                } else {
-                  tabIdleForRefresh.current = route.key
-                  tabIdleResetTimer.current = setTimeout(() => {
-                    tabIdleForRefresh.current = undefined
-                  }, REFRESH_IDLE_RESET_TIMEOUT)
-                }
-              }
-            }}
-          />
-        )
-      },
-    }
-  }, [routes, normalizedIndex, pathname, theme])
+      }
+    },
+    [routes],
+  )
+
+  const renderTabBar = useCallback(
+    (props) => {
+      return (
+        <TabBar
+          {...props}
+          scrollEnabled
+          pressColor={theme.colors.bg_layer3}
+          indicatorStyle={indicatorStyle}
+          style={styles.layer1}
+          tabStyle={TAB_STYLE}
+          contentContainerStyle={contentContainerStyle}
+          activeColor={theme.colors.primary}
+          inactiveColor={theme.colors.text}
+          onTabPress={handleTabPress}
+        />
+      )
+    },
+    [theme, styles.layer1, indicatorStyle, contentContainerStyle, handleTabPress],
+  )
 
   useEffect(() => {
     if (!homeTabs) {
@@ -208,7 +227,8 @@ export default function HomeScreen(props) {
           }
           tabIdleForRefresh.current = undefined
         } else {
-          tabIdleForRefresh.current = routes[normalizedIndex].key
+          tabIdleForRefresh.current =
+            routes[normalizedIndexRef.current]?.key
           tabIdleResetTimer.current = setTimeout(() => {
             tabIdleForRefresh.current = undefined
           }, REFRESH_IDLE_RESET_TIMEOUT)
@@ -216,7 +236,7 @@ export default function HomeScreen(props) {
       })
       return unsubscribe
     }
-  }, [navigation, routes, normalizedIndex, pathname])
+  }, [navigation, routes, pathname])
 
   if (error) {
     return (
@@ -243,10 +263,12 @@ export default function HomeScreen(props) {
     return <HomeSkeleton />
   }
 
+  const tabViewKey = routes.map((r) => r.key).join(',')
+
   return (
     <>
       <TabView
-        key={routes.map((r) => r.key).join(',')}
+        key={tabViewKey}
         navigationState={{ index: normalizedIndex, routes }}
         renderScene={renderScene}
         renderTabBar={renderTabBar}

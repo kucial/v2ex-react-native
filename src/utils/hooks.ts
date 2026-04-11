@@ -17,7 +17,6 @@ export const useCachedState = function useCachedState<
   const cacheRef = useRef(null)
   const updateCache = useCallback(
     debounce((value) => {
-      console.log('update cache', cacheKey)
       cacheRef.current = value
       setJSON(cacheKey, value)
     }, 300),
@@ -50,7 +49,7 @@ export const useCachedState = function useCachedState<
   )
 
   useEffect(() => {
-    if (cacheRef.current !== state) {
+    if (cacheRef.current !== state && state !== undefined) {
       updateCache(state)
     }
   }, [state])

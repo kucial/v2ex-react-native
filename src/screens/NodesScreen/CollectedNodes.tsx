@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { DocumentIcon } from 'react-native-heroicons/outline'
 import { Image } from 'expo-image'
@@ -10,7 +11,7 @@ import { cn } from '@/lib/utils'
 import { getAbsoluteUrl } from '@/utils/url'
 import { NodeExtra } from '@/utils/v2ex-client/types'
 
-export default function CollectedNodes(props: { data: NodeExtra[] }) {
+function CollectedNodes(props: { data: NodeExtra[] }) {
   const router = useRouter()
   const { data } = props
   const { theme, styles } = useTheme()
@@ -65,3 +66,5 @@ export default function CollectedNodes(props: { data: NodeExtra[] }) {
     </MaxWidthWrapper>
   )
 }
+
+export default memo(CollectedNodes)

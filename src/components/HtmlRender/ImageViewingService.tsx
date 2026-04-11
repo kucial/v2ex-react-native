@@ -6,6 +6,7 @@ import {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import { Pressable, Text, View } from 'react-native'
@@ -118,6 +119,9 @@ const ImageViewingServiceProvider = forwardRef<
   const [viewIndex, setViewIndex] = useState(-1)
   const [images, setImages] = useState<ImageResource[]>([])
 
+  const imagesRef = useRef<ImageResource[]>([])
+  useEffect(() => { imagesRef.current = images }, [images])
+
   const service: ImageViewingService = useMemo(() => {
     return {
       add: (info) => {
@@ -139,11 +143,11 @@ const ImageViewingServiceProvider = forwardRef<
         setImages((prev) => prev.filter((item) => item.origin !== url))
       },
       open: (url: string) => {
-        const index = images.findIndex((item) => item.origin === url)
+        const index = imagesRef.current.findIndex((item) => item.origin === url)
         setViewIndex(index)
       },
     }
-  }, [images])
+  }, [])
 
   const renderImages = useMemo(() => {
     return images.map((item) => ({

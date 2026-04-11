@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useMemo, useRef, useState } from 'react'
 import {
   Alert,
   Linking,
@@ -497,4 +497,4 @@ function HtmlRender({
   )
 }
 
-export default HtmlRender
+export default memo(HtmlRender)

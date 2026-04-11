@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { View } from 'react-native'
 import { useRouter } from 'expo-router'
 
@@ -7,7 +8,7 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { useTheme } from '@/containers/ThemeService'
 import { NodeBasic } from '@/utils/v2ex-client/types'
 
-export default function PubliicNodeItem({ data }: { data: NodeBasic }) {
+function PubliicNodeItem({ data }: { data: NodeBasic }) {
   const router = useRouter()
   const { styles } = useTheme()
 
@@ -31,3 +32,5 @@ export default function PubliicNodeItem({ data }: { data: NodeBasic }) {
     </MaxWidthWrapper>
   )
 }
+
+export default memo(PubliicNodeItem)

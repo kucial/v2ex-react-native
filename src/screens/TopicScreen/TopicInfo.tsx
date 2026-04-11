@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
@@ -7,23 +7,19 @@ import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 
 import {
-  useMaxContainerWidth,
   usePadLayout,
 } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { TopicDetail } from '@/utils/v2ex-client/types'
 
-function TopicInfo(props: { data: TopicDetail }) {
-  const { data: topic } = props
+function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
+  const { data: topic, contentWidth } = props
   const { member, node } = topic
-  const { width } = useWindowDimensions()
-  const maxContainerWidth = useMaxContainerWidth()
   const { styles, colorScheme } = useTheme()
 
   const padLayout = usePadLayout()
   const router = useRouter()
 
-  const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
 
   return (
     <>
@@ -115,9 +111,7 @@ function TopicInfo(props: { data: TopicDetail }) {
       {!!topic.content_rendered && (
         <HtmlRender
           key={topic.content_rendered + colorScheme}
-          contentWidth={
-            padLayout.active ? CONTAINER_WIDTH : CONTAINER_WIDTH - 32
-          }
+          contentWidth={contentWidth}
           baseStyle={{
             fontSize: styles.text_base.fontSize,
           }}
@@ -143,7 +137,7 @@ function TopicInfo(props: { data: TopicDetail }) {
               </View>
               <HtmlRender
                 key={subtle.content_rendered + colorScheme}
-                contentWidth={CONTAINER_WIDTH - 32}
+                contentWidth={contentWidth}
                 baseStyle={{
                   fontSize: styles.text_base.fontSize,
                 }}
