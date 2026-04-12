@@ -24,7 +24,7 @@ const AlertServiceProvider = forwardRef<
   const service = useMemo(() => {
     const s = {
       show({ type, message, loading, ...options }) {
-        const [bgStyle, textStyle] = getSemanticStyle(type, styles)
+        const { container: containerStyle, text: textStyle } = getSemanticStyle(type, styles)
         const sibling = Toast.show(message, {
           shadow: false,
           position: -110,
@@ -35,7 +35,7 @@ const AlertServiceProvider = forwardRef<
               style={{ marginRight: 8, marginLeft: -1 }}
             />
           ) : null,
-          containerStyle: [bgStyle, styles.shadow_light],
+          containerStyle: [containerStyle, styles.shadow_light],
           duration: type === 'success' ? 1500 : 2000,
           textStyle,
           onHidden() {

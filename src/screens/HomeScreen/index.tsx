@@ -238,6 +238,11 @@ export default function HomeScreen(props) {
     }
   }, [navigation, routes, pathname])
 
+  const initialLayout = useMemo(() => ({
+    width: viewWidth,
+    height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
+  }), [viewWidth, padLayout.active, height])
+
   if (error) {
     return (
       <View className='flex-1 flex flex-row items-center justify-center bg-white'>
@@ -273,12 +278,9 @@ export default function HomeScreen(props) {
         renderScene={renderScene}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
-        initialLayout={{
-          width: viewWidth,
-          height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
-        }}
+        initialLayout={initialLayout}
       />
-      <HomeDataPrefetch index={normalizedIndex} routes={routes} />
+      {/* <HomeDataPrefetch index={normalizedIndex} routes={routes} /> */}
     </>
   )
 }

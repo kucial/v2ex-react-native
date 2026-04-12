@@ -14,7 +14,7 @@ import {
 import * as themes from './themes'
 import { SemanticType, ThemeService, ThemeStyles } from './types'
 
-const themeServiceMap = {}
+const themeServiceMap: Record<string, ThemeService> = {}
 
 export function getThemeService(
   themeName?: string,
@@ -29,7 +29,7 @@ export function getThemeService(
 
   let subkey
 
-  if (scheme == 'dark' && usePureDark) {
+  if (scheme === 'dark' && usePureDark) {
     subkey = 'pure_dark'
   } else {
     subkey = scheme
@@ -38,10 +38,13 @@ export function getThemeService(
   const key = `${name}-${subkey}-${scale}`
 
   if (!themeServiceMap[key]) {
-    console.log('construct theme', name, scheme, usePureDark)
+    if (__DEV__) {
+      console.log('construct theme', name, scheme, usePureDark)
+    }
 
     const theme = (themes[name] || themes.r2v)[subkey]
 
+    // On a dark theme the background is dark, so contrast text should be light
     const contrastTextColor = theme.dark
       ? theme.colors.black
       : theme.colors.white
@@ -115,7 +118,8 @@ export function getThemeService(
         backgroundColor: theme.colors.warning,
       },
       btn_warning__text: {
-        color: theme.colors.text_info_warning || contrastTextColor,
+        // Fixed: was incorrectly referencing text_info_warning
+        color: theme.colors.text_warning_inverse || contrastTextColor,
       },
       badge__bg: {
         backgroundColor: theme.colors.badge_bg,
@@ -226,31 +230,38 @@ export function getThemeService(
   return themeServiceMap[key]
 }
 
+export type SemanticStyleResult = {
+  container?: ViewStyle
+  text?: TextStyle
+  border?: ViewStyle
+}
+
 export const getSemanticStyle = (
   code: SemanticType,
   styles: ThemeStyles,
-): [ViewStyle?, TextStyle?, ViewStyle?] => {
+): SemanticStyleResult => {
   switch (code) {
     case 'default':
-      return [styles.layer1, styles.text, styles.border]
+      return { container: styles.layer1, text: styles.text, border: styles.border }
     case 'primary':
-      return [styles.btn_primary__bg, styles.btn_primary__text]
+      return { container: styles.btn_primary__bg, text: styles.btn_primary__text }
     case 'input':
-      return [styles.input__bg, styles.text]
+      return { container: styles.input__bg, text: styles.text }
     case 'secondary':
-      return [styles.layer2, styles.text_primary]
+      // Uses layer2 bg with primary-colored text (intentional — no dedicated btn_secondary styles)
+      return { container: styles.layer2, text: styles.text_primary }
     case 'success':
-      return [styles.btn_success__bg, styles.btn_success__text]
+      return { container: styles.btn_success__bg, text: styles.btn_success__text }
     case 'danger':
     case 'error':
-      return [styles.btn_danger__bg, styles.btn_danger__text]
+      return { container: styles.btn_danger__bg, text: styles.btn_danger__text }
     case 'info':
-      return [styles.btn_info__bg, styles.btn_info__text]
+      return { container: styles.btn_info__bg, text: styles.btn_info__text }
     case 'warning':
     case 'warn':
-      return [styles.btn_warning__bg, styles.btn_warning__text]
+      return { container: styles.btn_warning__bg, text: styles.btn_warning__text }
     case 'custom':
     default:
-      return []
+      return {}
   }
 }

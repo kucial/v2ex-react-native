@@ -44,7 +44,8 @@ function Button(props: {
   const { styles, theme } = useTheme()
   const { size, variant, radius = 'md' } = props
 
-  const [bgStyle, textStyle, bdStyle] = getSemanticStyle(variant, styles)
+  // const [bgStyle, textStyle, bdStyle] = getSemanticStyle(variant, styles)
+  const { container: containerStyle, text: textStyle, border: borderStyle } = getSemanticStyle(variant, styles)
 
   const children = useMemo(() => {
     if (props.children) {
@@ -70,8 +71,8 @@ function Button(props: {
         'flex items-center justify-center',
         'active:opacity-60',
         Platform.OS === 'ios' &&
-          variant === 'icon' &&
-          'active:bg-neutral-100 dark:active:bg-neutral-600',
+        variant === 'icon' &&
+        'active:bg-neutral-100 dark:active:bg-neutral-600',
         radiusMap[radius],
         size === 'md' && 'h-[44] px-3',
         size === 'sm' && 'h-[36] px-2',
@@ -80,7 +81,7 @@ function Button(props: {
           'opacity-60': props.loading || props.disabled,
         },
       )}
-      style={[bgStyle, bdStyle, props.style]}
+      style={[containerStyle, borderStyle, props.style]}
       onPress={props.onPress}
       android_ripple={android_ripple}
     >

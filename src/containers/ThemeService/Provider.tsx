@@ -45,15 +45,15 @@ export const ThemeProvider = (props: {
     [activeScheme, activeTheme, fontScale, pureDarkTheme],
   )
   useEffect(() => {
-    if (Platform.OS == 'android') {
+    if (Platform.OS === 'android') {
       NavigationBar.setBackgroundColorAsync(service.theme.colors.bg_overlay)
       NavigationBar.setButtonStyleAsync(service.theme.dark ? 'light' : 'dark')
       SystemUI.setBackgroundColorAsync(service.theme.colors.bg_overlay)
     }
-  }, [service, themeName])
+  }, [service])
 
   const theme = useMemo(() => {
-    if (colorScheme === 'dark') {
+    if (activeScheme === 'dark') {
       return {
         ...DarkTheme,
         ...service.theme,
@@ -63,13 +63,12 @@ export const ThemeProvider = (props: {
       ...DefaultTheme,
       ...service.theme,
     }
-  }, [service.theme, colorScheme])
+  }, [service.theme, activeScheme])
 
   return (
     <ThemeContext.Provider value={service}>
       <NavigationThemeProvider value={theme}>
         {props.children}
-        <StatusBar style='auto' />
       </NavigationThemeProvider>
     </ThemeContext.Provider>
   )

@@ -31,22 +31,15 @@ export const useGetViewedStatus = () => {
 
   return useCallback(
     (params?: Pick<TopicDetail, 'id' | 'replies'>) => {
-      if (!showHasViewed || !params) {
-        return undefined
-      }
-      const data = useViewedTopicsStore.getState().data
-      if (!showHasNewReply) {
-        return data[params.id] ? 'viewed' : undefined
-      }
-      if (!data[params.id]) {
-        return undefined
-      }
-      if (data[params.id].replies < params.replies) {
-        return 'has_update'
-      }
-      if (data[params.id].replies === params.replies) {
-        return 'viewed'
-      }
+      if (!showHasViewed || !params) return undefined
+
+      const viewed = useViewedTopicsStore.getState().data[params.id]
+
+      if (!viewed) return undefined
+      if (!showHasNewReply) return 'viewed'
+      if (viewed.replies < params.replies) return 'has_update'
+      if (viewed.replies === params.replies) return 'viewed'
+
       return undefined
     },
     [showHasViewed, showHasNewReply],

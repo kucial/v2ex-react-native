@@ -38,42 +38,40 @@ type FeedTopicListProps = {
 
 function FeedTopicList(props: FeedTopicListProps) {
   const { tab, isFocused, currentListRef } = props
-  const listViewRef = useRef<FlashList<HomeTopicFeed>>()
+  const listViewRef = useRef<FlashList<HomeTopicFeed> | null>(null)
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const getViewedStatus = useGetViewedStatus()
   const queryclient = useQueryClient()
 
   const listQuery = useHomeTabFeed(tab, isFocused)
+  const { refetch, data: listQueryData, isRefetching } = listQuery
 
   const handleRefresh = useCallback(() => {
-    if (listQuery.data?.pages?.length > PAGE_RESET_LIMIT) {
+    if (listQueryData?.pages?.length > PAGE_RESET_LIMIT) {
       queryclient.resetQueries({
         queryKey: ['/page/home/feed', tab],
         exact: true,
       })
     }
-    listQuery.refetch()
-  }, [listQuery.data, tab, queryclient])
+    refetch()
+  }, [listQueryData, tab, queryclient, refetch])
 
   const scrollToRefresh = useCallback(() => {
-    if (listQuery.isRefetching) {
+    if (isRefetching) {
       return
     }
     if (settings.refreshHaptics) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     }
-
-    if (listQuery.data) {
-      // console.log(scrollY.current)
-      listViewRef.current.scrollToOffset({
-        // offset: scrollY.current > 0 ? 0 : -60,
+    if (listQueryData) {
+      listViewRef.current?.scrollToOffset({
         offset: 0,
         animated: true,
       })
     }
     handleRefresh()
-  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
+  }, [isRefetching, listQueryData, settings.refreshHaptics, handleRefresh])
 
   useEffect(() => {
     if (
@@ -87,7 +85,8 @@ function FeedTopicList(props: FeedTopicListProps) {
     }
     if (isFocused) {
       let appState = AppState.currentState
-      let toBackgroundDate: number
+      // Initialize to 0 so Date.now() - toBackgroundDate is never NaN
+      let toBackgroundDate: number = 0
       const subscription = AppState.addEventListener(
         'change',
         (nextAppState) => {
@@ -111,7 +110,7 @@ function FeedTopicList(props: FeedTopicListProps) {
         subscription.remove()
       }
     }
-  }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration])
+  }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration, scrollToRefresh])
 
   useEffect(() => {
     if (currentListRef) {
@@ -122,34 +121,34 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (isFocused && !listQuery.data && !listQuery.error) {
-      // initial loading
+    if (isFocused && !listQueryData && !listQuery.error) {
+      // initial loading — return skeleton placeholders
       return new Array(20)
     }
-    const items = listQuery.data?.pages?.reduce((combined, page) => {
+    const items = listQueryData?.pages?.reduce((combined, page) => {
       if (page.data) {
         return uniqBy([...combined, ...page.data], 'id')
       }
       return combined
     }, [])
     return items || []
-  }, [listQuery.data, isFocused])
+  }, [listQueryData, isFocused])
 
   useEffect(() => {
     if (tab === 'today_hots') {
       updateHotsFeedWidget(listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
+        if (__DEV__) console.warn('updateHotsFeedWidget failed', err)
       })
     } else if (tab === 'recent') {
       updateRecentWidgetFeedWidget(listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
+        if (__DEV__) console.warn('updateRecentWidgetFeedWidget failed', err)
       })
     } else {
       updateHomeFeedWidget(tab, listItems.slice(0, 10)).catch((err) => {
-        // do nothing.
+        if (__DEV__) console.warn('updateHomeFeedWidget failed', err)
       })
     }
-  }, [listItems])
+  }, [listItems, tab])
 
   const extraData = useMemo(
     () => ({
@@ -157,12 +156,21 @@ function FeedTopicList(props: FeedTopicListProps) {
       getViewedStatus,
       settings,
     }),
-    [listItems.length, getViewedStatus, settings],
+    [listItems.length, settings, getViewedStatus],
   )
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      renderItem: ({ item, index, extraData: extra }: { item: any; index: any; extraData?: any }) =>
+      // renderItem intentionally has no deps — all dynamic data flows through extraData
+      renderItem: ({
+        item,
+        index,
+        extraData: extra,
+      }: {
+        item: HomeTopicFeed | undefined
+        index: number
+        extraData?: typeof extraData
+      }) =>
         extra?.settings?.feedLayout === 'tide' ? (
           <TideTopicRow
             data={item}
@@ -211,7 +219,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
-          refreshing={listQuery.isRefetching}
+          refreshing={isRefetching}
           onRefresh={handleRefresh}
         />
       }
@@ -222,4 +230,5 @@ function FeedTopicList(props: FeedTopicListProps) {
     />
   )
 }
+
 export default memo(FeedTopicList)
