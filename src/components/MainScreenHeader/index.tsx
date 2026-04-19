@@ -11,8 +11,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
-import { useAuthService } from '@/containers/AuthService'
+import { useComposeAuthedNavigation } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { useAuthStore } from '@/stores/auth'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 import Button from '../Button'
@@ -24,7 +25,7 @@ export const useNavigationWithBreadcrumb = (
   requiresAuth = false,
 ) => {
   const router = useRouter()
-  const { composeAuthedNavigation } = useAuthService()
+  const composeAuthedNavigation = useComposeAuthedNavigation()
 
   const navigationCallback = useCallback(() => {
     router.push(route as any)
@@ -42,7 +43,7 @@ export const useNavigationWithBreadcrumb = (
 
 export default function MainScreenHeader(props) {
   const { options } = props
-  const { meta } = useAuthService()
+  const meta = useAuthStore((s) => s.meta)
   const { theme, styles } = useTheme()
   const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()

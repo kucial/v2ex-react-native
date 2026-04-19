@@ -11,11 +11,12 @@ import {
 } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
-import { ImageViewing } from '@/components/ImageViewing'
 import Share from 'react-native-share'
 import { Portal } from '@gorhom/portal'
 import { BarcodeScanningResult, Camera } from 'expo-camera'
 import colors from 'tailwindcss/colors'
+
+import { ImageViewing } from '@/components/ImageViewing'
 
 import CheckIcon from '../CheckIcon'
 import Loader from '../Loader'
@@ -120,7 +121,9 @@ const ImageViewingServiceProvider = forwardRef<
   const [images, setImages] = useState<ImageResource[]>([])
 
   const imagesRef = useRef<ImageResource[]>([])
-  useEffect(() => { imagesRef.current = images }, [images])
+  useEffect(() => {
+    imagesRef.current = images
+  }, [images])
 
   const service: ImageViewingService = useMemo(() => {
     return {

@@ -10,7 +10,6 @@ import {
   View,
   ViewToken,
 } from 'react-native'
-import { FullWindowOverlay } from 'react-native-screens'
 import {
   Gesture,
   GestureDetector,
@@ -23,6 +22,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
+import { FullWindowOverlay } from 'react-native-screens'
 import { scheduleOnRN } from 'react-native-worklets'
 import { Image } from 'expo-image'
 
@@ -587,9 +587,7 @@ export function ImageViewing({
               isActive={index === currentIndex}
               shouldCloseSV={shouldCloseSV}
               scrollEnabledSV={scrollEnabledSV}
-              zoomChangeSV={
-                index === currentIndex ? zoomChangeSV : dummyZoomSV
-              }
+              zoomChangeSV={index === currentIndex ? zoomChangeSV : dummyZoomSV}
             />
           )}
           getItemLayout={(_, index) => ({

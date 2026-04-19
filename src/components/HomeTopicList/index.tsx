@@ -108,7 +108,12 @@ function FeedTopicList(props: FeedTopicListProps) {
         subscription.remove()
       }
     }
-  }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration, scrollToRefresh])
+  }, [
+    isFocused,
+    settings.autoRefresh,
+    settings.autoRefreshDuration,
+    scrollToRefresh,
+  ])
 
   useEffect(() => {
     if (currentListRef) {
@@ -212,10 +217,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       onEndReachedThreshold={0.4}
       onEndReached={handleEndReached}
       refreshControl={
-        <MyRefreshControl
-          refreshing={isRefetching}
-          onRefresh={handleRefresh}
-        />
+        <MyRefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />
       }
       ListFooterComponent={listFooter}
       onScroll={(e) => {

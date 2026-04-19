@@ -1,12 +1,4 @@
-import {
-  createContext,
-  ReactElement,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
 import { AppState, InteractionManager } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useShallow } from 'zustand/react/shallow'
@@ -176,37 +168,61 @@ const getUTCDateString = () => {
   )}-${date.getUTCDate()}`
 }
 
-export const AuthServiceContext = createContext<AuthService>({
-  composeAuthedNavigation: (callback) => {
-    return function () {}
-  },
-} as AuthService)
+export function useLogout() {
+  const alert = useAlertService()
+  return useCallback(() => {
+    useAuthStore.getState().logout((err) => {
+      alert.show({ type: 'error', message: err.message })
+    })
+  }, [alert])
+}
 
-export default function AuthServiceProvider(props: { children: ReactElement }) {
+export function useGoToSigninScreen() {
   const router = useRouter()
+  return useCallback(() => {
+    router.push('/signin')
+  }, [router])
+}
 
-  const nextAction = useRef<VoidFunction>(null)
-  const isFetchingUserRef = useRef(false)
+export function useComposeAuthedNavigation() {
+  const router = useRouter()
   const alert = useAlertService()
 
-  const {
-    user,
-    meta,
-    status,
-    fetchedAt,
-    fetchCurrentUser,
-    logout,
-    updateMeta,
-    setAuthState,
-  } = useAuthStore(
+  return useCallback(
+    function <T>(callback?: (params?: T) => void) {
+      return (params?: T) => {
+        const { status, user, setNextAction } = useAuthStore.getState()
+        if (status === 'loading') {
+          alert.show({
+            type: 'info',
+            message: '提示 正在验证登录状态，请稍候',
+          })
+          return
+        }
+        if (!user) {
+          router.push('/signin')
+          if (callback) {
+            setNextAction(() => {
+              callback(params)
+            })
+          }
+          return
+        }
+        callback?.(params)
+      }
+    },
+    [router, alert],
+  )
+}
+
+export default function AuthServiceProvider(props: { children: ReactElement }) {
+  const isFetchingUserRef = useRef(false)
+
+  const { user, fetchedAt, fetchCurrentUser, setAuthState } = useAuthStore(
     useShallow((state) => ({
       user: state.user,
-      meta: state.meta,
-      status: state.status,
       fetchedAt: state.fetchedAt,
       fetchCurrentUser: state.fetchCurrentUser,
-      logout: state.logout,
-      updateMeta: state.updateMeta,
       setAuthState: state.setAuthState,
     })),
   )
@@ -215,67 +231,9 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
   const dailySignIn = useDailySignIn(user)
   useAuthSubscriptions(user, fetchCurrentUser, setAuthState, isFetchingUserRef)
 
-  const service: AuthService = useMemo(() => {
-    return {
-      user,
-      meta,
-      status,
-      fetchedAt,
-      fetchCurrentUser,
-      logout: () =>
-        logout((err) => {
-          alert.show({ type: 'error', message: err.message })
-        }),
-      goToSigninSreen() {
-        router.push('/signin')
-      },
-      composeAuthedNavigation: function <T>(callback) {
-        return (params?: T) => {
-          if (status === 'loading') {
-            alert.show({
-              type: 'info',
-              message: '提示 正在验证登录状态，请稍候',
-            })
-            return
-          }
-          if (!user) {
-            router.push('/signin')
-            if (callback) {
-              nextAction.current = () => {
-                callback(params)
-              }
-            }
-            return
-          }
-          callback?.(params)
-        }
-      },
-      getNextAction: () => {
-        if (nextAction) {
-          const action = nextAction.current
-          nextAction.current = undefined
-          return action
-        }
-        return undefined
-      },
-      updateMeta,
-    }
-  }, [
-    alert,
-    fetchedAt,
-    fetchCurrentUser,
-    logout,
-    meta,
-    router,
-    status,
-    updateMeta,
-    user,
-  ])
-
   // Initial user fetch
   useEffect(() => {
-    service.fetchCurrentUser().then((res) => {
-      console.log(res)
+    fetchCurrentUser().then((res) => {
       // Perform initial daily sign-in check
       if (res && shouldCheck(fetchedAt)) {
         dailySignIn(res)
@@ -285,11 +243,5 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     })
   }, []) // Only run once on mount
 
-  return (
-    <AuthServiceContext.Provider value={service}>
-      <TwoFAServiceProvider>{props.children}</TwoFAServiceProvider>
-    </AuthServiceContext.Provider>
-  )
+  return <TwoFAServiceProvider>{props.children}</TwoFAServiceProvider>
 }
-
-export const useAuthService = () => useContext(AuthServiceContext)

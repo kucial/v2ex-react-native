@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import ContextMenu from 'react-native-context-menu-view'
-import { ImageViewing } from '@/components/ImageViewing'
 import { UseQueryResult } from '@tanstack/react-query'
 
 import CheckIcon from '@/components/CheckIcon'
+import { ImageViewing } from '@/components/ImageViewing'
 
 import { ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'

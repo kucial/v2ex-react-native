@@ -19,9 +19,14 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
 import { Box, InlineText } from '@/components/Skeleton/Elements'
 
-import { useAuthService } from '@/containers/AuthService'
+import {
+  useComposeAuthedNavigation,
+  useGoToSigninScreen,
+  useLogout,
+} from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
+import { useAuthStore, useCurrentUser } from '@/stores/auth'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 import BalanceArea from './BalanceArea'
@@ -29,14 +34,13 @@ import BalanceArea from './BalanceArea'
 export default function MyScreen() {
   const router = useRouter()
   const { theme, styles } = useTheme()
-  const {
-    user: currentUser,
-    meta: currentUserMeta,
-    status: authStatus,
-    logout,
-    composeAuthedNavigation,
-    goToSigninSreen,
-  } = useAuthService()
+  const currentUser = useCurrentUser()
+  const currentUserMeta = useAuthStore((s) => s.meta)
+  const authStatus = useAuthStore((s) => s.status)
+
+  const logout = useLogout()
+  const composeAuthedNavigation = useComposeAuthedNavigation()
+  const goToSigninScreen = useGoToSigninScreen()
 
   const handleCreatedTopicsPressed = usePressBreadcrumb(
     composeAuthedNavigation(
@@ -129,7 +133,7 @@ export default function MyScreen() {
         className='flex flex-row py-3 px-4 items-center active:opacity-60'
         style={styles.grouped_secondary}
         onPress={() => {
-          goToSigninSreen()
+          goToSigninScreen()
         }}
       >
         <Box key={authStatus} className='w-[40px] h-[40px] rounded mr-3' />

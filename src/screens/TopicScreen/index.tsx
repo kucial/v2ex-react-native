@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { InteractionManager, Text, useWindowDimensions, View } from 'react-native'
+import {
+  InteractionManager,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
   useAnimatedScrollHandler,
@@ -25,11 +30,16 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 
 import { useAlertService } from '@/containers/AlertService'
-import { useAppSettings, useMaxContainerWidth, usePadLayout } from '@/containers/AppSettingsService'
-import { useAuthService } from '@/containers/AuthService'
+import {
+  useAppSettings,
+  useMaxContainerWidth,
+  usePadLayout,
+} from '@/containers/AppSettingsService'
+import { useComposeAuthedNavigation } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useTopicSheetService } from '@/containers/TopicSheetService'
 import { useTouchViewedTopic } from '@/containers/ViewedTopicsService'
+import { useAuthStore, useCurrentUser } from '@/stores/auth'
 import { getRelatedReplies } from '@/utils/content'
 import { useCachedState } from '@/utils/hooks'
 import { isLoading, shouldLoadMore } from '@/utils/react-query'
@@ -161,7 +171,8 @@ function TopicScreen() {
     [],
   )
 
-  const { composeAuthedNavigation, user: currentUser } = useAuthService()
+  const composeAuthedNavigation = useComposeAuthedNavigation()
+  const currentUser = useCurrentUser()
   const {
     showConversation,
     showUserInfo,
@@ -186,7 +197,12 @@ function TopicScreen() {
 
     // FIX: sort into a new array instead of mutating in place
     return [...items].sort((a, b) => a.num - b.num)
-  }, [repliesQuery.data?.pages, repliesQuery.isLoading, repliesQuery.error, myReplies])
+  }, [
+    repliesQuery.data?.pages,
+    repliesQuery.isLoading,
+    repliesQuery.error,
+    myReplies,
+  ])
 
   // cleanup replies
   useEffect(() => {
@@ -472,7 +488,15 @@ function TopicScreen() {
         alert.hide(indicator)
       }
     },
-    [alert, dismissReplyForm, getReplyFormCacheKey, id, queryClient, setMyReplies, topicId],
+    [
+      alert,
+      dismissReplyForm,
+      getReplyFormCacheKey,
+      id,
+      queryClient,
+      setMyReplies,
+      topicId,
+    ],
   )
 
   const initReply = useCallback(
@@ -484,11 +508,20 @@ function TopicScreen() {
         onSubmit: (values) => submitReply(context, values),
         onInitImgurSettings: () => {
           dismissReplyForm()
-          router.push({ pathname: '/imgur-settings', params: { autoBack: '1' } })
+          router.push({
+            pathname: '/imgur-settings',
+            params: { autoBack: '1' },
+          })
         },
       })
     },
-    [showReplyForm, getReplyFormCacheKey, submitReply, dismissReplyForm, router],
+    [
+      showReplyForm,
+      getReplyFormCacheKey,
+      submitReply,
+      dismissReplyForm,
+      router,
+    ],
   )
 
   const handleThankToReply = useCallback(
@@ -552,7 +585,13 @@ function TopicScreen() {
         router.push({ pathname: '/imgur-settings', params: { autoBack: '1' } })
       },
     })
-  }, [showReplyForm, getReplyFormCacheKey, submitReply, dismissReplyForm, router])
+  }, [
+    showReplyForm,
+    getReplyFormCacheKey,
+    submitReply,
+    dismissReplyForm,
+    router,
+  ])
 
   const handleEdit = useCallback(() => {
     if (topic) {
@@ -580,7 +619,14 @@ function TopicScreen() {
         onThank: handleThankToReply,
       })
     },
-    [showUserInfo, replyItems, currentUser, settings.feedShowAvatar, initReply, handleThankToReply],
+    [
+      showUserInfo,
+      replyItems,
+      currentUser,
+      settings.feedShowAvatar,
+      initReply,
+      handleThankToReply,
+    ],
   )
 
   const openConversation = useCallback(
@@ -594,11 +640,20 @@ function TopicScreen() {
         onShowUserInfo: openUserInfo,
       })
     },
-    [showConversation, replyItems, settings.feedShowAvatar, initReply, handleThankToReply, openUserInfo],
+    [
+      showConversation,
+      replyItems,
+      settings.feedShowAvatar,
+      initReply,
+      handleThankToReply,
+      openUserInfo,
+    ],
   )
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => { dismissAll() })
+    const unsubscribe = navigation.addListener('blur', () => {
+      dismissAll()
+    })
     return unsubscribe
   }, [navigation, dismissAll])
 
@@ -654,14 +709,30 @@ function TopicScreen() {
   const openConversationRef = useRef(openConversation)
   const openUserInfoRef = useRef(openUserInfo)
 
-  useEffect(() => { initReplyRef.current = initReply }, [initReply])
-  useEffect(() => { handleThankToReplyRef.current = handleThankToReply }, [handleThankToReply])
-  useEffect(() => { openConversationRef.current = openConversation }, [openConversation])
-  useEffect(() => { openUserInfoRef.current = openUserInfo }, [openUserInfo])
+  useEffect(() => {
+    initReplyRef.current = initReply
+  }, [initReply])
+  useEffect(() => {
+    handleThankToReplyRef.current = handleThankToReply
+  }, [handleThankToReply])
+  useEffect(() => {
+    openConversationRef.current = openConversation
+  }, [openConversation])
+  useEffect(() => {
+    openUserInfoRef.current = openUserInfo
+  }, [openUserInfo])
 
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
-      renderReply({ item, index, extraData }: { item: any; index: number; extraData?: any }) {
+      renderReply({
+        item,
+        index,
+        extraData,
+      }: {
+        item: any
+        index: number
+        extraData?: any
+      }) {
         return (
           <ReplyRow
             isLast={index === extraData?.repliesLength - 1}
@@ -673,7 +744,10 @@ function TopicScreen() {
             onThank={(reply) => handleThankToReplyRef.current(reply)}
             hasConversation={
               !!item?.members_mentioned?.length ||
-              !!(item?.member?.username && extraData?.mentionedUsers.has(item.member.username))
+              !!(
+                item?.member?.username &&
+                extraData?.mentionedUsers.has(item.member.username)
+              )
             }
             onShowConversation={(ctx) => openConversationRef.current(ctx)}
             onShowUserInfo={(ctx) => openUserInfoRef.current(ctx)}
@@ -854,7 +928,9 @@ function TopicScreen() {
             <TopicMovePanel
               topicId={topicQuery.data.id}
               node={topicQuery.data.node}
-              onExit={() => { changeNodeModalRef.current?.dismiss() }}
+              onExit={() => {
+                changeNodeModalRef.current?.dismiss()
+              }}
               onUpdated={(topic) => {
                 queryClient.setQueryData(
                   [`/page/t/:id/topic.json`, id.toString()],

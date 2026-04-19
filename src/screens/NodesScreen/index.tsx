@@ -9,9 +9,9 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import SearchInput from '@/components/SearchInput'
 
-import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCollectedNodesQuery } from '@/hooks'
+import { useAuthStore } from '@/stores/auth'
 import { useCachedState } from '@/utils/hooks'
 import { isRefreshing } from '@/utils/react-query'
 import { getMyCollectedNodes, getNodeGroups } from '@/utils/v2ex-client'
@@ -23,7 +23,7 @@ const CACHE_KEY = '$app$/nodes-filter'
 const SECTION_FOOTER_STYLE = { height: 12 }
 
 export default function NodesScreen() {
-  const { status } = useAuthService()
+  const status = useAuthStore((s) => s.status)
   const navigation = useNavigation()
 
   const { styles } = useTheme()
@@ -68,17 +68,14 @@ export default function NodesScreen() {
       .filter((section) => !!section && !!section.data.length)
   }, [commonNodesQuery.data, collectedNodesQuery.data, hasAuthed, filter])
 
-  const renderItem = useCallback(
-    ({ item }) => {
-      switch (item.type) {
-        case 'favorite':
-          return <CollectedNodes data={item.nodes} />
-        default:
-          return <PubliicNodeItem data={item} />
-      }
-    },
-    [],
-  )
+  const renderItem = useCallback(({ item }) => {
+    switch (item.type) {
+      case 'favorite':
+        return <CollectedNodes data={item.nodes} />
+      default:
+        return <PubliicNodeItem data={item} />
+    }
+  }, [])
 
   const keyExtractor = useCallback((item) => item.name, [])
 
@@ -123,7 +120,11 @@ export default function NodesScreen() {
       )
     }
     return null
-  }, [sections.length, collectedNodesQuery.isLoading, commonNodesQuery.isLoading])
+  }, [
+    sections.length,
+    collectedNodesQuery.isLoading,
+    commonNodesQuery.isLoading,
+  ])
 
   const handleRefresh = useCallback(() => {
     if (hasAuthed) {

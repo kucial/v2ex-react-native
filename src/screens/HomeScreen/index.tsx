@@ -204,7 +204,13 @@ export default function HomeScreen(props) {
         />
       )
     },
-    [theme, styles.layer1, indicatorStyle, contentContainerStyle, handleTabPress],
+    [
+      theme,
+      styles.layer1,
+      indicatorStyle,
+      contentContainerStyle,
+      handleTabPress,
+    ],
   )
 
   useEffect(() => {
@@ -227,8 +233,7 @@ export default function HomeScreen(props) {
           }
           tabIdleForRefresh.current = undefined
         } else {
-          tabIdleForRefresh.current =
-            routes[normalizedIndexRef.current]?.key
+          tabIdleForRefresh.current = routes[normalizedIndexRef.current]?.key
           tabIdleResetTimer.current = setTimeout(() => {
             tabIdleForRefresh.current = undefined
           }, REFRESH_IDLE_RESET_TIMEOUT)
@@ -238,10 +243,13 @@ export default function HomeScreen(props) {
     }
   }, [navigation, routes, pathname])
 
-  const initialLayout = useMemo(() => ({
-    width: viewWidth,
-    height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
-  }), [viewWidth, padLayout.active, height])
+  const initialLayout = useMemo(
+    () => ({
+      width: viewWidth,
+      height: padLayout.active ? height - 42 - 20 : height - 42 - 50 - 20,
+    }),
+    [viewWidth, padLayout.active, height],
+  )
 
   if (error) {
     return (

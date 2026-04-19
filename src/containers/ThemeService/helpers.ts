@@ -242,16 +242,26 @@ export const getSemanticStyle = (
 ): SemanticStyleResult => {
   switch (code) {
     case 'default':
-      return { container: styles.layer1, text: styles.text, border: styles.border }
+      return {
+        container: styles.layer1,
+        text: styles.text,
+        border: styles.border,
+      }
     case 'primary':
-      return { container: styles.btn_primary__bg, text: styles.btn_primary__text }
+      return {
+        container: styles.btn_primary__bg,
+        text: styles.btn_primary__text,
+      }
     case 'input':
       return { container: styles.input__bg, text: styles.text }
     case 'secondary':
       // Uses layer2 bg with primary-colored text (intentional — no dedicated btn_secondary styles)
       return { container: styles.layer2, text: styles.text_primary }
     case 'success':
-      return { container: styles.btn_success__bg, text: styles.btn_success__text }
+      return {
+        container: styles.btn_success__bg,
+        text: styles.btn_success__text,
+      }
     case 'danger':
     case 'error':
       return { container: styles.btn_danger__bg, text: styles.btn_danger__text }
@@ -259,7 +269,10 @@ export const getSemanticStyle = (
       return { container: styles.btn_info__bg, text: styles.btn_info__text }
     case 'warning':
     case 'warn':
-      return { container: styles.btn_warning__bg, text: styles.btn_warning__text }
+      return {
+        container: styles.btn_warning__bg,
+        text: styles.btn_warning__text,
+      }
     case 'custom':
     default:
       return {}

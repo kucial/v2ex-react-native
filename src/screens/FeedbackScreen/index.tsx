@@ -12,9 +12,9 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NavigationHeader from '@/components/NavigationHeader'
 
 import { useAlertService } from '@/containers/AlertService'
-import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
+import { useCurrentUser } from '@/stores/auth'
 
 type FormValues = {
   name: string
@@ -32,7 +32,7 @@ export default function FeedbackScreen() {
   const router = useRouter()
   const { theme, styles } = useTheme()
   const alert = useAlertService()
-  const { user } = useAuthService()
+  const user = useCurrentUser()
 
   const submitFeedback = useCallback(
     async (values, helpers: FormikHelpers<FormValues>) => {

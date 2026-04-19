@@ -45,7 +45,11 @@ function Button(props: {
   const { size, variant, radius = 'md' } = props
 
   // const [bgStyle, textStyle, bdStyle] = getSemanticStyle(variant, styles)
-  const { container: containerStyle, text: textStyle, border: borderStyle } = getSemanticStyle(variant, styles)
+  const {
+    container: containerStyle,
+    text: textStyle,
+    border: borderStyle,
+  } = getSemanticStyle(variant, styles)
 
   const children = useMemo(() => {
     if (props.children) {
@@ -71,8 +75,8 @@ function Button(props: {
         'flex items-center justify-center',
         'active:opacity-60',
         Platform.OS === 'ios' &&
-        variant === 'icon' &&
-        'active:bg-neutral-100 dark:active:bg-neutral-600',
+          variant === 'icon' &&
+          'active:bg-neutral-100 dark:active:bg-neutral-600',
         radiusMap[radius],
         size === 'md' && 'h-[44] px-3',
         size === 'sm' && 'h-[36] px-2',

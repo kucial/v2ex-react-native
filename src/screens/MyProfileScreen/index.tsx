@@ -8,8 +8,8 @@ import NavigationHeader from '@/components/NavigationHeader'
 
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { usePadLayout } from '@/containers/AppSettingsService'
-import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { useAuthStore, useCurrentUser } from '@/stores/auth'
 
 import AvatarForm from './AvatarForm'
 import SettingsForm from './SettingsForm'
@@ -31,7 +31,8 @@ const routes = [
 ]
 
 export default function ProfileScreen() {
-  const { user, fetchCurrentUser } = useAuthService()
+  const user = useCurrentUser()
+  const fetchCurrentUser = useAuthStore((s) => s.fetchCurrentUser)
   const { width, height } = useWindowDimensions()
   const { theme, styles } = useTheme()
   const padLayout = usePadLayout()

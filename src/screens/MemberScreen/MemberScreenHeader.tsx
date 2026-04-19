@@ -16,8 +16,8 @@ import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
 
 import { useAlertService } from '@/containers/AlertService'
-import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { useCurrentUser } from '@/stores/auth'
 import { getImageLuminosity } from '@/utils/image'
 import { localTime } from '@/utils/time'
 import {
@@ -61,7 +61,7 @@ export default function MemberScreenHeader(props: {
 
   const router = useRouter()
 
-  const { user: currentUser } = useAuthService()
+  const currentUser = useCurrentUser()
   const fetchMember = useCallback(async () => {
     const { data } = await getMemberDetail({ username })
     return data

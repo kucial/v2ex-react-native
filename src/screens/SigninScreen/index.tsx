@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'expo-router'
 
 import { useAlertService } from '@/containers/AlertService'
-import { useAuthService } from '@/containers/AuthService'
 import { use2FaModalPrompt } from '@/containers/AuthService/2fa'
+import { useAuthStore, useCurrentUser } from '@/stores/auth'
 
 import GoogleSign from './GoogleSign'
 import PasswordSign from './PasswordSign'
@@ -14,11 +14,9 @@ export default function SigninScreen() {
   const router = useRouter()
   const [type, setType] = useState<SignInType>('password')
   const alert = useAlertService()
-  const {
-    fetchCurrentUser,
-    user: currentUser,
-    getNextAction,
-  } = useAuthService()
+  const currentUser = useCurrentUser()
+  const fetchCurrentUser = useAuthStore((s) => s.fetchCurrentUser)
+  const popNextAction = useAuthStore((s) => s.popNextAction)
   const prompt2faModal = use2FaModalPrompt()
   const extraState = useRef(null)
 
@@ -42,7 +40,7 @@ export default function SigninScreen() {
         }, 300)
       }
       router.back()
-      const nextAction = getNextAction()
+      const nextAction = popNextAction()
       if (nextAction) {
         nextAction()
       }

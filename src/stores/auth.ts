@@ -9,14 +9,38 @@ import { MemberDetail } from '@/utils/v2ex-client/types'
 
 export const AUTH_CACHE_KEY = '$app$/current-user'
 
-export const INIT_AUTH_STATE: AuthState = {
-  user: null,
-  meta: null,
-  status: 'none', // 'loading' | 'authed' | 'visitor' | failed' | 'logout' | 'none',
+// FIX: Added 'logging-out' and 'logout-failed' as valid statuses
+export type AuthStatus =
+  | 'none'
+  | 'loading'
+  | 'authed'
+  | 'visitor'
+  | 'failed'
+  | 'logout'
+  | 'logging-out'
+  | 'logout-failed'
+
+// FIX: Added fetchedAt to AuthState so it's properly typed
+export type AuthStateWithMeta = AuthState & {
+  fetchedAt?: number
+  status: AuthStatus
 }
 
-type AuthStore = AuthState & {
-  setAuthState: (updater: (prev: AuthState) => AuthState) => void
+export const INIT_AUTH_STATE: AuthStateWithMeta = {
+  user: null,
+  meta: null,
+  status: 'none',
+  fetchedAt: undefined,
+}
+
+type AuthStore = AuthStateWithMeta & {
+  // nextAction is intentionally excluded from persistence (functions can't be serialized)
+  nextAction?: VoidFunction
+  setNextAction: (action?: VoidFunction) => void
+  popNextAction: () => VoidFunction | undefined
+  setAuthState: (
+    updater: (prev: AuthStateWithMeta) => AuthStateWithMeta,
+  ) => void
   updateMeta: (patch: MemberMeta) => void
   fetchCurrentUser: () => Promise<MemberDetail | undefined>
   logout: (onError?: (err: Error) => void) => Promise<void>
@@ -27,6 +51,16 @@ export const useAuthStore = create<AuthStore>()(
     persist(
       (set, get) => ({
         ...INIT_AUTH_STATE,
+        nextAction: undefined,
+        setNextAction: (action) => set({ nextAction: action }, false),
+        popNextAction: () => {
+          const action = get().nextAction
+          if (action) {
+            set({ nextAction: undefined }, false)
+            return action
+          }
+          return undefined
+        },
         setAuthState: (updater) => set((state) => updater(state)),
         updateMeta: (patch) =>
           set(
@@ -60,14 +94,17 @@ export const useAuthStore = create<AuthStore>()(
               ...state,
               status: 'failed',
             }))
+            // FIX: Re-throw so callers can handle the error directly
+            throw err instanceof Error ? err : new Error(String(err))
           }
         },
         logout: async (onError) => {
           const prevStatus = get().status
           try {
+            // FIX: Corrected typo 'logingout' → 'logging-out'
             set((state) => ({
               ...state,
-              status: 'logingout',
+              status: 'logging-out',
             }))
             const res = await v2exClient.logout()
             if (res.success) {
@@ -77,10 +114,14 @@ export const useAuthStore = create<AuthStore>()(
               }))
             }
           } catch (err) {
-            onError?.(err)
+            // FIX: Properly coerce unknown err to Error before passing to callback
+            const error = err instanceof Error ? err : new Error(String(err))
+            onError?.(error)
+            // FIX: Use 'logout-failed' instead of silently restoring previous status,
+            // which could mislead UI into showing an authenticated state after a failed logout
             set((state) => ({
               ...state,
-              status: prevStatus,
+              status: prevStatus === 'authed' ? 'logout-failed' : prevStatus,
             }))
           }
         },
@@ -88,6 +129,7 @@ export const useAuthStore = create<AuthStore>()(
       {
         name: AUTH_CACHE_KEY,
         storage: createJSONStorage(() => stateStorage),
+        // Note: nextAction is intentionally omitted here — functions can't be JSON-serialized
         partialize: (state) => ({
           user: state.user,
           meta: state.meta,

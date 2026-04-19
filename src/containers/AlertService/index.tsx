@@ -24,7 +24,10 @@ const AlertServiceProvider = forwardRef<
   const service = useMemo(() => {
     const s = {
       show({ type, message, loading, ...options }) {
-        const { container: containerStyle, text: textStyle } = getSemanticStyle(type, styles)
+        const { container: containerStyle, text: textStyle } = getSemanticStyle(
+          type,
+          styles,
+        )
         const sibling = Toast.show(message, {
           shadow: false,
           position: -110,

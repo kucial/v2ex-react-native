@@ -26,8 +26,13 @@ export const useColorScheme = () => {
       }
     }
 
-    const subscriptionA = AppState.addEventListener('change', handleColorSchemeChange)
-    const subscriptionB = Appearance.addChangeListener(() => handleColorSchemeChange())
+    const subscriptionA = AppState.addEventListener(
+      'change',
+      handleColorSchemeChange,
+    )
+    const subscriptionB = Appearance.addChangeListener(() =>
+      handleColorSchemeChange(),
+    )
 
     return () => {
       subscriptionA.remove()

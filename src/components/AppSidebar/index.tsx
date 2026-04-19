@@ -14,8 +14,9 @@ import { Image } from 'expo-image'
 import { usePathname, useRouter } from 'expo-router'
 
 import { APP_SIDEBAR_SIZE } from '@/constants'
-import { useAuthService } from '@/containers/AuthService'
+import { useComposeAuthedNavigation } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { useAuthStore, useCurrentUser } from '@/stores/auth'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 import AppSidebarButton from './AppSidebarButton'
@@ -26,7 +27,9 @@ export default function AppSidebar(props: {
   hasDynamicContent?: boolean
   position: 'BOTTOM' | 'SIDE'
 }) {
-  const { composeAuthedNavigation, meta, user } = useAuthService()
+  const composeAuthedNavigation = useComposeAuthedNavigation()
+  const meta = useAuthStore((s) => s.meta)
+  const user = useCurrentUser()
   const { theme, styles } = useTheme()
   const { width, height } = useWindowDimensions()
   const pathname = usePathname()

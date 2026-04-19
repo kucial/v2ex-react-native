@@ -38,13 +38,16 @@ export default function ReplyList({
     [maxContainerWidth, width],
   )
 
-  const extraData = useMemo(
-    () => ({ pivot }),
-    [pivot?.id],
-  )
+  const extraData = useMemo(() => ({ pivot }), [pivot?.id])
 
   const renderItem = useCallback(
-    ({ item: reply, extraData: extra }: { item: TopicReply; extraData?: any }) => (
+    ({
+      item: reply,
+      extraData: extra,
+    }: {
+      item: TopicReply
+      extraData?: any
+    }) => (
       <ReplyRow
         showAvatar={showAvatar}
         isPivot={reply.id === extra?.pivot?.id}
@@ -58,10 +61,7 @@ export default function ReplyList({
     [showAvatar, contentWidth, onReply, onThank, onShowUserInfo],
   )
 
-  const keyExtractor = useCallback(
-    (item: TopicReply) => String(item.id),
-    [],
-  )
+  const keyExtractor = useCallback((item: TopicReply) => String(item.id), [])
 
   return (
     <FlashList

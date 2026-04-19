@@ -7,14 +7,15 @@ import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import NavigationHeader from '@/components/NavigationHeader'
 
-import { useAuthService } from '@/containers/AuthService'
+import { useAuthStore, useCurrentUser } from '@/stores/auth'
 import { shouldLoadMore } from '@/utils/react-query'
 import { getMyNotifications } from '@/utils/v2ex-client'
 
 import NotificationRow from './NotificationRow'
 
 export default function NotificationScreen() {
-  const { updateMeta, user } = useAuthService()
+  const user = useCurrentUser()
+  const updateMeta = useAuthStore((s) => s.updateMeta)
   const getKey = useCallback(
     (index: number): [string, number] => {
       return [`/member/${user.username}/notifications.json`, index + 1]

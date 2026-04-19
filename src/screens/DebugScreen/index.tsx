@@ -7,8 +7,8 @@ import HtmlRender from '@/components/HtmlRender'
 import Loader from '@/components/Loader'
 import StarIcon from '@/components/StarIcon'
 
-import { useAuthService } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
+import { useCurrentUser } from '@/stores/auth'
 import { getCurrentUser } from '@/utils/v2ex-client'
 
 const fSize = 30
@@ -24,7 +24,7 @@ export default function DebugScreen() {
   // ref
   const { theme, styles } = useTheme()
 
-  const { user } = useAuthService()
+  const user = useCurrentUser()
   const starIconRef = useRef()
   const heartIconRef = useRef()
 

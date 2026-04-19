@@ -3,7 +3,7 @@ import { useSharedValue } from 'react-native-reanimated'
 
 import NavigationHeader from '@/components/NavigationHeader'
 
-import { useAuthService } from '@/containers/AuthService'
+import { useCurrentUser } from '@/stores/auth'
 
 import MemberReplies from '../MemberScreen/MemberReplies'
 
@@ -13,7 +13,7 @@ const voidFunction = () => {
 const style = {}
 
 export default function RepliedTopicsScreen() {
-  const { user } = useAuthService()
+  const user = useCurrentUser()
   const scrollY = useSharedValue(0)
   return (
     <View className='flex-1'>

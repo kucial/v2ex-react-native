@@ -13,7 +13,7 @@ import NodeTopicList from '@/components/NodeTopicList'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useMaxContainerWidth } from '@/containers/AppSettingsService'
-import { useAuthService } from '@/containers/AuthService'
+import { useComposeAuthedNavigation } from '@/containers/AuthService'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 import { getAbsoluteUrl } from '@/utils/url'
@@ -37,7 +37,7 @@ export default function NodeScreen() {
   const maxContainerWidth = useMaxContainerWidth()
   const CONTAINER_WIDTH = Math.min(width, maxContainerWidth)
   const alert = useAlertService()
-  const { composeAuthedNavigation } = useAuthService()
+  const composeAuthedNavigation = useComposeAuthedNavigation()
   const queryClient = useQueryClient()
 
   const fetchNode = useCallback(async () => {

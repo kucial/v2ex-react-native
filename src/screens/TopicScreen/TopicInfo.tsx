@@ -6,9 +6,7 @@ import { useRouter } from 'expo-router'
 import HtmlRender from '@/components/HtmlRender'
 import { BlockText, Box } from '@/components/Skeleton/Elements'
 
-import {
-  usePadLayout,
-} from '@/containers/AppSettingsService'
+import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { TopicDetail } from '@/utils/v2ex-client/types'
 
@@ -19,7 +17,6 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
 
   const padLayout = usePadLayout()
   const router = useRouter()
-
 
   return (
     <>

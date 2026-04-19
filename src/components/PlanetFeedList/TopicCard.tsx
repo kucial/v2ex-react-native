@@ -21,7 +21,13 @@ import HtmlRender from '../HtmlRender'
 import MaxWidthWrapper from '../MaxWidthWrapper'
 
 function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
-  const { data, showAvatar, titleStyle, variant = 'feed', contentWidth: propContentWidth } = props
+  const {
+    data,
+    showAvatar,
+    titleStyle,
+    variant = 'feed',
+    contentWidth: propContentWidth,
+  } = props
   const router = useRouter()
   const { styles, theme } = useTheme()
   const iconColor = theme.colors.text_meta
