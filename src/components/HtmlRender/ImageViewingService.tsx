@@ -11,7 +11,7 @@ import {
 } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
-import ImageView from 'react-native-image-viewing'
+import { ImageViewing } from '@/components/ImageViewing'
 import Share from 'react-native-share'
 import { Portal } from '@gorhom/portal'
 import { BarcodeScanningResult, Camera } from 'expo-camera'
@@ -161,7 +161,7 @@ const ImageViewingServiceProvider = forwardRef<
     <ServiceContext.Provider value={service}>
       {props.children}
       <Portal hostName='overlay'>
-        <ImageView
+        <ImageViewing
           images={renderImages}
           imageIndex={viewIndex}
           visible={viewIndex > -1}

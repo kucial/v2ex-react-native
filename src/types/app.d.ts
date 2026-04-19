@@ -16,7 +16,6 @@ declare global {
     showAvatar: boolean
     showLastReplyMember: boolean
     titleStyle: 'normal' | 'emphasized'
-    viewedStatus?: 'viewed' | 'has_update' | undefined
   }
   type HomeFeedRowProps = FeedRowProps<HomeTopicFeed>
   type NodeFeedRowProps = FeedRowProps<NodeTopicFeed>

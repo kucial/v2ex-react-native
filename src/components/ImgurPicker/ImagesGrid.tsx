@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import ContextMenu from 'react-native-context-menu-view'
-import ImageView from 'react-native-image-viewing'
+import { ImageViewing } from '@/components/ImageViewing'
 import { UseQueryResult } from '@tanstack/react-query'
 
 import CheckIcon from '@/components/CheckIcon'
@@ -152,7 +152,7 @@ export default function ImagesGrid(props: ImagesGridProps) {
       <View className='py-2 px-[1px]'>
         <View className='flex flex-row flex-wrap'>{content}</View>
       </View>
-      <ImageView
+      <ImageViewing
         {...imageViewingProps}
         imageIndex={viewIndex}
         visible={viewIndex > -1}

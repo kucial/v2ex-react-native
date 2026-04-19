@@ -17,7 +17,6 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useGetViewedStatus } from '@/containers/ViewedTopicsService'
 import { useHomeTabFeed } from '@/hooks'
 import {
   updateHomeFeedWidget,
@@ -41,7 +40,6 @@ function FeedTopicList(props: FeedTopicListProps) {
   const listViewRef = useRef<FlashList<HomeTopicFeed> | null>(null)
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
-  const getViewedStatus = useGetViewedStatus()
   const queryclient = useQueryClient()
 
   const listQuery = useHomeTabFeed(tab, isFocused)
@@ -153,15 +151,13 @@ function FeedTopicList(props: FeedTopicListProps) {
   const extraData = useMemo(
     () => ({
       listLength: listItems.length,
-      getViewedStatus,
       settings,
     }),
-    [listItems.length, settings, getViewedStatus],
+    [listItems.length, settings],
   )
 
   const { renderItem, keyExtractor } = useMemo(
     () => ({
-      // renderItem intentionally has no deps — all dynamic data flows through extraData
       renderItem: ({
         item,
         index,
@@ -175,7 +171,6 @@ function FeedTopicList(props: FeedTopicListProps) {
           <TideTopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
-            viewedStatus={extra?.getViewedStatus(item)}
             showAvatar={extra?.settings?.feedShowAvatar}
             showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
             titleStyle={extra?.settings?.feedTitleStyle}
@@ -184,7 +179,6 @@ function FeedTopicList(props: FeedTopicListProps) {
           <TopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
-            viewedStatus={extra?.getViewedStatus(item)}
             showAvatar={extra?.settings?.feedShowAvatar}
             showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
             titleStyle={extra?.settings?.feedTitleStyle}

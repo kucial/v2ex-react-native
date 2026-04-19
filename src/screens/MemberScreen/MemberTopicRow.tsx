@@ -6,6 +6,7 @@ import { BlockText, InlineBox } from '@/components/Skeleton/Elements'
 import TriangleCorner from '@/components/TriangleCorner'
 
 import { useTheme } from '@/containers/ThemeService'
+import { useViewedStatus } from '@/containers/ViewedTopicsService'
 import { cn } from '@/lib/utils'
 
 export default function MemberTopicRow(props: MemberFeedRowProps) {
@@ -13,6 +14,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
   const router = useRouter()
 
   const { styles } = useTheme()
+  const viewedStatus = useViewedStatus(data)
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <Pressable
@@ -33,7 +35,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
         <View
           className={cn(
             'flex-1 py-2 pl-3',
-            props.viewedStatus === 'viewed' && 'opacity-70',
+            viewedStatus === 'viewed' && 'opacity-70',
           )}
         >
           <View className='flex flex-row items-center space-x-2 mb-1'>
@@ -131,7 +133,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
             />
           )}
         </View>
-        {props.viewedStatus === 'has_update' && (
+        {viewedStatus === 'has_update' && (
           <TriangleCorner
             corner='top-left'
             size={10}

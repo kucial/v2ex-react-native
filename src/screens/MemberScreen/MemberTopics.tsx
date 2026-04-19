@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { SharedValue } from 'react-native-reanimated'
 import { FlashListProps } from '@shopify/flash-list'
 
@@ -8,7 +8,6 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useGetViewedStatus } from '@/containers/ViewedTopicsService'
 import { useMemberTopics } from '@/hooks'
 import { shouldLoadMore } from '@/utils/react-query'
 
@@ -23,7 +22,6 @@ export default function MemberTopics(
   } & Omit<FlashListProps<any>, 'data' | 'renderItem' | 'estimatedItemSize'>,
 ) {
   const alert = useAlertService()
-  const getViewedStatus = useGetViewedStatus()
   const { data: settings } = useAppSettings()
 
   const listQuery = useMemberTopics(props.username, props.isFocused)
@@ -40,19 +38,34 @@ export default function MemberTopics(
       return combined
     }, [])
     return items
-  }, [listQuery])
+  }, [listQuery.data, listQuery.isLoading, listQuery.error])
+
+  const extraData = useMemo(
+    () => ({
+      listLength: listItems?.length ?? 0,
+      settings,
+    }),
+    [listItems?.length, settings],
+  )
 
   const { renderItem, keyExtractor } = useMemo(() => {
     return {
-      renderItem({ item, index }) {
+      renderItem({
+        item,
+        index,
+        extraData: extra,
+      }: {
+        item: any
+        index: number
+        extraData?: typeof extraData
+      }) {
         return (
           <MemberTopicRow
             data={item}
-            isLast={index === listItems.length - 1}
-            viewedStatus={getViewedStatus(item)}
-            showAvatar={settings.feedShowAvatar}
-            showLastReplyMember={settings.feedShowLastReplyMember}
-            titleStyle={settings.feedTitleStyle}
+            isLast={index === (extra?.listLength ?? 0) - 1}
+            showAvatar={extra?.settings?.feedShowAvatar}
+            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
+            titleStyle={extra?.settings?.feedTitleStyle}
           />
         )
       },
@@ -60,23 +73,31 @@ export default function MemberTopics(
         return item?.id || `index-${index}`
       },
     }
-  }, [listItems?.length])
+  }, [])
+
+  const handleEndReached = useCallback(() => {
+    if (listQuery.error?.code === 'MEMBER_LOCKED') {
+      return
+    }
+    if (shouldLoadMore(listQuery)) {
+      listQuery.fetchNextPage()
+    }
+  }, [listQuery])
+
+  const listFooter = useMemo(
+    () => <CommonListFooter data={listQuery} />,
+    [listQuery],
+  )
 
   return (
     <AnimatedFlashList
       data={listItems}
+      extraData={extraData}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
       scrollEventThrottle={16}
-      onEndReached={() => {
-        if (listQuery.error?.code === 'MEMBER_LOCKED') {
-          return
-        }
-        if (shouldLoadMore(listQuery)) {
-          listQuery.fetchNextPage()
-        }
-      }}
+      onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
@@ -84,9 +105,7 @@ export default function MemberTopics(
           progressViewOffset={props.contentContainerStyle?.paddingTop as number}
         />
       }
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listQuery} />
-      }}
+      ListFooterComponent={listFooter}
       onScroll={props.isFocused ? props.onScroll : undefined}
       onScrollEndDrag={props.isFocused ? props.onScrollEndDrag : undefined}
       onMomentumScrollBegin={

@@ -18,7 +18,6 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { useGetViewedStatus } from '@/containers/ViewedTopicsService'
 import { NODE_TOPICS_KEY, useNodeTopics } from '@/hooks'
 import { shouldFetch } from '@/utils/react-query'
 import { NodeTopicFeed } from '@/utils/v2ex-client/types'
@@ -37,7 +36,6 @@ type NodeTopicListProps = {
 
 export default function NodeTopicList(props: NodeTopicListProps) {
   const { header, name, isFocused, currentListRef, scrollY } = props
-  const getViewedStatus = useGetViewedStatus()
   const { data: settings } = useAppSettings()
   const queryclient = useQueryClient()
 
@@ -139,10 +137,9 @@ export default function NodeTopicList(props: NodeTopicListProps) {
   const extraData = useMemo(
     () => ({
       listLength: listItems.length,
-      getViewedStatus,
       settings,
     }),
-    [listItems.length, getViewedStatus, settings],
+    [listItems.length, settings],
   )
 
   const { renderItem, keyExtractor } = useMemo(() => {
@@ -160,7 +157,6 @@ export default function NodeTopicList(props: NodeTopicListProps) {
           <TideNodeTopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
-            viewedStatus={extra?.getViewedStatus(item)}
             showAvatar={extra?.settings?.feedShowAvatar}
             showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
             titleStyle={extra?.settings?.feedTitleStyle}
@@ -169,7 +165,6 @@ export default function NodeTopicList(props: NodeTopicListProps) {
           <NodeTopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
-            viewedStatus={extra?.getViewedStatus(item)}
             showAvatar={extra?.settings?.feedShowAvatar}
             showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
             titleStyle={extra?.settings?.feedTitleStyle}

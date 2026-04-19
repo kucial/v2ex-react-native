@@ -8,6 +8,7 @@ import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import TriangleCorner from '@/components/TriangleCorner'
 
 import { useTheme } from '@/containers/ThemeService'
+import { useViewedStatus } from '@/containers/ViewedTopicsService'
 import { cn } from '@/lib/utils'
 import { preloadTopicInfo } from '@/utils/preload'
 
@@ -17,6 +18,7 @@ function TideTopicRow(props: HomeFeedRowProps) {
   const { data, showAvatar, showLastReplyMember, isLast } = props
   const router = useRouter()
   const { styles } = useTheme()
+  const viewedStatus = useViewedStatus(data)
 
   if (!data) {
     return (
@@ -94,7 +96,7 @@ function TideTopicRow(props: HomeFeedRowProps) {
         <View
           className={cn(
             'flex-1 pt-1 pb-2',
-            props.viewedStatus === 'viewed' && 'opacity-70',
+            viewedStatus === 'viewed' && 'opacity-70',
           )}
         >
           <Text
@@ -178,7 +180,7 @@ function TideTopicRow(props: HomeFeedRowProps) {
             </View>
           )}
         </View>
-        {props.viewedStatus === 'has_update' && (
+        {viewedStatus === 'has_update' && (
           <TriangleCorner
             corner='top-left'
             size={10}

@@ -268,19 +268,16 @@ export default function HomeScreen(props) {
     return <HomeSkeleton />
   }
 
-  const tabViewKey = routes.map((r) => r.key).join(',')
-
   return (
     <>
       <TabView
-        key={tabViewKey}
         navigationState={{ index: normalizedIndex, routes }}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
         initialLayout={initialLayout}
       />
-      {/* <HomeDataPrefetch index={normalizedIndex} routes={routes} /> */}
+      <HomeDataPrefetch index={normalizedIndex} routes={routes} />
     </>
   )
 }

@@ -13,6 +13,7 @@ import {
 import TriangleCorner from '@/components/TriangleCorner'
 
 import { useTheme } from '@/containers/ThemeService'
+import { useViewedStatus } from '@/containers/ViewedTopicsService'
 import { cn } from '@/lib/utils'
 import { preloadTopicInfo } from '@/utils/preload'
 
@@ -22,6 +23,7 @@ function NodeTopicRow(props: NodeFeedRowProps) {
   const { styles } = useTheme()
   const router = useRouter()
   const { data, showAvatar, isLast } = props
+  const viewedStatus = useViewedStatus(data)
 
   if (!data) {
     return (
@@ -104,7 +106,7 @@ function NodeTopicRow(props: NodeFeedRowProps) {
         <View
           className={cn(
             'flex-1 py-2',
-            props.viewedStatus === 'viewed' && 'opacity-70',
+            viewedStatus === 'viewed' && 'opacity-70',
           )}
         >
           <Text
@@ -159,7 +161,7 @@ function NodeTopicRow(props: NodeFeedRowProps) {
           )}
         </View>
 
-        {props.viewedStatus === 'has_update' && (
+        {viewedStatus === 'has_update' && (
           <TriangleCorner
             corner='top-left'
             size={10}
