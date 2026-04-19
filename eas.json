@@ -31,7 +31,6 @@
     },
     "production": {
       "channel": "production",
-      "autoIncrement": true,
       "env": {
         "CI": "true",
         "IMGUR_CLIENT_ID": "eb2dd6d8927e275",
