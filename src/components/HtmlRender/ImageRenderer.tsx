@@ -11,7 +11,7 @@ import { Image } from 'expo-image'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 
-import { useImageViewing } from './ImageViewingService'
+import { useImageViewing } from '@/containers/ImageViewingService'
 
 async function loadImage(
   uri: string,

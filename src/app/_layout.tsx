@@ -16,6 +16,8 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import FeedPanelSheet from '@/components/FeedPanelSheet'
 import Layout from '@/components/Layout'
 
+import { GlobalImageViewingModal } from '@/containers/ImageViewingService'
+
 import AlertService from '@/containers/AlertService'
 import AuthWatcher from '@/containers/AuthWatcher'
 import { TwoFAModal } from '@/containers/AuthWatcher/components/TwoFAModal'
@@ -75,6 +77,7 @@ export default function RootLayout() {
                                     <Slot />
                                     <PortalHost name='overlay' />
                                     <FeedPanelSheet />
+                                    <GlobalImageViewingModal />
                                     <TwoFAModal />
                                     <AuthWatcher />
                                   </Layout>

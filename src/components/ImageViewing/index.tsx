@@ -43,6 +43,7 @@ export type ImageViewingProps = {
   images: ViewerImage[]
   imageIndex: number
   visible: boolean
+  closeLabel?: string
   onRequestClose: () => void
   onImageIndexChange?: (index: number) => void
   onZoomChange?: (isZoomed: boolean) => void
