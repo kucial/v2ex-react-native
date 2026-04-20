@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'expo-router'
 
 import { useAlertService } from '@/containers/AlertService'
-import { use2FaModalPrompt } from '@/containers/AuthService/2fa'
+import { use2FaModalPrompt } from '@/containers/AuthWatcher/components/TwoFAModal'
 import { useAuthStore, useCurrentUser } from '@/stores/auth'
 
 import GoogleSign from './GoogleSign'

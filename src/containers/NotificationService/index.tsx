@@ -1,15 +1,15 @@
 import { useEffect } from 'react'
 import { useRouter } from 'expo-router'
 
-import { useAuthStore } from '@/stores/auth'
+import { useAuthMeta } from '@/stores/auth'
 import * as v2exClient from '@/utils/v2ex-client'
 
 import { useAlertService } from '../AlertService'
-import { useComposeAuthedNavigation } from '../AuthService'
+import { useComposeAuthedNavigation } from '../AuthWatcher/hooks'
 
 export default function NotificationService(props) {
   const alert = useAlertService()
-  const meta = useAuthStore((s) => s.meta)
+  const meta = useAuthMeta()
   const composeAuthedNavigation = useComposeAuthedNavigation()
   const router = useRouter()
 

@@ -17,7 +17,8 @@ import FeedPanelSheet from '@/components/FeedPanelSheet'
 import Layout from '@/components/Layout'
 
 import AlertService from '@/containers/AlertService'
-import AuthService from '@/containers/AuthService'
+import AuthWatcher from '@/containers/AuthWatcher'
+import { TwoFAModal } from '@/containers/AuthWatcher/components/TwoFAModal'
 import ClipboardWatcher from '@/containers/ClipboardWatcher'
 import FetchPrepare from '@/containers/FetchPrepare'
 import ImgurService from '@/containers/ImgurService'
@@ -68,17 +69,17 @@ export default function RootLayout() {
                         <ActionSheetProvider>
                           <ImgurService>
                             <ClipboardWatcher>
-                              <AuthService>
-                                <NotificationService>
-                                  <TopicSheetServiceProvider>
-                                    <Layout>
-                                      <Slot />
-                                      <PortalHost name='overlay' />
-                                      <FeedPanelSheet />
-                                    </Layout>
-                                  </TopicSheetServiceProvider>
-                                </NotificationService>
-                              </AuthService>
+                              <NotificationService>
+                                <TopicSheetServiceProvider>
+                                  <Layout>
+                                    <Slot />
+                                    <PortalHost name='overlay' />
+                                    <FeedPanelSheet />
+                                    <TwoFAModal />
+                                    <AuthWatcher />
+                                  </Layout>
+                                </TopicSheetServiceProvider>
+                              </NotificationService>
                             </ClipboardWatcher>
                           </ImgurService>
                         </ActionSheetProvider>

@@ -23,10 +23,10 @@ import {
   useComposeAuthedNavigation,
   useGoToSigninScreen,
   useLogout,
-} from '@/containers/AuthService'
+} from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
-import { useAuthStore, useCurrentUser } from '@/stores/auth'
+import { useAuthMeta, useAuthStatus, useCurrentUser } from '@/stores/auth'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 import BalanceArea from './BalanceArea'
@@ -35,8 +35,8 @@ export default function MyScreen() {
   const router = useRouter()
   const { theme, styles } = useTheme()
   const currentUser = useCurrentUser()
-  const currentUserMeta = useAuthStore((s) => s.meta)
-  const authStatus = useAuthStore((s) => s.status)
+  const currentUserMeta = useAuthMeta()
+  const authStatus = useAuthStatus()
 
   const logout = useLogout()
   const composeAuthedNavigation = useComposeAuthedNavigation()

@@ -444,6 +444,7 @@ export function ImageViewing({
   onRequestClose,
   onImageIndexChange,
   onZoomChange,
+  closeLabel = '关闭',
   backgroundColor = '#000',
   swipeToCloseEnabled = true,
   doubleTapToZoomEnabled = true,
@@ -559,11 +560,9 @@ export function ImageViewing({
           </View>
         ) : (
           <View style={styles.defaultHeader}>
-            <Text style={styles.counter}>
-              {currentIndex + 1} / {imagesCount}
-            </Text>
-            <Pressable onPress={onRequestClose} hitSlop={12}>
-              <Text style={styles.closeText}>Close</Text>
+            <View></View>
+            <Pressable className='active:opacity-70' style={styles.closeButton} onPress={onRequestClose} hitSlop={12}>
+              <Text style={styles.closeText}>{closeLabel}</Text>
             </Pressable>
           </View>
         )}
@@ -659,21 +658,21 @@ const styles = StyleSheet.create({
   },
   header: {
     position: 'absolute',
-    top: 56,
-    left: 16,
-    right: 16,
+    top: 0,
+    left: 0,
+    right: 0,
     zIndex: 10,
   },
   footer: {
     position: 'absolute',
     bottom: 32,
-    left: 16,
-    right: 16,
+    left: 0,
+    right: 0,
     zIndex: 10,
   },
   defaultHeader: {
     position: 'absolute',
-    top: 56,
+    top: 64,
     left: 16,
     right: 16,
     zIndex: 10,
@@ -683,4 +682,5 @@ const styles = StyleSheet.create({
   },
   counter: { color: '#fff', fontSize: 16, fontWeight: '600' },
   closeText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  closeButton: { paddingHorizontal: 12, paddingVertical: 6 },
 })

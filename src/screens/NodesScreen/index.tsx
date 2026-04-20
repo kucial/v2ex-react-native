@@ -11,7 +11,7 @@ import SearchInput from '@/components/SearchInput'
 
 import { useTheme } from '@/containers/ThemeService'
 import { useCollectedNodesQuery } from '@/hooks'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStatus } from '@/stores/auth'
 import { useCachedState } from '@/utils/hooks'
 import { isRefreshing } from '@/utils/react-query'
 import { getMyCollectedNodes, getNodeGroups } from '@/utils/v2ex-client'
@@ -23,7 +23,7 @@ const CACHE_KEY = '$app$/nodes-filter'
 const SECTION_FOOTER_STYLE = { height: 12 }
 
 export default function NodesScreen() {
-  const status = useAuthStore((s) => s.status)
+  const status = useAuthStatus()
   const navigation = useNavigation()
 
   const { styles } = useTheme()

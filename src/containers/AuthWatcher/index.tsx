@@ -1,16 +1,14 @@
-import { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { AppState, InteractionManager } from 'react-native'
-import { useRouter } from 'expo-router'
+
 import { useShallow } from 'zustand/react/shallow'
 
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore, AuthState } from '@/stores/auth'
 import { getJSON, setJSON, storage } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import { BalanceBrief, MemberDetail } from '@/utils/v2ex-client/types'
 
 import { useAlertService } from '../AlertService'
-import { TwoFAServiceProvider } from './2fa'
-import { AuthService, AuthState } from './types'
 
 // Custom hooks for better organization
 function useDailySignIn(user: MemberDetail | null) {
@@ -70,7 +68,7 @@ function useDailySignIn(user: MemberDetail | null) {
               v2exClient.getHomeFeeds({ tab: 'recent' }).catch((err) => {
                 // do nothing.
               })
-            } catch (err) {}
+            } catch (err) { }
           })
         }, CHECK_STATUS_DELAY)
       } else {
@@ -168,54 +166,9 @@ const getUTCDateString = () => {
   )}-${date.getUTCDate()}`
 }
 
-export function useLogout() {
-  const alert = useAlertService()
-  return useCallback(() => {
-    useAuthStore.getState().logout((err) => {
-      alert.show({ type: 'error', message: err.message })
-    })
-  }, [alert])
-}
 
-export function useGoToSigninScreen() {
-  const router = useRouter()
-  return useCallback(() => {
-    router.push('/signin')
-  }, [router])
-}
 
-export function useComposeAuthedNavigation() {
-  const router = useRouter()
-  const alert = useAlertService()
-
-  return useCallback(
-    function <T>(callback?: (params?: T) => void) {
-      return (params?: T) => {
-        const { status, user, setNextAction } = useAuthStore.getState()
-        if (status === 'loading') {
-          alert.show({
-            type: 'info',
-            message: '提示 正在验证登录状态，请稍候',
-          })
-          return
-        }
-        if (!user) {
-          router.push('/signin')
-          if (callback) {
-            setNextAction(() => {
-              callback(params)
-            })
-          }
-          return
-        }
-        callback?.(params)
-      }
-    },
-    [router, alert],
-  )
-}
-
-export default function AuthServiceProvider(props: { children: ReactElement }) {
+export default function AuthWatcher() {
   const isFetchingUserRef = useRef(false)
 
   const { user, fetchedAt, fetchCurrentUser, setAuthState } = useAuthStore(
@@ -243,5 +196,5 @@ export default function AuthServiceProvider(props: { children: ReactElement }) {
     })
   }, []) // Only run once on mount
 
-  return <TwoFAServiceProvider>{props.children}</TwoFAServiceProvider>
+  return null
 }

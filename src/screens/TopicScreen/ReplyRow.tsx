@@ -15,7 +15,7 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import ReplyIcon from '@/components/ReplyIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
-import { useComposeAuthedNavigation } from '@/containers/AuthService'
+import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import { usePressBreadcrumb } from '@/utils/hooks'

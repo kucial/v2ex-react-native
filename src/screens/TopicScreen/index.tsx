@@ -35,7 +35,7 @@ import {
   useMaxContainerWidth,
   usePadLayout,
 } from '@/containers/AppSettingsService'
-import { useComposeAuthedNavigation } from '@/containers/AuthService'
+import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
 import { useTopicSheetService } from '@/containers/TopicSheetService'
 import { useTouchViewedTopic } from '@/containers/ViewedTopicsService'

@@ -13,7 +13,7 @@ import NodeTopicList from '@/components/NodeTopicList'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useMaxContainerWidth } from '@/containers/AppSettingsService'
-import { useComposeAuthedNavigation } from '@/containers/AuthService'
+import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
 import { usePressBreadcrumb } from '@/utils/hooks'
 import { getAbsoluteUrl } from '@/utils/url'

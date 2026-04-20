@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStatus, useAuthStore } from '@/stores/auth'
 import {
   getHomeFeeds,
   getHomeTabs,
@@ -194,7 +194,7 @@ export const useHomeTabs = () => {
 
 export const useTabOptions = () => {
   const { data: homeTabs } = useHomeTabs()
-  const status = useAuthStore((s) => s.status)
+  const status = useAuthStatus()
   const { data: collectedNodes } = useCollectedNodesQuery(status === 'authed')
   return useMemo(() => {
     if (!homeTabs && !collectedNodes) {
