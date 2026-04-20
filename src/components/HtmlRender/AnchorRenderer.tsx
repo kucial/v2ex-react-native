@@ -13,7 +13,7 @@ import {
 } from '@/utils/url'
 
 import { RenderContext } from './context'
-import { useImageViewing } from './ImageViewingService'
+import { useImageViewing } from '@/containers/ImageViewingService'
 
 const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
   const renderProps = getNativePropsForTNode(props)

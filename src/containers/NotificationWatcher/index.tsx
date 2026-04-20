@@ -7,7 +7,7 @@ import * as v2exClient from '@/utils/v2ex-client'
 import { useAlertService } from '../AlertService'
 import { useComposeAuthedNavigation } from '../AuthWatcher/hooks'
 
-export default function NotificationService(props) {
+export default function NotificationWatcher() {
   const alert = useAlertService()
   const meta = useAuthMeta()
   const composeAuthedNavigation = useComposeAuthedNavigation()
@@ -31,5 +31,5 @@ export default function NotificationService(props) {
     return unsubscribe
   }, [meta?.unread_count, onAlertPress])
 
-  return props.children
+  return null
 }

@@ -24,7 +24,7 @@ import { TwoFAModal } from '@/containers/AuthWatcher/components/TwoFAModal'
 import ClipboardWatcher from '@/containers/ClipboardWatcher'
 import FetchPrepare from '@/containers/FetchPrepare'
 import ImgurService from '@/containers/ImgurService'
-import NotificationService from '@/containers/NotificationService'
+import NotificationWatcher from '@/containers/NotificationWatcher'
 import QueryClientProvider from '@/containers/QueryClientProvider'
 import { getThemeService, ThemeProvider } from '@/containers/ThemeService'
 import TopicSheetServiceProvider from '@/containers/TopicSheetService'
@@ -71,18 +71,17 @@ export default function RootLayout() {
                         <ActionSheetProvider>
                           <ImgurService>
                             <ClipboardWatcher>
-                              <NotificationService>
-                                <TopicSheetServiceProvider>
-                                  <Layout>
-                                    <Slot />
-                                    <PortalHost name='overlay' />
-                                    <FeedPanelSheet />
-                                    <GlobalImageViewingModal />
-                                    <TwoFAModal />
-                                    <AuthWatcher />
-                                  </Layout>
-                                </TopicSheetServiceProvider>
-                              </NotificationService>
+                              <TopicSheetServiceProvider>
+                                <Layout>
+                                  <Slot />
+                                  <PortalHost name='overlay' />
+                                  <FeedPanelSheet />
+                                  <GlobalImageViewingModal />
+                                  <TwoFAModal />
+                                  <NotificationWatcher />
+                                  <AuthWatcher />
+                                </Layout>
+                              </TopicSheetServiceProvider>
                             </ClipboardWatcher>
                           </ImgurService>
                         </ActionSheetProvider>

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import { useRouter } from 'expo-router'
 
 import { useAlertService } from '@/containers/AlertService'
@@ -38,9 +38,7 @@ export function useComposeAuthedNavigation() {
         if (!user) {
           router.push('/signin')
           if (callback) {
-            setNextAction(() => {
-              callback(params)
-            })
+            setNextAction(() => callback(params))
           }
           return
         }
