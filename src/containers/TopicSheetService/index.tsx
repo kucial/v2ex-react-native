@@ -1,12 +1,4 @@
-import {
-  createContext,
-  ReactElement,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { useEffect, useRef } from 'react'
 import { KeyboardAvoidingView, Platform, View } from 'react-native'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 
@@ -14,112 +6,64 @@ import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
 import ReplyList from '@/screens/TopicScreen/ReplyList'
 import TopicReplyForm from '@/screens/TopicScreen/TopicReplyForm'
-import { ReplyContext, UserInfoContext } from '@/screens/TopicScreen/types'
-import { TopicReply } from '@/utils/v2ex-client/types'
-
-type ConversationSheetOptions = {
-  data: TopicReply[]
-  pivot: TopicReply
-  showAvatar?: boolean
-  onReply: (reply: TopicReply) => void
-  onThank: (reply: TopicReply) => void
-  onShowUserInfo?: (context: UserInfoContext) => void
-}
-
-type UserInfoSheetOptions = {
-  data: TopicReply[]
-  header?: ReactElement
-  showAvatar?: boolean
-  onReply: (reply: TopicReply) => void
-  onThank: (reply: TopicReply) => void
-}
-
-type ReplyFormSheetOptions = {
-  cacheKey: string
-  context: ReplyContext
-  onSubmit: (values: { content: string }) => Promise<void>
-  onInitImgurSettings: () => void
-}
-
-type TopicSheetService = {
-  showConversation: (options: ConversationSheetOptions) => void
-  showUserInfo: (options: UserInfoSheetOptions) => void
-  showReplyForm: (options: ReplyFormSheetOptions) => void
-  dismissReplyForm: () => void
-  dismissAll: () => void
-}
-
-const TopicSheetContext = createContext<TopicSheetService>(null)
+import { useTopicSheetStore } from '@/stores/topicSheet'
 
 const conversationDetents = [0.8]
 
-export default function TopicSheetServiceProvider(props: {
-  children: ReactElement
-}) {
+export default function TopicSheetModal() {
   const { styles } = useTheme()
   const conversationModalRef = useRef<TrueSheet>(null)
   const userInfoModalRef = useRef<TrueSheet>(null)
   const replyModalRef = useRef<TrueSheet>(null)
-  const [conversationOptions, setConversationOptions] =
-    useState<ConversationSheetOptions>(null)
-  const [userInfoOptions, setUserInfoOptions] =
-    useState<UserInfoSheetOptions>(null)
-  const [replyOptions, setReplyOptions] = useState<ReplyFormSheetOptions>(null)
 
-  const showConversation = useCallback((options: ConversationSheetOptions) => {
-    setConversationOptions(options)
-    conversationModalRef.current?.present()
-  }, [])
+  const {
+    conversationOptions,
+    userInfoOptions,
+    replyOptions,
+    showConversation,
+    showUserInfo,
+    showReplyForm,
+    dismissReplyForm,
+    dismissAll,
+  } = useTopicSheetStore()
 
-  const showUserInfo = useCallback((options: UserInfoSheetOptions) => {
-    setUserInfoOptions(options)
-    userInfoModalRef.current?.present()
-  }, [])
+  useEffect(() => {
+    if (conversationOptions) {
+      conversationModalRef.current?.present()
+    } else {
+      conversationModalRef.current?.dismiss()
+    }
+  }, [conversationOptions])
 
-  const showReplyForm = useCallback((options: ReplyFormSheetOptions) => {
-    setReplyOptions(options)
-    replyModalRef.current?.present()
-  }, [])
+  useEffect(() => {
+    if (userInfoOptions) {
+      userInfoModalRef.current?.present()
+    } else {
+      userInfoModalRef.current?.dismiss()
+    }
+  }, [userInfoOptions])
 
-  const dismissReplyForm = useCallback(() => {
-    replyModalRef.current?.dismiss()
-    setReplyOptions(null)
-  }, [])
-
-  const dismissAll = useCallback(() => {
-    conversationModalRef.current?.dismiss()
-    userInfoModalRef.current?.dismiss()
-    replyModalRef.current?.dismiss()
-    setConversationOptions(null)
-    setUserInfoOptions(null)
-    setReplyOptions(null)
-  }, [])
-
-  const value = useMemo(
-    () => ({
-      showConversation,
-      showUserInfo,
-      showReplyForm,
-      dismissReplyForm,
-      dismissAll,
-    }),
-    [
-      showConversation,
-      showUserInfo,
-      showReplyForm,
-      dismissReplyForm,
-      dismissAll,
-    ],
-  )
+  useEffect(() => {
+    if (replyOptions) {
+      replyModalRef.current?.present()
+    } else {
+      replyModalRef.current?.dismiss()
+    }
+  }, [replyOptions])
 
   return (
-    <TopicSheetContext.Provider value={value}>
-      {props.children}
+    <>
       <TrueSheet
         ref={conversationModalRef}
         detents={conversationDetents}
         backgroundColor={styles.overlay.backgroundColor}
         scrollable
+        onDidDismiss={() => {
+          if (conversationOptions) {
+            // Dismiss triggered externally (e.g. swipe down)
+            useTopicSheetStore.setState({ conversationOptions: null })
+          }
+        }}
       >
         {conversationOptions && (
           <ReplyList
@@ -139,6 +83,11 @@ export default function TopicSheetServiceProvider(props: {
         detents={conversationDetents}
         backgroundColor={styles.overlay.backgroundColor}
         scrollable
+        onDidDismiss={() => {
+          if (userInfoOptions) {
+            useTopicSheetStore.setState({ userInfoOptions: null })
+          }
+        }}
       >
         {userInfoOptions && (
           <ReplyList
@@ -157,6 +106,11 @@ export default function TopicSheetServiceProvider(props: {
         detents={['auto']}
         backgroundColor={styles.overlay.backgroundColor}
         grabber={false}
+        onDidDismiss={() => {
+          if (replyOptions) {
+            dismissReplyForm()
+          }
+        }}
       >
         <KeyboardAvoidingView>
           <View
@@ -176,8 +130,6 @@ export default function TopicSheetServiceProvider(props: {
           </View>
         </KeyboardAvoidingView>
       </TrueSheet>
-    </TopicSheetContext.Provider>
+    </>
   )
 }
-
-export const useTopicSheetService = () => useContext(TopicSheetContext)

@@ -4,7 +4,7 @@ import * as Clipboard from 'expo-clipboard'
 
 import { useAlertService } from '../AlertService'
 
-export default function ClipboardWatcher(props) {
+export default function ClipboardWatcher() {
   const alert = useAlertService()
   useEffect(() => {
     const subscription = Clipboard.addClipboardListener(({ contentTypes }) => {
@@ -29,5 +29,5 @@ export default function ClipboardWatcher(props) {
       Clipboard.removeClipboardListener(subscription)
     }
   }, [alert])
-  return props.children
+  return null
 }

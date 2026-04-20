@@ -27,7 +27,7 @@ import ImgurService from '@/containers/ImgurService'
 import NotificationWatcher from '@/containers/NotificationWatcher'
 import QueryClientProvider from '@/containers/QueryClientProvider'
 import { getThemeService, ThemeProvider } from '@/containers/ThemeService'
-import TopicSheetServiceProvider from '@/containers/TopicSheetService'
+import TopicSheetModal from '@/containers/TopicSheetService'
 import { AudioProvider } from '@/contexts/AudioContext'
 import { initSentry } from '@/lib/sentry'
 import { registerBackgroundTaskAsync } from '@/lib/widget-background-task'
@@ -70,19 +70,17 @@ export default function RootLayout() {
                       <PortalProvider>
                         <ActionSheetProvider>
                           <ImgurService>
-                            <ClipboardWatcher>
-                              <TopicSheetServiceProvider>
-                                <Layout>
-                                  <Slot />
-                                  <PortalHost name='overlay' />
-                                  <FeedPanelSheet />
-                                  <GlobalImageViewingModal />
-                                  <TwoFAModal />
-                                  <NotificationWatcher />
-                                  <AuthWatcher />
-                                </Layout>
-                              </TopicSheetServiceProvider>
-                            </ClipboardWatcher>
+                              <Layout>
+                                <Slot />
+                                <PortalHost name='overlay' />
+                                <FeedPanelSheet />
+                                <GlobalImageViewingModal />
+                                <TwoFAModal />
+                                <ClipboardWatcher />
+                                <NotificationWatcher />
+                                <AuthWatcher />
+                                <TopicSheetModal />
+                              </Layout>
                           </ImgurService>
                         </ActionSheetProvider>
                       </PortalProvider>

@@ -37,7 +37,7 @@ import {
 } from '@/containers/AppSettingsService'
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
-import { useTopicSheetService } from '@/containers/TopicSheetService'
+import { useTopicSheetStore } from '@/stores/topicSheet'
 import { useTouchViewedTopic } from '@/containers/ViewedTopicsService'
 import { useAuthStore, useCurrentUser } from '@/stores/auth'
 import { getRelatedReplies } from '@/utils/content'
@@ -179,7 +179,7 @@ function TopicScreen() {
     showReplyForm,
     dismissReplyForm,
     dismissAll,
-  } = useTopicSheetService()
+  } = useTopicSheetStore()
 
   const { styles, colorScheme } = useTheme()
 
