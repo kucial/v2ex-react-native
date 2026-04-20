@@ -8,10 +8,9 @@ import {
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 
+import { useImageViewing } from '@/containers/ImageViewingService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
-
-import { useImageViewing } from '@/containers/ImageViewingService'
 
 async function loadImage(
   uri: string,

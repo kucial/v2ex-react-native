@@ -28,20 +28,13 @@ export default function FeedPanelSheet() {
       <ScrollView contentContainerClassName='px-4 pt-4 pb-safe'>
         <View className='py-3 mb-3' style={styles.border_b_light}>
           <Text
-            style={[
-              styles.text_title,
-              styles.text_lg,
-              { fontWeight: 'bold' },
-            ]}
+            style={[styles.text_title, styles.text_lg, { fontWeight: 'bold' }]}
           >
             {data.title}
           </Text>
         </View>
 
-        <HtmlRender
-          source={{ html: data.content }}
-          contentWidth={width - 32}
-        />
+        <HtmlRender source={{ html: data.content }} contentWidth={width - 32} />
       </ScrollView>
     </TrueSheet>
   )

@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { AppState, InteractionManager } from 'react-native'
-
 import { useShallow } from 'zustand/react/shallow'
 
-import { useAuthStore, AuthState } from '@/stores/auth'
+import { AuthState, useAuthStore } from '@/stores/auth'
 import { getJSON, setJSON, storage } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
 import { BalanceBrief, MemberDetail } from '@/utils/v2ex-client/types'
@@ -68,7 +67,7 @@ function useDailySignIn(user: MemberDetail | null) {
               v2exClient.getHomeFeeds({ tab: 'recent' }).catch((err) => {
                 // do nothing.
               })
-            } catch (err) { }
+            } catch (err) {}
           })
         }, CHECK_STATUS_DELAY)
       } else {
@@ -165,8 +164,6 @@ const getUTCDateString = () => {
     -2,
   )}-${date.getUTCDate()}`
 }
-
-
 
 export default function AuthWatcher() {
   const isFetchingUserRef = useRef(false)

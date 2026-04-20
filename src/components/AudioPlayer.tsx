@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import { useTheme } from '@/containers/ThemeService'
-import { useAudioContext } from '@/contexts/AudioContext'
+import { useAudioPlayerStore } from '@/stores/audioPlayer'
 
 interface AudioPlayerProps {
   audio: {
@@ -24,8 +24,12 @@ const THUMB_SIZE = 12
 
 export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
   const { styles, theme } = useTheme()
-  const { currentAudio, isPlaying, status, playAudio, pauseAudio, seekTo } =
-    useAudioContext()
+  const currentAudio = useAudioPlayerStore((s) => s.currentAudio)
+  const isPlaying = useAudioPlayerStore((s) => s.isPlaying)
+  const status = useAudioPlayerStore((s) => s.status)
+  const playAudio = useAudioPlayerStore((s) => s.playAudio)
+  const pauseAudio = useAudioPlayerStore((s) => s.pauseAudio)
+  const seekTo = useAudioPlayerStore((s) => s.seekTo)
 
   const isCurrentAudio = currentAudio?.url === audio.url
 

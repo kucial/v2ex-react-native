@@ -562,7 +562,12 @@ export function ImageViewing({
         ) : (
           <View style={styles.defaultHeader}>
             <View></View>
-            <Pressable className='active:opacity-70' style={styles.closeButton} onPress={onRequestClose} hitSlop={12}>
+            <Pressable
+              className='active:opacity-70'
+              style={styles.closeButton}
+              onPress={onRequestClose}
+              hitSlop={12}
+            >
               <Text style={styles.closeText}>{closeLabel}</Text>
             </Pressable>
           </View>

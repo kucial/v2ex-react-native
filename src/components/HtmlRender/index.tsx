@@ -28,6 +28,8 @@ import htmlToMarkdown from 'html-to-md'
 
 import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
+import type { ImageViewingService } from '@/containers/ImageViewingService'
+import ImageViewingServiceProvider from '@/containers/ImageViewingService'
 import { useTheme } from '@/containers/ThemeService'
 import { extractBase64Decoded, getMaxLength } from '@/utils/content'
 import {
@@ -44,8 +46,6 @@ import { RenderContext } from './context'
 import htmlMinifier from './htmlMinifier'
 import IframeRenderer from './IframeRenderer'
 import ImageRenderer from './ImageRenderer'
-import type { ImageViewingService } from '@/containers/ImageViewingService'
-import ImageViewingServiceProvider from '@/containers/ImageViewingService'
 import PreRenderer from './PreRenderer'
 import { atomOne } from './styles'
 

@@ -2,12 +2,15 @@ import { Pressable, Text, View } from 'react-native'
 import { PlayIcon } from 'react-native-heroicons/outline'
 
 import { useTheme } from '@/containers/ThemeService'
-import { useAudioContext } from '@/contexts/AudioContext'
 import { AudioItem } from '@/stores/audio'
+import { useAudioPlayerStore } from '@/stores/audioPlayer'
 
 export function AudioRow({ item }: { item: AudioItem }) {
   const { styles, theme } = useTheme()
-  const { playAudio, currentAudio, isPlaying, pauseAudio } = useAudioContext()
+  const playAudio = useAudioPlayerStore((s) => s.playAudio)
+  const pauseAudio = useAudioPlayerStore((s) => s.pauseAudio)
+  const currentAudio = useAudioPlayerStore((s) => s.currentAudio)
+  const isPlaying = useAudioPlayerStore((s) => s.isPlaying)
 
   const isActive = currentAudio?.url === item.url
 

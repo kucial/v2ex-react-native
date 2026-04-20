@@ -16,19 +16,18 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import FeedPanelSheet from '@/components/FeedPanelSheet'
 import Layout from '@/components/Layout'
 
-import { GlobalImageViewingModal } from '@/containers/ImageViewingService'
-
 import AlertService from '@/containers/AlertService'
+import AudioWatcher from '@/containers/AudioWatcher'
 import AuthWatcher from '@/containers/AuthWatcher'
 import { TwoFAModal } from '@/containers/AuthWatcher/components/TwoFAModal'
 import ClipboardWatcher from '@/containers/ClipboardWatcher'
 import FetchPrepare from '@/containers/FetchPrepare'
+import { GlobalImageViewingModal } from '@/containers/ImageViewingService'
 import ImgurService from '@/containers/ImgurService'
 import NotificationWatcher from '@/containers/NotificationWatcher'
 import QueryClientProvider from '@/containers/QueryClientProvider'
 import { getThemeService, ThemeProvider } from '@/containers/ThemeService'
 import TopicSheetModal from '@/containers/TopicSheetService'
-import { AudioProvider } from '@/contexts/AudioContext'
 import { initSentry } from '@/lib/sentry'
 import { registerBackgroundTaskAsync } from '@/lib/widget-background-task'
 import { handleDeepLink } from '@/utils/deeplink'
@@ -58,40 +57,39 @@ export default function RootLayout() {
   })
 
   return (
-    <AudioProvider>
-      <SafeAreaProvider style={styles.layer1}>
-        <RootSiblingParent>
-          <ThemeProvider>
-            <ErrorBoundary>
-              <GestureHandlerRootView>
-                <AlertService>
-                  <FetchPrepare>
-                    <QueryClientProvider>
-                      <PortalProvider>
-                        <ActionSheetProvider>
-                          <ImgurService>
-                              <Layout>
-                                <Slot />
-                                <PortalHost name='overlay' />
-                                <FeedPanelSheet />
-                                <GlobalImageViewingModal />
-                                <TwoFAModal />
-                                <ClipboardWatcher />
-                                <NotificationWatcher />
-                                <AuthWatcher />
-                                <TopicSheetModal />
-                              </Layout>
-                          </ImgurService>
-                        </ActionSheetProvider>
-                      </PortalProvider>
-                    </QueryClientProvider>
-                  </FetchPrepare>
-                </AlertService>
-              </GestureHandlerRootView>
-            </ErrorBoundary>
-          </ThemeProvider>
-        </RootSiblingParent>
-      </SafeAreaProvider>
-    </AudioProvider>
+    <SafeAreaProvider style={styles.layer1}>
+      <RootSiblingParent>
+        <ThemeProvider>
+          <ErrorBoundary>
+            <GestureHandlerRootView>
+              <AlertService>
+                <FetchPrepare>
+                  <QueryClientProvider>
+                    <PortalProvider>
+                      <ActionSheetProvider>
+                        <ImgurService>
+                          <Layout>
+                            <Slot />
+                            <PortalHost name='overlay' />
+                            <FeedPanelSheet />
+                            <GlobalImageViewingModal />
+                            <TwoFAModal />
+                            <ClipboardWatcher />
+                            <NotificationWatcher />
+                            <AuthWatcher />
+                            <TopicSheetModal />
+                            <AudioWatcher />
+                          </Layout>
+                        </ImgurService>
+                      </ActionSheetProvider>
+                    </PortalProvider>
+                  </QueryClientProvider>
+                </FetchPrepare>
+              </AlertService>
+            </GestureHandlerRootView>
+          </ErrorBoundary>
+        </ThemeProvider>
+      </RootSiblingParent>
+    </SafeAreaProvider>
   )
 }

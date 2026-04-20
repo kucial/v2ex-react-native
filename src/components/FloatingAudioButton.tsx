@@ -11,12 +11,16 @@ import Animated, {
 } from 'react-native-reanimated'
 
 import { useTheme } from '@/containers/ThemeService'
-import { useAudioContext } from '@/contexts/AudioContext'
+import { useAudioPlayerStore } from '@/stores/audioPlayer'
 
 export default function FloatingAudioButton() {
   const { styles, theme } = useTheme()
-  const { isPlaying, togglePlayPause, currentAudio, clearCurrentAudio } =
-    useAudioContext()
+  const isPlaying = useAudioPlayerStore((state) => state.isPlaying)
+  const togglePlayPause = useAudioPlayerStore((state) => state.togglePlayPause)
+  const currentAudio = useAudioPlayerStore((state) => state.currentAudio)
+  const clearCurrentAudio = useAudioPlayerStore(
+    (state) => state.clearCurrentAudio,
+  )
 
   const translateX = useSharedValue(0)
   const opacity = useSharedValue(1)

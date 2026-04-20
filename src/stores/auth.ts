@@ -22,7 +22,6 @@ export interface AuthState {
   fetchedAt?: number
 }
 
-
 export type AuthStatus =
   | 'none'
   | 'loading'

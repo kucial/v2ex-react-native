@@ -5,13 +5,11 @@ import { create } from 'zustand'
 
 import Button from '@/components/Button'
 
+import { useAlertService } from '@/containers/AlertService'
+import { useTheme } from '@/containers/ThemeService'
 import { logout, subscribe, verify2faCode } from '@/utils/v2ex-client'
 import ApiError from '@/utils/v2ex-client/ApiError'
 import { TFA_Error } from '@/utils/v2ex-client/types'
-import { useAlertService } from '@/containers/AlertService'
-import { useTheme } from '@/containers/ThemeService'
-
-
 
 type TwoFAState = {
   visible: boolean
@@ -80,7 +78,15 @@ export function TwoFAModal() {
   const alert = useAlertService()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { visible, message, once, resolve, hideModal, handleModalDismiss, setModalState } = useTwoFAStore()
+  const {
+    visible,
+    message,
+    once,
+    resolve,
+    hideModal,
+    handleModalDismiss,
+    setModalState,
+  } = useTwoFAStore()
 
   useEffect(() => {
     if (visible) {
