@@ -17,15 +17,12 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
 
   const { data, isLast } = props
   const { styles, colorScheme } = useTheme()
-  const htmlRenderProps = useMemo(
+  const htmlSource = useMemo(
     () => ({
-      key: `${data?.reply_content_rendered}${colorScheme}`,
-      source: {
-        html: data?.reply_content_rendered,
-        baseUrl: 'https://v2ex.com',
-      },
+      html: data?.reply_content_rendered,
+      baseUrl: 'https://v2ex.com',
     }),
-    [data?.reply_content_rendered, colorScheme],
+    [data?.reply_content_rendered],
   )
   if (!data) {
     return (
@@ -77,11 +74,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
           </View>
         </View>
         <View className='pt-1 pb-2 px-3'>
-          <HtmlRender
-            key={htmlRenderProps.key}
-            source={htmlRenderProps.source}
-            contentWidth={CONTAINER_WIDTH - 24}
-          />
+          <HtmlRender source={htmlSource} contentWidth={CONTAINER_WIDTH - 24} />
         </View>
       </View>
     </MaxWidthWrapper>

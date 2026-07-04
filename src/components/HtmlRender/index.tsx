@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Alert,
   Linking,
@@ -100,6 +100,9 @@ function HtmlRender({
 
   const [textToSelect, setTextToSelect] = useState('')
   const [base64Options, setBase64Options] = useState([])
+  const [activeModal, setActiveModal] = useState<'select' | 'base64' | null>(
+    null,
+  )
 
   const styles = useMemo(() => {
     const baseFontSize = (baseStyle?.fontSize ||
@@ -282,7 +285,7 @@ function HtmlRender({
           copyAndNotice(result[0][1])
         } else {
           setBase64Options(result)
-          base64ModalRef.current?.present()
+          setActiveModal('base64')
         }
       } else {
         alert.show({ type: 'info', message: '未找到 base64 字符串' })
@@ -297,8 +300,16 @@ function HtmlRender({
   const handleSelect = useCallback(() => {
     const content = htmlToMarkdown(props.source.html)
     setTextToSelect(content)
-    selectModalRef.current?.present()
+    setActiveModal('select')
   }, [props.source.html])
+
+  useEffect(() => {
+    if (activeModal === 'select') {
+      selectModalRef.current?.present()
+    } else if (activeModal === 'base64') {
+      base64ModalRef.current?.present()
+    }
+  }, [activeModal])
 
   const source = useMemo(
     () => ({ ...props.source, html: htmlMinifier(props.source.html) }),
@@ -349,94 +360,103 @@ function HtmlRender({
           </View>
         </ContextMenu>
       </View>
-      <TrueSheet
-        ref={selectModalRef}
-        scrollable
-        grabber={false}
-        backgroundColor={themeStyles.overlay.backgroundColor}
-      >
-        <ScrollView
-          nestedScrollEnabled
-          contentContainerClassName='pb-safe px-4 pt-3 rounded'
+      {activeModal === 'select' && (
+        <TrueSheet
+          ref={selectModalRef}
+          scrollable
+          grabber={false}
+          backgroundColor={themeStyles.overlay.backgroundColor}
+          onDidDismiss={() => setActiveModal(null)}
         >
-          {Platform.OS === 'ios' ? (
-            <TextInput
-              style={styles.body}
-              value={textToSelect}
-              readOnly
-              multiline
-              selectionColor={theme.colors.primary}
-            />
-          ) : (
-            <Text
-              style={[styles.body, { backgroundColor: 'transparent' }]}
-              selectable
-              selectionColor={Color(theme.colors.primary)
-                .alpha(0.15)
-                .toString()}
-            >
-              {textToSelect}
-            </Text>
-          )}
-        </ScrollView>
-      </TrueSheet>
-      <TrueSheet ref={base64ModalRef} detents={['auto']}>
-        <ScrollView
-          style={themeStyles.overlay}
-          contentContainerClassName='pb-safe px-4 pt-3'
+          <ScrollView
+            nestedScrollEnabled
+            contentContainerClassName='pb-safe px-4 pt-3 rounded'
+          >
+            {Platform.OS === 'ios' ? (
+              <TextInput
+                style={styles.body}
+                value={textToSelect}
+                readOnly
+                multiline
+                selectionColor={theme.colors.primary}
+              />
+            ) : (
+              <Text
+                style={[styles.body, { backgroundColor: 'transparent' }]}
+                selectable
+                selectionColor={Color(theme.colors.primary)
+                  .alpha(0.15)
+                  .toString()}
+              >
+                {textToSelect}
+              </Text>
+            )}
+          </ScrollView>
+        </TrueSheet>
+      )}
+      {activeModal === 'base64' && (
+        <TrueSheet
+          ref={base64ModalRef}
+          detents={['auto']}
+          onDidDismiss={() => setActiveModal(null)}
         >
-          <View className='flex-row w-full'>
-            <View className='flex-1 py-2' style={themeStyles.border_b}>
-              <Text
-                style={[
-                  themeStyles.text,
-                  themeStyles.text_base,
-                  { fontWeight: 'bold' },
-                ]}
-              >
-                字符串
-              </Text>
-            </View>
-            <View className='flex-1 py-2' style={themeStyles.border_b}>
-              <Text
-                style={[
-                  themeStyles.text,
-                  themeStyles.text_base,
-                  { fontWeight: 'bold' },
-                ]}
-              >
-                解码内容
-              </Text>
-            </View>
-          </View>
-          {base64Options.map((item) => (
-            <Pressable
-              key={item[0]}
-              className='flex-row w-full'
-              onPress={() => {
-                base64ModalRef.current?.dismiss()
-                copyAndNotice(item[1])
-              }}
-            >
+          <ScrollView
+            style={themeStyles.overlay}
+            contentContainerClassName='pb-safe px-4 pt-3'
+          >
+            <View className='flex-row w-full'>
               <View className='flex-1 py-2' style={themeStyles.border_b}>
-                <Text style={[themeStyles.text, themeStyles.text_base]}>
-                  {item[0]}
+                <Text
+                  style={[
+                    themeStyles.text,
+                    themeStyles.text_base,
+                    { fontWeight: 'bold' },
+                  ]}
+                >
+                  字符串
                 </Text>
               </View>
               <View className='flex-1 py-2' style={themeStyles.border_b}>
-                <Text style={[themeStyles.text, themeStyles.text_base]}>
-                  {item[1]}
+                <Text
+                  style={[
+                    themeStyles.text,
+                    themeStyles.text_base,
+                    { fontWeight: 'bold' },
+                  ]}
+                >
+                  解码内容
                 </Text>
               </View>
-            </Pressable>
-          ))}
-          <View className='mt-3'>
-            <Text style={[themeStyles.text, themeStyles.text_sm]}>
-              点击选择复制
-            </Text>
-          </View>
-        </ScrollView>
-      </TrueSheet>
+            </View>
+            {base64Options.map((item) => (
+              <Pressable
+                key={item[0]}
+                className='flex-row w-full'
+                onPress={() => {
+                  base64ModalRef.current?.dismiss()
+                  copyAndNotice(item[1])
+                }}
+              >
+                <View className='flex-1 py-2' style={themeStyles.border_b}>
+                  <Text style={[themeStyles.text, themeStyles.text_base]}>
+                    {item[0]}
+                  </Text>
+                </View>
+                <View className='flex-1 py-2' style={themeStyles.border_b}>
+                  <Text style={[themeStyles.text, themeStyles.text_base]}>
+                    {item[1]}
+                  </Text>
+                </View>
+              </Pressable>
+            ))}
+            <View className='mt-3'>
+              <Text style={[themeStyles.text, themeStyles.text_sm]}>
+                点击选择复制
+              </Text>
+            </View>
+          </ScrollView>
+        </TrueSheet>
+      )}
     </RenderContext.Provider>
   )
 }

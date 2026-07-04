@@ -105,7 +105,6 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
       </View>
       {!!topic.content_rendered && (
         <HtmlRender
-          key={topic.content_rendered + colorScheme}
           contentWidth={contentWidth}
           baseStyle={{
             fontSize: styles.text_base.fontSize,
@@ -131,7 +130,6 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
                 </Text>
               </View>
               <HtmlRender
-                key={subtle.content_rendered + colorScheme}
                 contentWidth={contentWidth}
                 baseStyle={{
                   fontSize: styles.text_base.fontSize,
