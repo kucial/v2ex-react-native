@@ -6,7 +6,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { AppState } from 'react-native'
+import { AppState, StyleSheet } from 'react-native'
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
 import { FlashListRef } from '@shopify/flash-list'
 import { useQueryClient, UseQueryResult } from '@tanstack/react-query'
@@ -232,7 +232,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     <AnimatedFlashList
       scrollToOverflowEnabled
       ref={listViewRef}
-      className='flex-1'
+      style={listStyles.list}
       data={listItems}
       extraData={extraData}
       renderItem={renderItem}
@@ -246,3 +246,9 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     />
   )
 }
+
+const listStyles = StyleSheet.create({
+  list: {
+    flex: 1,
+  },
+})

@@ -1,5 +1,11 @@
 import { memo, useMemo } from 'react'
-import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { useRouter } from 'expo-router'
 
 import HtmlRender from '@/components/HtmlRender'
@@ -16,7 +22,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
   const router = useRouter()
 
   const { data, isLast } = props
-  const { styles, colorScheme } = useTheme()
+  const { styles } = useTheme()
   const htmlSource = useMemo(
     () => ({
       html: data?.reply_content_rendered,
@@ -28,13 +34,13 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
     return (
       <MaxWidthWrapper style={styles.layer1}>
         <View style={!isLast && styles.border_b_light}>
-          <View className='p-1'>
-            <View className='px-1 pb-1 pt-1 rounded-sm' style={styles.layer2}>
+          <View style={rowStyles.container}>
+            <View style={[rowStyles.skeletonBox, styles.layer2]}>
               <InlineText style={styles.text_xs} width='80%'></InlineText>
               <BlockText lines={[1, 2]} />
             </View>
           </View>
-          <View className='py-1 px-2'>
+          <View style={rowStyles.skeletonContent}>
             <BlockText lines={[1, 4]} />
           </View>
         </View>
@@ -44,10 +50,10 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <View style={!isLast && styles.border_b_light}>
-        <View className='p-1'>
-          <View className='px-2 pb-1 pt-2' style={styles.layer2}>
-            <View className='flex flex-row'>
-              <View className='flex-1'>
+        <View style={rowStyles.container}>
+          <View style={[rowStyles.headerBox, styles.layer2]}>
+            <View style={rowStyles.row}>
+              <View style={rowStyles.flex1}>
                 <Text
                   style={[styles.text_meta, styles.text_xs]}
                 >{`回复了${data.member?.username} 创建的主题 › `}</Text>
@@ -57,7 +63,7 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
               </Text>
             </View>
             <Pressable
-              className='active:opacity-60'
+              style={({ pressed }) => pressed && rowStyles.pressed}
               onPress={() => {
                 router.push({
                   pathname: '/topic/[id]',
@@ -67,18 +73,54 @@ const MemberReplyRow = (props: RepliedFeedRowProps) => {
                 })
               }}
             >
-              <Text className='my-1' style={styles.text}>
+              <Text style={[styles.text, rowStyles.titleText]}>
                 {data.title}
               </Text>
             </Pressable>
           </View>
         </View>
-        <View className='pt-1 pb-2 px-3'>
+        <View style={rowStyles.contentBox}>
           <HtmlRender source={htmlSource} contentWidth={CONTAINER_WIDTH - 24} />
         </View>
       </View>
     </MaxWidthWrapper>
   )
 }
+
+const rowStyles = StyleSheet.create({
+  container: {
+    padding: 4,
+  },
+  skeletonBox: {
+    padding: 4,
+    borderRadius: 2,
+  },
+  skeletonContent: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  headerBox: {
+    paddingHorizontal: 8,
+    paddingBottom: 4,
+    paddingTop: 8,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  flex1: {
+    flex: 1,
+  },
+  titleText: {
+    marginVertical: 4,
+  },
+  contentBox: {
+    paddingTop: 4,
+    paddingBottom: 8,
+    paddingHorizontal: 12,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+})
 
 export default memo(MemberReplyRow)

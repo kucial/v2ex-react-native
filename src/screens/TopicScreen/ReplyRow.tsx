@@ -345,7 +345,9 @@ function ReplyRow(props: ReplyRowProps) {
                   <View style={rowStyles.buttonContent}>
                     <ReplyIcon size={14} color={iconColor} />
                     <View style={rowStyles.ml1}>
-                      <Text style={[styles.text_meta, styles.text_xs]}>回复</Text>
+                      <Text style={[styles.text_meta, styles.text_xs]}>
+                        回复
+                      </Text>
                     </View>
                   </View>
                 </Pressable>
@@ -587,7 +589,7 @@ const rowStyles = StyleSheet.create({
     opacity: 0.6,
   },
   markdownButtonContainer: {
-    marginRight: 4,
+    marginRight: 8,
     flexDirection: 'row',
   },
   markdownButton: {

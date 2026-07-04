@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import {
   ArrowsPointingOutIcon,
   ChartBarIcon,
@@ -13,7 +13,6 @@ import FixedPressable from '@/components/FixedPressable'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { usePanelSheet } from '@/stores/panelSheet'
 
 import AudioPlayer from '../AudioPlayer'
@@ -39,28 +38,31 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
-        <View className={cn('flex flex-row items-center')}>
-          <View className='flex-1 py-2 pl-1'>
-            <View className='flex flex-row items-center space-x-2 pl-1 mb-1'>
-              {showPlanetInfo && (
-                <Box className='w-[24px] h-[24px] rounded mr-2' />
-              )}
+        <View style={cardStyles.skeletonRow}>
+          <View style={cardStyles.skeletonBody}>
+            <View style={cardStyles.skeletonHeader}>
+              {showPlanetInfo && <Box style={cardStyles.avatarBox} />}
               <View>
-                <View className='py-[2px] rounded w-[50px]'>
+                <View style={cardStyles.tagSkeleton}>
                   <InlineText style={styles.text_xs}></InlineText>
                 </View>
               </View>
-              <View className='mx-1'></View>
-              <View className='relative'>
+              <View style={cardStyles.mx1}></View>
+              <View>
                 <InlineText
                   width={[56, 80]}
                   style={styles.text_xs}
                 ></InlineText>
               </View>
             </View>
-            <View className={cn(showPlanetInfo ? 'pl-[34px]' : '') + ' pr-4'}>
+            <View
+              style={[
+                showPlanetInfo && cardStyles.pl34,
+                cardStyles.bodyContent,
+              ]}
+            >
               <BlockText lines={[1, 3]} style={styles.text_base}></BlockText>
-              <View className='mt-2'>
+              <View style={cardStyles.mt2}>
                 <InlineText
                   width={[80, 120]}
                   style={styles.text_xs}
@@ -90,19 +92,12 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
   }
 
   return (
-    <MaxWidthWrapper
-      style={styles.layer1}
-      className='rounded-lg overflow-hidden'
-    >
-      <View
-        sentry-label='TopicRow'
-        className={cn('flex flex-row items-center')}
-        style={[styles.layer1]}
-      >
+    <MaxWidthWrapper style={[styles.layer1, cardStyles.wrapper]}>
+      <View sentry-label='TopicRow' style={[cardStyles.row, styles.layer1]}>
         {showPlanetInfo ? (
-          <View className='px-2 py-2 self-start'>
+          <View style={cardStyles.avatarContainer}>
             <FixedPressable
-              className='active:opacity-50'
+              style={({ pressed }) => pressed && cardStyles.pressed50}
               onPress={handlePlanetPress}
             >
               <Image
@@ -110,27 +105,30 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
                 source={{
                   uri: planet.avatar,
                 }}
-                className='w-[24px] h-[24px] rounded'
+                style={cardStyles.avatarImage}
               />
             </FixedPressable>
           </View>
         ) : (
-          <View className='pl-3'></View>
+          <View style={cardStyles.pl3}></View>
         )}
 
         <View
-          className={cn(
-            'flex-1 py-2',
-            props.viewedStatus === 'viewed' && 'opacity-70',
-          )}
+          style={[
+            cardStyles.centerContent,
+            props.viewedStatus === 'viewed' && cardStyles.viewedOpacity,
+          ]}
         >
-          <View className='flex flex-row items-center pt-[2px] space-x-1 mb-1'>
+          <View style={cardStyles.headerRow}>
             {showPlanetInfo && (
               <View>
                 <FixedPressable
                   hitSlop={4}
-                  className='py-[2px] px-[6px] rounded active:opacity-60'
-                  style={styles.layer2}
+                  style={({ pressed }) => [
+                    cardStyles.planetPressable,
+                    styles.layer2,
+                    pressed && cardStyles.pressed60,
+                  ]}
                   onPress={handlePlanetPress}
                 >
                   <Text style={[styles.text_desc, styles.text_xs]}>
@@ -140,50 +138,55 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
               </View>
             )}
             {showPlanetInfo && (
-              <View className='mx-1'>
+              <View style={cardStyles.mx1}>
                 <Text>·</Text>
               </View>
             )}
-            <View className=''>
+            <View>
               <Text style={[styles.text_desc, styles.text_xs]}>
                 {data.updated_at}
               </Text>
             </View>
           </View>
-          <View className='pr-4'>
+          <View style={cardStyles.bodyContent}>
             {title &&
               (isTitlePressable ? (
                 <Pressable onPress={handleTitlePress}>
                   <Text
-                    className={cn({
-                      'font-[500]': titleStyle === 'emphasized',
-                    })}
-                    style={[styles.text, styles.text_base]}
+                    style={[
+                      styles.text,
+                      styles.text_base,
+                      titleStyle === 'emphasized' && cardStyles.font500,
+                    ]}
                   >
                     {title}
                   </Text>
                 </Pressable>
               ) : (
                 <Text
-                  className={cn({
-                    'font-[500]': titleStyle === 'emphasized',
-                  })}
-                  style={[styles.text, styles.text_base]}
+                  style={[
+                    styles.text,
+                    styles.text_base,
+                    titleStyle === 'emphasized' && cardStyles.font500,
+                  ]}
                 >
                   {title}
                 </Text>
               ))}
             {data.expand_label ? (
               <Pressable
-                style={styles.layer2}
-                className='py-1 px-[6px] rounded flex-row items-center active:opacity-50'
+                style={({ pressed }) => [
+                  styles.layer2,
+                  cardStyles.expandPressable,
+                  pressed && cardStyles.pressed50,
+                ]}
                 onPress={handleTitlePress}
               >
                 <Text style={[styles.text_base, styles.text_meta]}>
                   {data.expand_label}
                 </Text>
 
-                <View className='ml-auto mr-1'>
+                <View style={cardStyles.expandIcon}>
                   <ArrowsPointingOutIcon color={iconColor} size={16} />
                 </View>
               </Pressable>
@@ -194,7 +197,7 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
               />
             )}
             {data.audio && (
-              <View className='my-1'>
+              <View style={cardStyles.my1}>
                 <AudioPlayer
                   audio={{
                     title: data.audio.title || title || 'Audio',
@@ -204,20 +207,20 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
                 />
               </View>
             )}
-            <View className='mt-2 flex flex-row justify-between gap-x-3 pr-12'>
-              <View className='flex-1 flex-row gap-1 items-center'>
+            <View style={cardStyles.statsRow}>
+              <View style={cardStyles.statItem}>
                 <ChatBubbleLeftIcon size={14} color={iconColor} />
                 <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.comment_count}
                 </Text>
               </View>
-              <View className='flex-1 flex-row gap-1 items-center'>
+              <View style={cardStyles.statItem}>
                 <HeartIcon size={14} color={iconColor} />
                 <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.liked_count}
                 </Text>
               </View>
-              <View className='flex-1 flex-row gap-1 items-center'>
+              <View style={cardStyles.statItem}>
                 <ChartBarIcon size={14} color={iconColor} />
                 <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.stats_num}
@@ -230,5 +233,120 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
     </MaxWidthWrapper>
   )
 }
+
+const cardStyles = StyleSheet.create({
+  skeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  skeletonBody: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingLeft: 4,
+  },
+  skeletonHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 4,
+    marginBottom: 4,
+  },
+  avatarBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  tagSkeleton: {
+    paddingVertical: 2,
+    borderRadius: 4,
+    width: 50,
+  },
+  mx1: {
+    marginHorizontal: 4,
+  },
+  bodyContent: {
+    paddingRight: 16,
+  },
+  pl34: {
+    paddingLeft: 34,
+  },
+  mt2: {
+    marginTop: 8,
+  },
+  wrapper: {
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
+  avatarImage: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  pl3: {
+    paddingLeft: 12,
+  },
+  centerContent: {
+    flex: 1,
+    paddingVertical: 8,
+  },
+  viewedOpacity: {
+    opacity: 0.7,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 2,
+    marginBottom: 4,
+  },
+  planetPressable: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  font500: {
+    fontWeight: '500',
+  },
+  expandPressable: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  expandIcon: {
+    marginLeft: 'auto',
+    marginRight: 4,
+  },
+  my1: {
+    marginVertical: 4,
+  },
+  statsRow: {
+    marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingRight: 48,
+  },
+  statItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  pressed50: {
+    opacity: 0.5,
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+})
 
 export default memo(TopicCard)

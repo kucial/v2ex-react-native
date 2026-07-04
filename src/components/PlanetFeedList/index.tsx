@@ -6,7 +6,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { AppState, useWindowDimensions, View } from 'react-native'
+import { AppState, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
@@ -186,7 +186,7 @@ function PlanetFeedList(props: PlanetFeedListProps) {
         index: any
         extraData?: any
       }) => (
-        <View className='py-1 px-2'>
+        <View style={listStyles.itemWrapper}>
           <TopicCard
             data={item}
             isLast={index === extra?.listLength - 1}
@@ -257,4 +257,12 @@ function PlanetFeedList(props: PlanetFeedListProps) {
     />
   )
 }
+
+const listStyles = StyleSheet.create({
+  itemWrapper: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+})
+
 export default memo(PlanetFeedList)

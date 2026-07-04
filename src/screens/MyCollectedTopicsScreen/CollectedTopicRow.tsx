@@ -1,12 +1,12 @@
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
+import FixedPressable from '@/components/FixedPressable'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import { BlockText, Box, InlineBox } from '@/components/Skeleton/Elements'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 const CollectedTopicRow = (props: CollectedTopicRowProps) => {
   const { data, isLast } = props
@@ -17,25 +17,21 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
-        <View
-          className='flex flex-row items-center p-2'
-          style={!isLast && styles.border_b_light}
-        >
-          <View className='self-start'>
-            <Box className='w-[24px] h-[24px] rounded' />
+        <View style={[rowStyles.skeletonRow, !isLast && styles.border_b_light]}>
+          <View style={rowStyles.skeletonAvatar}>
+            <Box style={rowStyles.avatarBox} />
           </View>
-          <View className='flex-1 pl-2'>
-            <View className=''>
+          <View style={rowStyles.skeletonBody}>
+            <View>
               <BlockText style={styles.text_base} lines={[1, 3]}></BlockText>
-              <View className='mt-2 flex flex-row flex-wrap items-center'>
+              <View style={rowStyles.mt2}>
                 <BlockText style={styles.text_xs} lines={2} />
               </View>
             </View>
           </View>
-          <View className='w-[64px] flex flex-row justify-end pr-1'>
+          <View style={rowStyles.rightContent}>
             <InlineBox
-              className='rounded-full px-2'
-              style={styles.text_xs}
+              style={[rowStyles.badgeBox, styles.text_xs]}
               width={[26, 36]}
             />
           </View>
@@ -46,79 +42,27 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
 
   return (
     <MaxWidthWrapper style={styles.layer1}>
-      <Pressable
-        className='flex flex-row items-center p-2 active:opacity-60'
-        style={!isLast && styles.border_b_light}
+      <FixedPressable
+        style={({ pressed }) => [
+          rowStyles.mainPressable,
+          !isLast && styles.border_b_light,
+          pressed && rowStyles.pressed60,
+        ]}
         onPress={() => {
           if (data) {
             router.push({
               pathname: '/topic/[id]',
               params: {
                 id: props.data.id,
-                // brief: props.data,
               },
             })
           }
         }}
       >
-        <View className='self-start'>
-          {data.member.avatar_normal ? (
-            <Pressable
-              onPress={() => {
-                router.push({
-                  pathname: '/member/[username]',
-                  params: {
-                    username: data.member.username,
-                    // brief: data.member,
-                  },
-                })
-              }}
-            >
-              <Image
-                recyclingKey={`user:${data.member.username}`}
-                className='w-[24px] h-[24px] rounded'
-                source={{ uri: data.member.avatar_normal }}
-              />
-            </Pressable>
-          ) : (
-            <Box className='w-[24px] h-[24px] rounded' />
-          )}
-        </View>
-        <View className='flex-1 pl-2'>
-          <View className=''>
-            <Text
-              className={cn({
-                'font-[500]': props.titleStyle === 'emphasized',
-              })}
-              style={[styles.text, styles.text_base]}
-            >
-              {data.title}
-            </Text>
-            <View className='mt-2 flex flex-row flex-wrap items-center'>
-              <Pressable
-                hitSlop={4}
-                className='py-[2px] px-[6px] rounded active:opacity-60'
-                style={styles.layer2}
-                onPress={() => {
-                  router.push({
-                    pathname: '/node/[name]',
-                    params: {
-                      name: data.node.name,
-                      brief: data.node,
-                    },
-                  })
-                }}
-              >
-                <Text style={[styles.text_meta, styles.text_xs]}>
-                  {data.node.title}
-                </Text>
-              </Pressable>
-              <Text className='px-1' style={styles.text_meta}>
-                •
-              </Text>
-              <Pressable
-                className='px-1 active:opacity-60'
-                hitSlop={4}
+        <View style={rowStyles.mainPressableContent}>
+          <View style={rowStyles.avatarContainer}>
+            {data.member.avatar_normal ? (
+              <FixedPressable
                 onPress={() => {
                   router.push({
                     pathname: '/member/[username]',
@@ -128,67 +72,217 @@ const CollectedTopicRow = (props: CollectedTopicRowProps) => {
                   })
                 }}
               >
-                <Text
-                  className='font-[600]'
-                  style={[styles.text_desc, styles.text_xs]}
+                <Image
+                  recyclingKey={`user:${data.member.username}`}
+                  style={rowStyles.avatarImage}
+                  source={{ uri: data.member.avatar_normal }}
+                />
+              </FixedPressable>
+            ) : (
+              <Box style={rowStyles.avatarBox} />
+            )}
+          </View>
+          <View style={rowStyles.centerContent}>
+            <View>
+              <Text
+                style={[
+                  styles.text,
+                  styles.text_base,
+                  props.titleStyle === 'emphasized' && rowStyles.font500,
+                ]}
+              >
+                {data.title}
+              </Text>
+              <View style={rowStyles.metaRow}>
+                <FixedPressable
+                  hitSlop={4}
+                  style={({ pressed }) => [
+                    rowStyles.nodePressable,
+                    styles.layer2,
+                    pressed && rowStyles.pressed60,
+                  ]}
+                  onPress={() => {
+                    router.push({
+                      pathname: '/node/[name]',
+                      params: {
+                        name: data.node.name,
+                        brief: data.node,
+                      },
+                    })
+                  }}
                 >
-                  {data.member.username}
-                </Text>
-              </Pressable>
-              <Text className='px-1' style={styles.text_meta}>
-                •
-              </Text>
-
-              <Text style={[styles.text_meta, styles.text_xs]}>
-                {data?.last_reply_time}
-              </Text>
-              {data?.last_reply_by && (
-                <>
-                  <Text className='px-1' style={styles.text_meta}>
-                    •
+                  <Text style={[styles.text_meta, styles.text_xs]}>
+                    {data.node.title}
                   </Text>
-                  <View className='flex flex-row items-center'>
-                    <Text style={[styles.text_meta, styles.text_xs]}>
-                      最后回复来自
-                    </Text>
-                    <Pressable
-                      className='px-1 active:opacity-60'
-                      hitSlop={4}
-                      onPress={() => {
-                        router.push({
-                          pathname: '/member/[username]',
-                          params: {
-                            username: data.last_reply_by,
-                            tab: 'replies',
-                          },
-                        })
-                      }}
-                    >
-                      <Text
-                        className='font-[600]'
-                        style={[styles.text_desc, styles.text_xs]}
-                      >
-                        {data.last_reply_by}
+                </FixedPressable>
+                <Text style={[styles.text_meta, rowStyles.px1]}>•</Text>
+                <FixedPressable
+                  style={({ pressed }) => [
+                    rowStyles.px1,
+                    pressed && rowStyles.pressed60,
+                  ]}
+                  hitSlop={4}
+                  onPress={() => {
+                    router.push({
+                      pathname: '/member/[username]',
+                      params: {
+                        username: data.member.username,
+                      },
+                    })
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.text_desc,
+                      styles.text_xs,
+                      rowStyles.font600,
+                    ]}
+                  >
+                    {data.member.username}
+                  </Text>
+                </FixedPressable>
+                <Text style={[styles.text_meta, rowStyles.px1]}>•</Text>
+
+                <Text style={[styles.text_meta, styles.text_xs]}>
+                  {data?.last_reply_time}
+                </Text>
+                {data?.last_reply_by && (
+                  <>
+                    <Text style={[styles.text_meta, rowStyles.px1]}>•</Text>
+                    <View style={rowStyles.rowCenter}>
+                      <Text style={[styles.text_meta, styles.text_xs]}>
+                        最后回复来自
                       </Text>
-                    </Pressable>
-                  </View>
-                </>
-              )}
+                      <FixedPressable
+                        style={({ pressed }) => [
+                          rowStyles.px1,
+                          pressed && rowStyles.pressed60,
+                        ]}
+                        hitSlop={4}
+                        onPress={() => {
+                          router.push({
+                            pathname: '/member/[username]',
+                            params: {
+                              username: data.last_reply_by,
+                              tab: 'replies',
+                            },
+                          })
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.text_desc,
+                            styles.text_xs,
+                            rowStyles.font600,
+                          ]}
+                        >
+                          {data.last_reply_by}
+                        </Text>
+                      </FixedPressable>
+                    </View>
+                  </>
+                )}
+              </View>
             </View>
           </View>
+          <View style={rowStyles.rightContent}>
+            {data && !!data.replies && (
+              <View style={[rowStyles.badgeBox, styles.tag__bg]}>
+                <Text style={[styles.tag__text, styles.text_xs]}>
+                  {data.replies}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
-        <View className='w-[64px] flex flex-row justify-end pr-1'>
-          {data && !!data.replies && (
-            <View className='rounded-full px-2' style={styles.tag__bg}>
-              <Text style={[styles.tag__text, styles.text_xs]}>
-                {data.replies}
-              </Text>
-            </View>
-          )}
-        </View>
-      </Pressable>
+      </FixedPressable>
     </MaxWidthWrapper>
   )
 }
+
+const rowStyles = StyleSheet.create({
+  skeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+  },
+  skeletonAvatar: {
+    alignSelf: 'flex-start',
+  },
+  avatarBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  skeletonBody: {
+    flex: 1,
+    paddingLeft: 8,
+  },
+  mt2: {
+    marginTop: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  rightContent: {
+    width: 64,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingRight: 4,
+  },
+  badgeBox: {
+    borderRadius: 9999,
+    paddingHorizontal: 8,
+  },
+  mainPressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+  },
+  mainPressableContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatarContainer: {
+    alignSelf: 'flex-start',
+  },
+  avatarImage: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  centerContent: {
+    flex: 1,
+    paddingLeft: 8,
+  },
+  font500: {
+    fontWeight: '500',
+  },
+  font600: {
+    fontWeight: '600',
+  },
+  metaRow: {
+    marginTop: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  nodePressable: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  px1: {
+    paddingHorizontal: 4,
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+})
 
 export default CollectedTopicRow

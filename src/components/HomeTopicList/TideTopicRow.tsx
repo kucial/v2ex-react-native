@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
@@ -9,7 +9,6 @@ import TriangleCorner from '@/components/TriangleCorner'
 
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedStatus } from '@/containers/ViewedTopicsService'
-import { cn } from '@/lib/utils'
 import { preloadTopicInfo } from '@/utils/preload'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
@@ -23,25 +22,22 @@ function TideTopicRow(props: HomeFeedRowProps) {
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
-        <View
-          className={cn('flex flex-row items-center')}
-          style={!isLast && styles.border_b_light}
-        >
+        <View style={[rowStyles.skeletonRow, !isLast && styles.border_b_light]}>
           {showAvatar ? (
-            <View className='px-2 py-2 self-start mr-2'>
-              <Box className='w-[24px] h-[24px] rounded' />
+            <View style={rowStyles.skeletonAvatar}>
+              <Box style={rowStyles.avatarBox} />
             </View>
           ) : (
-            <View className='pl-3'></View>
+            <View style={rowStyles.pl3}></View>
           )}
-          <View className='flex-1 pt-1 pb-2'>
+          <View style={rowStyles.skeletonBody}>
             <BlockText lines={[1, 2]} style={styles.text_base}></BlockText>
-            <View className='mt-1'>
+            <View style={rowStyles.mt1}>
               <InlineText width={[80, 120]} style={styles.text_xs}></InlineText>
             </View>
           </View>
-          <View className='flex flex-row justify-end pl-1 pr-2'>
-            <Box className='rounded-full px-2'>
+          <View style={rowStyles.rightContent}>
+            <Box style={rowStyles.badgeBox}>
               <InlineText width={8} style={styles.text_xs} />
             </Box>
           </View>
@@ -55,146 +51,266 @@ function TideTopicRow(props: HomeFeedRowProps) {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label='TideTopicRow'
-        className={cn('flex flex-row items-center active:opacity-50')}
-        style={!isLast && styles.border_b_light}
+        style={({ pressed }) => [
+          rowStyles.mainPressable,
+          !isLast && styles.border_b_light,
+          pressed && rowStyles.pressed50,
+        ]}
         onPress={() => {
           preloadTopicInfo(props.data.id)
           router.push({
             pathname: '/topic/[id]',
             params: {
               id: props.data.id,
-              // brief: props.data,
             },
           })
         }}
       >
-        {showAvatar ? (
-          <View className='px-2 py-2 self-start'>
-            <FixedPressable
-              onPress={() => {
-                router.push({
-                  pathname: '/member/[username]',
-                  params: {
-                    username: member.username,
-                    // brief: member,
-                  },
-                })
-              }}
-            >
-              <Image
-                recyclingKey={`user-avatar:${member.username}`}
-                source={{
-                  uri: member.avatar_normal,
+        <View style={rowStyles.mainPressableContent}>
+          {showAvatar ? (
+            <View style={rowStyles.avatarContainer}>
+              <FixedPressable
+                onPress={() => {
+                  router.push({
+                    pathname: '/member/[username]',
+                    params: {
+                      username: member.username,
+                    },
+                  })
                 }}
-                className='w-[24px] h-[24px] rounded'
-              />
-            </FixedPressable>
-          </View>
-        ) : (
-          <View className='pl-3'></View>
-        )}
-        <View
-          className={cn(
-            'flex-1 pt-1 pb-2',
-            viewedStatus === 'viewed' && 'opacity-70',
-          )}
-        >
-          <Text
-            className={cn({
-              'font-[500]': props.titleStyle === 'emphasized',
-            })}
-            style={[styles.text, styles.text_base]}
-          >
-            {title}
-          </Text>
-          <View className='mt-1 flex flex-row flex-wrap items-center'>
-            <FixedPressable
-              hitSlop={4}
-              className='py-[2px] px-[6px] mr-[6px] rounded active:opacity-60'
-              style={[styles.layer2]}
-              onPress={() => {
-                router.push({
-                  pathname: '/node/[name]',
-                  params: {
-                    name: node.name,
-                    // brief: node,
-                  },
-                })
-              }}
-            >
-              <Text style={[styles.text_desc, styles.text_xs]}>
-                {node.title}
-              </Text>
-            </FixedPressable>
-            {!showLastReplyMember && data?.last_reply_time && (
-              <View className='mr-1'>
-                <Text style={[styles.text_meta, styles.text_xs]}>最后回复</Text>
-              </View>
-            )}
-            <Text style={[styles.text_meta, styles.text_xs]}>
-              {data?.last_reply_time}
-            </Text>
-            {data?.last_reply_time &&
-              showLastReplyMember &&
-              data?.last_reply_by && (
-                <Text
-                  className='px-1'
-                  style={[styles.text_meta, styles.text_xs]}
-                >
-                  •
-                </Text>
-              )}
-            {showLastReplyMember && data?.last_reply_by && (
-              <View className='flex flex-row items-center'>
-                <Text style={[styles.text_meta, styles.text_xs]}>
-                  最后回复来自
-                </Text>
-                <FixedPressable
-                  className='px-1 active:opacity-60'
-                  hitSlop={4}
-                  onPress={() => {
-                    router.push({
-                      pathname: '/member/[username]',
-                      params: {
-                        username: data.last_reply_by,
-                        tab: 'replies',
-                      },
-                    })
+              >
+                <Image
+                  recyclingKey={`user-avatar:${member.username}`}
+                  source={{
+                    uri: member.avatar_normal,
                   }}
-                >
-                  <Text
-                    className='font-[600]'
-                    style={[styles.text_desc, styles.text_xs]}
-                  >
-                    {data.last_reply_by}
+                  style={rowStyles.avatarImage}
+                />
+              </FixedPressable>
+            </View>
+          ) : (
+            <View style={rowStyles.pl3}></View>
+          )}
+          <View
+            style={[
+              rowStyles.centerContent,
+              viewedStatus === 'viewed' && rowStyles.viewedOpacity,
+            ]}
+          >
+            <Text
+              style={[
+                styles.text,
+                styles.text_base,
+                props.titleStyle === 'emphasized' && rowStyles.font500,
+              ]}
+            >
+              {title}
+            </Text>
+            <View style={rowStyles.metaRow}>
+              <FixedPressable
+                hitSlop={4}
+                style={({ pressed }) => [
+                  rowStyles.nodePressable,
+                  styles.layer2,
+                  pressed && rowStyles.pressed60,
+                ]}
+                onPress={() => {
+                  router.push({
+                    pathname: '/node/[name]',
+                    params: {
+                      name: node.name,
+                    },
+                  })
+                }}
+              >
+                <Text style={[styles.text_desc, styles.text_xs]}>
+                  {node.title}
+                </Text>
+              </FixedPressable>
+              {!showLastReplyMember && data?.last_reply_time && (
+                <View style={rowStyles.mr1}>
+                  <Text style={[styles.text_meta, styles.text_xs]}>
+                    最后回复
                   </Text>
-                </FixedPressable>
+                </View>
+              )}
+              <Text style={[styles.text_meta, styles.text_xs]}>
+                {data?.last_reply_time}
+              </Text>
+              {data?.last_reply_time &&
+                showLastReplyMember &&
+                data?.last_reply_by && (
+                  <Text
+                    style={[styles.text_meta, styles.text_xs, rowStyles.px1]}
+                  >
+                    •
+                  </Text>
+                )}
+              {showLastReplyMember && data?.last_reply_by && (
+                <View style={rowStyles.rowCenter}>
+                  <Text style={[styles.text_meta, styles.text_xs]}>
+                    最后回复来自
+                  </Text>
+                  <FixedPressable
+                    style={({ pressed }) => [
+                      rowStyles.px1,
+                      pressed && rowStyles.pressed60,
+                    ]}
+                    hitSlop={4}
+                    onPress={() => {
+                      router.push({
+                        pathname: '/member/[username]',
+                        params: {
+                          username: data.last_reply_by,
+                          tab: 'replies',
+                        },
+                      })
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.text_desc,
+                        styles.text_xs,
+                        rowStyles.font600,
+                      ]}
+                    >
+                      {data.last_reply_by}
+                    </Text>
+                  </FixedPressable>
+                </View>
+              )}
+            </View>
+          </View>
+          <View style={rowStyles.rightContent}>
+            {!!replies && (
+              <View style={[rowStyles.badgeBoxTide, styles.tag__bg]}>
+                <Text style={[styles.tag__text, styles.text_xs]}>
+                  {replies}
+                </Text>
               </View>
             )}
           </View>
-        </View>
-        <View className='flex flex-row justify-end pl-1 pr-2'>
-          {!!replies && (
-            <View className='rounded-full px-1' style={styles.tag__bg}>
-              <Text style={[styles.tag__text, styles.text_xs]}>{replies}</Text>
-            </View>
-          )}
         </View>
         {viewedStatus === 'has_update' && (
           <TriangleCorner
             corner='top-left'
             size={10}
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              opacity: 0.9,
-            }}
+            style={rowStyles.triangle}
           />
         )}
       </FixedPressable>
     </MaxWidthWrapper>
   )
 }
+
+const rowStyles = StyleSheet.create({
+  skeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  skeletonAvatar: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+    marginRight: 8,
+  },
+  avatarBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  pl3: {
+    paddingLeft: 12,
+  },
+  skeletonBody: {
+    flex: 1,
+    paddingTop: 4,
+    paddingBottom: 8,
+  },
+  mt1: {
+    marginTop: 4,
+  },
+  rightContent: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingLeft: 4,
+    paddingRight: 8,
+  },
+  badgeBox: {
+    borderRadius: 9999,
+    paddingHorizontal: 8,
+  },
+  badgeBoxTide: {
+    borderRadius: 9999,
+    paddingHorizontal: 4,
+  },
+  mainPressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mainPressableContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatarContainer: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
+  avatarImage: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  centerContent: {
+    flex: 1,
+    paddingTop: 4,
+    paddingBottom: 8,
+  },
+  viewedOpacity: {
+    opacity: 0.7,
+  },
+  font500: {
+    fontWeight: '500',
+  },
+  metaRow: {
+    marginTop: 4,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  nodePressable: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    marginRight: 6,
+    borderRadius: 4,
+  },
+  mr1: {
+    marginRight: 4,
+  },
+  px1: {
+    paddingHorizontal: 4,
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  font600: {
+    fontWeight: '600',
+  },
+  triangle: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    opacity: 0.9,
+  },
+  pressed50: {
+    opacity: 0.5,
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+})
 
 export default memo(TideTopicRow)
