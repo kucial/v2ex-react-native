@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   ClockIcon,
   Cog6ToothIcon,
@@ -25,7 +25,6 @@ import {
   useLogout,
 } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { useAuthMeta, useAuthStatus, useCurrentUser } from '@/stores/auth'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
@@ -81,20 +80,26 @@ export default function MyScreen() {
   if (currentUser) {
     header = (
       <Pressable
-        className='flex flex-row py-3 px-4 active:opacity-60'
-        style={styles.grouped_secondary}
+        style={({ pressed }) => [
+          myScreenStyles.headerPressable,
+          styles.grouped_secondary,
+          pressed && myScreenStyles.pressed,
+        ]}
         onPress={() => {
           router.push('/me')
         }}
       >
         <Image
           source={{ uri: currentUser.avatar_normal }}
-          className='w-[40px] h-[40px] rounded bg-neutral-100 mr-3'
+          style={myScreenStyles.avatar}
         />
-        <View className='flex-1'>
+        <View style={myScreenStyles.flex1}>
           <Text
-            className='font-semibold mt-[-1px] mb-[1px]'
-            style={[styles.text, styles.text_base]}
+            style={[
+              myScreenStyles.username,
+              styles.text,
+              styles.text_base,
+            ]}
           >
             {currentUser.username}
           </Text>
@@ -106,7 +111,10 @@ export default function MyScreen() {
         </View>
         {currentUserMeta?.balance && (
           <Pressable
-            className='-mr-2 pl-2 justify-center active:opacity-50'
+            style={({ pressed }) => [
+              myScreenStyles.balanceBtn,
+              pressed && myScreenStyles.pressed,
+            ]}
             onPress={(e) => {
               e.stopPropagation()
               router.push({
@@ -130,17 +138,23 @@ export default function MyScreen() {
   ) {
     header = (
       <Pressable
-        className='flex flex-row py-3 px-4 items-center active:opacity-60'
-        style={styles.grouped_secondary}
+        style={({ pressed }) => [
+          myScreenStyles.visitorPressable,
+          styles.grouped_secondary,
+          pressed && myScreenStyles.pressed,
+        ]}
         onPress={() => {
           goToSigninScreen()
         }}
       >
-        <Box key={authStatus} className='w-[40px] h-[40px] rounded mr-3' />
-        <View className='flex-1'>
+        <Box key={authStatus} style={myScreenStyles.avatarBox} />
+        <View style={myScreenStyles.flex1}>
           <Text
-            className='font-semibold'
-            style={[styles.text, styles.text_base]}
+            style={[
+              myScreenStyles.username,
+              styles.text,
+              styles.text_base,
+            ]}
           >
             未登录
           </Text>
@@ -150,18 +164,16 @@ export default function MyScreen() {
   } else {
     header = (
       <View
-        className='flex flex-row py-3 px-4'
-        style={styles.grouped_secondary}
+        style={[myScreenStyles.skeletonHeader, styles.grouped_secondary]}
       >
-        <Box className='w-[40px] h-[40px] mr-3' />
-        <View className='flex-1'>
+        <Box style={myScreenStyles.avatarBox} />
+        <View style={myScreenStyles.flex1}>
           <InlineText
-            className='font-semibold mb-1'
-            style={styles.text_base}
+            style={[myScreenStyles.inlineTextMb, styles.text_base]}
             width={[120, 180]}
-          ></InlineText>
+          />
           <View>
-            <InlineText style={styles.text_xs} width={[100, 140]}></InlineText>
+            <InlineText style={styles.text_xs} width={[100, 140]} />
           </View>
         </View>
       </View>
@@ -171,12 +183,17 @@ export default function MyScreen() {
   const iconColor = theme.colors.primary
 
   return (
-    <ScrollView className='flex-1 py-3'>
-      <MaxWidthWrapper className='flex-1'>
-        <LineItemGroup className='mx-2 my-2'>{header}</LineItemGroup>
+    <ScrollView
+      style={myScreenStyles.scrollView}
+      contentContainerStyle={myScreenStyles.scrollContent}
+    >
+      <MaxWidthWrapper style={myScreenStyles.flex1}>
+        <LineItemGroup style={myScreenStyles.groupMargin}>
+          {header}
+        </LineItemGroup>
 
-        <View className='flex flex-wrap flex-row flex-1 mx-1'>
-          <View className='w-1/2 px-1 my-2'>
+        <View style={myScreenStyles.grid}>
+          <View style={myScreenStyles.gridItem}>
             <GroupWapper>
               <LineItem
                 style={styles.grouped_secondary}
@@ -188,7 +205,7 @@ export default function MyScreen() {
               />
             </GroupWapper>
           </View>
-          <View className='w-1/2 px-1 my-2'>
+          <View style={myScreenStyles.gridItem}>
             <GroupWapper>
               <LineItem
                 style={styles.grouped_secondary}
@@ -200,7 +217,7 @@ export default function MyScreen() {
               />
             </GroupWapper>
           </View>
-          <View className='w-1/2 px-1 my-2'>
+          <View style={myScreenStyles.gridItem}>
             <GroupWapper>
               <LineItem
                 style={styles.grouped_secondary}
@@ -212,7 +229,7 @@ export default function MyScreen() {
               />
             </GroupWapper>
           </View>
-          <View className='w-1/2 px-1 my-2'>
+          <View style={myScreenStyles.gridItem}>
             <GroupWapper>
               <LineItem
                 style={styles.grouped_secondary}
@@ -228,7 +245,7 @@ export default function MyScreen() {
           </View>
         </View>
 
-        <LineItemGroup className='mx-2 my-2'>
+        <LineItemGroup style={myScreenStyles.groupMargin}>
           <LineItem
             style={styles.grouped_secondary}
             title='首页 Tab 设置'
@@ -264,7 +281,7 @@ export default function MyScreen() {
           />
         </LineItemGroup>
 
-        <LineItemGroup className='mx-2 my-2'>
+        <LineItemGroup style={myScreenStyles.groupMargin}>
           <LineItem
             style={styles.grouped_secondary}
             onPress={() => {
@@ -275,13 +292,14 @@ export default function MyScreen() {
             isLast
           />
         </LineItemGroup>
-        <View className='mx-2 py-7 mb-4 mt-8 flex-1 justify-end'>
+        <View style={myScreenStyles.logoutWrap}>
           {currentUser && (
             <Pressable
-              className={cn(
-                'flex flex-row items-center justify-center h-[44px] rounded-md active:opacity-60',
-              )}
-              style={{ backgroundColor: theme.colors.bg_danger_mask }}
+              style={({ pressed }) => [
+                myScreenStyles.logoutBtn,
+                { backgroundColor: theme.colors.bg_danger_mask },
+                pressed && myScreenStyles.pressed,
+              ]}
               onPress={() => {
                 Alert.alert('确认要退出登录吗?', '', [
                   {
@@ -303,3 +321,91 @@ export default function MyScreen() {
     </ScrollView>
   )
 }
+
+const myScreenStyles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingVertical: 12,
+  },
+  headerPressable: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 4,
+    backgroundColor: '#f5f5f5',
+    marginRight: 12,
+  },
+  username: {
+    fontWeight: '600',
+    marginTop: -1,
+    marginBottom: 1,
+  },
+  balanceBtn: {
+    marginRight: -8,
+    paddingLeft: 8,
+    justifyContent: 'center',
+  },
+  visitorPressable: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  avatarBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 4,
+    marginRight: 12,
+  },
+  skeletonHeader: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  inlineTextMb: {
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  groupMargin: {
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  gridItem: {
+    width: '50%',
+    paddingHorizontal: 4,
+    marginVertical: 8,
+  },
+  logoutWrap: {
+    marginHorizontal: 8,
+    paddingVertical: 28,
+    marginBottom: 16,
+    marginTop: 32,
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 44,
+    borderRadius: 6,
+  },
+})

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { Image, Pressable, ScrollView, View } from 'react-native'
+import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import * as ImageManipulator from 'expo-image-manipulator'
 import * as ImagePicker from 'expo-image-picker'
@@ -88,7 +88,7 @@ const AvatarPicker = (props: {
       return
     }
     avatarFormQuery.refetch()
-  }, [uploading])
+  }, [uploading, avatarFormQuery])
 
   return (
     <ScrollView
@@ -99,58 +99,73 @@ const AvatarPicker = (props: {
         />
       }
     >
-      <MaxWidthWrapper className='py-4 px-2'>
+      <MaxWidthWrapper style={avatarStyles.wrapper}>
         <GroupWapper
           innerStyle={styles.layer1}
           style={avatarFormQuery.isRefetching && { opacity: 0.4 }}
           pointerEvents={avatarFormQuery.isRefetching ? 'none' : 'auto'}
         >
           <SectionHeader title='当前头像' />
-          <View className='flex flex-row items-end px-1 py-2'>
+          <View style={avatarStyles.avatarRow}>
             <Image
               source={{ uri: avatarFormQuery.data?.avatars[0] }}
-              style={{ backgroundColor: theme.colors.skeleton }}
-              className='w-[73] h-[73] rounded mx-2'
+              style={[
+                avatarStyles.avatarLarge,
+                { backgroundColor: theme.colors.skeleton },
+              ]}
             />
             <Image
               source={{ uri: avatarFormQuery.data?.avatars[1] }}
-              style={{ backgroundColor: theme.colors.skeleton }}
-              className='w-[48] h-[48] rounded mx-2'
+              style={[
+                avatarStyles.avatarMedium,
+                { backgroundColor: theme.colors.skeleton },
+              ]}
             />
             <Image
               source={{ uri: avatarFormQuery.data?.avatars[2] }}
-              style={{ backgroundColor: theme.colors.skeleton }}
-              className='w-[24] h-[24] rounded mx-2'
+              style={[
+                avatarStyles.avatarSmall,
+                { backgroundColor: theme.colors.skeleton },
+              ]}
             />
           </View>
           <SectionHeader title='新头像' />
 
-          <View className='px-1 py-2'>
+          <View style={avatarStyles.pickerRow}>
             <Pressable
-              className='flex flex-row items-end active:opacity-50'
+              style={({ pressed }) => [
+                avatarStyles.pressableRow,
+                pressed && avatarStyles.pressed,
+              ]}
               onPress={pickImage}
             >
               <Image
                 key={avatar?.uri + 'large'}
                 source={avatar}
-                style={{ backgroundColor: theme.colors.skeleton }}
-                className='w-[73] h-[73] rounded mx-2'
+                style={[
+                  avatarStyles.avatarLarge,
+                  { backgroundColor: theme.colors.skeleton },
+                ]}
               />
               <Image
                 key={avatar?.uri + 'normal'}
                 source={avatar}
-                style={{ backgroundColor: theme.colors.skeleton }}
-                className='w-[48] h-[48] rounded mx-2'
+                style={[
+                  avatarStyles.avatarMedium,
+                  { backgroundColor: theme.colors.skeleton },
+                ]}
               />
               <Image
                 key={avatar?.uri + 'mini'}
                 source={avatar}
-                style={{ backgroundColor: theme.colors.skeleton }}
-                className='w-[24] h-[24] rounded mx-2'
+                style={[
+                  avatarStyles.avatarSmall,
+                  { backgroundColor: theme.colors.skeleton },
+                ]}
               />
             </Pressable>
           </View>
-          <View className='p-3 flex flex-row mb-2'>
+          <View style={avatarStyles.btnRow}>
             {avatar ? (
               <Button
                 loading={uploading}
@@ -174,5 +189,52 @@ const AvatarPicker = (props: {
     </ScrollView>
   )
 }
+
+const avatarStyles = StyleSheet.create({
+  wrapper: {
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+  },
+  avatarRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+  },
+  pickerRow: {
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+  },
+  pressableRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  avatarLarge: {
+    width: 73,
+    height: 73,
+    borderRadius: 4,
+    marginHorizontal: 8,
+  },
+  avatarMedium: {
+    width: 48,
+    height: 48,
+    borderRadius: 4,
+    marginHorizontal: 8,
+  },
+  avatarSmall: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    marginHorizontal: 8,
+  },
+  btnRow: {
+    padding: 12,
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+})
 
 export default AvatarPicker

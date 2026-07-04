@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -9,27 +9,27 @@ export default function BalanceArea(props: { data: BalanceBrief }) {
   const { styles } = useTheme()
 
   return (
-    <View className='flex flex-row items-center'>
+    <View style={balanceAreaStyles.row}>
       {!!data.gold && (
-        <View className='flex flex-row'>
-          <Image className='w-[16] h-[16]' source='gold_coin' />
-          <View className='mx-[6]'>
+        <View style={balanceAreaStyles.row}>
+          <Image style={balanceAreaStyles.icon} source='gold_coin' />
+          <View style={balanceAreaStyles.margin}>
             <Text style={styles.text}>{data.gold}</Text>
           </View>
         </View>
       )}
       {!!data.silver && (
-        <View className='flex flex-row'>
-          <Image className='w-[16] h-[16]' source='silver_coin' />
-          <View className='mx-[6]'>
+        <View style={balanceAreaStyles.row}>
+          <Image style={balanceAreaStyles.icon} source='silver_coin' />
+          <View style={balanceAreaStyles.margin}>
             <Text style={styles.text}>{data.silver}</Text>
           </View>
         </View>
       )}
       {!!data.bronze && (
-        <View className='flex flex-row'>
-          <Image className='w-[16] h-[16]' source='bronze_coin' />
-          <View className='mx-[6]'>
+        <View style={balanceAreaStyles.row}>
+          <Image style={balanceAreaStyles.icon} source='bronze_coin' />
+          <View style={balanceAreaStyles.margin}>
             <Text style={styles.text}>{data.bronze}</Text>
           </View>
         </View>
@@ -37,3 +37,17 @@ export default function BalanceArea(props: { data: BalanceBrief }) {
     </View>
   )
 }
+
+const balanceAreaStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    width: 16,
+    height: 16,
+  },
+  margin: {
+    marginHorizontal: 6,
+  },
+})

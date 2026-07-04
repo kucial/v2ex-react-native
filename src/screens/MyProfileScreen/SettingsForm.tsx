@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Formik, FormikHelpers } from 'formik'
 
@@ -51,7 +51,7 @@ export default function SettingsForm(props: {
         formikProps.setSubmitting(false)
       }
     },
-    [settingsQuery.data],
+    [props.username, queryClient, alert],
   )
 
   return (
@@ -73,28 +73,28 @@ export default function SettingsForm(props: {
             />
           }
         >
-          <MaxWidthWrapper className='py-4 px-2'>
+          <MaxWidthWrapper style={settingsStyles.wrapper}>
             <GroupWapper
               innerStyle={styles.layer1}
               style={settingsQuery.isRefetching && { opacity: 0.4 }}
               pointerEvents={settingsQuery.isRefetching ? 'none' : 'auto'}
             >
-              <View className='p-3'>
+              <View style={settingsStyles.formContainer}>
                 <TextField
-                  className='mb-2'
+                  style={settingsStyles.fieldMargin}
                   name='website'
                   label='个人网站'
                   placeholder='个人网站'
                 />
-                <View className='-mx-2 flex flex-row mb-2'>
-                  <View className='px-2 flex-1'>
+                <View style={settingsStyles.row}>
+                  <View style={settingsStyles.col}>
                     <TextField
                       name='company'
                       label='所在公司'
                       placeholder='所在公司'
                     />
                   </View>
-                  <View className='px-2 flex-1'>
+                  <View style={settingsStyles.col}>
                     <TextField
                       name='company_title'
                       label='工作职位'
@@ -104,26 +104,26 @@ export default function SettingsForm(props: {
                 </View>
 
                 <TextField
-                  className='mb-2'
+                  style={settingsStyles.fieldMargin}
                   name='location'
                   label='所在地'
                   placeholder='所在地'
                 />
                 <TextField
-                  className='mb-2'
+                  style={settingsStyles.fieldMargin}
                   name='tagline'
                   label='签名'
                   placeholder='签名'
                 />
                 <TextField
-                  className='mb-2'
+                  style={settingsStyles.fieldMargin}
                   name='bio'
                   label='个人简介'
                   placeholder='个人简介'
                   multiline
                   inputStyle={{ height: 140 }}
                 />
-                <View className='mt-4 mb-2'>
+                <View style={settingsStyles.btnContainer}>
                   <Button
                     variant='primary'
                     size='md'
@@ -143,3 +143,29 @@ export default function SettingsForm(props: {
     </Formik>
   )
 }
+
+const settingsStyles = StyleSheet.create({
+  wrapper: {
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+  },
+  formContainer: {
+    padding: 12,
+  },
+  fieldMargin: {
+    marginBottom: 8,
+  },
+  row: {
+    marginHorizontal: -8,
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  col: {
+    paddingHorizontal: 8,
+    flex: 1,
+  },
+  btnContainer: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+})

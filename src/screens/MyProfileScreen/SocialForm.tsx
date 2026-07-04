@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { Formik, FormikHelpers } from 'formik'
@@ -72,7 +72,7 @@ export default function SocialForm(props: {
         formikProps.setSubmitting(false)
       }
     },
-    [socialQuery],
+    [props.username, queryClient, alert],
   )
 
   return (
@@ -94,24 +94,21 @@ export default function SocialForm(props: {
             />
           }
         >
-          <MaxWidthWrapper className='py-4 px-2 mb-4'>
+          <MaxWidthWrapper style={socialStyles.wrapper}>
             {socialQuery.data && (
               <GroupWapper
                 innerStyle={styles.layer1}
                 style={socialQuery.isRefetching && { opacity: 0.4 }}
                 pointerEvents={socialQuery.isRefetching ? 'none' : 'auto'}
               >
-                <View className='p-3'>
+                <View style={socialStyles.formContainer}>
                   {socialQuery.data.fields.map((field) => (
-                    <View
-                      className='flex flex-row items-center mb-2'
-                      key={field.name}
-                    >
+                    <View style={socialStyles.fieldRow} key={field.name}>
                       <Image
                         source={{ uri: field.image }}
                         style={{ width: 28, height: 28, marginRight: 12 }}
                       />
-                      <View className='flex-1'>
+                      <View style={socialStyles.inputCol}>
                         <TextField
                           placeholder={field.label}
                           name={field.name}
@@ -121,7 +118,7 @@ export default function SocialForm(props: {
                     </View>
                   ))}
                   <Button
-                    className='my-2'
+                    style={socialStyles.btnMargin}
                     variant='primary'
                     size='md'
                     label='提交'
@@ -140,3 +137,25 @@ export default function SocialForm(props: {
     </Formik>
   )
 }
+
+const socialStyles = StyleSheet.create({
+  wrapper: {
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    marginBottom: 16,
+  },
+  formContainer: {
+    padding: 12,
+  },
+  fieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  inputCol: {
+    flex: 1,
+  },
+  btnMargin: {
+    marginVertical: 8,
+  },
+})

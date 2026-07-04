@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 
 import NavigationHeader from '@/components/NavigationHeader'
@@ -16,7 +16,7 @@ export default function RepliedTopicsScreen() {
   const user = useCurrentUser()
   const scrollY = useSharedValue(0)
   return (
-    <View className='flex-1'>
+    <View style={repliedStyles.container}>
       <NavigationHeader canGoBack title='回复的主题' />
       <MemberReplies
         username={user.username}
@@ -28,3 +28,9 @@ export default function RepliedTopicsScreen() {
     </View>
   )
 }
+
+const repliedStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})

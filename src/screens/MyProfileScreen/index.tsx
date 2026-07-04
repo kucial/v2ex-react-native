@@ -1,5 +1,11 @@
 import { useMemo, useState } from 'react'
-import { ScrollView, Text, useWindowDimensions, View } from 'react-native'
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { TabBar, TabView } from 'react-native-tab-view'
 import { useLocalSearchParams } from 'expo-router'
 
@@ -89,7 +95,7 @@ export default function ProfileScreen() {
           default:
             return (
               <ScrollView>
-                <MaxWidthWrapper className='py-4 px-2'>
+                <MaxWidthWrapper style={profileStyles.defaultWrap}>
                   <View>
                     <Text>{route.title}</Text>
                   </View>
@@ -136,10 +142,10 @@ export default function ProfileScreen() {
         )
       },
     }
-  }, [user.username, styles, index])
+  }, [user.username, styles, index, fetchCurrentUser, theme.colors])
 
   return (
-    <View className='flex-1'>
+    <View style={profileStyles.container}>
       <NavigationHeader canGoBack title='用户档案' shadow={false} />
       <TabView
         navigationState={navigationState}
@@ -157,3 +163,13 @@ export default function ProfileScreen() {
     </View>
   )
 }
+
+const profileStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  defaultWrap: {
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+  },
+})
