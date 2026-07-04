@@ -1,4 +1,4 @@
-import { Alert, Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 import { PlusIcon } from 'react-native-heroicons/outline'
 
 import { useImgurService } from '@/containers/ImgurService'
@@ -9,7 +9,7 @@ export default function AlbumCard(props) {
   const { theme, styles } = useTheme()
   return (
     <Pressable
-      className='active:opacity-50'
+      style={({ pressed }) => pressed && albumAddStyles.pressed}
       onPress={() => {
         Alert.prompt('输入相册名称', undefined, async (val) => {
           const trimed = val.trim()
@@ -22,17 +22,19 @@ export default function AlbumCard(props) {
         })
       }}
     >
-      <View className='w-full pt-[100%] rounded-lg overflow-hidden '>
+      <View style={albumAddStyles.imageBox}>
         <View
-          className='absolute inset-0 w-full items-center justify-center'
-          style={{
-            backgroundColor: theme.colors.bg_layer3,
-          }}
+          style={[
+            albumAddStyles.absoluteInset,
+            {
+              backgroundColor: theme.colors.bg_layer3,
+            },
+          ]}
         >
           <PlusIcon size={30} color={theme.colors.text} />
         </View>
       </View>
-      <View className='mt-1 px-1'>
+      <View style={albumAddStyles.textWrap}>
         <Text
           style={[styles.text, styles.text_sm]}
           numberOfLines={1}
@@ -44,3 +46,29 @@ export default function AlbumCard(props) {
     </Pressable>
   )
 }
+
+const albumAddStyles = StyleSheet.create({
+  pressed: {
+    opacity: 0.5,
+  },
+  imageBox: {
+    width: '100%',
+    paddingTop: '100%',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  absoluteInset: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textWrap: {
+    marginTop: 4,
+    paddingHorizontal: 4,
+  },
+})

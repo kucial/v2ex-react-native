@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
 import { ImgurAlbum, ImgurImage } from '@/containers/ImgurService/types'
@@ -31,28 +31,28 @@ export default function AlbumImages(props: {
   )
 
   return (
-    <View className='flex flex-1'>
-      <View
-        className='flex flex-row items-center min-h-[44px] pt-1 px-1 pb-1'
-        style={[styles.border_b_light]}
-      >
-        <View className='w-[56px]'>
+    <View style={albumImagesStyles.container}>
+      <View style={[albumImagesStyles.headerRow, styles.border_b_light]}>
+        <View style={albumImagesStyles.sideBox}>
           <BackButton
             tintColor={theme.colors.text}
             onPress={props.onBackward}
           />
         </View>
-        <View className='flex-1 px-1'>
+        <View style={albumImagesStyles.titleWrap}>
           <Text
-            className='text-center font-medium'
-            style={[styles.text, styles.text_base]}
+            style={[
+              albumImagesStyles.titleText,
+              styles.text,
+              styles.text_base,
+            ]}
             numberOfLines={1}
             ellipsizeMode='tail'
           >
             {album.title}
           </Text>
         </View>
-        <View className='w-[56px] items-end'></View>
+        <View style={albumImagesStyles.sideBoxRight}></View>
       </View>
       <ImagesGrid
         imagesQuery={imagesQuery}
@@ -67,3 +67,32 @@ export default function AlbumImages(props: {
     </View>
   )
 }
+
+const albumImagesStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 44,
+    paddingTop: 4,
+    paddingHorizontal: 4,
+    paddingBottom: 4,
+  },
+  sideBox: {
+    width: 56,
+  },
+  titleWrap: {
+    flex: 1,
+    paddingHorizontal: 4,
+  },
+  titleText: {
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  sideBoxRight: {
+    width: 56,
+    alignItems: 'flex-end',
+  },
+})

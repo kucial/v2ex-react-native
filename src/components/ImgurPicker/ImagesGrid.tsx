@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import ContextMenu from 'react-native-context-menu-view'
 import { UseQueryResult } from '@tanstack/react-query'
 
@@ -8,7 +8,6 @@ import { ImageViewing } from '@/components/ImageViewing'
 
 import { ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import Loader from '../Loader'
 import MyRefreshControl from '../MyRefreshControl'
@@ -38,51 +37,60 @@ export default function ImagesGrid(props: ImagesGridProps) {
         const image = imageItems[imageIndex]
         const selected = !!props.selected.find((i) => i.id === image.id)
         return (
-          <View className='flex flex-row w-full px-3 pb-8 items-center justify-between'>
-            <View className='w-[80px]'>
-              <View className='px-2'>
-                <Text className='text-neutral-300'>
+          <View style={gridStyles.footerContainer}>
+            <View style={gridStyles.footerLeft}>
+              <View style={gridStyles.footerIndexWrap}>
+                <Text style={gridStyles.textNeutral300}>
                   {imageIndex + 1} / {imageItems.length}
                 </Text>
               </View>
             </View>
-            <View className='flex-1'>
+            <View style={gridStyles.flex1}>
               <Pressable
-                className='h-[52px] rounded-lg flex flex-row items-center justify-center px-4 active:opacity-60'
+                style={({ pressed }) => [
+                  gridStyles.selectBtn,
+                  pressed && gridStyles.pressed,
+                ]}
                 onPress={() => {
                   props.onToggleSelect(image)
                 }}
               >
                 <View
-                  className={cn(
-                    'w-[18px] h-[18px] rounded-full items-center justify-center',
-                    '-mr-1 mr-2',
+                  style={[
+                    gridStyles.checkCircle,
                     selected
-                      ? 'bg-emerald-400'
-                      : 'border-[1.5px] border-neutral-300',
-                  )}
+                      ? gridStyles.checkCircleSelected
+                      : gridStyles.checkCircleUnselected,
+                  ]}
                 >
                   {selected && <CheckIcon size={12} color='#111' />}
                 </View>
                 <Text
-                  className={cn(
-                    selected ? 'text-emerald-400' : 'text-neutral-300',
-                  )}
-                  style={styles.text_base}
+                  style={[
+                    styles.text_base,
+                    selected
+                      ? gridStyles.textEmerald400
+                      : gridStyles.textNeutral300,
+                  ]}
                 >
                   选择
                 </Text>
               </Pressable>
             </View>
-            <View className='w-[80px]'>
+            <View style={gridStyles.footerRight}>
               <Pressable
-                className='h-[52px] min-w-[60px] rounded-lg flex flex-row items-center justify-center px-2 active:opacity-60'
+                style={({ pressed }) => [
+                  gridStyles.closeBtn,
+                  pressed && gridStyles.pressed,
+                ]}
                 onPress={() => {
                   setViewIndex(-1)
                   props.selected.length && context.submit()
                 }}
               >
-                <Text className='text-neutral-300' style={styles.text_base}>
+                <Text
+                  style={[gridStyles.textNeutral300, styles.text_base]}
+                >
                   {props.selected.length ? '完成选择' : '关闭'}
                 </Text>
               </Pressable>
@@ -100,19 +108,19 @@ export default function ImagesGrid(props: ImagesGridProps) {
   let content
   if (imagesQuery.isLoading) {
     content = (
-      <View className='py-6 w-full items-center justify-center'>
+      <View style={gridStyles.loaderWrap}>
         <Loader />
       </View>
     )
   } else if (!hasData) {
     content = (
-      <View className='p-6'>
+      <View style={gridStyles.emptyWrap}>
         <Text style={styles.text}>相册里没有图片哦~</Text>
       </View>
     )
   } else {
     content = imageItems?.map((image, index) => (
-      <View className='basis-1/3 p-[1px]' key={image.id}>
+      <View style={gridStyles.gridItem} key={image.id}>
         <ContextMenu
           actions={[{ title: '删除', systemIcon: 'trash' }]}
           onPress={({ nativeEvent }) => {
@@ -149,8 +157,8 @@ export default function ImagesGrid(props: ImagesGridProps) {
       }
       contentContainerStyle={{ paddingBottom: 100 }}
     >
-      <View className='py-2 px-[1px]'>
-        <View className='flex flex-row flex-wrap'>{content}</View>
+      <View style={gridStyles.container}>
+        <View style={gridStyles.gridRow}>{content}</View>
       </View>
       <ImageViewing
         {...imageViewingProps}
@@ -161,3 +169,89 @@ export default function ImagesGrid(props: ImagesGridProps) {
     </ScrollView>
   )
 }
+
+const gridStyles = StyleSheet.create({
+  footerContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    paddingHorizontal: 12,
+    paddingBottom: 32,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  footerLeft: {
+    width: 80,
+  },
+  footerIndexWrap: {
+    paddingHorizontal: 8,
+  },
+  textNeutral300: {
+    color: '#d4d4d4',
+  },
+  textEmerald400: {
+    color: '#34d399',
+  },
+  flex1: {
+    flex: 1,
+  },
+  selectBtn: {
+    height: 52,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  checkCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+    marginLeft: -4,
+  },
+  checkCircleSelected: {
+    backgroundColor: '#34d399',
+  },
+  checkCircleUnselected: {
+    borderWidth: 1.5,
+    borderColor: '#d4d4d4',
+  },
+  footerRight: {
+    width: 80,
+  },
+  closeBtn: {
+    height: 52,
+    minWidth: 60,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  loaderWrap: {
+    paddingVertical: 24,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyWrap: {
+    padding: 24,
+  },
+  gridItem: {
+    flexBasis: '33.333333%',
+    padding: 1,
+  },
+  container: {
+    paddingVertical: 8,
+    paddingHorizontal: 1,
+  },
+  gridRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+})

@@ -1,9 +1,8 @@
-import { Pressable, View } from 'react-native'
+import { Pressable, StyleSheet, View } from 'react-native'
 
 import CheckIcon from '@/components/CheckIcon'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import { usePickerContext } from './context'
 
@@ -13,14 +12,16 @@ export default function SubmitButton() {
   const disabled = !selected.length
   return (
     <View
-      className='absolute bottom-[56px] w-full flex justify-center items-center'
+      style={submitStyles.container}
       pointerEvents={disabled ? 'none' : 'box-none'}
     >
       <Pressable
-        className={cn(
-          'w-[120px] h-[56px] items-center justify-center rounded-full shadow-sm active:opacity-60',
-        )}
-        style={[styles.btn_success__bg, disabled && { opacity: 0.5 }]}
+        style={({ pressed }) => [
+          submitStyles.button,
+          styles.btn_success__bg,
+          disabled && submitStyles.disabled,
+          pressed && submitStyles.pressed,
+        ]}
         onPress={submit}
         disabled={disabled}
       >
@@ -29,3 +30,31 @@ export default function SubmitButton() {
     </View>
   )
 }
+
+const submitStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 56,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    width: 120,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+})

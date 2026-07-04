@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
 import { ImgurAlbum, ImgurImage } from '@/containers/ImgurService/types'
@@ -22,11 +22,11 @@ export default function Landing(props: LandingProps) {
   const { theme, styles, colorScheme } = useTheme()
 
   return (
-    <View className='flex flex-1'>
-      <View className='p-safe'>
-        <View className='pt-1' style={styles.border_b}>
-          <View className='flex flex-row items-center min-h-[44px] px-1'>
-            <View className='w-[100px]'>
+    <View style={landingStyles.container}>
+      <View style={landingStyles.safeWrap}>
+        <View style={[landingStyles.headerWrap, styles.border_b]}>
+          <View style={landingStyles.headerRow}>
+            <View style={landingStyles.sideBox}>
               {props.onCancel && (
                 <BackButton
                   tintColor={theme.colors.text}
@@ -34,19 +34,22 @@ export default function Landing(props: LandingProps) {
                 />
               )}
             </View>
-            <View className='flex-1 px-1'>
+            <View style={landingStyles.titleWrap}>
               <Text
-                className='text-center font-medium'
-                style={[styles.text, styles.text_base]}
+                style={[
+                  landingStyles.titleText,
+                  styles.text,
+                  styles.text_base,
+                ]}
                 numberOfLines={1}
                 ellipsizeMode='tail'
               >
                 Imgur 图床
               </Text>
             </View>
-            <View className='w-[100px] items-end'></View>
+            <View style={landingStyles.sideBoxRight}></View>
           </View>
-          <View className='px-4 pt-1 pb-3 relative'>
+          <View style={landingStyles.segmentWrap}>
             <SegmentedControl
               values={['图片', '相册']}
               selectedIndex={tabIndex}
@@ -71,3 +74,42 @@ export default function Landing(props: LandingProps) {
     </View>
   )
 }
+
+const landingStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  safeWrap: {
+    // safe area if needed
+  },
+  headerWrap: {
+    paddingTop: 4,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: 44,
+    paddingHorizontal: 4,
+  },
+  sideBox: {
+    width: 100,
+  },
+  titleWrap: {
+    flex: 1,
+    paddingHorizontal: 4,
+  },
+  titleText: {
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  sideBoxRight: {
+    width: 100,
+    alignItems: 'flex-end',
+  },
+  segmentWrap: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 12,
+    position: 'relative',
+  },
+})

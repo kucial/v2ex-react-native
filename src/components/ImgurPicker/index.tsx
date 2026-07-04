@@ -1,10 +1,9 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Pressable, Text, View, ViewStyle } from 'react-native'
+import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
 
 import { useImgurService } from '@/containers/ImgurService'
 import { ImgurAlbum, ImgurImage } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { useCachedState } from '@/utils/hooks'
 
 import Album from './AlbumImages'
@@ -70,22 +69,19 @@ export default function ImgurPicker(props: ImgurPickerProps) {
 
   if (!imgur.credentials) {
     return (
-      <View
-        className='flex flex-1 p-8 items-center justify-center w-full'
-        style={props.style}
-      >
-        <View className='my-5'>
+      <View style={[imgurPickerStyles.emptyContainer, props.style]}>
+        <View style={imgurPickerStyles.textWrap}>
           <Text style={[styles.text, styles.text_base]}>
             Imgur 服务还未设置
           </Text>
         </View>
         {props.onConfigSettings && (
           <Pressable
-            className={cn(
-              'h-[44px] w-[200px] rounded-md flex items-center justify-center mt-4',
-              'active:opacity-60',
-            )}
-            style={styles.btn_primary__bg}
+            style={({ pressed }) => [
+              imgurPickerStyles.settingsBtn,
+              styles.btn_primary__bg,
+              pressed && imgurPickerStyles.pressed,
+            ]}
             onPress={props.onConfigSettings}
           >
             <Text style={styles.btn_primary__text}>前往设置</Text>
@@ -139,10 +135,39 @@ export default function ImgurPicker(props: ImgurPickerProps) {
 
   return (
     <PickerContext.Provider value={context}>
-      <View className='relative flex-1 w-full' style={props.style}>
+      <View style={[imgurPickerStyles.mainContainer, props.style]}>
         {view}
         <SubmitButton />
       </View>
     </PickerContext.Provider>
   )
 }
+
+const imgurPickerStyles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    padding: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  textWrap: {
+    marginVertical: 20,
+  },
+  settingsBtn: {
+    height: 44,
+    width: 200,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  mainContainer: {
+    position: 'relative',
+    flex: 1,
+    width: '100%',
+  },
+})

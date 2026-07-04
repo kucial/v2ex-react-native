@@ -1,11 +1,12 @@
 import { useCallback } from 'react'
-import { Alert, Pressable, View } from 'react-native'
+import { Alert, Pressable, StyleSheet, View } from 'react-native'
 import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'expo-image-picker'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useImgurService } from '@/containers/ImgurService'
+import { useTheme } from '@/containers/ThemeService'
 
 import { useAlbum } from './context'
 
@@ -13,6 +14,7 @@ export default function UploadButton(props) {
   const imgur = useImgurService()
   const album = useAlbum()
   const alert = useAlertService()
+  const { theme } = useTheme()
   const uploadImage = useCallback(
     async (imageInfo) => {
       if (!imgur) {
@@ -40,9 +42,13 @@ export default function UploadButton(props) {
     return null
   }
   return (
-    <View className='absolute bottom-[56px] right-[16px]'>
+    <View style={uploadStyles.container}>
       <Pressable
-        className='opacity-70 h-[56px] w-[56px] flex-row items-center justify-center rounded-full bg-blue-700 dark:bg-blue-300 active:opacity-50'
+        style={({ pressed }) => [
+          uploadStyles.button,
+          { backgroundColor: theme.dark ? '#93c5fd' : '#1d4ed8' },
+          pressed && uploadStyles.pressed,
+        ]}
         onPress={async () => {
           const permissionRes =
             await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -96,12 +102,27 @@ export default function UploadButton(props) {
         }}
       >
         <ArrowUpTrayIcon size={22} color={props.tintColor} />
-        {/* <View className="ml-1 w-[60px]">
-          <Text style={{ color: props.tintColor, fontSize: 10 }}>
-            从系统相册中选择图片
-          </Text>
-        </View> */}
       </Pressable>
     </View>
   )
 }
+
+const uploadStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 56,
+    right: 16,
+  },
+  button: {
+    opacity: 0.7,
+    height: 56,
+    width: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 28,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+})

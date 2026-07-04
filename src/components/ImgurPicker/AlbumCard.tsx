@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react'
-import { Alert, Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 import ContextMenu from 'react-native-context-menu-view'
 import { LockClosedIcon, PhotoIcon } from 'react-native-heroicons/outline'
 import { Image } from 'expo-image'
@@ -85,16 +85,21 @@ export default function AlbumCard(props: {
       ]}
       onPress={handleContextMenu}
     >
-      <View className='p-1 -m-1 rounded-md'>
+      <View style={albumCardStyles.wrapper}>
         <Pressable
-          className='w-full aspect-square rounded-lg overflow-hidden active:opacity-50'
+          style={({ pressed }) => [
+            albumCardStyles.imageBox,
+            pressed && albumCardStyles.pressed,
+          ]}
           onPress={props.onPress}
         >
           <View
-            className='absolute inset-0 w-full items-center justify-center'
-            style={{
-              backgroundColor: theme.colors.bg_layer3,
-            }}
+            style={[
+              albumCardStyles.absoluteInset,
+              {
+                backgroundColor: theme.colors.bg_layer3,
+              },
+            ]}
           >
             {coverUri ? (
               <Image
@@ -102,25 +107,25 @@ export default function AlbumCard(props: {
                   uri: coverUri,
                 }}
                 contentFit='cover'
-                className='absolute inset-0'
+                style={albumCardStyles.absoluteInset}
               ></Image>
             ) : (
               <PhotoIcon size={30} color={theme.colors.text} />
             )}
           </View>
-          <View className='absolute right-0 bottom-0 px-2 py-[2] items-center min-w-[30] bg-neutral-900/20 rounded-tl-md'>
+          <View style={albumCardStyles.badge}>
             <Text style={[styles.text_sm, { color: 'white' }]}>
               {data.images_count}
             </Text>
           </View>
         </Pressable>
-        <View className='flex-row items-center mt-1'>
+        <View style={albumCardStyles.infoRow}>
           {data.privacy === 'hidden' && (
-            <View className='px-1'>
+            <View style={albumCardStyles.lockIcon}>
               <LockClosedIcon size={14} color={theme.colors.text_meta} />
             </View>
           )}
-          <View className='flex-1'>
+          <View style={albumCardStyles.flex1}>
             <Text
               style={[styles.text, styles.text_sm]}
               numberOfLines={1}
@@ -134,3 +139,52 @@ export default function AlbumCard(props: {
     </ContextMenu>
   )
 }
+
+const albumCardStyles = StyleSheet.create({
+  wrapper: {
+    padding: 4,
+    margin: -4,
+    borderRadius: 6,
+  },
+  imageBox: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  absoluteInset: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    alignItems: 'center',
+    minWidth: 30,
+    backgroundColor: 'rgba(23, 23, 23, 0.2)',
+    borderTopLeftRadius: 6,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  lockIcon: {
+    paddingHorizontal: 4,
+  },
+  flex1: {
+    flex: 1,
+  },
+})

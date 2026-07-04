@@ -1,4 +1,4 @@
-import { ScrollView, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 
 import MyRefreshControl from '@/components/MyRefreshControl'
 
@@ -18,16 +18,16 @@ export default function Albums(props: AlbumsProps) {
   let content = null
   if (albumsQuery.isLoading) {
     content = (
-      <View className='py-6 items-center justify-center'>
+      <View style={albumsStyles.loaderWrap}>
         <Loader />
       </View>
     )
   } else if (albumsQuery.data) {
     content = (
-      <View className='py-2 px-[2px]'>
-        <View className='flex flex-row flex-wrap'>
+      <View style={albumsStyles.container}>
+        <View style={albumsStyles.grid}>
           {albumsQuery.data?.map((album) => (
-            <View className='basis-1/3 p-[2px] mb-2' key={album.id}>
+            <View style={albumsStyles.gridItem} key={album.id}>
               <AlbumCard
                 data={album}
                 onPress={() => {
@@ -37,7 +37,7 @@ export default function Albums(props: AlbumsProps) {
             </View>
           ))}
 
-          <View className='basis-1/3 p-[2px]'>
+          <View style={albumsStyles.gridItem}>
             <AlbumAdd />
           </View>
         </View>
@@ -57,3 +57,24 @@ export default function Albums(props: AlbumsProps) {
     </ScrollView>
   )
 }
+
+const albumsStyles = StyleSheet.create({
+  loaderWrap: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container: {
+    paddingVertical: 8,
+    paddingHorizontal: 2,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  gridItem: {
+    flexBasis: '33.333333%',
+    padding: 2,
+    marginBottom: 8,
+  },
+})

@@ -1,23 +1,30 @@
-import { Pressable, View } from 'react-native'
+import { Pressable, StyleSheet, View } from 'react-native'
 import { Image } from 'expo-image'
 
 import CheckIcon from '@/components/CheckIcon'
 
 import { getImageLink } from '@/containers/ImgurService'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 export default function ImageCard(props) {
   const { data, selected } = props
   const { theme, styles } = useTheme()
   return (
-    <Pressable className='active:opacity-50 relative' onPress={props.onPress}>
-      <View className='w-full pt-[100%] overflow-hidden'>
+    <Pressable
+      style={({ pressed }) => [
+        imageCardStyles.wrapper,
+        pressed && imageCardStyles.pressed,
+      ]}
+      onPress={props.onPress}
+    >
+      <View style={imageCardStyles.imageBox}>
         <View
-          className='absolute inset-0 w-full'
-          style={{
-            backgroundColor: theme.colors.text_placeholder,
-          }}
+          style={[
+            imageCardStyles.absoluteInset,
+            {
+              backgroundColor: theme.colors.text_placeholder,
+            },
+          ]}
         >
           <Image
             source={
@@ -36,34 +43,67 @@ export default function ImageCard(props) {
         </View>
       </View>
       <Pressable
-        className={cn(
-          'absolute right-0 top-0 p-2 items-center justify-center active:opacity-60',
-        )}
+        style={({ pressed }) => [
+          imageCardStyles.checkBtn,
+          pressed && imageCardStyles.pressed,
+        ]}
         onPress={(e) => {
           e.stopPropagation()
           props.onToggleSelect()
         }}
       >
         <View
-          className={cn(
-            'w-[18px] h-[18px] rounded-full items-center justify-center',
-            selected ? 'bg-neutral-800' : 'border',
-          )}
-          style={selected ? styles.btn_success__bg : styles.border}
+          style={[
+            imageCardStyles.checkCircle,
+            selected
+              ? [imageCardStyles.checkCircleSelected, styles.btn_success__bg]
+              : styles.border,
+          ]}
         >
           {selected && <CheckIcon size={14} color='white' />}
         </View>
       </Pressable>
-      {/* <View className="flex flex-row items-center mt-[2px]">
-        <View className="flex-1">
-
-        </View>
-        {data.privacy === 'hidden' && (
-          <View className="px-1">
-            <LockClosedIcon size={12} color="#888888" />
-          </View>
-        )}
-      </View> */}
     </Pressable>
   )
 }
+
+const imageCardStyles = StyleSheet.create({
+  wrapper: {
+    position: 'relative',
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  imageBox: {
+    width: '100%',
+    paddingTop: '100%',
+    overflow: 'hidden',
+  },
+  absoluteInset: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+  },
+  checkBtn: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  checkCircleSelected: {
+    borderWidth: 0,
+  },
+})
