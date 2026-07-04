@@ -31,8 +31,6 @@ export default function TopicSheetModal() {
   useEffect(() => {
     if (conversationOptions) {
       conversationModalRef.current?.present()
-    } else {
-      conversationModalRef.current?.dismiss()
     }
   }, [conversationOptions])
 
@@ -68,7 +66,6 @@ export default function TopicSheetModal() {
       >
         {conversationOptions && (
           <ReplyList
-            style={sheetStyles.list}
             contentContainerStyle={[
               sheetStyles.listContent,
               { paddingBottom: Math.max(insets.bottom, 16) },
@@ -95,7 +92,6 @@ export default function TopicSheetModal() {
       >
         {userInfoOptions && (
           <ReplyList
-            style={sheetStyles.list}
             contentContainerStyle={[
               sheetStyles.listContent,
               { paddingBottom: Math.max(insets.bottom, 16) },
@@ -142,10 +138,8 @@ export default function TopicSheetModal() {
 }
 
 const sheetStyles = StyleSheet.create({
-  list: {
-    paddingTop: 16,
-  },
   listContent: {
+    paddingTop: 16,
     paddingBottom: 16,
   },
   replyFormContainer: {

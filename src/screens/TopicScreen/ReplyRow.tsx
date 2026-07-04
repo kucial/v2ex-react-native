@@ -342,13 +342,9 @@ function ReplyRow(props: ReplyRowProps) {
                   ]}
                   onPress={handleReply}
                 >
-                  <View style={rowStyles.buttonContent}>
-                    <ReplyIcon size={14} color={iconColor} />
-                    <View style={rowStyles.ml1}>
-                      <Text style={[styles.text_meta, styles.text_xs]}>
-                        回复
-                      </Text>
-                    </View>
+                  <ReplyIcon size={14} color={iconColor} />
+                  <View style={rowStyles.ml1}>
+                    <Text style={[styles.text_meta, styles.text_xs]}>回复</Text>
                   </View>
                 </Pressable>
                 <View style={rowStyles.actionButtonSpacer}></View>
@@ -363,23 +359,21 @@ function ReplyRow(props: ReplyRowProps) {
                   ]}
                   onPress={handleThank}
                 >
-                  <View style={rowStyles.buttonContent}>
-                    <HeartIcon
-                      size={14}
-                      liked={data.thanked}
-                      ref={heartIconRef}
-                    />
-                    <View style={rowStyles.ml1}>
-                      {data.thanked ? (
-                        <Text style={[styles.text_meta, styles.text_xs]}>
-                          已感谢
-                        </Text>
-                      ) : (
-                        <Text style={[styles.text_meta, styles.text_xs]}>
-                          感谢
-                        </Text>
-                      )}
-                    </View>
+                  <HeartIcon
+                    size={14}
+                    liked={data.thanked}
+                    ref={heartIconRef}
+                  />
+                  <View style={rowStyles.ml1}>
+                    {data.thanked ? (
+                      <Text style={[styles.text_meta, styles.text_xs]}>
+                        已感谢
+                      </Text>
+                    ) : (
+                      <Text style={[styles.text_meta, styles.text_xs]}>
+                        感谢
+                      </Text>
+                    )}
                   </View>
                 </Pressable>
 
@@ -396,13 +390,11 @@ function ReplyRow(props: ReplyRowProps) {
                     ]}
                     onPress={handleConversation}
                   >
-                    <View style={rowStyles.buttonContent}>
-                      <ChatBubbleLeftRightIcon size={14} color={iconColor} />
-                      <View style={rowStyles.ml1}>
-                        <Text style={[styles.text_meta, styles.text_xs]}>
-                          会话
-                        </Text>
-                      </View>
+                    <ChatBubbleLeftRightIcon size={14} color={iconColor} />
+                    <View style={rowStyles.ml1}>
+                      <Text style={[styles.text_meta, styles.text_xs]}>
+                        会话
+                      </Text>
                     </View>
                   </Pressable>
                 )}
@@ -571,8 +563,6 @@ const rowStyles = StyleSheet.create({
     borderRadius: 9999,
     position: 'relative',
     zIndex: 10,
-  },
-  buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
