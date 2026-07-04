@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Platform, Text, TextInput, View } from 'react-native'
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { create } from 'zustand'
 
@@ -135,13 +135,15 @@ export function TwoFAModal() {
         onDidDismiss={handleModalDismiss}
         backgroundColor={styles.overlay.backgroundColor}
       >
-        <View className='pt-4 h-[280]'>
-          <View className='px-4 flex-col gap-4'>
-            <View className='flex flex-row justify-center py-2'>
+        <View style={twoFAStyles.container}>
+          <View style={twoFAStyles.contentWrap}>
+            <View style={twoFAStyles.msgRow}>
               <Text style={[styles.text]}>{message}</Text>
             </View>
             <View>
-              <View className='rounded-lg' style={[styles.overlay_input__bg]}>
+              <View
+                style={[twoFAStyles.inputBg, styles.overlay_input__bg]}
+              >
                 <TextInput
                   placeholder='Enter 2FA Code'
                   value={input}
@@ -189,3 +191,23 @@ export function TwoFAModal() {
     </>
   )
 }
+
+const twoFAStyles = StyleSheet.create({
+  container: {
+    paddingTop: 16,
+    height: 280,
+  },
+  contentWrap: {
+    paddingHorizontal: 16,
+    flexDirection: 'column',
+    gap: 16,
+  },
+  msgRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 8,
+  },
+  inputBg: {
+    borderRadius: 8,
+  },
+})

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
 import Share from 'react-native-share'
 import { BarcodeScanningResult, Camera } from 'expo-camera'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import colors from 'tailwindcss/colors'
 
 import CheckIcon from '@/components/CheckIcon'
@@ -21,6 +22,7 @@ const ImageViewingFooter = (props: {
   const [saveStatus, setSaveStatus] = useState('')
   const [qrCodes, setQrCodes] = useState<BarcodeScanningResult[] | null>(null)
   const displayUri = images[imageIndex]?.local || images[imageIndex]?.origin
+  const insets = useSafeAreaInsets()
 
   useEffect(() => {
     if (displayUri) {
@@ -32,17 +34,20 @@ const ImageViewingFooter = (props: {
   }, [displayUri])
 
   return (
-    <View className='pb-safe'>
-      <View className='flex flex-row justify-between items-center px-8'>
+    <View style={{ paddingBottom: insets.bottom }}>
+      <View style={modalStyles.footerRow}>
         <View>
-          <Text className='text-neutral-500'>
+          <Text style={modalStyles.counterText}>
             {imageIndex + 1} / {images.length}
           </Text>
         </View>
-        <View className='flex flex-row gap-x-2'>
+        <View style={modalStyles.btnGroup}>
           {!!(qrCodes?.length && handleQrCode) && (
             <Pressable
-              className='w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50'
+              style={({ pressed }) => [
+                modalStyles.iconBtn,
+                pressed && modalStyles.pressed,
+              ]}
               hitSlop={6}
               onPress={() => {
                 handleQrCode(qrCodes[0])
@@ -52,7 +57,10 @@ const ImageViewingFooter = (props: {
             </Pressable>
           )}
           <Pressable
-            className='w-[32px] h-[32px] bg-neutral-800/50 rounded-full flex justify-center items-center active:opacity-50'
+            style={({ pressed }) => [
+              modalStyles.iconBtn,
+              pressed && modalStyles.pressed,
+            ]}
             hitSlop={6}
             disabled={saveStatus === 'loading'}
             onPress={async () => {
@@ -112,3 +120,30 @@ export function GlobalImageViewingModal() {
     />
   )
 }
+
+const modalStyles = StyleSheet.create({
+  footerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  counterText: {
+    color: '#737373',
+  },
+  btnGroup: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconBtn: {
+    width: 32,
+    height: 32,
+    backgroundColor: 'rgba(38, 38, 38, 0.5)',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+})

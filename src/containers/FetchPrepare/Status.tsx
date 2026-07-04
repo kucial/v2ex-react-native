@@ -1,4 +1,4 @@
-import { Text, useWindowDimensions, View } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 
 import AppBrandIcon from '@/components/AppBrandIcon'
 import Button from '@/components/Button'
@@ -22,10 +22,12 @@ export default function Status(props: {
 
   return (
     <View
-      className='flex-1 items-center justify-center'
-      style={{
-        backgroundColor: colorScheme === 'light' ? 'white' : '#111111',
-      }}
+      style={[
+        statusStyles.container,
+        {
+          backgroundColor: colorScheme === 'light' ? 'white' : '#111111',
+        },
+      ]}
     >
       <View
         style={{
@@ -44,8 +46,8 @@ export default function Status(props: {
         }}
       >
         {props.status == 'error' ? (
-          <View className='items-center'>
-            <View className='py-6'>
+          <View style={statusStyles.itemsCenter}>
+            <View style={statusStyles.py6}>
               <Text style={styles.text_danger}>{props.error?.message}</Text>
             </View>
 
@@ -71,12 +73,12 @@ export default function Status(props: {
             <Loader />
             <View style={{ marginTop: 12 }}>
               {props.status === 'checking' && (
-                <Text style={styles.text} className='text-center'>
+                <Text style={[styles.text, statusStyles.textCenter]}>
                   正在等待 Cloudflare 检测
                 </Text>
               )}
               {props.status === 'checked' && (
-                <Text style={styles.text} className='text-center'>
+                <Text style={[styles.text, statusStyles.textCenter]}>
                   Cloudflare 检测完成，完成最后初始化
                 </Text>
               )}
@@ -87,3 +89,20 @@ export default function Status(props: {
     </View>
   )
 }
+
+const statusStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  itemsCenter: {
+    alignItems: 'center',
+  },
+  py6: {
+    paddingVertical: 24,
+  },
+  textCenter: {
+    textAlign: 'center',
+  },
+})
