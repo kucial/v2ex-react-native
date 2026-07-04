@@ -12,7 +12,6 @@ import {
 import { PhotoIcon } from 'react-native-heroicons/outline'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { encode } from 'js-base64'
-import colors from 'tailwindcss/colors'
 
 import ImgurPicker from '@/components/ImgurPicker'
 import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
@@ -123,7 +122,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                   },
                   isTouched &&
                     error && {
-                      backgroundColor: colors.red[500] + '26',
+                      backgroundColor: theme.colors.danger + '26',
                     },
                 ]}
                 selectionColor={theme.colors.primary}

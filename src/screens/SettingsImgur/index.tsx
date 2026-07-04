@@ -11,7 +11,6 @@ import {
 import * as Clipboard from 'expo-clipboard'
 import * as Linking from 'expo-linking'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import colors from 'tailwindcss/colors'
 
 import GroupWapper from '@/components/GroupWrapper'
 import ImgurLogo from '@/components/ImgurLogo'
@@ -29,7 +28,7 @@ export default function ImgurSettings() {
   const autoBack = params.autoBack === '1'
   const router = useRouter()
 
-  const { theme, colorScheme, styles } = useTheme()
+  const { theme, styles } = useTheme()
   const alert = useAlertService()
   const imgurService = useImgurService()
   const [clientInfo, setClientInfo] = useState({
@@ -77,11 +76,7 @@ export default function ImgurSettings() {
                 <View style={imgurStyles.logoWrap}>
                   <ImgurLogo
                     style={{ width: 80, height: (80 / 220) * 79 }}
-                    color={
-                      colorScheme === 'dark'
-                        ? colors.neutral[200]
-                        : colors.neutral[900]
-                    }
+                    color={theme.colors.text}
                   />
                 </View>
                 {imgurService.credentials ? (

@@ -4,7 +4,6 @@ import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Share from 'react-native-share'
 import { BarcodeScanningResult, Camera } from 'expo-camera'
-import colors from 'tailwindcss/colors'
 
 import CheckIcon from '@/components/CheckIcon'
 import { ImageViewing } from '@/components/ImageViewing'
@@ -53,7 +52,7 @@ const ImageViewingFooter = (props: {
                 handleQrCode(qrCodes[0])
               }}
             >
-              <QrCodeIcon size={16} color={colors.neutral[300]} />
+              <QrCodeIcon size={16} color='#d4d4d4' />
             </Pressable>
           )}
           <Pressable
@@ -77,14 +76,10 @@ const ImageViewingFooter = (props: {
               }
             }}
           >
-            {saveStatus === '' && (
-              <ShareIcon size={14} color={colors.neutral[300]} />
-            )}
-            {saveStatus === 'loading' && (
-              <Loader size={14} color={colors.neutral[300]} />
-            )}
+            {saveStatus === '' && <ShareIcon size={14} color='#d4d4d4' />}
+            {saveStatus === 'loading' && <Loader size={14} color='#d4d4d4' />}
             {saveStatus === 'success' && (
-              <CheckIcon size={16} color={colors.neutral[300]} />
+              <CheckIcon size={16} color='#d4d4d4' />
             )}
           </Pressable>
         </View>
