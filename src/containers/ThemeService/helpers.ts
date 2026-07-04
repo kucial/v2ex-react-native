@@ -42,7 +42,8 @@ export function getThemeService(
       console.log('construct theme', name, scheme, usePureDark)
     }
 
-    const theme = (themes[name] || themes.r2v)[subkey]
+    const theme = ((themes as Record<string, typeof themes.r2v>)[name] ||
+      themes.r2v)[subkey]
 
     // On a dark theme the background is dark, so contrast text should be light
     const contrastTextColor = theme.dark

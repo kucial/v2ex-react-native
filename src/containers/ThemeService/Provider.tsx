@@ -6,7 +6,6 @@ import {
   ThemeProvider as NavigationThemeProvider,
 } from '@react-navigation/native'
 import * as NavigationBar from 'expo-navigation-bar'
-import { StatusBar } from 'expo-status-bar'
 import * as SystemUI from 'expo-system-ui'
 
 import { useAppSettings } from '../AppSettingsService'
@@ -46,8 +45,7 @@ export const ThemeProvider = (props: {
   )
   useEffect(() => {
     if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(service.theme.colors.bg_overlay)
-      NavigationBar.setButtonStyleAsync(service.theme.dark ? 'light' : 'dark')
+      NavigationBar.setStyle(service.theme.dark ? 'light' : 'dark')
       SystemUI.setBackgroundColorAsync(service.theme.colors.bg_overlay)
     }
   }, [service])

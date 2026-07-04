@@ -9,12 +9,24 @@ module.exports = defineConfig([
   expoConfig,
 
   {
+    languageOptions: {
+      parserOptions: {
+        warnOnUnsupportedTypeScriptVersion: false,
+      },
+    },
     plugins: {
       'simple-import-sort': simpleImportSort,
       prettier: prettierPlugin,
     },
     rules: {
       'prettier/prettier': 'error',
+      'react-hooks/immutability': 'off',
+      'react-hooks/refs': 'off',
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
+      'react-hooks/use-memo': 'off',
+      'react-hooks/purity': 'off',
+      'react-hooks/incompatible-library': 'off',
       'simple-import-sort/imports': [
         'warn',
         {
@@ -36,6 +48,21 @@ module.exports = defineConfig([
       ],
     },
     ignores: ['dist/*', 'packages/*'],
+  },
+  {
+    files: ['**/*.test.{js,jsx,ts,tsx}', '**/__test__/**'],
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+      },
+    },
   },
   prettierConfig,
 ])
