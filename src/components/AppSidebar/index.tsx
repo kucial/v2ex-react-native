@@ -162,10 +162,10 @@ export default function AppSidebar(props: {
           ]}
         >
           <View
-            className={
+            style={
               props.position === 'BOTTOM'
-                ? 'flex-row pl-2 pt-[2] pb-[2]'
-                : 'items-center pt-2'
+                ? sidebarStyles.topRowBottom
+                : sidebarStyles.topRowSide
             }
           >
             <AppSidebarButton
@@ -198,8 +198,7 @@ export default function AppSidebar(props: {
             />
             {props.position === 'BOTTOM' && width > 730 && (
               <View
-                className='w-[50px] h-[50px]'
-                style={layoutStyles.button}
+                style={[sidebarStyles.spacer50, layoutStyles.button]}
               ></View>
             )}
           </View>
@@ -215,8 +214,10 @@ export default function AppSidebar(props: {
           </View>
 
           <View
-            className={
-              props.position === 'BOTTOM' ? 'flex-row pr-2' : 'items-center'
+            style={
+              props.position === 'BOTTOM'
+                ? sidebarStyles.bottomRowBottom
+                : sidebarStyles.bottomRowSide
             }
           >
             <AppSidebarButton
@@ -261,3 +262,26 @@ export default function AppSidebar(props: {
     </LayoutStyleContext.Provider>
   )
 }
+
+const sidebarStyles = StyleSheet.create({
+  topRowBottom: {
+    flexDirection: 'row',
+    paddingLeft: 8,
+    paddingVertical: 2,
+  },
+  topRowSide: {
+    alignItems: 'center',
+    paddingTop: 8,
+  },
+  spacer50: {
+    width: 50,
+    height: 50,
+  },
+  bottomRowBottom: {
+    flexDirection: 'row',
+    paddingRight: 8,
+  },
+  bottomRowSide: {
+    alignItems: 'center',
+  },
+})

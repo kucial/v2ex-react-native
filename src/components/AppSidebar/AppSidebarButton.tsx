@@ -2,6 +2,7 @@ import {
   ColorValue,
   Pressable,
   PressableProps,
+  StyleSheet,
   Text,
   View,
   ViewStyle,
@@ -9,7 +10,6 @@ import {
 import { HomeIcon } from 'react-native-heroicons/outline'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import { useLayoutStyle } from './context'
 
@@ -40,11 +40,11 @@ function AppSidebarButton(props: {
   const layoutStyle = useLayoutStyle()
   return (
     <Pressable
-      className={cn(
-        'w-[50px] h-[50px] rounded-lg items-center justify-center',
-        'active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600',
-      )}
-      style={layoutStyle}
+      style={({ pressed }) => [
+        sidebarBtnStyles.btn,
+        layoutStyle,
+        pressed && sidebarBtnStyles.pressed,
+      ]}
       disabled={props.disabled}
       onPress={(e) => {
         if (isActive) {
@@ -53,7 +53,7 @@ function AppSidebarButton(props: {
         onPress(e)
       }}
     >
-      <View className='relative w-[24px] h-[24px]'>
+      <View style={sidebarBtnStyles.iconContainer}>
         <Icon
           style={iconStyle}
           size={24}
@@ -61,31 +61,58 @@ function AppSidebarButton(props: {
         />
         {!!props.badge && (
           <View
-            className='absolute top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-solid'
             style={[
+              sidebarBtnStyles.badge,
               styles.btn_primary__bg,
               {
                 borderColor: theme.colors.bg_overlay,
               },
             ]}
           >
-            <Text className='text-[10px]' style={styles.btn_primary__text}>
+            <Text
+              style={[sidebarBtnStyles.badgeText, styles.btn_primary__text]}
+            >
               {props.badge}
             </Text>
           </View>
         )}
       </View>
-      {/* {label && (
-        <Text
-          className={cn('text-[10px] mt-1', isActive && 'font-bold')}
-          style={{
-            color: isActive ? activeColor : staticColor,
-          }}>
-          {label}
-        </Text>
-      )} */}
     </Pressable>
   )
 }
+
+const sidebarBtnStyles = StyleSheet.create({
+  btn: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  iconContainer: {
+    position: 'relative',
+    width: 24,
+    height: 24,
+  },
+  badge: {
+    position: 'absolute',
+    top: -6,
+    right: -8,
+    borderRadius: 6,
+    minWidth: 12,
+    paddingHorizontal: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderStyle: 'solid',
+  },
+  badgeText: {
+    fontSize: 10,
+    textAlign: 'center',
+  },
+})
 
 export default AppSidebarButton

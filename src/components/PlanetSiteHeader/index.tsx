@@ -1,5 +1,5 @@
 import React from 'react'
-import { Linking, Pressable, Text, View } from 'react-native'
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
@@ -17,29 +17,29 @@ export default function PlanetSiteHeader({ siteInfo }: PlanetSiteHeaderProps) {
 
   return (
     <MaxWidthWrapper style={{ ...styles.layer1, marginBottom: 4 }}>
-      <View className='p-2' style={[styles.border_b_light]}>
-        <View className='rounded-lg'>
-          <View className='flex flex-row'>
+      <View style={[planetStyles.p2, styles.border_b_light]}>
+        <View style={planetStyles.rounded8}>
+          <View style={planetStyles.row}>
             {siteInfo.avatar ? (
               <Image
-                className='w-[60px] h-[60px] mr-3 rounded-lg'
+                style={planetStyles.avatar}
                 source={{
                   uri: getAbsoluteUrl(siteInfo.avatar),
                 }}
               />
             ) : (
-              <View
-                className='w-[60px] h-[60px] mr-3 rounded-lg'
-                style={styles.layer3}
-              />
+              <View style={[planetStyles.avatar, styles.layer3]} />
             )}
 
-            <View className='flex-1'>
-              <View className='flex flex-row justify-between items-center mb-1'>
+            <View style={planetStyles.flex1}>
+              <View style={planetStyles.titleRow}>
                 <View>
                   <Text
-                    className='font-semibold'
-                    style={[styles.text, styles.text_lg]}
+                    style={[
+                      planetStyles.fontSemiBold,
+                      styles.text,
+                      styles.text_lg,
+                    ]}
                   >
                     {siteInfo.site_title}
                   </Text>
@@ -47,17 +47,20 @@ export default function PlanetSiteHeader({ siteInfo }: PlanetSiteHeaderProps) {
               </View>
 
               {siteInfo.links && siteInfo.links.length > 0 && (
-                <View className='flex flex-row flex-wrap'>
+                <View style={planetStyles.linksWrap}>
                   {siteInfo.links.map((link, index) => (
                     <Pressable
-                      className='px-2 py-1 mb-1 rounded active:opacity-50'
-                      style={[styles.layer2]}
+                      style={({ pressed }) => [
+                        planetStyles.linkBtn,
+                        styles.layer2,
+                        pressed && planetStyles.pressed,
+                      ]}
                       key={link.href}
                       onPress={() => {
                         Linking.openURL(link.href)
                       }}
                     >
-                      <Text className='text-xs'>
+                      <Text style={styles.text_xs}>
                         <Text>🔗 </Text>
                         <Text style={styles.text_meta}>{link.text}</Text>
                       </Text>
@@ -72,3 +75,46 @@ export default function PlanetSiteHeader({ siteInfo }: PlanetSiteHeaderProps) {
     </MaxWidthWrapper>
   )
 }
+
+const planetStyles = StyleSheet.create({
+  p2: {
+    padding: 8,
+  },
+  rounded8: {
+    borderRadius: 8,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    marginRight: 12,
+    borderRadius: 8,
+  },
+  flex1: {
+    flex: 1,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  fontSemiBold: {
+    fontWeight: '600',
+  },
+  linksWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  linkBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginBottom: 4,
+    borderRadius: 4,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+})

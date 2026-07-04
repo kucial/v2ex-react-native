@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Platform, Text, View } from 'react-native'
+import { Platform, StyleSheet, Text, View } from 'react-native'
 import {
   ClockIcon,
   DocumentPlusIcon,
@@ -81,21 +81,25 @@ export default function MainScreenHeader(props) {
   const title = options.title
   return (
     <View
-      className='w-full flex-row items-center pl-4 pt-safe'
       style={[
+        mainHeaderStyles.container,
         {
           height: padLayout.active ? insets.top : 48 + insets.top,
+          paddingTop: insets.top,
           backgroundColor: theme.colors.bg_layer1,
         },
         props.hasBorder && styles.border_b_light,
       ]}
     >
       {!padLayout.active && (
-        <View className='flex-1'>
-          <View className=''>
+        <View style={mainHeaderStyles.flex1}>
+          <View>
             <Text
-              className='font-bold'
-              style={[styles.text_lg, styles.text_title]}
+              style={[
+                mainHeaderStyles.titleText,
+                styles.text_lg,
+                styles.text_title,
+              ]}
             >
               {title}
             </Text>
@@ -104,9 +108,9 @@ export default function MainScreenHeader(props) {
       )}
 
       {!padLayout.active && (
-        <View className='flex flex-row space-x-1 items-center justify-self-end pr-1'>
+        <View style={mainHeaderStyles.actionsRow}>
           <Button
-            className='w-[44px] h-[44px] rounded-full'
+            style={mainHeaderStyles.iconBtn}
             variant='icon'
             radius={22}
             onPress={handleNewTopicPress}
@@ -114,16 +118,27 @@ export default function MainScreenHeader(props) {
             <DocumentPlusIcon size={24} color={iconColor} />
           </Button>
           <Button
-            className='w-[44px] h-[44px] rounded-full'
+            style={mainHeaderStyles.iconBtn}
             variant='icon'
             radius={22}
             onPress={handleNotificationPress}
           >
-            <View className='relative w-[24px] h-[24px]'>
+            <View style={mainHeaderStyles.iconWrap}>
               <EnvelopeIcon size={24} color={iconColor} />
               {!!meta?.unread_count && (
-                <View className='absolute bg-neutral-700 top-[-6px] right-[-8px] rounded-md min-w-[12px] px-[3px] text-center border-2 border-white border-solid'>
-                  <Text className='text-white text-[10px]'>
+                <View
+                  style={[
+                    mainHeaderStyles.badge,
+                    styles.btn_primary__bg,
+                    { borderColor: theme.colors.bg_overlay },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      mainHeaderStyles.badgeText,
+                      styles.btn_primary__text,
+                    ]}
+                  >
                     {meta.unread_count}
                   </Text>
                 </View>
@@ -132,7 +147,7 @@ export default function MainScreenHeader(props) {
           </Button>
 
           <Button
-            className='w-[44px] h-[44px] rounded-full'
+            style={mainHeaderStyles.iconBtn}
             variant='icon'
             radius={22}
             onPress={handleSearchButtonPress}
@@ -141,7 +156,7 @@ export default function MainScreenHeader(props) {
           </Button>
 
           <Button
-            className='w-[44px] h-[44px] rounded-full'
+            style={mainHeaderStyles.iconBtn}
             variant='icon'
             radius={22}
             onPress={handleViewedTopicButtonPress}
@@ -150,7 +165,7 @@ export default function MainScreenHeader(props) {
           </Button>
 
           <Button
-            className='w-[44px] h-[44px] rounded-full'
+            style={mainHeaderStyles.iconBtn}
             variant='icon'
             radius={22}
             onPress={handleAudioScreenPress}
@@ -162,3 +177,50 @@ export default function MainScreenHeader(props) {
     </View>
   )
 }
+
+const mainHeaderStyles = StyleSheet.create({
+  container: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+  },
+  flex1: {
+    flex: 1,
+  },
+  titleText: {
+    fontWeight: 'bold',
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingRight: 4,
+  },
+  iconBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
+  iconWrap: {
+    position: 'relative',
+    width: 24,
+    height: 24,
+  },
+  badge: {
+    position: 'absolute',
+    top: -6,
+    right: -8,
+    borderRadius: 6,
+    minWidth: 12,
+    paddingHorizontal: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderStyle: 'solid',
+  },
+  badgeText: {
+    fontSize: 10,
+    textAlign: 'center',
+  },
+})

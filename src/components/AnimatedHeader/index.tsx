@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Platform, Text, View } from 'react-native'
+import { Platform, StyleSheet, Text, View } from 'react-native'
 import Animate, {
   Extrapolation,
   interpolate,
@@ -39,8 +39,8 @@ function AnimatedHeader(props: {
 
   return (
     <View
-      className='w-full flex-row items-center'
       style={[
+        animHeaderStyles.container,
         {
           height: HEADER_BAR_HEIGHT + insets.top,
           paddingTop: insets.top,
@@ -111,5 +111,13 @@ function AnimatedHeader(props: {
     </View>
   )
 }
+
+const animHeaderStyles = StyleSheet.create({
+  container: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+})
 
 export default AnimatedHeader

@@ -1,4 +1,4 @@
-import { GestureResponderEvent, ViewStyle } from 'react-native'
+import { GestureResponderEvent, StyleSheet, ViewStyle } from 'react-native'
 import { ChevronLeftIcon } from 'react-native-heroicons/outline'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -17,9 +17,8 @@ export default function BackButton({
   const { theme } = useTheme()
   return (
     <Button
-      className='w-[44px] h-[44px] rounded-full'
+      style={[backBtnStyles.btn, style]}
       variant='icon'
-      style={style}
       onPress={onPress}
       radius={22}
     >
@@ -33,3 +32,11 @@ export default function BackButton({
     </Button>
   )
 }
+
+const backBtnStyles = StyleSheet.create({
+  btn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
+})
