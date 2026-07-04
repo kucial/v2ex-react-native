@@ -1,22 +1,19 @@
 import { ReactNode } from 'react'
 import { StyleSheet, View, ViewStyle } from 'react-native'
-import { cssInterop } from 'nativewind'
 
 import { CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
 
-function MaxWidthWrapper(props: { children: ReactNode; style?: ViewStyle }) {
+export default function MaxWidthWrapper(props: {
+  children: ReactNode
+  style?: ViewStyle | ViewStyle[]
+  className?: string
+}) {
   return (
     <View style={[styles.wrapper, props.style]}>
       <View style={styles.inner}>{props.children}</View>
     </View>
   )
 }
-
-export default cssInterop(MaxWidthWrapper, {
-  className: {
-    target: 'style',
-  },
-})
 
 const styles = StyleSheet.create({
   wrapper: {

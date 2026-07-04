@@ -393,8 +393,8 @@ export default function ProfileCoordinator(props: ProfileCoordinatorProps) {
         {/* Pinned tab bar (translated by scrollY, in sync with the header). */}
         <Animated.View
           collapsable={false}
-          className='flex-row'
           style={[
+            coordStyles.tabBar,
             styles.layer1,
             styles.border_b_light,
             { height: TAB_BAR_HEIGHT },
@@ -404,7 +404,10 @@ export default function ProfileCoordinator(props: ProfileCoordinatorProps) {
           {tabs.map((tab, index) => (
             <Pressable
               key={tab.key}
-              className='flex-1 h-[44] items-center justify-center active:opacity-50'
+              style={({ pressed }) => [
+                coordStyles.tabBtn,
+                pressed && coordStyles.pressed,
+              ]}
               onPress={() => pagerRef.current?.setPage(index)}
             >
               <Text
@@ -441,3 +444,18 @@ export default function ProfileCoordinator(props: ProfileCoordinatorProps) {
     </View>
   )
 }
+
+const coordStyles = StyleSheet.create({
+  tabBar: {
+    flexDirection: 'row',
+  },
+  tabBtn: {
+    flex: 1,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+})

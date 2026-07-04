@@ -35,7 +35,7 @@ function NodeLabel(props: {
   }
 
   return (
-    <Text style={props.style} className={props.className}>
+    <Text style={props.style}>
       {node.title}
     </Text>
   )

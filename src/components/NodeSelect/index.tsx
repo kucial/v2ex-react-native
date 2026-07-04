@@ -1,12 +1,11 @@
 import { ReactNode, useCallback, useMemo, useRef, useState } from 'react'
-import { Pressable, Text, TextInput, View } from 'react-native'
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { FlashList } from '@shopify/flash-list'
 import { useQuery } from '@tanstack/react-query'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { getNodes } from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
 
@@ -82,26 +81,28 @@ function NodeSelect(props: NodeSelectProps) {
     ({ item }: { item: NodeDetail }) => {
       return (
         <Pressable
-          className='pl-3 active:opacity-50'
+          style={({ pressed }) => [
+            nodeSelectStyles.itemBtn,
+            pressed && nodeSelectStyles.pressed,
+          ]}
           onPress={() => {
             props.onChange(item)
             selectRef.current?.dismiss()
           }}
         >
           <View
-            className={cn('h-[50px] flex flex-row items-center pr-3')}
-            style={[styles.border_b_light]}
+            style={[nodeSelectStyles.itemRow, styles.border_b_light]}
           >
             {renderLabel(item)}
           </View>
         </Pressable>
       )
     },
-    [renderLabel, props.onChange],
+    [renderLabel, props.onChange, styles.border_b_light],
   )
   return (
     <>
-      <View className='relative'>
+      <View style={nodeSelectStyles.relative}>
         <Button
           size='md'
           variant='input'
@@ -110,7 +111,7 @@ function NodeSelect(props: NodeSelectProps) {
             selectRef.current?.present()
           }}
         >
-          <View className='w-full'>
+          <View style={nodeSelectStyles.wFull}>
             {value ? (
               <Text style={styles.text_base}>{renderLabel(value)}</Text>
             ) : (
@@ -121,7 +122,7 @@ function NodeSelect(props: NodeSelectProps) {
           </View>
         </Button>
         {props.canClear && props.value && (
-          <View className='absolute right-0 h-full flex flex-row items-center justify-center'>
+          <View style={nodeSelectStyles.clearWrap}>
             <MyClearButton
               onPress={() => {
                 props.onChange(undefined)
@@ -140,8 +141,8 @@ function NodeSelect(props: NodeSelectProps) {
         backgroundColor={styles.overlay.backgroundColor}
       >
         {open && (
-          <View className='flex-1 w-full'>
-            <View className='p-3'>
+          <View style={nodeSelectStyles.sheetContent}>
+            <View style={nodeSelectStyles.inputWrap}>
               <TextInput
                 autoFocus={!props.value}
                 style={{
@@ -162,7 +163,7 @@ function NodeSelect(props: NodeSelectProps) {
               />
             </View>
             <FlashList
-              className='w-full'
+              style={nodeSelectStyles.wFull}
               data={filtered}
               renderItem={renderItem}
               keyExtractor={(n) => n.name}
@@ -174,5 +175,41 @@ function NodeSelect(props: NodeSelectProps) {
     </>
   )
 }
+
+const nodeSelectStyles = StyleSheet.create({
+  itemBtn: {
+    paddingLeft: 12,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  itemRow: {
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 12,
+  },
+  relative: {
+    position: 'relative',
+  },
+  wFull: {
+    width: '100%',
+  },
+  clearWrap: {
+    position: 'absolute',
+    right: 0,
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sheetContent: {
+    flex: 1,
+    width: '100%',
+  },
+  inputWrap: {
+    padding: 12,
+  },
+})
 
 export default NodeSelect
