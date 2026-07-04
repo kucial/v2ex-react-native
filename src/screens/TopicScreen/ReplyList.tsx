@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useMemo } from 'react'
-import { useWindowDimensions } from 'react-native'
+import { StyleProp, useWindowDimensions, ViewStyle } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 
 import { useMaxContainerWidth } from '@/containers/AppSettingsService'
@@ -16,8 +16,8 @@ type ReplyListProps = {
   onReply: (reply: TopicReply) => void
   onThank: (reply: TopicReply) => void
   onShowUserInfo?: (context: UserInfoContext) => void
-  className?: string
-  contentContainerClassName?: string
+  style?: StyleProp<ViewStyle>
+  contentContainerStyle?: StyleProp<ViewStyle>
 }
 
 export default function ReplyList({
@@ -28,8 +28,8 @@ export default function ReplyList({
   onShowUserInfo,
   showAvatar,
   header,
-  className,
-  contentContainerClassName,
+  style,
+  contentContainerStyle,
 }: ReplyListProps) {
   const { width } = useWindowDimensions()
   const maxContainerWidth = useMaxContainerWidth()
@@ -66,8 +66,8 @@ export default function ReplyList({
   return (
     <FlashList
       data={data}
-      className={className}
-      contentContainerClassName={contentContainerClassName}
+      style={style}
+      contentContainerStyle={contentContainerStyle}
       extraData={extraData}
       nestedScrollEnabled
       ListHeaderComponent={header}

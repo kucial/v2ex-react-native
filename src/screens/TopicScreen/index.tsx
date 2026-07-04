@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   InteractionManager,
+  StyleSheet,
   Text,
   useWindowDimensions,
   View,
@@ -392,7 +393,7 @@ function TopicScreen() {
   const headerRight = useMemo(
     () => (
       <Button
-        className='h-[44px] w-[44px] rounded-full'
+        style={screenStyles.headerButton}
         variant='icon'
         radius={22}
         onPress={() => {
@@ -918,7 +919,7 @@ function TopicScreen() {
     return (
       <>
         <AnimatedHeader scrollY={scrollY} />
-        <View className='flex-1 items-center justify-center'>
+        <View style={screenStyles.errorContainer}>
           <Text style={styles.text}>{topicQuery.error.message}</Text>
           {(topicQuery.error as ApiError).code !== 'RESOURCE_ERROR' &&
             (topicQuery.error as ApiError).code !== 'NOT_FOUND' && (
@@ -926,7 +927,7 @@ function TopicScreen() {
                 label='重试'
                 size='md'
                 onPress={() => topicQuery.refetch()}
-                className='mt-4'
+                style={screenStyles.mt4}
                 variant='primary'
               />
             )}
@@ -955,7 +956,7 @@ function TopicScreen() {
       />
       <AnimatedFlashList
         ref={listRef}
-        className='flex-1'
+        style={screenStyles.list}
         data={replyItems}
         extraData={extraData}
         renderItem={renderReply}
@@ -973,7 +974,7 @@ function TopicScreen() {
       />
       {showScrollToLastPosition && (
         <ScrollToLastPosition
-          className='absolute bottom-[100px] w-full flex items-center'
+          style={screenStyles.scrollToLast}
           onPress={() => {
             InteractionManager.runAfterInteractions(() => {
               listRef.current?.scrollToIndex({
@@ -1008,7 +1009,7 @@ function TopicScreen() {
           detents={['auto']}
           backgroundColor={styles.overlay.backgroundColor}
         >
-          <View className='h-[280px] pt-4'>
+          <View style={screenStyles.movePanelContainer}>
             <TopicMovePanel
               topicId={topicQuery.data.id}
               node={topicQuery.data.node}
@@ -1028,5 +1029,34 @@ function TopicScreen() {
     </>
   )
 }
+
+const screenStyles = StyleSheet.create({
+  headerButton: {
+    height: 44,
+    width: 44,
+    borderRadius: 22,
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mt4: {
+    marginTop: 16,
+  },
+  list: {
+    flex: 1,
+  },
+  scrollToLast: {
+    position: 'absolute',
+    bottom: 100,
+    width: '100%',
+    alignItems: 'center',
+  },
+  movePanelContainer: {
+    height: 280,
+    paddingTop: 16,
+  },
+})
 
 export default TopicScreen

@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Animated, Pressable, Text, View } from 'react-native'
+import {
+  Animated,
+  Pressable,
+  StyleProp,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -8,7 +15,7 @@ const ANIMATE_DURATION = 300
 
 function ScrollToLastPosition(props: {
   onPress: () => void
-  className?: string
+  style?: StyleProp<ViewStyle>
 }) {
   const [visible, setVisible] = useState(true)
   const fadeAnim = useRef(new Animated.Value(0)).current
@@ -55,7 +62,7 @@ function ScrollToLastPosition(props: {
   }
 
   return (
-    <View className={props.className}>
+    <View style={props.style}>
       <Animated.View
         style={[
           {

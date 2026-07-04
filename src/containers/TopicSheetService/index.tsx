@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { KeyboardAvoidingView, Platform, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import ReplyList from '@/screens/TopicScreen/ReplyList'
 import TopicReplyForm from '@/screens/TopicScreen/TopicReplyForm'
 import { useTopicSheetStore } from '@/stores/topicSheet'
@@ -12,6 +12,7 @@ const conversationDetents = [0.8]
 
 export default function TopicSheetModal() {
   const { styles } = useTheme()
+  const insets = useSafeAreaInsets()
   const conversationModalRef = useRef<TrueSheet>(null)
   const userInfoModalRef = useRef<TrueSheet>(null)
   const replyModalRef = useRef<TrueSheet>(null)
@@ -67,8 +68,11 @@ export default function TopicSheetModal() {
       >
         {conversationOptions && (
           <ReplyList
-            className='pt-4'
-            contentContainerClassName='pb-safe'
+            style={sheetStyles.list}
+            contentContainerStyle={[
+              sheetStyles.listContent,
+              { paddingBottom: Math.max(insets.bottom, 16) },
+            ]}
             showAvatar={conversationOptions.showAvatar}
             data={conversationOptions.data}
             pivot={conversationOptions.pivot}
@@ -91,8 +95,11 @@ export default function TopicSheetModal() {
       >
         {userInfoOptions && (
           <ReplyList
-            className='pt-4'
-            contentContainerClassName='pb-safe'
+            style={sheetStyles.list}
+            contentContainerStyle={[
+              sheetStyles.listContent,
+              { paddingBottom: Math.max(insets.bottom, 16) },
+            ]}
             showAvatar={userInfoOptions.showAvatar}
             data={userInfoOptions.data}
             header={userInfoOptions.header}
@@ -114,10 +121,10 @@ export default function TopicSheetModal() {
       >
         <KeyboardAvoidingView>
           <View
-            className={cn(
-              'pt-4 h-[220px]',
-              Platform.OS === 'android' && 'pb-7',
-            )}
+            style={[
+              sheetStyles.replyFormContainer,
+              Platform.OS === 'android' && sheetStyles.pb7,
+            ]}
           >
             {replyOptions && (
               <TopicReplyForm
@@ -133,3 +140,19 @@ export default function TopicSheetModal() {
     </>
   )
 }
+
+const sheetStyles = StyleSheet.create({
+  list: {
+    paddingTop: 16,
+  },
+  listContent: {
+    paddingBottom: 16,
+  },
+  replyFormContainer: {
+    paddingTop: 16,
+    height: 220,
+  },
+  pb7: {
+    paddingBottom: 28,
+  },
+})

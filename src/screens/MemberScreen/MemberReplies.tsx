@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import { StyleSheet } from 'react-native'
 import { FlashListProps } from '@shopify/flash-list'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
@@ -72,7 +73,7 @@ export default function MemberReplies(props: MemberRepliesProps) {
 
   return (
     <AnimatedFlashList
-      className='flex-1'
+      style={listStyles.list}
       data={listItems}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
@@ -91,3 +92,9 @@ export default function MemberReplies(props: MemberRepliesProps) {
     />
   )
 }
+
+const listStyles = StyleSheet.create({
+  list: {
+    flex: 1,
+  },
+})
