@@ -1,18 +1,24 @@
 import { ReactElement, ReactNode } from 'react'
-import { GestureResponderEvent, Text, View, ViewStyle } from 'react-native'
+import {
+  GestureResponderEvent,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import FixedPressable from '../FixedPressable'
 
 export const LineItemGroup = (props: {
   className?: string
+  style?: ViewStyle | ViewStyle[]
   children: ReactNode
 }) => {
   return (
-    <View className={cn('flex-1', props.className)}>
-      <View className='flex-1 rounded-lg overflow-hidden'>
+    <View style={[lineItemStyles.groupOuter, props.style]}>
+      <View style={lineItemStyles.groupInner}>
         {props.children}
       </View>
     </View>
@@ -26,31 +32,25 @@ export const LineItem = (props: {
   icon?: ReactElement
   title: string
   extra?: ReactElement
-  style?: ViewStyle
+  style?: ViewStyle | ViewStyle[]
   className?: string
 }) => {
   const { styles } = useTheme()
   return (
     <FixedPressable
-      className={cn(
-        'min-h-[50px] flex flex-row items-center pl-4',
-        'active:opacity-50',
-        props.className,
-      )}
-      style={[styles.layer1, props.style]}
+      style={[lineItemStyles.pressable, styles.layer1, props.style]}
       onPress={props.onPress}
       disabled={props.disabled}
     >
       <View
-        className={cn('h-full flex-1 flex flex-row')}
-        style={!props.isLast && styles.border_b}
+        style={[lineItemStyles.contentRow, !props.isLast && styles.border_b]}
       >
-        <View className='flex-1 flex flex-row items-center'>
-          {props.icon && <View className='mr-2'>{props.icon}</View>}
+        <View style={lineItemStyles.leftRow}>
+          {props.icon && <View style={lineItemStyles.iconWrap}>{props.icon}</View>}
           <Text style={[styles.text, styles.text_base]}>{props.title}</Text>
         </View>
         {props.extra && (
-          <View className='h-full flex flex-row items-center pr-3'>
+          <View style={lineItemStyles.extraWrap}>
             {props.extra}
           </View>
         )}
@@ -58,3 +58,39 @@ export const LineItem = (props: {
     </FixedPressable>
   )
 }
+
+const lineItemStyles = StyleSheet.create({
+  groupOuter: {
+    flex: 1,
+  },
+  groupInner: {
+    flex: 1,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  pressable: {
+    minHeight: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+  },
+  contentRow: {
+    height: '100%',
+    flex: 1,
+    flexDirection: 'row',
+  },
+  leftRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconWrap: {
+    marginRight: 8,
+  },
+  extraWrap: {
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 12,
+  },
+})

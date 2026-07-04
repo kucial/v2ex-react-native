@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { UseInfiniteQueryResult } from '@tanstack/react-query'
 
@@ -29,29 +29,34 @@ export default function CommonListFooter(props: CommonListFooterProps) {
   return (
     <View
       sentry-label='ListFooter'
-      className='min-h-[60px] flex flex-col items-center justify-center'
-      style={{
-        paddingBottom: (insets?.bottom || 4) + 12,
-        paddingTop: 16,
-      }}
+      style={[
+        footerStyles.container,
+        {
+          paddingBottom: (insets?.bottom || 4) + 12,
+          paddingTop: 16,
+        },
+      ]}
     >
       {isLoadingMore(listQuery) && (
-        <View className='w-full flex flex-row items-center justify-center'>
+        <View style={footerStyles.centerRow}>
           <Loader />
         </View>
       )}
       {shouldShowError(listQuery) && (
-        <View className='w-full px-4 items-center'>
-          <View className='my-4'>
+        <View style={footerStyles.errorWrap}>
+          <View style={footerStyles.my4}>
             <Text style={styles.text}>{listQuery.error.message}</Text>
           </View>
           {!['MEMBER_LOCKED', 'RESOURCE_ERROR'].includes(
             (listQuery.error as ApiError).code,
           ) && (
-            <View className='flex flex-row justify-center mb-4'>
+            <View style={footerStyles.retryRow}>
               <Pressable
-                className='px-4 h-[44px] w-[120px] rounded-full items-center justify-center active:opacity-60'
-                style={styles.btn_primary__bg}
+                style={({ pressed }) => [
+                  footerStyles.retryBtn,
+                  styles.btn_primary__bg,
+                  pressed && footerStyles.pressed,
+                ]}
                 onPress={() => {
                   listQuery.refetch()
                 }}
@@ -64,16 +69,61 @@ export default function CommonListFooter(props: CommonListFooterProps) {
       )}
       {(props.hasReachEnd || hasReachEnd(listQuery)) &&
         (isEmpty(listQuery) ? (
-          <View className='w-full flex flex-row justify-center py-4'>
+          <View style={footerStyles.py4Row}>
             <Text style={styles.text_meta}>
               {props.emptyMessage || '还没有内容哦'}
             </Text>
           </View>
         ) : (
-          <View className='w-full flex flex-row justify-center py-4'>
+          <View style={footerStyles.py4Row}>
             <Text style={styles.text_meta}>到达底部啦</Text>
           </View>
         ))}
     </View>
   )
 }
+
+const footerStyles = StyleSheet.create({
+  container: {
+    minHeight: 60,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centerRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorWrap: {
+    width: '100%',
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  my4: {
+    marginVertical: 16,
+  },
+  retryRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  retryBtn: {
+    paddingHorizontal: 16,
+    height: 44,
+    width: 120,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  py4Row: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 16,
+  },
+})

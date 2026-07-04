@@ -563,8 +563,10 @@ export function ImageViewing({
           <View style={styles.defaultHeader}>
             <View></View>
             <Pressable
-              className='active:opacity-70'
-              style={styles.closeButton}
+              style={({ pressed }) => [
+                styles.closeButton,
+                pressed && styles.pressed,
+              ]}
               onPress={onRequestClose}
               hitSlop={12}
             >
@@ -689,4 +691,5 @@ const styles = StyleSheet.create({
   counter: { color: '#fff', fontSize: 16, fontWeight: '600' },
   closeText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   closeButton: { paddingHorizontal: 12, paddingVertical: 6 },
+  pressed: { opacity: 0.7 },
 })

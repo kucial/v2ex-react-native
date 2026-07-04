@@ -1,5 +1,11 @@
 import React, { useEffect, useRef } from 'react'
-import { ScrollView, Text, useWindowDimensions, View } from 'react-native'
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 
 import HtmlRender from '@/components/HtmlRender'
@@ -25,8 +31,10 @@ export default function FeedPanelSheet() {
       scrollable
       grabber={false}
     >
-      <ScrollView contentContainerClassName='px-4 pt-4 pb-safe'>
-        <View className='py-3 mb-3' style={styles.border_b_light}>
+      <ScrollView contentContainerStyle={sheetStyles.scrollContent}>
+        <View
+          style={[sheetStyles.titleWrap, styles.border_b_light]}
+        >
           <Text
             style={[styles.text_title, styles.text_lg, { fontWeight: 'bold' }]}
           >
@@ -39,3 +47,15 @@ export default function FeedPanelSheet() {
     </TrueSheet>
   )
 }
+
+const sheetStyles = StyleSheet.create({
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 34, // safe area bottom approximation
+  },
+  titleWrap: {
+    paddingVertical: 12,
+    marginBottom: 12,
+  },
+})

@@ -1,10 +1,9 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
-import { Animated, View } from 'react-native'
+import { Animated, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import AppSidebar from '../AppSidebar'
 import FloatingAudioButton from '../FloatingAudioButton'
@@ -83,12 +82,12 @@ export default function Layout(props: { children: ReactNode }) {
   return (
     <AppLayoutContext.Provider value={context}>
       <View
-        className={cn(
-          'flex-1 flex',
+        style={[
+          layoutStyles.container,
           padLayout.orientation === 'PORTRAIT'
-            ? 'flex-col'
-            : 'flex-row-reverse',
-        )}
+            ? layoutStyles.portrait
+            : layoutStyles.landscape,
+        ]}
       >
         <View
           style={[
@@ -143,3 +142,15 @@ export default function Layout(props: { children: ReactNode }) {
     </AppLayoutContext.Provider>
   )
 }
+
+const layoutStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  portrait: {
+    flexDirection: 'column',
+  },
+  landscape: {
+    flexDirection: 'row-reverse',
+  },
+})

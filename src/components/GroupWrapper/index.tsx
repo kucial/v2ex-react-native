@@ -1,30 +1,38 @@
 import type { ReactNode } from 'react'
 import type { ViewProps, ViewStyle } from 'react-native'
-import { View } from 'react-native'
-
-import { cn } from '@/lib/utils'
+import { StyleSheet, View } from 'react-native'
 
 const GroupWapper = (props: {
   className?: string
   children: ReactNode
   innerStyle?: ViewStyle | ViewStyle[]
-  style?: ViewStyle
+  style?: ViewStyle | ViewStyle[]
   pointerEvents?: ViewProps['pointerEvents']
 }) => {
   return (
     <View
-      className={cn('flex-1', props.className)}
-      style={props.style}
+      style={[groupStyles.outer, props.style]}
       pointerEvents={props.pointerEvents}
     >
       <View
-        className='flex-1 w-full rounded-lg overflow-hidden'
-        style={props.innerStyle}
+        style={[groupStyles.inner, props.innerStyle]}
       >
         {props.children}
       </View>
     </View>
   )
 }
+
+const groupStyles = StyleSheet.create({
+  outer: {
+    flex: 1,
+  },
+  inner: {
+    flex: 1,
+    width: '100%',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+})
 
 export default GroupWapper
