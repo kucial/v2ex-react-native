@@ -22,7 +22,6 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/types/global.d.ts",
-    "nativewind-env.d.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ]

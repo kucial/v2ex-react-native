@@ -1,6 +1,4 @@
 import 'react-native-reanimated'
-import '@/global.css'
-import '@/utils/app-css-interop'
 
 import { useEffect } from 'react'
 import { Linking } from 'react-native'
