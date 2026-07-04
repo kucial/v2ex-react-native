@@ -3,6 +3,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -22,7 +23,6 @@ import { useImgurService } from '@/containers/ImgurService'
 import { ImgurCredentials } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 import { IMGUR_CLIENT_ID } from '@/env'
-import { cn } from '@/lib/utils'
 
 export default function ImgurSettings() {
   const params = useLocalSearchParams()
@@ -61,20 +61,20 @@ export default function ImgurSettings() {
     return () => {
       subscription.remove()
     }
-  }, [autoBack])
+  }, [autoBack, alert, clientInfo.clientId, imgurService, router])
 
   return (
-    <View className='flex-1'>
+    <View style={imgurStyles.container}>
       <NavigationHeader canGoBack title={'Imgur 设置'} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className='flex-1'
+        style={imgurStyles.container}
       >
-        <MaxWidthWrapper className='flex-1'>
-          <View className='px-2 py-4 flex-1'>
-            <GroupWapper className='w-full'>
-              <View style={styles.layer1} className='p-4'>
-                <View className='items-center py-3'>
+        <MaxWidthWrapper style={imgurStyles.container}>
+          <View style={imgurStyles.innerCol}>
+            <GroupWapper style={imgurStyles.wFull}>
+              <View style={[styles.layer1, imgurStyles.p4]}>
+                <View style={imgurStyles.logoWrap}>
                   <ImgurLogo
                     style={{ width: 80, height: (80 / 220) * 79 }}
                     color={
@@ -88,14 +88,16 @@ export default function ImgurSettings() {
                   <View>
                     <View>
                       <Text
-                        className={cn('pl-2 pb-[2px]')}
-                        style={[styles.text, styles.text_sm]}
+                        style={[
+                          imgurStyles.labelText,
+                          styles.text,
+                          styles.text_sm,
+                        ]}
                       >
                         Client ID
                       </Text>
                       <View
-                        className='h-[44px] px-2 mb-2 rounded-md flex flex-row items-center'
-                        style={styles.layer2}
+                        style={[imgurStyles.boxRow, styles.layer2]}
                       >
                         <Text style={styles.text}>
                           {imgurService.credentials.client_id}
@@ -104,14 +106,16 @@ export default function ImgurSettings() {
                     </View>
                     <View>
                       <Text
-                        className={cn('pl-2 pb-[2px]')}
-                        style={[styles.text, styles.text_sm]}
+                        style={[
+                          imgurStyles.labelText,
+                          styles.text,
+                          styles.text_sm,
+                        ]}
                       >
                         Account Username
                       </Text>
                       <View
-                        className='h-[44px] px-2 mb-2 rounded-md flex flex-row items-center'
-                        style={styles.layer2}
+                        style={[imgurStyles.boxRow, styles.layer2]}
                       >
                         <Text style={styles.text}>
                           {imgurService.credentials.account_username}
@@ -120,24 +124,27 @@ export default function ImgurSettings() {
                     </View>
                     <View>
                       <Text
-                        className={cn('pl-2 pb-[2px]')}
-                        style={[styles.text, styles.text_sm]}
+                        style={[
+                          imgurStyles.labelText,
+                          styles.text,
+                          styles.text_sm,
+                        ]}
                       >
                         Access Token
                       </Text>
                       <TextInput
                         secureTextEntry
                         editable={false}
-                        className='h-[44px] px-2 mb-2 rounded-md flex flex-row items-center'
-                        style={[styles.text, styles.layer2]}
+                        style={[imgurStyles.boxRow, styles.text, styles.layer2]}
                         value={imgurService.credentials.access_token}
                       />
                     </View>
                     <Pressable
-                      className={cn(
-                        'h-[44px] rounded-md flex items-center justify-center active:opacity-60 mt-4 mb-4',
-                      )}
-                      style={styles.btn_primary__bg}
+                      style={({ pressed }) => [
+                        imgurStyles.btn,
+                        styles.btn_primary__bg,
+                        pressed && imgurStyles.pressed60,
+                      ]}
                       onPress={() => {
                         imgurService.updateCredentials()
                       }}
@@ -150,16 +157,17 @@ export default function ImgurSettings() {
                 ) : (
                   <View>
                     <View
-                      className='px-3 py-1 border-l-2'
-                      style={{
-                        borderColor: theme.colors.primary,
-                      }}
+                      style={[
+                        imgurStyles.noticeBox,
+                        {
+                          borderColor: theme.colors.primary,
+                        },
+                      ]}
                     >
-                      <Text className='leading-[20px]' style={styles.text_meta}>
+                      <Text style={[imgurStyles.leading20, styles.text_meta]}>
                         由于 Imgur 服务的资源限制，您可能需要在 imgur 上{' '}
                         <Text
-                          className='underline'
-                          style={styles.text_link}
+                          style={[imgurStyles.underline, styles.text_link]}
                           onPress={() => {
                             Linking.openURL(
                               'https://api.imgur.com/oauth2/addclient',
@@ -171,8 +179,11 @@ export default function ImgurSettings() {
                         ，并将 Authorization callback URL 设置为
                       </Text>
                       <Pressable
-                        className='h-[33px] mt-1 flex flex-row items-center px-1 rounded active:opacity-60'
-                        style={styles.layer2}
+                        style={({ pressed }) => [
+                          imgurStyles.urlBox,
+                          styles.layer2,
+                          pressed && imgurStyles.pressed60,
+                        ]}
                         onPress={async () => {
                           await Clipboard.setStringAsync(REDIRECT_URI)
                           alert.show({
@@ -184,18 +195,19 @@ export default function ImgurSettings() {
                         <Text style={styles.text}>{REDIRECT_URI}</Text>
                       </Pressable>
                     </View>
-                    <View className='mt-2'>
+                    <View style={imgurStyles.mt2}>
                       <Text
-                        className={cn('pl-2 pb-[2px]', {
-                          'opacity-0': !clientInfo.clientId,
-                        })}
-                        style={[styles.text, styles.text_sm]}
+                        style={[
+                          imgurStyles.labelText,
+                          !clientInfo.clientId && imgurStyles.opacity0,
+                          styles.text,
+                          styles.text_sm,
+                        ]}
                       >
                         clientId
                       </Text>
                       <TextInput
-                        className='h-[44px] px-2 mb-2 rounded-md'
-                        style={[styles.text, styles.layer2]}
+                        style={[imgurStyles.boxRow, styles.text, styles.layer2]}
                         selectionColor={theme.colors.primary}
                         placeholderTextColor={theme.colors.text_placeholder}
                         placeholder='Client Id'
@@ -212,10 +224,11 @@ export default function ImgurSettings() {
                       />
                     </View>
                     <Pressable
-                      className={cn(
-                        'h-[44px] rounded-md flex items-center justify-center active:opacity-60 mt-4 mb-4',
-                      )}
-                      style={styles.btn_primary__bg}
+                      style={({ pressed }) => [
+                        imgurStyles.btn,
+                        styles.btn_primary__bg,
+                        pressed && imgurStyles.pressed60,
+                      ]}
                       onPress={() => {
                         if (!clientInfo.clientId) {
                           return
@@ -239,3 +252,72 @@ export default function ImgurSettings() {
     </View>
   )
 }
+
+const imgurStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  innerCol: {
+    paddingHorizontal: 8,
+    paddingVertical: 16,
+    flex: 1,
+  },
+  wFull: {
+    width: '100%',
+  },
+  p4: {
+    padding: 16,
+  },
+  logoWrap: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  labelText: {
+    paddingLeft: 8,
+    paddingBottom: 2,
+  },
+  boxRow: {
+    height: 44,
+    paddingHorizontal: 8,
+    marginBottom: 8,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  btn: {
+    height: 44,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  noticeBox: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderLeftWidth: 2,
+  },
+  leading20: {
+    lineHeight: 20,
+  },
+  underline: {
+    textDecorationLine: 'underline',
+  },
+  urlBox: {
+    height: 33,
+    marginTop: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    borderRadius: 4,
+  },
+  mt2: {
+    marginTop: 8,
+  },
+  opacity0: {
+    opacity: 0,
+  },
+})

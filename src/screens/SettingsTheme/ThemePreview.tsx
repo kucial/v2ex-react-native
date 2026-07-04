@@ -4,6 +4,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   useWindowDimensions,
@@ -26,7 +27,6 @@ import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import * as themes from '@/containers/ThemeService/themes'
-import { cn } from '@/lib/utils'
 import NormalTopicRowDemo from '@/screens/SettingsPreference/NormalTopicRowDemo'
 
 import { html, topic } from './mock'
@@ -72,21 +72,20 @@ export default function ThemePreview(props: {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
+      style={previewStyles.flex1}
     >
       <ScrollView style={{ backgroundColor: theme.colors.background }}>
         <StatusBar style={props.colorScheme === 'dark' ? 'light' : 'dark'} />
         <MaxWidthWrapper>
-          <View className='flex flex-row px-3 py-3 items-center'>
-            <View className='flex-1'>
+          <View style={previewStyles.headerRow}>
+            <View style={previewStyles.flex1}>
               <Text
-                className='font-medium'
-                style={[styles.text, styles.text_base]}
+                style={[previewStyles.fontMedium, styles.text, styles.text_base]}
               >
                 外观预览
               </Text>
             </View>
-            <View className='w-[200] mr-1'>
+            <View style={previewStyles.controlWrap}>
               <SegmentedControl
                 values={options.map((o) => o.label)}
                 selectedIndex={options.findIndex(
@@ -101,14 +100,14 @@ export default function ThemePreview(props: {
               />
             </View>
           </View>
-          <View className={cn('pl-3')}>
-            <View className={cn('min-h-[44px] flex flex-row items-center')}>
-              <View className='flex-1'>
+          <View style={previewStyles.pl3}>
+            <View style={previewStyles.rowContent}>
+              <View style={previewStyles.flex1}>
                 <Text style={[styles.text, styles.text_base]}>
                   纯黑暗夜主题
                 </Text>
               </View>
-              <View className='mr-2 px-2'>
+              <View style={previewStyles.switchWrap}>
                 <MySwitch
                   value={props.pureDarkTheme}
                   onValueChange={(val) => props.setPureDarkTheme(val)}
@@ -117,7 +116,7 @@ export default function ThemePreview(props: {
             </View>
           </View>
 
-          <View className='flex flex-row flex-wrap px-2 pt-2'>
+          <View style={previewStyles.optionsGrid}>
             {Object.values(themes).map((item) => (
               <ThemeOption
                 data={item}
@@ -136,11 +135,10 @@ export default function ThemePreview(props: {
             ))}
           </View>
 
-          <View className='px-3 pt-3'>
+          <View style={previewStyles.fontSection}>
             <View>
               <Text
-                className='font-medium'
-                style={[styles.text, styles.text_base]}
+                style={[previewStyles.fontMedium, styles.text, styles.text_base]}
               >
                 字体大小
               </Text>
@@ -160,7 +158,7 @@ export default function ThemePreview(props: {
                   props.setFontScale(Number(value.toFixed(2)))
                 }
               />
-              <View className='flex flex-row justify-between items-center px-1'>
+              <View style={previewStyles.sliderLabels}>
                 <View>
                   <Text style={[styles.text_desc, styles.text_xs]}>小</Text>
                 </View>
@@ -172,11 +170,11 @@ export default function ThemePreview(props: {
           </View>
 
           <SectionHeader title='骨架图' />
-          <GroupWapper className='mx-2' innerStyle={styles.layer1}>
-            <View className='p-3'>
-              <View className='flex flex-row mb-1'>
-                <Box className='w-[24] h-[24] rounded' />
-                <View className='flex-1 pl-1'>
+          <GroupWapper style={previewStyles.mx2} innerStyle={styles.layer1}>
+            <View style={previewStyles.p3}>
+              <View style={previewStyles.skeletonRow}>
+                <Box style={previewStyles.box24} />
+                <View style={previewStyles.skeletonTextWrap}>
                   <InlineText style={styles.text_xs} width={120} />
                 </View>
               </View>
@@ -185,7 +183,7 @@ export default function ThemePreview(props: {
           </GroupWapper>
 
           <SectionHeader title='列表项' />
-          <GroupWapper className='mx-2' innerStyle={styles.layer1}>
+          <GroupWapper style={previewStyles.mx2} innerStyle={styles.layer1}>
             <NormalTopicRowDemo
               data={topic}
               showAvatar
@@ -194,8 +192,8 @@ export default function ThemePreview(props: {
             />
           </GroupWapper>
           <SectionHeader title='表单' />
-          <GroupWapper className='mx-2' innerStyle={styles.overlay}>
-            <View className='px-2 py-4 gap-4'>
+          <GroupWapper style={previewStyles.mx2} innerStyle={styles.overlay}>
+            <View style={previewStyles.formButtons}>
               <Button
                 size='md'
                 variant='primary'
@@ -231,10 +229,9 @@ export default function ThemePreview(props: {
               detents={[0.5, 0.75]}
               backgroundColor={styles.overlay.backgroundColor}
             >
-              <View className='p-4'>
+              <View style={previewStyles.p4}>
                 <TextInput
-                  className='h-[44px] px-2 my-2 rounded-md'
-                  style={[styles.text, styles.overlay_input__bg]}
+                  style={[previewStyles.input, styles.text, styles.overlay_input__bg]}
                   selectionColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.text_placeholder}
                   placeholder='用户名'
@@ -243,8 +240,7 @@ export default function ThemePreview(props: {
                   autoCapitalize='none'
                 />
                 <TextInput
-                  className='h-[44px] px-2 my-2 rounded-md'
-                  style={[styles.text, styles.overlay_input__bg]}
+                  style={[previewStyles.input, styles.text, styles.overlay_input__bg]}
                   selectionColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.text_placeholder}
                   placeholder='密码'
@@ -253,11 +249,11 @@ export default function ThemePreview(props: {
                   autoCapitalize='none'
                 />
                 <Pressable
-                  className={cn(
-                    'h-[44px] rounded-md flex items-center justify-center my-4',
-                    'active:opacity-60',
-                  )}
-                  style={styles.btn_primary__bg}
+                  style={({ pressed }) => [
+                    previewStyles.confirmBtn,
+                    styles.btn_primary__bg,
+                    pressed && previewStyles.pressed60,
+                  ]}
                   onPress={(e) => {
                     sheetRef.current?.dismiss()
                   }}
@@ -270,8 +266,8 @@ export default function ThemePreview(props: {
             </TrueSheet>
           </GroupWapper>
           <SectionHeader title='消息提示' />
-          <View className='flex flex-row gap-2 px-2'>
-            <View className='flex-1'>
+          <View style={previewStyles.alertButtons}>
+            <View style={previewStyles.flex1}>
               <Button
                 onPress={() => {
                   alert.show({
@@ -284,7 +280,7 @@ export default function ThemePreview(props: {
                 label='success'
               ></Button>
             </View>
-            <View className='flex-1'>
+            <View style={previewStyles.flex1}>
               <Button
                 onPress={() => {
                   alert.show({
@@ -297,7 +293,7 @@ export default function ThemePreview(props: {
                 label='warning'
               ></Button>
             </View>
-            <View className='flex-1'>
+            <View style={previewStyles.flex1}>
               <Button
                 onPress={() => {
                   alert.show({
@@ -310,7 +306,7 @@ export default function ThemePreview(props: {
                 label='error'
               ></Button>
             </View>
-            <View className='flex-1'>
+            <View style={previewStyles.flex1}>
               <Button
                 onPress={() => {
                   alert.show({
@@ -323,7 +319,7 @@ export default function ThemePreview(props: {
                 label='info'
               ></Button>
             </View>
-            <View className='flex-1'>
+            <View style={previewStyles.flex1}>
               <Button
                 onPress={() => {
                   alert.show({
@@ -340,8 +336,8 @@ export default function ThemePreview(props: {
           </View>
 
           <SectionHeader title='富文本' />
-          <GroupWapper className='mx-2' innerStyle={[styles.layer1]}>
-            <View className='px-2'>
+          <GroupWapper style={previewStyles.mx2} innerStyle={[styles.layer1]}>
+            <View style={previewStyles.px2}>
               <HtmlRender
                 key={`${props.theme}-${props.colorScheme}-${props.fontScale}`}
                 contentWidth={CONTAINER_WIDTH - 32}
@@ -354,8 +350,8 @@ export default function ThemePreview(props: {
           </GroupWapper>
 
           <SectionHeader title='色板' />
-          <GroupWapper className='mx-2' innerStyle={[styles.layer1]}>
-            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+          <GroupWapper style={previewStyles.mx2} innerStyle={[styles.layer1]}>
+            <View style={previewStyles.swatchRow}>
               <Swatch name='primary' />
               <Swatch name='background' />
               <Swatch name='card' />
@@ -363,15 +359,15 @@ export default function ThemePreview(props: {
               <Swatch name='border' />
               <Swatch name='notification' />
             </View>
-            <View className='flex-1' style={styles.border_b} />
-            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+            <View style={[previewStyles.flex1, styles.border_b]} />
+            <View style={previewStyles.swatchRow}>
               <Swatch name='success' />
               <Swatch name='danger' />
               <Swatch name='warning' />
               <Swatch name='info' />
             </View>
-            <View className='flex-1' style={styles.border_b} />
-            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+            <View style={[previewStyles.flex1, styles.border_b]} />
+            <View style={previewStyles.swatchRow}>
               <Swatch name='text_title' />
               <Swatch name='text' />
               <Swatch name='text_desc' />
@@ -379,8 +375,8 @@ export default function ThemePreview(props: {
               <Swatch name='text_placeholder' />
               <Swatch name='text_link' />
             </View>
-            <View className='flex-1' style={styles.border_b} />
-            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+            <View style={[previewStyles.flex1, styles.border_b]} />
+            <View style={previewStyles.swatchRow}>
               <Swatch name='bg_overlay' />
               <Swatch name='bg_layer1' />
               <Swatch name='bg_layer2' />
@@ -390,12 +386,12 @@ export default function ThemePreview(props: {
               <Swatch name='bg_danger_mask' />
               <Swatch name='bg_highlight_mask' />
             </View>
-            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+            <View style={previewStyles.swatchRow}>
               <Swatch name='border' />
               <Swatch name='border_light' />
             </View>
-            <View className='flex-1' style={styles.border_b} />
-            <View className='pt-4 pl-4 flex flex-row flex-wrap'>
+            <View style={[previewStyles.flex1, styles.border_b]} />
+            <View style={previewStyles.swatchRow}>
               <Swatch name='badge_bg' />
               <Swatch name='badge_border' />
               <Swatch name='bts_handle_bg' />
@@ -413,3 +409,107 @@ export default function ThemePreview(props: {
     </KeyboardAvoidingView>
   )
 }
+
+const previewStyles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  fontMedium: {
+    fontWeight: '500',
+  },
+  controlWrap: {
+    width: 200,
+    marginRight: 4,
+  },
+  pl3: {
+    paddingLeft: 12,
+  },
+  rowContent: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  switchWrap: {
+    marginRight: 8,
+    paddingHorizontal: 8,
+  },
+  optionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 8,
+    paddingTop: 8,
+  },
+  fontSection: {
+    paddingHorizontal: 12,
+    paddingTop: 12,
+  },
+  sliderLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  mx2: {
+    marginHorizontal: 8,
+  },
+  p3: {
+    padding: 12,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    marginBottom: 4,
+  },
+  box24: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  skeletonTextWrap: {
+    flex: 1,
+    paddingLeft: 4,
+  },
+  formButtons: {
+    paddingHorizontal: 8,
+    paddingVertical: 16,
+    gap: 16,
+  },
+  p4: {
+    padding: 16,
+  },
+  input: {
+    height: 44,
+    paddingHorizontal: 8,
+    marginVertical: 8,
+    borderRadius: 6,
+  },
+  confirmBtn: {
+    height: 44,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 16,
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  alertButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingHorizontal: 8,
+  },
+  px2: {
+    paddingHorizontal: 8,
+  },
+  swatchRow: {
+    paddingTop: 16,
+    paddingLeft: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+})

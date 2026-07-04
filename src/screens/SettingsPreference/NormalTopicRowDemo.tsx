@@ -1,10 +1,9 @@
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 
 import TriangleCorner from '@/components/TriangleCorner'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import { DemoRowProps } from './types'
 
@@ -15,30 +14,31 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
   const { styles } = useTheme()
   return (
     <View
-      className={cn('flex flex-row items-center')}
-      style={[styles.layer1, !isLast && styles.border_b_light]}
+      style={[normalDemoStyles.row, styles.layer1, !isLast && styles.border_b_light]}
     >
       {showAvatar ? (
-        <View className='px-2 py-2 self-start'>
+        <View style={normalDemoStyles.avatarWrap}>
           <Image
             recyclingKey={`user-avatar:${member.username}`}
             source={{
               uri: member.avatar_normal,
             }}
-            className='w-[24px] h-[24px] rounded'
+            style={normalDemoStyles.avatar}
           />
         </View>
       ) : (
-        <View className='pl-3'></View>
+        <View style={normalDemoStyles.noAvatarPlaceholder}></View>
       )}
       <View
-        className={cn('flex-1 py-2', viewedStatus === 'viewed' && 'opacity-70')}
+        style={[
+          normalDemoStyles.contentCol,
+          viewedStatus === 'viewed' && normalDemoStyles.opacity70,
+        ]}
       >
-        <View className='flex flex-row items-center pt-[2px] space-x-1 mb-1'>
+        <View style={normalDemoStyles.metaRow}>
           <View>
             <View
-              className='py-[2px] px-[6px] rounded active:opacity-60'
-              style={styles.layer2}
+              style={[normalDemoStyles.nodeTag, styles.layer2]}
             >
               <Text style={[styles.text_desc, styles.text_xs]}>
                 {node.title}
@@ -46,10 +46,13 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
             </View>
           </View>
           <Text style={styles.text_meta}>·</Text>
-          <View className='relative top-[1px]'>
+          <View style={normalDemoStyles.usernameWrap}>
             <Text
-              className='font-[600]'
-              style={[styles.text_desc, styles.text_xs]}
+              style={[
+                normalDemoStyles.font600,
+                styles.text_desc,
+                styles.text_xs,
+              ]}
             >
               {member.username}
             </Text>
@@ -57,33 +60,40 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
         </View>
         <View>
           <Text
-            className={cn({
-              'font-[500]': props.titleStyle === 'emphasized',
-            })}
-            style={[styles.text, styles.text_base]}
+            style={[
+              props.titleStyle === 'emphasized' && normalDemoStyles.font500,
+              styles.text,
+              styles.text_base,
+            ]}
           >
             {title}
           </Text>
-          <View className='mt-2 flex flex-row items-center'>
+          <View style={normalDemoStyles.footerRow}>
             <Text style={[styles.text_meta, styles.text_xs]}>
               {last_reply_time}
             </Text>
             {showLastReplyMember && (
               <>
                 <Text
-                  className='px-2'
-                  style={[styles.text_meta, styles.text_xs]}
+                  style={[
+                    normalDemoStyles.px2,
+                    styles.text_meta,
+                    styles.text_xs,
+                  ]}
                 >
                   •
                 </Text>
-                <View className='flex flex-row items-center'>
+                <View style={normalDemoStyles.replyMemberRow}>
                   <Text style={[styles.text_meta, styles.text_xs]}>
                     最后回复来自
                   </Text>
-                  <View className='px-1 active:opacity-60'>
+                  <View style={normalDemoStyles.replyByWrap}>
                     <Text
-                      className='font-[600]'
-                      style={[styles.text_desc, styles.text_xs]}
+                      style={[
+                        normalDemoStyles.font600,
+                        styles.text_desc,
+                        styles.text_xs,
+                      ]}
                     >
                       {last_reply_by}
                     </Text>
@@ -94,9 +104,9 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
           </View>
         </View>
       </View>
-      <View className='w-[80px] flex flex-row justify-end pr-4'>
+      <View style={normalDemoStyles.repliesCol}>
         {!!replies && (
-          <View className='rounded-full px-2' style={styles.tag__bg}>
+          <View style={[normalDemoStyles.tagBg, styles.tag__bg]}>
             <Text style={styles.tag__text}>{replies}</Text>
           </View>
         )}
@@ -116,5 +126,79 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
     </View>
   )
 }
+
+const normalDemoStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarWrap: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
+  avatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  noAvatarPlaceholder: {
+    paddingLeft: 12,
+  },
+  contentCol: {
+    flex: 1,
+    paddingVertical: 8,
+  },
+  opacity70: {
+    opacity: 0.7,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 2,
+    columnGap: 4,
+    marginBottom: 4,
+  },
+  nodeTag: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  usernameWrap: {
+    position: 'relative',
+    top: 1,
+  },
+  font600: {
+    fontWeight: '600',
+  },
+  font500: {
+    fontWeight: '500',
+  },
+  footerRow: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  px2: {
+    paddingHorizontal: 8,
+  },
+  replyMemberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  replyByWrap: {
+    paddingHorizontal: 4,
+  },
+  repliesCol: {
+    width: 80,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingRight: 16,
+  },
+  tagBg: {
+    borderRadius: 9999,
+    paddingHorizontal: 8,
+  },
+})
 
 export default NormalTopicRowDemo

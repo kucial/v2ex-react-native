@@ -6,6 +6,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -21,7 +22,6 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { fetchLoginForm, loginWithPassword } from '@/utils/v2ex-client'
 
 type PasswordSigninProps = {
@@ -88,7 +88,7 @@ function PasswordSignin(props: PasswordSigninProps) {
         setIsSubmitting(false)
       }
     },
-    [formQuery],
+    [formQuery, isSubmitting, props],
   )
 
   const refreshCaptcha = useCallback(async () => {
@@ -102,11 +102,16 @@ function PasswordSignin(props: PasswordSigninProps) {
   const values = watch()
   return (
     <View
-      className='flex-1'
-      style={Platform.OS === 'android' ? styles.layer1 : styles.overlay}
+      style={[
+        pwdSignStyles.container,
+        Platform.OS === 'android' ? styles.layer1 : styles.overlay,
+      ]}
     >
       <View
-        className={cn('pl-1 pt-1 z-10', Platform.OS === 'android' && 'pt-safe')}
+        style={[
+          pwdSignStyles.backWrap,
+          Platform.OS === 'android' && pwdSignStyles.ptSafe,
+        ]}
       >
         <BackButton
           tintColor={theme.colors.text}
@@ -115,27 +120,29 @@ function PasswordSignin(props: PasswordSigninProps) {
           }}
         />
       </View>
-      <ScrollView className='flex-1 w-full '>
+      <ScrollView style={pwdSignStyles.scrollView}>
         <MaxWidthWrapper>
-          <View className='flex flex-row justify-center mt-1'>
+          <View style={pwdSignStyles.spacer}>
             {/* <View style={{ width: 94, height: 20 }}></View> */}
           </View>
           <Pressable
-            className='w-full'
+            style={pwdSignStyles.pressableWidth}
             onPress={() => {
               Keyboard.dismiss()
             }}
           >
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              className='flex-1 w-full items-center'
+              style={pwdSignStyles.kav}
             >
-              <View className='py-4 px-8 w-full'>
+              <View style={pwdSignStyles.formContainer}>
                 <Text
-                  className={cn('pl-2 pb-[2px]', {
-                    'opacity-0': !values.username,
-                  })}
-                  style={[styles.text, styles.text_xs]}
+                  style={[
+                    pwdSignStyles.label,
+                    !values.username && pwdSignStyles.opacity0,
+                    styles.text,
+                    styles.text_xs,
+                  ]}
                 >
                   用户名
                 </Text>
@@ -143,8 +150,8 @@ function PasswordSignin(props: PasswordSigninProps) {
                   control={control}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className='h-[44px] px-2 mb-2 rounded-md'
                       style={[
+                        pwdSignStyles.input,
                         styles.text,
                         Platform.OS === 'android'
                           ? styles.input__bg
@@ -166,10 +173,12 @@ function PasswordSignin(props: PasswordSigninProps) {
                   rules={{ required: true }}
                 />
                 <Text
-                  className={cn('pl-2 pb-[2px]', {
-                    'opacity-0': !values.password,
-                  })}
-                  style={[styles.text, styles.text_xs]}
+                  style={[
+                    pwdSignStyles.label,
+                    !values.password && pwdSignStyles.opacity0,
+                    styles.text,
+                    styles.text_xs,
+                  ]}
                 >
                   密码
                 </Text>
@@ -177,8 +186,8 @@ function PasswordSignin(props: PasswordSigninProps) {
                   control={control}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className='h-[44px] px-2 mb-2 rounded-md'
                       style={[
+                        pwdSignStyles.input,
                         styles.text,
                         Platform.OS === 'android'
                           ? styles.input__bg
@@ -201,34 +210,34 @@ function PasswordSignin(props: PasswordSigninProps) {
                 {formQuery.data?.captcha ? (
                   <Pressable
                     onPress={refreshCaptcha}
-                    className='active:opacity-60 mb-2 mt-1'
-                    style={{
-                      width: 320,
-                      height: 80,
-                    }}
+                    style={({ pressed }) => [
+                      pwdSignStyles.captchaPressable,
+                      pressed && pwdSignStyles.pressed60,
+                    ]}
                     disabled={formQuery.isLoading}
                   >
                     <Image
                       source={{ uri: formQuery.data.captcha }}
-                      className='rounded-md'
-                      style={{
-                        width: 320,
-                        height: 80,
-                        opacity: formQuery.isLoading ? 0.5 : 1,
-                      }}
+                      style={[
+                        pwdSignStyles.captchaImg,
+                        {
+                          opacity: formQuery.isLoading ? 0.5 : 1,
+                        },
+                      ]}
                     />
                   </Pressable>
                 ) : (
                   <View
-                    style={[{ width: 320, height: 80 }, styles.layer1]}
-                    className='rounded-md mb-2 mt-1'
+                    style={[pwdSignStyles.captchaPlaceholder, styles.layer1]}
                   />
                 )}
                 <Text
-                  className={cn('pl-2 pb-[2px]', {
-                    'opacity-0': !values.captcha,
-                  })}
-                  style={[styles.text, styles.text_xs]}
+                  style={[
+                    pwdSignStyles.label,
+                    !values.captcha && pwdSignStyles.opacity0,
+                    styles.text,
+                    styles.text_xs,
+                  ]}
                 >
                   验证码
                 </Text>
@@ -236,8 +245,8 @@ function PasswordSignin(props: PasswordSigninProps) {
                   control={control}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className='h-[44px] px-2 mb-2 rounded-md'
                       style={[
+                        pwdSignStyles.input,
                         styles.text,
                         Platform.OS === 'android'
                           ? styles.input__bg
@@ -264,7 +273,7 @@ function PasswordSignin(props: PasswordSigninProps) {
                 />
 
                 <Button
-                  className='mt-4'
+                  style={pwdSignStyles.loginBtn}
                   size='md'
                   variant='primary'
                   disabled={!formQuery.data || isSubmitting}
@@ -279,14 +288,14 @@ function PasswordSignin(props: PasswordSigninProps) {
                 />
 
                 {!formQuery.isLoading && formQuery.error && (
-                  <View className='mt-4'>
+                  <View style={pwdSignStyles.errWrap}>
                     <Text style={styles.text_danger}>
                       {formQuery.error.message}
                     </Text>
                   </View>
                 )}
                 {error && (
-                  <View className='mt-4'>
+                  <View style={pwdSignStyles.errWrap}>
                     {error.map((str) => (
                       <View key={str}>
                         <Text style={styles.text_danger}>{str}</Text>
@@ -296,12 +305,15 @@ function PasswordSignin(props: PasswordSigninProps) {
                 )}
 
                 {googleSigninEnabled && (
-                  <View className='mt-8'>
+                  <View style={pwdSignStyles.googleSection}>
                     <Pressable
-                      className='h-[44px] flex-row rounded-md items-center justify-center active:opacity-70'
+                      style={({ pressed }) => [
+                        pwdSignStyles.googleBtn,
+                        pressed && pwdSignStyles.pressed70,
+                      ]}
                       onPress={props.onSelectGoogleSignin}
                     >
-                      <View className='mr-2'>
+                      <View style={pwdSignStyles.googleIconWrap}>
                         <GoogleIcon />
                       </View>
                       <View>
@@ -310,19 +322,6 @@ function PasswordSignin(props: PasswordSigninProps) {
                     </Pressable>
                   </View>
                 )}
-
-                {/* <View className="h-[1px] w-full bg-neutral-100 mt-8 mb-4"></View>
-              <Pressable
-                className="h-[44px] rounded-md flex items-center justify-center active:bg-neutral-200 active:opacity-60"
-                onPress={() => {
-                  console.log('pressed.....')
-
-                  navigation.push('browser', {
-                    url: 'https://www.v2ex.com/signup'
-                  })
-                }}>
-                <Text>注册</Text>
-              </Pressable> */}
               </View>
             </KeyboardAvoidingView>
           </Pressable>
@@ -331,5 +330,97 @@ function PasswordSignin(props: PasswordSigninProps) {
     </View>
   )
 }
+
+const pwdSignStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  backWrap: {
+    paddingLeft: 4,
+    paddingTop: 4,
+    zIndex: 10,
+  },
+  ptSafe: {
+    paddingTop: 32,
+  },
+  scrollView: {
+    flex: 1,
+    width: '100%',
+  },
+  spacer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 4,
+  },
+  pressableWidth: {
+    width: '100%',
+  },
+  kav: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+  },
+  formContainer: {
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    width: '100%',
+  },
+  label: {
+    paddingLeft: 8,
+    paddingBottom: 2,
+  },
+  opacity0: {
+    opacity: 0,
+  },
+  input: {
+    height: 44,
+    paddingHorizontal: 8,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  captchaPressable: {
+    marginBottom: 8,
+    marginTop: 4,
+    width: 320,
+    height: 80,
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  captchaImg: {
+    borderRadius: 6,
+    width: 320,
+    height: 80,
+  },
+  captchaPlaceholder: {
+    width: 320,
+    height: 80,
+    borderRadius: 6,
+    marginBottom: 8,
+    marginTop: 4,
+  },
+  loginBtn: {
+    marginTop: 16,
+  },
+  errWrap: {
+    marginTop: 16,
+  },
+  googleSection: {
+    marginTop: 32,
+  },
+  googleBtn: {
+    height: 44,
+    flexDirection: 'row',
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed70: {
+    opacity: 0.7,
+  },
+  googleIconWrap: {
+    marginRight: 8,
+  },
+})
 
 export default memo(PasswordSignin)

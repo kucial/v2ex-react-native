@@ -10,6 +10,7 @@ import {
   Alert,
   GestureResponderEvent,
   Pressable,
+  StyleSheet,
   Text,
   View,
   ViewStyle,
@@ -39,7 +40,6 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useTabOptions } from '@/hooks'
-import { cn } from '@/lib/utils'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import AddTabPanelSheet, { AddTabPanelSheetRef } from './AddTabPanelSheet'
@@ -57,29 +57,29 @@ const LineItem = (props: {
   const { styles } = useTheme()
   return (
     <Pressable
-      className={cn('min-h-[50px] flex flex-row items-center pl-4')}
-      style={[
+      style={({ pressed }) => [
+        homeTabsStyles.lineItem,
         styles.layer1,
-        props.isFirst && { borderTopLeftRadius: 4, borderTopRightRadius: 4 },
-        props.isLast && {
-          borderBottomLeftRadius: 4,
-          borderBottomRightRadius: 4,
-        },
+        props.isFirst && homeTabsStyles.firstRadius,
+        props.isLast && homeTabsStyles.lastRadius,
         props.style,
+        pressed && homeTabsStyles.pressed,
       ]}
       disabled={props.disabled}
       onLongPress={props.onLongPress}
     >
       <View
-        className={cn('h-full flex-1 flex flex-row')}
-        style={!props.isLast && [styles.border_b]}
+        style={[
+          homeTabsStyles.lineContent,
+          !props.isLast && styles.border_b,
+        ]}
       >
-        <View className='flex-1 flex flex-row items-center'>
-          {props.icon && <View className='mr-3'>{props.icon}</View>}
+        <View style={homeTabsStyles.lineLeft}>
+          {props.icon && <View style={homeTabsStyles.mr3}>{props.icon}</View>}
           <Text style={[styles.text, styles.text_base]}>{props.title}</Text>
         </View>
         {props.extra && (
-          <View className='h-full flex flex-row items-center pr-3'>
+          <View style={homeTabsStyles.lineExtra}>
             {props.extra}
           </View>
         )}
@@ -129,7 +129,7 @@ export default function HomeTabs() {
       }
       return (
         <ScaleDecorator>
-          <MaxWidthWrapper className='px-2'>
+          <MaxWidthWrapper style={homeTabsStyles.px2}>
             <LineItem
               onLongPress={drag}
               disabled={isActive}
@@ -142,7 +142,10 @@ export default function HomeTabs() {
               }}
               extra={
                 <Pressable
-                  className='px-2 py-2 rounded-md active:opacity-50 active:bg-red-100 dark:active:bg-rose-100'
+                  style={({ pressed }) => [
+                    homeTabsStyles.actionBtn,
+                    pressed && homeTabsStyles.pressed50,
+                  ]}
                   onPress={() => {
                     setTabs((prev) => {
                       return [
@@ -162,7 +165,7 @@ export default function HomeTabs() {
         </ScaleDecorator>
       )
     },
-    [enabledTabs, setTabs],
+    [enabledTabs, setTabs, theme],
   )
 
   const renderDisabledItem = useCallback(
@@ -175,7 +178,10 @@ export default function HomeTabs() {
         icon = <HomeModernIcon size={18} color={tintColor} />
       }
       return (
-        <MaxWidthWrapper key={`${item.type}-${item.name}`} className='px-2'>
+        <MaxWidthWrapper
+          key={`${item.type}-${item.name}`}
+          style={homeTabsStyles.px2}
+        >
           <LineItem
             title={item.label}
             icon={icon}
@@ -183,7 +189,10 @@ export default function HomeTabs() {
             isLast={index === disabledTabs.length - 1}
             extra={
               <Pressable
-                className='px-2 py-2 rounded-md active:opacity-50 active:bg-green-100 dark:active:bg-emerald-100'
+                style={({ pressed }) => [
+                  homeTabsStyles.actionBtn,
+                  pressed && homeTabsStyles.pressed50,
+                ]}
                 onPress={() => {
                   setTabs((prev) => {
                     return [
@@ -226,13 +235,16 @@ export default function HomeTabs() {
   }, [navigation, tabs, homeTabs, enabledTabs, update])
 
   return (
-    <View className='flex-1'>
+    <View style={homeTabsStyles.container}>
       <NavigationHeader
         canGoBack
         title='首页标签设置'
         headerRight={() => (
           <Pressable
-            className='h-[44px] w-[44px] items-center justify-center active:opacity-60'
+            style={({ pressed }) => [
+              homeTabsStyles.headerRightBtn,
+              pressed && homeTabsStyles.pressed60,
+            ]}
             onPress={() => {
               // actionsheet
               showActionSheetWithOptions(
@@ -284,22 +296,21 @@ export default function HomeTabs() {
         activationDistance={10}
         initialNumToRender={20}
         ListHeaderComponent={
-          <MaxWidthWrapper className='px-2'>
+          <MaxWidthWrapper style={homeTabsStyles.px2}>
             <SectionHeader title='已启用' desc='长按拖放可调整顺序' />
           </MaxWidthWrapper>
         }
         ListFooterComponent={
           <>
-            <MaxWidthWrapper className='px-2'>
+            <MaxWidthWrapper style={homeTabsStyles.px2}>
               <SectionHeader title='已停用' />
             </MaxWidthWrapper>
             {disabledTabs.length ? (
               <View>{disabledTabs.map(renderDisabledItem)}</View>
             ) : (
-              <MaxWidthWrapper className='px-2'>
+              <MaxWidthWrapper style={homeTabsStyles.px2}>
                 <View
-                  className='py-4 px-3'
-                  style={[styles.layer1, { borderRadius: 4 }]}
+                  style={[homeTabsStyles.emptyBox, styles.layer1]}
                 >
                   <Text style={styles.text}>（空）</Text>
                 </View>
@@ -314,12 +325,12 @@ export default function HomeTabs() {
         renderItem={renderItem}
       />
       <View
-        className='absolute w-full bottom-0 flex flex-row justify-center pb-safe'
+        style={homeTabsStyles.bottomFloat}
         pointerEvents='box-none'
       >
         <Button
           variant='primary'
-          className={cn('mb-3', 'w-[62px] h-[62px] rounded-full shadow-sm')}
+          style={homeTabsStyles.addBtn}
           radius={31}
           onPress={() => {
             sheetRef.current?.present()
@@ -332,3 +343,84 @@ export default function HomeTabs() {
     </View>
   )
 }
+
+const homeTabsStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  lineItem: {
+    minHeight: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+  },
+  firstRadius: {
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+  },
+  lastRadius: {
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  lineContent: {
+    height: '100%',
+    flex: 1,
+    flexDirection: 'row',
+  },
+  lineLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mr3: {
+    marginRight: 12,
+  },
+  lineExtra: {
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 12,
+  },
+  px2: {
+    paddingHorizontal: 8,
+  },
+  actionBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  pressed50: {
+    opacity: 0.5,
+  },
+  headerRightBtn: {
+    height: 44,
+    width: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  emptyBox: {
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  bottomFloat: {
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingBottom: 20,
+  },
+  addBtn: {
+    marginBottom: 12,
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+  },
+})

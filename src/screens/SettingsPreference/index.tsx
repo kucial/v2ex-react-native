@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import RNRestart from 'react-native-restart'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { EventArg } from '@react-navigation/native'
@@ -18,7 +18,6 @@ import {
   SearchProvider,
 } from '@/containers/AppSettingsService/types'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import { topic } from './mock'
 import NormalTopicRowDemo from './NormalTopicRowDemo'
@@ -89,7 +88,7 @@ export default function PreferenceSettings() {
       },
     )
     return unsubscribe
-  }, [navigation, data, state])
+  }, [navigation, data, state, update])
 
   const timerRef = useRef(null)
   useEffect(() => {
@@ -99,13 +98,13 @@ export default function PreferenceSettings() {
   }, [])
 
   return (
-    <View className='flex-1'>
+    <View style={prefStyles.container}>
       <NavigationHeader canGoBack title='功能设置' />
-      <ScrollView className='flex-1 px-2'>
+      <ScrollView style={prefStyles.scrollView}>
         <MaxWidthWrapper>
           <SectionHeader title='显示' />
           <GroupWapper>
-            <View className=''>
+            <View>
               {state.feedLayout === 'normal' && (
                 <NormalTopicRowDemo
                   data={topic}
@@ -126,15 +125,14 @@ export default function PreferenceSettings() {
               )}
             </View>
 
-            <View className={cn('pl-4')} style={styles.layer1}>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
               <View
-                className={cn('min-h-[52px] flex flex-row items-center')}
-                style={[styles.border_b]}
+                style={[prefStyles.rowContent, styles.border_b]}
               >
-                <View className='flex-1'>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>列表布局</Text>
                 </View>
-                <View className='w-[140] mr-1 px-2'>
+                <View style={prefStyles.controlWrap}>
                   <SegmentedControl
                     values={feedLayoutOptions.map((o) => o.label)}
                     selectedIndex={feedLayoutOptions.findIndex(
@@ -155,15 +153,14 @@ export default function PreferenceSettings() {
                 </View>
               </View>
             </View>
-            <View className={cn('pl-4')} style={styles.layer1}>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
               <View
-                className={cn('min-h-[52px] flex flex-row items-center')}
-                style={[styles.border_b]}
+                style={[prefStyles.rowContent, styles.border_b]}
               >
-                <View className='flex-1'>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>标题样式</Text>
                 </View>
-                <View className='w-[140] mr-1 px-2'>
+                <View style={prefStyles.controlWrap}>
                   <SegmentedControl
                     values={titleStyleOptions.map((o) => o.label)}
                     selectedIndex={titleStyleOptions.findIndex(
@@ -184,15 +181,14 @@ export default function PreferenceSettings() {
                 </View>
               </View>
             </View>
-            <View className={cn('pl-4')} style={styles.layer1}>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
               <View
-                className={cn('min-h-[52px] flex flex-row items-center')}
-                style={styles.border_b}
+                style={[prefStyles.rowContent, styles.border_b]}
               >
-                <View className='flex-1'>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>显示头像</Text>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <MySwitch
                     value={state.feedShowAvatar}
                     onValueChange={(val) =>
@@ -205,17 +201,16 @@ export default function PreferenceSettings() {
                 </View>
               </View>
             </View>
-            <View className={cn('pl-4')} style={styles.layer1}>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
               <View
-                className={cn('min-h-[52px] flex flex-row items-center')}
-                style={styles.border_b}
+                style={[prefStyles.rowContent, styles.border_b]}
               >
-                <View className='flex-1'>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>
                     显示最后回复用户
                   </Text>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <MySwitch
                     value={state.feedShowLastReplyMember}
                     onValueChange={(val) =>
@@ -228,15 +223,14 @@ export default function PreferenceSettings() {
                 </View>
               </View>
             </View>
-            <View className={cn('pl-4')} style={styles.layer1}>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
               <View
-                className={cn('min-h-[52px] flex flex-row items-center')}
-                style={styles.border_b}
+                style={[prefStyles.rowContent, styles.border_b]}
               >
-                <View className='flex-1'>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>已读提示</Text>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <MySwitch
                     value={state.showHasViewed}
                     onValueChange={(val) => {
@@ -258,14 +252,14 @@ export default function PreferenceSettings() {
                 </View>
               </View>
             </View>
-            <View className={cn('pl-4')} style={styles.layer1}>
-              <View className={cn('min-h-[52px] flex flex-row items-center')}>
-                <View className='flex-1'>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
+              <View style={prefStyles.rowContent}>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>
                     帖子新回复提示
                   </Text>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <MySwitch
                     value={state.showHasNewReply}
                     onValueChange={(val) => {
@@ -292,17 +286,15 @@ export default function PreferenceSettings() {
           <GroupWapper>
             <View
               sentry-label='AutoRefrehLineItem'
-              className={cn('pl-4')}
-              style={styles.layer1}
+              style={[prefStyles.rowWrap, styles.layer1]}
             >
               <View
-                className={cn('min-h-[52px] flex flex-row items-center')}
-                style={styles.border_b}
+                style={[prefStyles.rowContent, styles.border_b]}
               >
-                <View className='flex-1'>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>自动刷新</Text>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <MySwitch
                     value={state.autoRefresh}
                     onValueChange={(val) =>
@@ -317,8 +309,11 @@ export default function PreferenceSettings() {
             </View>
 
             <Pressable
-              className={cn('pl-4', 'active:opacity-50')}
-              style={styles.layer1}
+              style={({ pressed }) => [
+                prefStyles.rowWrap,
+                styles.layer1,
+                pressed && prefStyles.pressed50,
+              ]}
               onPress={() => {
                 const index = refreshDurationOptions.findIndex(
                   (o) => o.value === state.autoRefreshDuration,
@@ -333,13 +328,12 @@ export default function PreferenceSettings() {
               }}
             >
               <View
-                className={cn('min-h-[52px] flex flex-row items-center')}
-                style={styles.border_b}
+                style={[prefStyles.rowContent, styles.border_b]}
               >
-                <View className='flex-1'>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>刷新间隔</Text>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <Text style={styles.text_desc}>
                     {state.autoRefreshDuration} 分钟
                   </Text>
@@ -348,14 +342,13 @@ export default function PreferenceSettings() {
             </Pressable>
             <View
               sentry-label='AutoRefrehLineItem'
-              className={cn('pl-4')}
-              style={styles.layer1}
+              style={[prefStyles.rowWrap, styles.layer1]}
             >
-              <View className={cn('min-h-[52px] flex flex-row items-center')}>
-                <View className='flex-1'>
+              <View style={prefStyles.rowContent}>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>震动反馈</Text>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <MySwitch
                     value={state.refreshHaptics}
                     onValueChange={(val) =>
@@ -371,15 +364,14 @@ export default function PreferenceSettings() {
           </GroupWapper>
           <SectionHeader title='其他' />
           <GroupWapper>
-            <View className={cn('pl-4')} style={styles.layer1}>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
               <View
-                className={cn('min-h-[52px] flex flex-row items-center')}
-                style={styles.border_b}
+                style={[prefStyles.rowContent, styles.border_b]}
               >
-                <View className='flex-1'>
+                <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>搜索服务</Text>
                 </View>
-                <View className='w-[140] mr-1 px-2'>
+                <View style={prefStyles.controlWrap}>
                   <SegmentedControl
                     values={searchProviderOptions.map((o) => o.label)}
                     selectedIndex={searchProviderOptions.findIndex(
@@ -401,8 +393,11 @@ export default function PreferenceSettings() {
               </View>
             </View>
             <Pressable
-              className={cn('pl-4', 'active:opacity-50')}
-              style={styles.layer1}
+              style={({ pressed }) => [
+                prefStyles.rowWrap,
+                styles.layer1,
+                pressed && prefStyles.pressed50,
+              ]}
               onPress={() => {
                 const index = historyRecordLimitOptions.findIndex((o) => {
                   return o.value === state.historyRecordLimit
@@ -415,18 +410,18 @@ export default function PreferenceSettings() {
                 }))
               }}
             >
-              <View className={cn('min-h-[52px] flex flex-row items-center')}>
-                <View className='flex-1 flex flex-row items-center'>
+              <View style={prefStyles.rowContent}>
+                <View style={prefStyles.titleRow}>
                   <Text style={[styles.text, styles.text_base]}>
                     本地历史保留
                   </Text>
-                  <View className='ml-1 mt-1'>
+                  <View style={prefStyles.descWrap}>
                     <Text style={[styles.text_desc, styles.text_xs]}>
                       自动清理过往记录
                     </Text>
                   </View>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <Text style={styles.text_desc}>
                     {
                       historyRecordLimitOptions.find(
@@ -439,21 +434,20 @@ export default function PreferenceSettings() {
             </Pressable>
             <View
               sentry-label='AutoRefrehLineItem'
-              className={cn('pl-4')}
-              style={styles.layer1}
+              style={[prefStyles.rowWrap, styles.layer1]}
             >
-              <View className={cn('min-h-[52px] flex flex-row items-center')}>
-                <View className='flex-1 flex flex-row items-center'>
+              <View style={prefStyles.rowContent}>
+                <View style={prefStyles.titleRow}>
                   <Text style={[styles.text, styles.text_base]}>
                     启用多用户回复
                   </Text>
-                  <View className='ml-1 mt-1'>
+                  <View style={prefStyles.descWrap}>
                     <Text style={[styles.text_desc, styles.text_xs]}>
                       一次回复多个用户
                     </Text>
                   </View>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <MySwitch
                     value={state.enableMultiMention}
                     onValueChange={(val) =>
@@ -469,19 +463,18 @@ export default function PreferenceSettings() {
           </GroupWapper>
 
           <SectionHeader title='布局' desc='修改此项时会重新启动应用' />
-          <GroupWapper className='mb-8'>
+          <GroupWapper style={prefStyles.mb8}>
             <View
               sentry-label='AutoRefrehLineItem'
-              className={cn('pl-4')}
-              style={styles.layer1}
+              style={[prefStyles.rowWrap, styles.layer1]}
             >
-              <View className={cn('min-h-[52px] flex flex-row items-center')}>
-                <View className='flex-1 flex flex-row items-center'>
+              <View style={prefStyles.rowContent}>
+                <View style={prefStyles.titleRow}>
                   <Text style={[styles.text, styles.text_base]}>
                     启用平板布局
                   </Text>
                 </View>
-                <View className='mr-2 px-2'>
+                <View style={prefStyles.switchWrap}>
                   <MySwitch
                     value={state.payLayoutEnabled}
                     onValueChange={(val) =>
@@ -500,3 +493,48 @@ export default function PreferenceSettings() {
     </View>
   )
 }
+
+const prefStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 8,
+  },
+  rowWrap: {
+    paddingLeft: 16,
+  },
+  rowContent: {
+    minHeight: 52,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  flex1: {
+    flex: 1,
+  },
+  controlWrap: {
+    width: 140,
+    marginRight: 4,
+    paddingHorizontal: 8,
+  },
+  switchWrap: {
+    marginRight: 8,
+    paddingHorizontal: 8,
+  },
+  pressed50: {
+    opacity: 0.5,
+  },
+  titleRow: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  descWrap: {
+    marginLeft: 4,
+    marginTop: 4,
+  },
+  mb8: {
+    marginBottom: 32,
+  },
+})

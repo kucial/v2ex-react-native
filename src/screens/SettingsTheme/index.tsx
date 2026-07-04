@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useNavigation } from 'expo-router'
 
 import NavigationHeader from '@/components/NavigationHeader'
@@ -68,7 +68,7 @@ export default function SettingsTheme() {
       pureDarkTheme={pureDark}
     >
       <AlertService>
-        <View className='flex-1'>
+        <View style={themeStyles.container}>
           <NavigationHeader canGoBack title='主题样式' />
           <ThemePreview
             lightTheme={previewLightTheme}
@@ -87,3 +87,9 @@ export default function SettingsTheme() {
     </ThemeProvider>
   )
 }
+
+const themeStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})

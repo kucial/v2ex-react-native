@@ -6,14 +6,20 @@ import {
   useRef,
   useState,
 } from 'react'
-import { FlatList, Pressable, Text, TextInput, View } from 'react-native'
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { useQuery } from '@tanstack/react-query'
 
 import CheckIcon from '@/components/CheckIcon'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { getNodes } from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
@@ -80,7 +86,10 @@ const AddTabPanelSheet = forwardRef<AddTabPanelSheetRef, Props>(
       ({ item, index }) => {
         return (
           <Pressable
-            className='pl-3 active:opacity-50'
+            style={({ pressed }) => [
+              addTabSheetStyles.itemPressable,
+              pressed && addTabSheetStyles.pressed,
+            ]}
             onPress={() => {
               const relatedItemIndex = selected.findIndex(
                 (t) => t.type === 'node' && t.value === item.name,
@@ -103,15 +112,18 @@ const AddTabPanelSheet = forwardRef<AddTabPanelSheetRef, Props>(
             }}
           >
             <View
-              className={cn('h-[50px] flex flex-row items-center pr-3')}
-              style={[styles.border_b_light, index === 0 && styles.border_t]}
+              style={[
+                addTabSheetStyles.itemRow,
+                styles.border_b_light,
+                index === 0 && styles.border_t,
+              ]}
             >
               <TypeIcon size={18} color={tintColor} type='node' />
-              <View className='ml-3 flex-1'>
+              <View style={addTabSheetStyles.titleCol}>
                 <Text style={styles.text}>{item.title}</Text>
               </View>
               {selectedMap[`node:${item.name}`] && (
-                <View style={{ marginRight: 8 }}>
+                <View style={addTabSheetStyles.checkWrap}>
                   <CheckIcon size={16} color={theme.colors.success} />
                 </View>
               )}
@@ -127,6 +139,7 @@ const AddTabPanelSheet = forwardRef<AddTabPanelSheetRef, Props>(
         theme.colors.success,
         onChange,
         selected,
+        selectedMap,
       ],
     )
 
@@ -136,7 +149,7 @@ const AddTabPanelSheet = forwardRef<AddTabPanelSheetRef, Props>(
         scrollable
         backgroundColor={styles.overlay.backgroundColor}
         header={
-          <View className='pt-4 px-3 pb-3'>
+          <View style={addTabSheetStyles.headerWrap}>
             <TextInput
               style={{
                 height: 36,
@@ -169,5 +182,32 @@ const AddTabPanelSheet = forwardRef<AddTabPanelSheetRef, Props>(
 )
 
 AddTabPanelSheet.displayName = 'AddTabPanelSheet'
+
+const addTabSheetStyles = StyleSheet.create({
+  itemPressable: {
+    paddingLeft: 12,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  itemRow: {
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 12,
+  },
+  titleCol: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  checkWrap: {
+    marginRight: 8,
+  },
+  headerWrap: {
+    paddingTop: 16,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+  },
+})
 
 export default AddTabPanelSheet

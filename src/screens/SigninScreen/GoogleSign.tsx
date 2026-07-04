@@ -1,5 +1,5 @@
 import { memo, useCallback, useRef, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import WebView from 'react-native-webview'
 import CookieManager from '@react-native-cookies/cookies'
 import { useQuery } from '@tanstack/react-query'
@@ -72,10 +72,9 @@ function GoogleSign(props: GoogleSigninProps) {
   }, [])
 
   return (
-    <View className='flex-1' style={styles.overlay}>
+    <View style={[googleSignStyles.container, styles.overlay]}>
       <View
-        className='min-h-[44px] flex-row justify-between p-1'
-        style={[styles.border_b_light]}
+        style={[googleSignStyles.header, styles.border_b_light]}
       >
         <BackButton
           tintColor={theme.colors.text}
@@ -84,13 +83,16 @@ function GoogleSign(props: GoogleSigninProps) {
           }}
         />
         <Pressable
-          className='h-[44px] px-3 justify-center active:opacity-70'
+          style={({ pressed }) => [
+            googleSignStyles.pwdBtn,
+            pressed && googleSignStyles.pressed70,
+          ]}
           onPress={props.onSelectPasswordSignin}
         >
           <Text style={styles.text}>密码登录</Text>
         </Pressable>
       </View>
-      <View className='flex-1 relative'>
+      <View style={googleSignStyles.webviewWrap}>
         {onceQuery.data && (
           <WebView
             ref={webviewRef}
@@ -124,8 +126,7 @@ function GoogleSign(props: GoogleSigninProps) {
         )}
         {loading && (
           <View
-            className='absolute inset-0 p-4 items-center'
-            style={styles.layer1}
+            style={[googleSignStyles.loaderWrap, styles.layer1]}
           >
             <Loader />
           </View>
@@ -134,5 +135,38 @@ function GoogleSign(props: GoogleSigninProps) {
     </View>
   )
 }
+
+const googleSignStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    minHeight: 44,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 4,
+  },
+  pwdBtn: {
+    height: 44,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+  },
+  pressed70: {
+    opacity: 0.7,
+  },
+  webviewWrap: {
+    flex: 1,
+    position: 'relative',
+  },
+  loaderWrap: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: 16,
+    alignItems: 'center',
+  },
+})
 
 export default memo(GoogleSign)

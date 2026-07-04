@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 
 import CheckIcon from '@/components/CheckIcon'
 
@@ -15,23 +15,21 @@ export default function ThemeOption(props: {
   return (
     <Pressable
       key={data.name}
-      className='rounded-lg px-2 py-1 mb-3 items-center justify-center active:opacity-50 active:bg-gray-300/10'
+      style={({ pressed }) => [
+        optionStyles.container,
+        pressed && optionStyles.pressed,
+      ]}
       onPress={() => {
         props.onSelect()
       }}
     >
       <View
-        style={{
-          width: 34,
-          height: 34,
-          borderRadius: 999,
-          backgroundColor: data[colorScheme].colors.primary,
-          marginBottom: 6,
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingRight: 1,
-          paddingBottom: 1,
-        }}
+        style={[
+          optionStyles.colorCircle,
+          {
+            backgroundColor: data[colorScheme].colors.primary,
+          },
+        ]}
       >
         {active && <CheckIcon color={styles.btn_primary__text.color} />}
       </View>
@@ -39,3 +37,28 @@ export default function ThemeOption(props: {
     </Pressable>
   )
 }
+
+const optionStyles = StyleSheet.create({
+  container: {
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginBottom: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.5,
+    backgroundColor: 'rgba(209, 213, 219, 0.1)',
+  },
+  colorCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 999,
+    marginBottom: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingRight: 1,
+    paddingBottom: 1,
+  },
+})
