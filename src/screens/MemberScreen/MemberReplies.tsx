@@ -1,37 +1,33 @@
 import { useCallback, useMemo } from 'react'
-import { SharedValue } from 'react-native-reanimated'
 import { FlashListProps } from '@shopify/flash-list'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+import { ProfileCoordinatorTabRenderProps } from '@/components/ProfileCoordinator'
 
 import { shouldLoadMore } from '@/utils/react-query'
 import { getMemberReplies } from '@/utils/v2ex-client'
 
 import MemberReplyRow from './MemberReplyRow'
 
-export default function MemberReplies(
-  props: {
-    username: string
-    scrollY: SharedValue<number>
-    isFocused?: boolean
-    onGetRef: (ref: any) => void
-  } & Omit<FlashListProps<any>, 'data' | 'renderItem' | 'estimatedItemSize'>,
-) {
+type MemberRepliesProps = {
+  username: string
+  isFocused?: boolean
+} & ProfileCoordinatorTabRenderProps &
+  Omit<FlashListProps<any>, 'data' | 'renderItem' | 'estimatedItemSize'>
+
+export default function MemberReplies(props: MemberRepliesProps) {
+  const { username, listProps, contentContainerStyle } = props
+
   const fetchItems = useCallback(
-    async ({ pageParam }) => {
-      return getMemberReplies({
-        username: props.username,
-        p: pageParam,
-      })
-    },
-    [props.username],
+    async ({ pageParam }) => getMemberReplies({ username, p: pageParam }),
+    [username],
   )
 
   const listQuery = useInfiniteQuery({
-    queryKey: ['/page/member/:username/replies.json', props.username],
+    queryKey: ['/page/member/:username/replies.json', username],
     queryFn: fetchItems,
     initialPageParam: 1,
     getNextPageParam(lastPage) {
@@ -47,16 +43,14 @@ export default function MemberReplies(
 
   const listItems = useMemo(() => {
     if (listQuery.isLoading && !listQuery.error) {
-      // initial loading
       return new Array(10)
     }
-    const items = listQuery.data?.pages.reduce((combined, page) => {
-      if (page.data) {
-        return [...combined, ...page.data]
-      }
-      return combined
-    }, [])
-    return items
+    return (
+      listQuery.data?.pages.reduce((combined, page) => {
+        if (page.data) return [...combined, ...page.data]
+        return combined
+      }, []) ?? []
+    )
   }, [listQuery])
 
   const { renderItem, keyExtractor } = useMemo(() => {
@@ -67,10 +61,14 @@ export default function MemberReplies(
         )
       },
       keyExtractor(item, index) {
-        return item?.reply_content_rendered || index
+        return item?.reply_content_rendered || String(index)
       },
     }
-  }, [listItems?.length])
+  }, [listItems.length])
+
+  const handleEndReached = useCallback(() => {
+    if (shouldLoadMore(listQuery)) listQuery.fetchNextPage()
+  }, [listQuery])
 
   return (
     <AnimatedFlashList
@@ -79,32 +77,17 @@ export default function MemberReplies(
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      scrollEventThrottle={16}
-      onEndReached={() => {
-        if (shouldLoadMore(listQuery)) {
-          listQuery.fetchNextPage()
-        }
-      }}
+      onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
           onRefresh={listQuery.refetch}
-          progressViewOffset={props.contentContainerStyle.paddingTop as number}
+          progressViewOffset={contentContainerStyle?.paddingTop as number}
         />
       }
-      ListFooterComponent={() => {
-        return <CommonListFooter data={listQuery} />
-      }}
-      onScroll={props.isFocused ? props.onScroll : undefined}
-      onScrollEndDrag={props.isFocused ? props.onScrollEndDrag : undefined}
-      onMomentumScrollBegin={
-        props.isFocused ? props.onMomentumScrollBegin : undefined
-      }
-      onMomentumScrollEnd={
-        props.isFocused ? props.onMomentumScrollEnd : undefined
-      }
-      contentContainerStyle={props.contentContainerStyle}
-      ref={props.onGetRef}
+      ListFooterComponent={() => <CommonListFooter data={listQuery} />}
+      contentContainerStyle={contentContainerStyle}
+      {...listProps}
     />
   )
 }

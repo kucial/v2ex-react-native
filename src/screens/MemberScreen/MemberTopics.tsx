@@ -1,43 +1,39 @@
 import { useCallback, useMemo } from 'react'
-import { SharedValue } from 'react-native-reanimated'
 import { FlashListProps } from '@shopify/flash-list'
 
 import AnimatedFlashList from '@/components/AnimatedFlashList'
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
+import { ProfileCoordinatorTabRenderProps } from '@/components/ProfileCoordinator'
 
-import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useMemberTopics } from '@/hooks'
 import { shouldLoadMore } from '@/utils/react-query'
 
 import MemberTopicRow from './MemberTopicRow'
 
-export default function MemberTopics(
-  props: {
-    username: string
-    scrollY: SharedValue<number>
-    isFocused?: boolean
-    onGetRef: (ref: any) => void
-  } & Omit<FlashListProps<any>, 'data' | 'renderItem' | 'estimatedItemSize'>,
-) {
-  const alert = useAlertService()
+type MemberTopicsProps = {
+  username: string
+  isFocused?: boolean
+} & ProfileCoordinatorTabRenderProps &
+  Omit<FlashListProps<any>, 'data' | 'renderItem' | 'estimatedItemSize'>
+
+export default function MemberTopics(props: MemberTopicsProps) {
+  const { username, isFocused, listProps, contentContainerStyle } = props
   const { data: settings } = useAppSettings()
 
-  const listQuery = useMemberTopics(props.username, props.isFocused)
+  const listQuery = useMemberTopics(username, isFocused)
 
   const listItems = useMemo(() => {
     if (listQuery.isLoading && !listQuery.error) {
-      // initial loading
       return new Array(10)
     }
-    const items = listQuery.data?.pages.reduce((combined, page) => {
-      if (page.data) {
-        return [...combined, ...page.data]
-      }
-      return combined
-    }, [])
-    return items
+    return (
+      listQuery.data?.pages.reduce((combined, page) => {
+        if (page.data) return [...combined, ...page.data]
+        return combined
+      }, []) ?? []
+    )
   }, [listQuery.data, listQuery.isLoading, listQuery.error])
 
   const extraData = useMemo(
@@ -76,12 +72,8 @@ export default function MemberTopics(
   }, [])
 
   const handleEndReached = useCallback(() => {
-    if (listQuery.error?.code === 'MEMBER_LOCKED') {
-      return
-    }
-    if (shouldLoadMore(listQuery)) {
-      listQuery.fetchNextPage()
-    }
+    if (listQuery.error?.code === 'MEMBER_LOCKED') return
+    if (shouldLoadMore(listQuery)) listQuery.fetchNextPage()
   }, [listQuery])
 
   const listFooter = useMemo(
@@ -96,26 +88,17 @@ export default function MemberTopics(
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      scrollEventThrottle={16}
       onEndReached={handleEndReached}
       refreshControl={
         <MyRefreshControl
           refreshing={listQuery.isRefetching}
           onRefresh={listQuery.refetch}
-          progressViewOffset={props.contentContainerStyle?.paddingTop as number}
+          progressViewOffset={contentContainerStyle?.paddingTop as number}
         />
       }
       ListFooterComponent={listFooter}
-      onScroll={props.isFocused ? props.onScroll : undefined}
-      onScrollEndDrag={props.isFocused ? props.onScrollEndDrag : undefined}
-      onMomentumScrollBegin={
-        props.isFocused ? props.onMomentumScrollBegin : undefined
-      }
-      onMomentumScrollEnd={
-        props.isFocused ? props.onMomentumScrollEnd : undefined
-      }
-      contentContainerStyle={props.contentContainerStyle}
-      ref={props.onGetRef}
+      contentContainerStyle={contentContainerStyle}
+      {...listProps}
     />
   )
 }

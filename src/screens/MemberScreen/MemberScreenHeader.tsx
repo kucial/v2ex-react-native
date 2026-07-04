@@ -43,7 +43,8 @@ const HEADER_CANVAS_HEIGHT = 64
 export default function MemberScreenHeader(props: {
   username: string
   brief?: MemberBasic
-  setHeaderHeight: (val: number) => void
+  /** Called when the header measures its own height — pass to ProfileCoordinator as onHeaderLayout. */
+  onLayout: (height: number) => void
   headerHeight: number
   headerCollapsedHeight: number
   scrollY: SharedValue<number>
@@ -52,7 +53,7 @@ export default function MemberScreenHeader(props: {
     username,
     brief,
     headerHeight,
-    setHeaderHeight,
+    onLayout,
     headerCollapsedHeight,
     scrollY,
   } = props
@@ -183,9 +184,12 @@ export default function MemberScreenHeader(props: {
 
   const topDelta = topBannerHeight - headerCollapsedHeight
 
-  const handleLayout = useCallback((e) => {
-    setHeaderHeight(e.nativeEvent.layout.height)
-  }, [])
+  const handleLayout = useCallback(
+    (e) => {
+      onLayout(e.nativeEvent.layout.height)
+    },
+    [onLayout],
+  )
 
   const layer2OffsetStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
