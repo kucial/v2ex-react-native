@@ -7,10 +7,9 @@ import {
   useRef,
 } from 'react'
 import { AppState } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
-import { uniqBy } from 'lodash'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
@@ -37,7 +36,7 @@ type FeedTopicListProps = {
 
 function FeedTopicList(props: FeedTopicListProps) {
   const { tab, isFocused, currentListRef } = props
-  const listViewRef = useRef<FlashList<HomeTopicFeed> | null>(null)
+  const listViewRef = useRef<FlashListRef<HomeTopicFeed> | null>(null)
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const queryclient = useQueryClient()
@@ -128,13 +127,24 @@ function FeedTopicList(props: FeedTopicListProps) {
       // initial loading — return skeleton placeholders
       return new Array(20)
     }
-    const items = listQueryData?.pages?.reduce((combined, page) => {
-      if (page.data) {
-        return uniqBy([...combined, ...page.data], 'id')
+    if (!listQueryData?.pages) {
+      return []
+    }
+
+    const seenIds = new Set<HomeTopicFeed['id']>()
+    const items: HomeTopicFeed[] = []
+    for (const page of listQueryData.pages) {
+      if (!page.data) {
+        continue
       }
-      return combined
-    }, [])
-    return items || []
+      for (const item of page.data) {
+        if (!seenIds.has(item.id)) {
+          seenIds.add(item.id)
+          items.push(item)
+        }
+      }
+    }
+    return items
   }, [listQueryData, isFocused])
 
   useEffect(() => {
@@ -153,12 +163,27 @@ function FeedTopicList(props: FeedTopicListProps) {
     }
   }, [listItems, tab])
 
+  const rowSettings = useMemo(
+    () => ({
+      feedLayout: settings.feedLayout,
+      feedShowAvatar: settings.feedShowAvatar,
+      feedShowLastReplyMember: settings.feedShowLastReplyMember,
+      feedTitleStyle: settings.feedTitleStyle,
+    }),
+    [
+      settings.feedLayout,
+      settings.feedShowAvatar,
+      settings.feedShowLastReplyMember,
+      settings.feedTitleStyle,
+    ],
+  )
+
   const extraData = useMemo(
     () => ({
       listLength: listItems.length,
-      settings,
+      rowSettings,
     }),
-    [listItems.length, settings],
+    [listItems.length, rowSettings],
   )
 
   const { renderItem, keyExtractor } = useMemo(
@@ -172,21 +197,21 @@ function FeedTopicList(props: FeedTopicListProps) {
         index: number
         extraData?: typeof extraData
       }) =>
-        extra?.settings?.feedLayout === 'tide' ? (
+        extra?.rowSettings?.feedLayout === 'tide' ? (
           <TideTopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
-            showAvatar={extra?.settings?.feedShowAvatar}
-            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
-            titleStyle={extra?.settings?.feedTitleStyle}
+            showAvatar={extra?.rowSettings?.feedShowAvatar}
+            showLastReplyMember={extra?.rowSettings?.feedShowLastReplyMember}
+            titleStyle={extra?.rowSettings?.feedTitleStyle}
           />
         ) : (
           <TopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
-            showAvatar={extra?.settings?.feedShowAvatar}
-            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
-            titleStyle={extra?.settings?.feedTitleStyle}
+            showAvatar={extra?.rowSettings?.feedShowAvatar}
+            showLastReplyMember={extra?.rowSettings?.feedShowLastReplyMember}
+            titleStyle={extra?.rowSettings?.feedTitleStyle}
           />
         ),
       keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>
@@ -199,12 +224,27 @@ function FeedTopicList(props: FeedTopicListProps) {
     if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
       listQuery.fetchNextPage()
     }
-  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+  }, [
+    listQuery.fetchNextPage,
+    listQuery.hasNextPage,
+    listQuery.isFetchingNextPage,
+  ])
 
   const listFooter = useMemo(
     () => <CommonListFooter data={listQuery} />,
     [listQuery],
   )
+
+  const refreshControl = useMemo(
+    () => (
+      <MyRefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />
+    ),
+    [handleRefresh, isRefetching],
+  )
+
+  const handleScroll = useCallback((e) => {
+    scrollY.current = e.nativeEvent.contentOffset.y
+  }, [])
 
   return (
     <FlashList
@@ -216,13 +256,9 @@ function FeedTopicList(props: FeedTopicListProps) {
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
       onEndReached={handleEndReached}
-      refreshControl={
-        <MyRefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />
-      }
+      refreshControl={refreshControl}
       ListFooterComponent={listFooter}
-      onScroll={(e) => {
-        scrollY.current = e.nativeEvent.contentOffset.y
-      }}
+      onScroll={handleScroll}
     />
   )
 }

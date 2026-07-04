@@ -251,6 +251,14 @@ export default function HomeScreen(props) {
     [viewWidth, padLayout.active, height],
   )
 
+  const navigationState = useMemo(
+    () => ({
+      index: normalizedIndex,
+      routes,
+    }),
+    [normalizedIndex, routes],
+  )
+
   if (error) {
     return (
       <View className='flex-1 flex flex-row items-center justify-center bg-white'>
@@ -279,7 +287,7 @@ export default function HomeScreen(props) {
   return (
     <>
       <TabView
-        navigationState={{ index: normalizedIndex, routes }}
+        navigationState={navigationState}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}

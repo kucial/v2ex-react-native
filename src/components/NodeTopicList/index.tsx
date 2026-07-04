@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { AppState } from 'react-native'
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
-import { FlashList } from '@shopify/flash-list'
+import { FlashListRef } from '@shopify/flash-list'
 import { useQueryClient, UseQueryResult } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
 
@@ -39,7 +39,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
   const { data: settings } = useAppSettings()
   const queryclient = useQueryClient()
 
-  const listViewRef = useRef<FlashList<NodeTopicFeed>>()
+  const listViewRef = useRef<FlashListRef<NodeTopicFeed> | null>(null)
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
       scrollY.value = e.contentOffset.y
@@ -56,7 +56,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       })
     }
     listQuery.refetch()
-  }, [listQuery.data, name, queryclient])
+  }, [listQuery.data, listQuery.refetch, name, queryclient])
 
   const scrollToRefresh = useCallback(() => {
     if (listQuery.isRefetching) {
@@ -66,13 +66,19 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     }
     if (listQuery.data) {
-      listViewRef.current.scrollToOffset({
+      listViewRef.current?.scrollToOffset({
         offset: scrollY.value > 0 ? 0 : -60,
         animated: true,
       })
     }
     handleRefresh()
-  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
+  }, [
+    handleRefresh,
+    listQuery.data,
+    listQuery.isRefetching,
+    scrollY,
+    settings.refreshHaptics,
+  ])
 
   useEffect(() => {
     if (
@@ -125,21 +131,41 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       // initial loading
       return new Array(20)
     }
-    const items = listQuery.data?.pages.reduce((combined, page) => {
-      if (page.data) {
-        return [...combined, ...page.data]
+    if (!listQuery.data?.pages) {
+      return []
+    }
+
+    const items: NodeTopicFeed[] = []
+    for (const page of listQuery.data.pages) {
+      if (!page.data) {
+        continue
       }
-      return combined
-    }, [])
-    return items || []
+      items.push(...page.data)
+    }
+    return items
   }, [listQuery.data, listQuery.error])
+
+  const rowSettings = useMemo(
+    () => ({
+      feedLayout: settings.feedLayout,
+      feedShowAvatar: settings.feedShowAvatar,
+      feedShowLastReplyMember: settings.feedShowLastReplyMember,
+      feedTitleStyle: settings.feedTitleStyle,
+    }),
+    [
+      settings.feedLayout,
+      settings.feedShowAvatar,
+      settings.feedShowLastReplyMember,
+      settings.feedTitleStyle,
+    ],
+  )
 
   const extraData = useMemo(
     () => ({
       listLength: listItems.length,
-      settings,
+      rowSettings,
     }),
-    [listItems.length, settings],
+    [listItems.length, rowSettings],
   )
 
   const { renderItem, keyExtractor } = useMemo(() => {
@@ -153,21 +179,21 @@ export default function NodeTopicList(props: NodeTopicListProps) {
         index: any
         extraData?: any
       }) {
-        return extra?.settings?.feedLayout === 'tide' ? (
+        return extra?.rowSettings?.feedLayout === 'tide' ? (
           <TideNodeTopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
-            showAvatar={extra?.settings?.feedShowAvatar}
-            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
-            titleStyle={extra?.settings?.feedTitleStyle}
+            showAvatar={extra?.rowSettings?.feedShowAvatar}
+            showLastReplyMember={extra?.rowSettings?.feedShowLastReplyMember}
+            titleStyle={extra?.rowSettings?.feedTitleStyle}
           />
         ) : (
           <NodeTopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
-            showAvatar={extra?.settings?.feedShowAvatar}
-            showLastReplyMember={extra?.settings?.feedShowLastReplyMember}
-            titleStyle={extra?.settings?.feedTitleStyle}
+            showAvatar={extra?.rowSettings?.feedShowAvatar}
+            showLastReplyMember={extra?.rowSettings?.feedShowLastReplyMember}
+            titleStyle={extra?.rowSettings?.feedTitleStyle}
           />
         )
       },
@@ -181,11 +207,25 @@ export default function NodeTopicList(props: NodeTopicListProps) {
     if (listQuery.hasNextPage && !listQuery.isFetchingNextPage) {
       listQuery.fetchNextPage()
     }
-  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+  }, [
+    listQuery.fetchNextPage,
+    listQuery.hasNextPage,
+    listQuery.isFetchingNextPage,
+  ])
 
   const listFooter = useMemo(
     () => <CommonListFooter data={listQuery} />,
     [listQuery],
+  )
+
+  const refreshControl = useMemo(
+    () => (
+      <MyRefreshControl
+        refreshing={listQuery.isRefetching}
+        onRefresh={handleRefresh}
+      />
+    ),
+    [handleRefresh, listQuery.isRefetching],
   )
 
   return (
@@ -199,12 +239,7 @@ export default function NodeTopicList(props: NodeTopicListProps) {
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
       onEndReached={handleEndReached}
-      refreshControl={
-        <MyRefreshControl
-          refreshing={listQuery.isRefetching}
-          onRefresh={handleRefresh}
-        />
-      }
+      refreshControl={refreshControl}
       ListHeaderComponent={header}
       ListFooterComponent={listFooter}
       onScroll={scrollHandler}

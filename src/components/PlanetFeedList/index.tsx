@@ -10,7 +10,6 @@ import { AppState, useWindowDimensions, View } from 'react-native'
 import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
-import { uniqBy } from 'lodash'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
@@ -22,7 +21,7 @@ import {
 } from '@/containers/AppSettingsService'
 import { PLANET_FEED_LIST_KEY, usePlanetFeed } from '@/hooks'
 import { useAudioResourceInterceptor } from '@/stores/audio'
-import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
+import { shouldFetch } from '@/utils/react-query'
 import { PlanetFeedItem } from '@/utils/v2ex-client/types'
 
 import { useViewedLinks } from './hooks'
@@ -62,7 +61,7 @@ function PlanetFeedList(props: PlanetFeedListProps) {
       })
     }
     listQuery.refetch()
-  }, [listQuery.data, queryclient])
+  }, [listQuery.data, listQuery.refetch, queryclient])
 
   const scrollToRefresh = useCallback(() => {
     if (listQuery.isRefetching) {
@@ -73,13 +72,18 @@ function PlanetFeedList(props: PlanetFeedListProps) {
     }
 
     if (listQuery.data) {
-      listViewRef.current.scrollToOffset({
+      listViewRef.current?.scrollToOffset({
         offset: 0,
         animated: true,
       })
     }
-    listQuery.refetch()
-  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
+    handleRefresh()
+  }, [
+    handleRefresh,
+    listQuery.data,
+    listQuery.isRefetching,
+    settings.refreshHaptics,
+  ])
 
   useEffect(() => {
     if (
@@ -132,24 +136,43 @@ function PlanetFeedList(props: PlanetFeedListProps) {
       // initial loading
       return new Array(20)
     }
-    const items = listQuery.data?.pages.reduce((combined, page) => {
-      if (page.data) {
-        return uniqBy([...combined, ...page.data], 'uuid')
+    if (!listQuery.data?.pages) {
+      return []
+    }
+
+    const seenUuids = new Set<PlanetFeedItem['uuid']>()
+    const items: PlanetFeedItem[] = []
+    for (const page of listQuery.data.pages) {
+      if (!page.data) {
+        continue
       }
-      return combined
-    }, [])
-    return items || []
+      for (const item of page.data) {
+        if (!seenUuids.has(item.uuid)) {
+          seenUuids.add(item.uuid)
+          items.push(item)
+        }
+      }
+    }
+    return items
   }, [listQuery.data, listQuery.isLoading, listQuery.error])
+
+  const rowSettings = useMemo(
+    () => ({
+      feedShowAvatar: settings.feedShowAvatar,
+      feedTitleStyle: settings.feedTitleStyle,
+    }),
+    [settings.feedShowAvatar, settings.feedTitleStyle],
+  )
 
   const extraData = useMemo(
     () => ({
       listLength: listItems.length,
       getViewedStatus,
-      settings,
+      rowSettings,
       setViewed,
       contentWidth,
     }),
-    [listItems.length, getViewedStatus, settings, setViewed, contentWidth],
+    [listItems.length, getViewedStatus, rowSettings, setViewed, contentWidth],
   )
 
   const { renderItem, keyExtractor } = useMemo(
@@ -168,9 +191,9 @@ function PlanetFeedList(props: PlanetFeedListProps) {
             data={item}
             isLast={index === extra?.listLength - 1}
             viewedStatus={extra?.getViewedStatus(item?.url || item?.uuid)}
-            showAvatar={extra?.settings?.feedShowAvatar}
+            showAvatar={extra?.rowSettings?.feedShowAvatar}
             onView={extra?.setViewed}
-            titleStyle={extra?.settings?.feedTitleStyle}
+            titleStyle={extra?.rowSettings?.feedTitleStyle}
             contentWidth={extra?.contentWidth}
           />
         </View>
@@ -182,15 +205,40 @@ function PlanetFeedList(props: PlanetFeedListProps) {
   )
 
   const handleEndReached = useCallback(() => {
-    if (shouldLoadMore(listQuery)) {
+    if (
+      listQuery.hasNextPage &&
+      !listQuery.isFetchingNextPage &&
+      !listQuery.error
+    ) {
       listQuery.fetchNextPage()
     }
-  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+  }, [
+    listQuery.error,
+    listQuery.fetchNextPage,
+    listQuery.hasNextPage,
+    listQuery.isFetchingNextPage,
+  ])
 
   const listFooter = useMemo(
     () => <CommonListFooter data={listQuery} />,
     [listQuery],
   )
+
+  const contentContainerStyle = useMemo(() => ({ paddingVertical: 4 }), [])
+
+  const refreshControl = useMemo(
+    () => (
+      <MyRefreshControl
+        refreshing={listQuery.isRefetching}
+        onRefresh={handleRefresh}
+      />
+    ),
+    [handleRefresh, listQuery.isRefetching],
+  )
+
+  const handleScroll = useCallback((e) => {
+    scrollY.current = e.nativeEvent.contentOffset.y
+  }, [])
 
   return (
     <FlashList
@@ -201,18 +249,11 @@ function PlanetFeedList(props: PlanetFeedListProps) {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
-      contentContainerStyle={{ paddingVertical: 4 }}
+      contentContainerStyle={contentContainerStyle}
       onEndReached={handleEndReached}
-      refreshControl={
-        <MyRefreshControl
-          refreshing={listQuery.isRefetching}
-          onRefresh={handleRefresh}
-        />
-      }
+      refreshControl={refreshControl}
       ListFooterComponent={listFooter}
-      onScroll={(e) => {
-        scrollY.current = e.nativeEvent.contentOffset.y
-      }}
+      onScroll={handleScroll}
     />
   )
 }

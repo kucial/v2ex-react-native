@@ -7,10 +7,9 @@ import {
   useRef,
 } from 'react'
 import { AppState } from 'react-native'
-import { FlashList } from '@shopify/flash-list'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
-import { uniqBy } from 'lodash'
 
 import CommonListFooter from '@/components/CommonListFooter'
 import MyRefreshControl from '@/components/MyRefreshControl'
@@ -18,7 +17,7 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import { PAGE_RESET_LIMIT } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useXnaFeed, XNA_LIST_KEY } from '@/hooks'
-import { shouldFetch, shouldLoadMore } from '@/utils/react-query'
+import { shouldFetch } from '@/utils/react-query'
 import { XnaFeed } from '@/utils/v2ex-client/types'
 
 import { useViewedLinks } from './hooks'
@@ -32,7 +31,7 @@ type XnaTopicListProps = {
 
 function XnaTopicList(props: XnaTopicListProps) {
   const { isFocused, currentListRef } = props
-  const listViewRef = useRef<FlashList<XnaFeed>>()
+  const listViewRef = useRef<FlashListRef<XnaFeed> | null>(null)
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const { setViewed, getViewedStatus } = useViewedLinks()
@@ -48,7 +47,7 @@ function XnaTopicList(props: XnaTopicListProps) {
       })
     }
     listQuery.refetch()
-  }, [listQuery.data, queryclient])
+  }, [listQuery.data, listQuery.refetch, queryclient])
 
   const scrollToRefresh = useCallback(() => {
     if (listQuery.isRefetching) {
@@ -59,13 +58,18 @@ function XnaTopicList(props: XnaTopicListProps) {
     }
 
     if (listQuery.data) {
-      listViewRef.current.scrollToOffset({
+      listViewRef.current?.scrollToOffset({
         offset: 0,
         animated: true,
       })
     }
-    listQuery.refetch()
-  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics])
+    handleRefresh()
+  }, [
+    handleRefresh,
+    listQuery.data,
+    listQuery.isRefetching,
+    settings.refreshHaptics,
+  ])
 
   useEffect(() => {
     if (
@@ -118,23 +122,43 @@ function XnaTopicList(props: XnaTopicListProps) {
       // initial loading
       return new Array(20)
     }
-    const items = listQuery.data?.pages.reduce((combined, page) => {
-      if (page.data) {
-        return uniqBy([...combined, ...page.data], 'url')
+    if (!listQuery.data?.pages) {
+      return []
+    }
+
+    const seenUrls = new Set<XnaFeed['url']>()
+    const items: XnaFeed[] = []
+    for (const page of listQuery.data.pages) {
+      if (!page.data) {
+        continue
       }
-      return combined
-    }, [])
-    return items || []
+      for (const item of page.data) {
+        if (!seenUrls.has(item.url)) {
+          seenUrls.add(item.url)
+          items.push(item)
+        }
+      }
+    }
+    return items
   }, [listQuery.data, listQuery.isLoading, listQuery.error])
+
+  const rowSettings = useMemo(
+    () => ({
+      feedLayout: settings.feedLayout,
+      feedShowAvatar: settings.feedShowAvatar,
+      feedTitleStyle: settings.feedTitleStyle,
+    }),
+    [settings.feedLayout, settings.feedShowAvatar, settings.feedTitleStyle],
+  )
 
   const extraData = useMemo(
     () => ({
       listLength: listItems.length,
       getViewedStatus,
-      settings,
+      rowSettings,
       setViewed,
     }),
-    [listItems.length, getViewedStatus, settings, setViewed],
+    [listItems.length, getViewedStatus, rowSettings, setViewed],
   )
 
   const { renderItem, keyExtractor } = useMemo(
@@ -148,23 +172,23 @@ function XnaTopicList(props: XnaTopicListProps) {
         index: any
         extraData?: any
       }) =>
-        extra?.settings?.feedLayout === 'tide' ? (
+        extra?.rowSettings?.feedLayout === 'tide' ? (
           <TideTopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
             viewedStatus={extra?.getViewedStatus(item?.url)}
             onView={extra?.setViewed}
-            showAvatar={extra?.settings?.feedShowAvatar}
-            titleStyle={extra?.settings?.feedTitleStyle}
+            showAvatar={extra?.rowSettings?.feedShowAvatar}
+            titleStyle={extra?.rowSettings?.feedTitleStyle}
           />
         ) : (
           <TopicRow
             data={item}
             isLast={index === extra?.listLength - 1}
             viewedStatus={extra?.getViewedStatus(item?.url)}
-            showAvatar={extra?.settings?.feedShowAvatar}
+            showAvatar={extra?.rowSettings?.feedShowAvatar}
             onView={extra?.setViewed}
-            titleStyle={extra?.settings?.feedTitleStyle}
+            titleStyle={extra?.rowSettings?.feedTitleStyle}
           />
         ),
       keyExtractor: (item: XnaFeed | undefined, index: number) =>
@@ -174,15 +198,38 @@ function XnaTopicList(props: XnaTopicListProps) {
   )
 
   const handleEndReached = useCallback(() => {
-    if (shouldLoadMore(listQuery)) {
+    if (
+      listQuery.hasNextPage &&
+      !listQuery.isFetchingNextPage &&
+      !listQuery.error
+    ) {
       listQuery.fetchNextPage()
     }
-  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+  }, [
+    listQuery.error,
+    listQuery.fetchNextPage,
+    listQuery.hasNextPage,
+    listQuery.isFetchingNextPage,
+  ])
 
   const listFooter = useMemo(
     () => <CommonListFooter data={listQuery} />,
     [listQuery],
   )
+
+  const refreshControl = useMemo(
+    () => (
+      <MyRefreshControl
+        refreshing={listQuery.isRefetching}
+        onRefresh={handleRefresh}
+      />
+    ),
+    [handleRefresh, listQuery.isRefetching],
+  )
+
+  const handleScroll = useCallback((e) => {
+    scrollY.current = e.nativeEvent.contentOffset.y
+  }, [])
 
   return (
     <FlashList
@@ -194,16 +241,9 @@ function XnaTopicList(props: XnaTopicListProps) {
       keyExtractor={keyExtractor}
       onEndReachedThreshold={0.4}
       onEndReached={handleEndReached}
-      refreshControl={
-        <MyRefreshControl
-          refreshing={listQuery.isRefetching}
-          onRefresh={handleRefresh}
-        />
-      }
+      refreshControl={refreshControl}
       ListFooterComponent={listFooter}
-      onScroll={(e) => {
-        scrollY.current = e.nativeEvent.contentOffset.y
-      }}
+      onScroll={handleScroll}
     />
   )
 }
