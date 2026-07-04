@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
@@ -7,7 +7,6 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import TimeAgo from '@/components/TimeAgo'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
   const { data, showAvatar, isLast } = props
@@ -18,8 +17,10 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label='TideTopicRow'
-        className={cn('flex flex-row items-center', 'active:opacity-50')}
-        style={!isLast && styles.border_b_light}
+        style={[
+          tideViewedStyles.pressable,
+          !isLast && styles.border_b_light,
+        ]}
         onPress={() => {
           router.push({
             pathname: '/topic/[id]',
@@ -31,7 +32,7 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
         }}
       >
         {showAvatar ? (
-          <View className='px-2 py-2 self-start'>
+          <View style={tideViewedStyles.avatarCol}>
             <FixedPressable
               onPress={() => {
                 router.push({
@@ -48,27 +49,27 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
                 source={{
                   uri: member.avatar_normal,
                 }}
-                className='w-[24px] h-[24px] rounded'
+                style={tideViewedStyles.avatar}
               />
             </FixedPressable>
           </View>
         ) : (
-          <View className='pl-3'></View>
+          <View style={tideViewedStyles.pl3} />
         )}
-        <View className={cn('flex-1 pt-1 pb-2')}>
+        <View style={tideViewedStyles.contentCol}>
           <Text
-            className={cn({
-              'font-[500]': props.titleStyle === 'emphasized',
-            })}
-            style={[styles.text, styles.text_base]}
+            style={[
+              styles.text,
+              styles.text_base,
+              props.titleStyle === 'emphasized' && tideViewedStyles.titleEmphasized,
+            ]}
           >
             {title}
           </Text>
-          <View className='mt-1 flex flex-row flex-wrap items-center'>
+          <View style={tideViewedStyles.metaRow}>
             <FixedPressable
               hitSlop={4}
-              className='py-[2px] px-[6px] mr-[6px] rounded active:opacity-60'
-              style={styles.layer2}
+              style={[tideViewedStyles.nodeTag, styles.layer2]}
               onPress={() => {
                 router.push({
                   pathname: '/node/[name]',
@@ -83,7 +84,13 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
                 {node.title}
               </Text>
             </FixedPressable>
-            <Text className='mr-2' style={[styles.text_meta, styles.text_xs]}>
+            <Text
+              style={[
+                tideViewedStyles.mr2,
+                styles.text_meta,
+                styles.text_xs,
+              ]}
+            >
               上次查看
             </Text>
             <Text style={[styles.text_meta, styles.text_xs]}>
@@ -95,5 +102,48 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
     </MaxWidthWrapper>
   )
 }
+
+const tideViewedStyles = StyleSheet.create({
+  pressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarCol: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
+  avatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  pl3: {
+    paddingLeft: 12,
+  },
+  contentCol: {
+    flex: 1,
+    paddingTop: 4,
+    paddingBottom: 8,
+  },
+  titleEmphasized: {
+    fontWeight: '500',
+  },
+  metaRow: {
+    marginTop: 4,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  nodeTag: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    marginRight: 6,
+    borderRadius: 4,
+  },
+  mr2: {
+    marginRight: 8,
+  },
+})
 
 export default TideViewedTopicRow

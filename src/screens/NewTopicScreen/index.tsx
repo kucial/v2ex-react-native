@@ -3,6 +3,7 @@ import {
   findNodeHandle,
   InteractionManager,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -27,7 +28,6 @@ import { SlateEditorService } from '@/components/SlateEditor/types'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { createTopic } from '@/utils/v2ex-client'
 
 import NodeSelect from './NodeSelect'
@@ -153,24 +153,24 @@ export default function NewTopicScreen() {
         alert.show({ type: 'error', message: err.message })
       }
     }
-  }, [values, router])
+  }, [values, router, alert, queryClient])
 
   return (
-    <View className='flex-1'>
+    <View style={newTopicStyles.container}>
       <NavigationHeader canGoBack title='新主题' />
-      <View className='flex-1' style={styles.layer1}>
+      <View style={[newTopicStyles.container, styles.layer1]}>
         <KeyboardAwareView
           animated
           style={{
             height: '100%',
           }}
         >
-          <View className='flex-1'>
+          <View style={newTopicStyles.container}>
             <EditorProvider ref={editorRef}>
               <MaxWidthWrapper>
-                <KeyboardDismiss className='flex-1'>
+                <KeyboardDismiss style={newTopicStyles.container}>
                   <ScrollView
-                    className='flex-1'
+                    style={newTopicStyles.container}
                     ref={scrollViewRef}
                     onLayout={(e) => {
                       scrollViewInfo.current.width = e.nativeEvent.layout.width
@@ -184,16 +184,15 @@ export default function NewTopicScreen() {
                     }}
                     scrollEventThrottle={16}
                   >
-                    <View className='px-4 my-3'>
-                      <View className='mb-1'>
-                        <Text className='font-medium px-2' style={styles.text}>
+                    <View style={newTopicStyles.section}>
+                      <View style={newTopicStyles.labelWrap}>
+                        <Text style={[newTopicStyles.labelText, styles.text]}>
                           标题
                         </Text>
                       </View>
                       <View>
                         <TextInput
-                          className='h-[44px] px-2 mb-2 rounded-md'
-                          style={[styles.layer2, styles.text, { fontSize: 16 }]}
+                          style={[newTopicStyles.input, styles.layer2, styles.text, { fontSize: 16 }]}
                           selectionColor={theme.colors.primary}
                           placeholderTextColor={theme.colors.text_placeholder}
                           placeholder='请输入主题标题'
@@ -208,9 +207,9 @@ export default function NewTopicScreen() {
                         />
                       </View>
                     </View>
-                    <View className='px-4 my-3'>
-                      <View className='mb-1'>
-                        <Text className='font-medium px-2' style={styles.text}>
+                    <View style={newTopicStyles.section}>
+                      <View style={newTopicStyles.labelWrap}>
+                        <Text style={[newTopicStyles.labelText, styles.text]}>
                           节点
                         </Text>
                       </View>
@@ -225,10 +224,7 @@ export default function NewTopicScreen() {
                           placeholderStyle={{
                             color: theme.colors.text_placeholder,
                           }}
-                          className={cn(
-                            'h-[44px] px-2 mb-2 rounded-md flex flex-row items-center',
-                          )}
-                          style={[styles.layer2]}
+                          style={[newTopicStyles.nodeSelectBtn, styles.layer2]}
                           filterPlaceholder='查询'
                           placeholder='请输入主题节点'
                           onChange={(node) => {
@@ -240,16 +236,15 @@ export default function NewTopicScreen() {
                         />
                       </View>
                     </View>
-                    <View className='px-4 my-3'>
-                      <View className='mb-1'>
-                        <Text className='font-medium px-2' style={styles.text}>
+                    <View style={newTopicStyles.section}>
+                      <View style={newTopicStyles.labelWrap}>
+                        <Text style={[newTopicStyles.labelText, styles.text]}>
                           正文
                         </Text>
                       </View>
                       <View>
                         <View
-                          className='mb-2 rounded-md overflow-hidden px-2 py-[10px]'
-                          style={styles.layer2}
+                          style={[newTopicStyles.editorBox, styles.layer2]}
                           ref={editorRenderContainer}
                         >
                           <EditorRender
@@ -268,7 +263,7 @@ export default function NewTopicScreen() {
                         </View>
                       </View>
                     </View>
-                    <View className='px-4 my-3'>
+                    <View style={newTopicStyles.section}>
                       <Button
                         variant='primary'
                         size='md'
@@ -279,7 +274,7 @@ export default function NewTopicScreen() {
                       />
                     </View>
 
-                    <View className='h-[56px]'></View>
+                    <View style={newTopicStyles.bottomSpacer} />
                   </ScrollView>
                 </KeyboardDismiss>
                 <View
@@ -328,3 +323,44 @@ export default function NewTopicScreen() {
     </View>
   )
 }
+
+const newTopicStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  section: {
+    paddingHorizontal: 16,
+    marginVertical: 12,
+  },
+  labelWrap: {
+    marginBottom: 4,
+  },
+  labelText: {
+    fontWeight: '500',
+    paddingHorizontal: 8,
+  },
+  input: {
+    height: 44,
+    paddingHorizontal: 8,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  nodeSelectBtn: {
+    height: 44,
+    paddingHorizontal: 8,
+    marginBottom: 8,
+    borderRadius: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  editorBox: {
+    marginBottom: 8,
+    borderRadius: 6,
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+  },
+  bottomSpacer: {
+    height: 56,
+  },
+})

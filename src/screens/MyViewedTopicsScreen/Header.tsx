@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Platform, Text, View } from 'react-native'
+import { Platform, StyleSheet, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 
@@ -31,8 +31,8 @@ export default function Header(props: {
       ]}
     >
       <View
-        className='w-full flex-row items-center pl-4 relative'
         style={[
+          headerStyles.row,
           {
             height: HEADER_HEIGHT,
           },
@@ -105,3 +105,13 @@ export default function Header(props: {
     </View>
   )
 }
+
+const headerStyles = StyleSheet.create({
+  row: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 16,
+    position: 'relative',
+  },
+})

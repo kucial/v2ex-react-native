@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Text, useWindowDimensions, View } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
@@ -52,7 +52,7 @@ export default function NodeScreen() {
         })
       }
     }
-  }, [name])
+  }, [name, alert])
 
   const nodeQuery = useQuery({
     queryKey: [`/page/go/:name/node.json`, name],
@@ -104,7 +104,7 @@ export default function NodeScreen() {
             alert.hide(indicator)
             setCollecting(false)
           })
-      }, [node]),
+      }, [node, alert, name, queryClient, nodeQuery]),
     ),
     {
       message: '[NodeScreen] `Collect` button pressed',
@@ -122,7 +122,7 @@ export default function NodeScreen() {
             },
           })
         }
-      }, [node?.name]),
+      }, [node, router]),
     ),
     {
       message: '[NodeScreen] `New topic` button pressed',
@@ -131,43 +131,51 @@ export default function NodeScreen() {
 
   const header = (
     <MaxWidthWrapper style={styles.layer1}>
-      <View className='p-2' style={[styles.border_b_light]}>
-        <View className='rounded-lg'>
-          <View className='flex flex-row'>
+      <View style={[nodeScreenStyles.headerContainer, styles.border_b_light]}>
+        <View style={nodeScreenStyles.rounded}>
+          <View style={nodeScreenStyles.row}>
             {node.avatar_large ? (
               <Image
-                className='w-[60px] h-[60px] mr-3'
+                style={nodeScreenStyles.avatar}
                 source={{
                   uri: getAbsoluteUrl(node.avatar_large),
                 }}
-              ></Image>
+              />
             ) : (
               <View
-                className='w-[60px] h-[60px] mr-3'
-                style={styles.layer3}
-              ></View>
+                style={[nodeScreenStyles.avatar, styles.layer3]}
+              />
             )}
 
-            <View className='flex-1'>
-              <View className='flex flex-row justify-between items-center mb-[6px]'>
+            <View style={nodeScreenStyles.flex1}>
+              <View style={nodeScreenStyles.titleRow}>
                 <View>
                   <Text
-                    className='font-semibold'
-                    style={[styles.text, styles.text_lg]}
+                    style={[
+                      nodeScreenStyles.titleText,
+                      styles.text,
+                      styles.text_lg,
+                    ]}
                   >
                     {node.title}
                   </Text>
                 </View>
-                <View className='flex flex-row pr-2'>
+                <View style={nodeScreenStyles.countRow}>
                   <Text
-                    className='mr-1'
-                    style={[styles.text_meta, styles.text_sm]}
+                    style={[
+                      nodeScreenStyles.countLabel,
+                      styles.text_meta,
+                      styles.text_sm,
+                    ]}
                   >
                     主题总数
                   </Text>
                   <Text
-                    className='font-medium'
-                    style={[styles.text_meta, styles.text_sm]}
+                    style={[
+                      nodeScreenStyles.countValue,
+                      styles.text_meta,
+                      styles.text_sm,
+                    ]}
                   >
                     {node.topics || '--'}
                   </Text>
@@ -182,11 +190,11 @@ export default function NodeScreen() {
                   />
                 )}
               </View>
-              <View className='flex flex-row mt-3 mb-2 justify-end mr-1'>
+              <View style={nodeScreenStyles.btnRow}>
                 <Button
                   variant='default'
                   size='sm'
-                  className='mr-2'
+                  style={nodeScreenStyles.mr2}
                   disabled={collecting || node.collected === undefined}
                   onPress={handleCollectToggle}
                   label={node.collected ? '取消收藏' : '加入收藏'}
@@ -220,3 +228,52 @@ export default function NodeScreen() {
     </View>
   )
 }
+
+const nodeScreenStyles = StyleSheet.create({
+  headerContainer: {
+    padding: 8,
+  },
+  rounded: {
+    borderRadius: 8,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    marginRight: 12,
+  },
+  flex1: {
+    flex: 1,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  titleText: {
+    fontWeight: '600',
+  },
+  countRow: {
+    flexDirection: 'row',
+    paddingRight: 8,
+  },
+  countLabel: {
+    marginRight: 4,
+  },
+  countValue: {
+    fontWeight: '500',
+  },
+  btnRow: {
+    flexDirection: 'row',
+    marginTop: 12,
+    marginBottom: 8,
+    justifyContent: 'flex-end',
+    marginRight: 4,
+  },
+  mr2: {
+    marginRight: 8,
+  },
+})

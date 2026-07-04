@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
@@ -7,7 +7,6 @@ import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import TimeAgo from '@/components/TimeAgo'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 const ViewedTopicRow = (props: ViewedTopicRowProps) => {
   const { data, showAvatar, isLast } = props
@@ -17,8 +16,10 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
-        className='flex flex-row items-center active:opacity-50'
-        style={!isLast && styles.border_b_light}
+        style={[
+          viewedRowStyles.pressable,
+          !isLast && styles.border_b_light,
+        ]}
         onPress={() => {
           router.push({
             pathname: '/topic/[id]',
@@ -30,7 +31,7 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
         }}
       >
         {showAvatar ? (
-          <View className='px-2 py-2 self-start'>
+          <View style={viewedRowStyles.avatarCol}>
             <FixedPressable
               onPress={() => {
                 router.push({
@@ -47,21 +48,20 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
                 source={{
                   uri: member.avatar_normal,
                 }}
-                className='w-[24px] h-[24px] rounded'
+                style={viewedRowStyles.avatar}
               />
             </FixedPressable>
           </View>
         ) : (
-          <View className='pl-3'></View>
+          <View style={viewedRowStyles.pl3} />
         )}
 
-        <View className={cn('flex-1 py-2')}>
-          <View className='flex flex-row items-center pt-[2px] space-x-1 mb-1'>
+        <View style={viewedRowStyles.contentCol}>
+          <View style={viewedRowStyles.headerRow}>
             <View>
               <FixedPressable
                 hitSlop={4}
-                className='py-[2px] px-[6px] rounded active:opacity-60'
-                style={styles.layer2}
+                style={[viewedRowStyles.nodeTag, styles.layer2]}
                 onPress={() => {
                   router.push({
                     pathname: '/node/[name]',
@@ -77,10 +77,9 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
                 </Text>
               </FixedPressable>
             </View>
-            <Text style={styles.text_meta}>·</Text>
-            <View className='relative top-[1px]'>
+            <Text style={[styles.text_meta, viewedRowStyles.dot]}>·</Text>
+            <View style={viewedRowStyles.usernameWrap}>
               <FixedPressable
-                className='active:opacity-60'
                 hitSlop={5}
                 onPress={() => {
                   router.push({
@@ -93,8 +92,11 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
                 }}
               >
                 <Text
-                  className='font-[600]'
-                  style={[styles.text_desc, styles.text_xs]}
+                  style={[
+                    styles.text_desc,
+                    styles.text_xs,
+                    viewedRowStyles.usernameText,
+                  ]}
                 >
                   {member.username}
                 </Text>
@@ -103,15 +105,22 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
           </View>
           <View>
             <Text
-              className={cn({
-                'font-[500]': props.titleStyle === 'emphasized',
-              })}
-              style={[styles.text, styles.text_base]}
+              style={[
+                styles.text,
+                styles.text_base,
+                props.titleStyle === 'emphasized' && viewedRowStyles.titleEmphasized,
+              ]}
             >
               {title}
             </Text>
-            <View className='mt-2 flex flex-row items-center'>
-              <Text className='mr-2' style={[styles.text_meta, styles.text_xs]}>
+            <View style={viewedRowStyles.metaRow}>
+              <Text
+                style={[
+                  viewedRowStyles.mr2,
+                  styles.text_meta,
+                  styles.text_xs,
+                ]}
+              >
                 上次查看
               </Text>
               <Text style={[styles.text_meta, styles.text_xs]}>
@@ -124,5 +133,61 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
     </MaxWidthWrapper>
   )
 }
+
+const viewedRowStyles = StyleSheet.create({
+  pressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarCol: {
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
+  avatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  pl3: {
+    paddingLeft: 12,
+  },
+  contentCol: {
+    flex: 1,
+    paddingVertical: 8,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 2,
+    marginBottom: 4,
+  },
+  nodeTag: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  dot: {
+    marginHorizontal: 4,
+  },
+  usernameWrap: {
+    position: 'relative',
+    top: 1,
+  },
+  usernameText: {
+    fontWeight: '600',
+  },
+  titleEmphasized: {
+    fontWeight: '500',
+  },
+  metaRow: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mr2: {
+    marginRight: 8,
+  },
+})
 
 export default ViewedTopicRow

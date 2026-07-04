@@ -2,6 +2,8 @@ import { ReactElement, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   Pressable,
+  StyleProp,
+  StyleSheet,
   Text,
   TextInput,
   TextStyle,
@@ -12,7 +14,6 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { useQuery } from '@tanstack/react-query'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { getNodes } from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
 
@@ -21,8 +22,7 @@ type NodeSelectProps = {
   filterPlaceholder: string
   placeholder: string
   placeholderStyle: TextStyle
-  className?: string
-  style?: ViewStyle | ViewStyle[]
+  style?: StyleProp<ViewStyle>
   renderLabel(item: NodeDetail): ReactElement
   value?: string
 }
@@ -54,22 +54,24 @@ function NodeSelect(props: NodeSelectProps) {
     ({ item }) => {
       return (
         <Pressable
-          className='pl-3 active:opacity-50'
+          style={({ pressed }) => [
+            nodeSelectStyles.itemPressable,
+            pressed && nodeSelectStyles.pressed,
+          ]}
           onPress={() => {
             props.onChange(item)
             selectRef.current?.dismiss()
           }}
         >
           <View
-            className={cn('h-[50px] flex flex-row items-center pr-3')}
-            style={[styles.border_b_light]}
+            style={[nodeSelectStyles.itemRow, styles.border_b_light]}
           >
             {props.renderLabel(item)}
           </View>
         </Pressable>
       )
     },
-    [props.renderLabel],
+    [props.renderLabel, styles.border_b_light],
   )
 
   const selectedValue = nodesQuery.data?.data.find(
@@ -79,8 +81,10 @@ function NodeSelect(props: NodeSelectProps) {
   return (
     <>
       <Pressable
-        className={cn('active:opacity-50', props.className)}
-        style={props.style}
+        style={({ pressed }) => [
+          props.style,
+          pressed && nodeSelectStyles.pressed,
+        ]}
         onPress={() => {
           setOpen(true)
           selectRef.current?.present()
@@ -104,7 +108,7 @@ function NodeSelect(props: NodeSelectProps) {
           setOpen(false)
         }}
         header={
-          <View className='pt-4 px-3 pb-3'>
+          <View style={nodeSelectStyles.headerWrap}>
             <TextInput
               autoFocus={!props.value}
               style={{
@@ -136,5 +140,25 @@ function NodeSelect(props: NodeSelectProps) {
     </>
   )
 }
+
+const nodeSelectStyles = StyleSheet.create({
+  itemPressable: {
+    paddingLeft: 12,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  itemRow: {
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 12,
+  },
+  headerWrap: {
+    paddingTop: 16,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+  },
+})
 
 export default NodeSelect

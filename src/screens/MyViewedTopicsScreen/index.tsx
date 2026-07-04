@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import {
   EllipsisHorizontalIcon,
   TrashIcon,
@@ -22,7 +22,6 @@ import {
   useRemoveViewedTopic,
   useViewedItems,
 } from '@/containers/ViewedTopicsService'
-import { cn } from '@/lib/utils'
 
 import Header from './Header'
 import TideViewedTopicRow from './TideViewedTopicRow'
@@ -32,12 +31,12 @@ const Actions = (props) => {
   const params = useSwipeableItemParams()
   const { styles } = useTheme()
   return (
-    <View className='h-full flex-row justify-end' style={styles.btn_danger__bg}>
+    <View style={[viewedStyles.actionsWrap, styles.btn_danger__bg]}>
       <Pressable
-        className={cn(
-          'w-[56px] h-full flex flex-row items-center justify-center mr-[2px]',
-          'active:opacity-70',
-        )}
+        style={({ pressed }) => [
+          viewedStyles.deleteBtn,
+          pressed && viewedStyles.pressed,
+        ]}
         onPress={() => {
           params.close().then(() => {
             props.onDelete(params.item)
@@ -106,13 +105,13 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
       },
       keyExtractor: (item) => item.id,
     }),
-    [settings.feedLayout, settings.feedShowAvatar, data, removeItem],
+    [settings.feedLayout, settings.feedShowAvatar, settings.feedTitleStyle, data, removeItem, styles.layer1],
   )
 
   const headerRight = useMemo(
     () => (
       <Button
-        className='h-[44px] w-[44px] rounded-full'
+        style={viewedStyles.iconBtn}
         variant='icon'
         radius={22}
         onPress={() => {
@@ -140,7 +139,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
         <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
       </Button>
     ),
-    [theme.colors],
+    [theme.colors, showActionSheetWithOptions, colorScheme, styles.layer1, insets.bottom, clear],
   )
 
   const submitFilter = useCallback(
@@ -155,7 +154,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
   }, [setFilter])
 
   return (
-    <View className='flex-1'>
+    <View style={viewedStyles.container}>
       <Header
         title={'浏览的主题（缓存）'}
         initialFilter={filter}
@@ -170,7 +169,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListEmptyComponent={() => (
-          <View className='items-center py-9'>
+          <View style={viewedStyles.emptyWrap}>
             <Text style={styles.text_meta}>你还没有查看过任何一个主题哦～</Text>
           </View>
         )}
@@ -178,9 +177,9 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
           !!data.length && (
             <View
               sentry-label='ListFooter'
-              className='min-h-[60px] py-4 flex flex-row items-center justify-center'
+              style={viewedStyles.footerWrap}
             >
-              <View className='w-full flex flex-row justify-center py-4'>
+              <View style={viewedStyles.footerInner}>
                 <Text style={styles.text_meta}>到达底部啦</Text>
               </View>
             </View>
@@ -190,3 +189,47 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
     </View>
   )
 }
+
+const viewedStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  actionsWrap: {
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  deleteBtn: {
+    width: 56,
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 2,
+  },
+  pressed: {
+    opacity: 0.7,
+  },
+  iconBtn: {
+    height: 44,
+    width: 44,
+    borderRadius: 22,
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    paddingVertical: 36,
+  },
+  footerWrap: {
+    minHeight: 60,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  footerInner: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 16,
+  },
+})
