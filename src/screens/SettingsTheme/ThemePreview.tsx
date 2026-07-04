@@ -80,7 +80,11 @@ export default function ThemePreview(props: {
           <View style={previewStyles.headerRow}>
             <View style={previewStyles.flex1}>
               <Text
-                style={[previewStyles.fontMedium, styles.text, styles.text_base]}
+                style={[
+                  previewStyles.fontMedium,
+                  styles.text,
+                  styles.text_base,
+                ]}
               >
                 外观预览
               </Text>
@@ -138,7 +142,11 @@ export default function ThemePreview(props: {
           <View style={previewStyles.fontSection}>
             <View>
               <Text
-                style={[previewStyles.fontMedium, styles.text, styles.text_base]}
+                style={[
+                  previewStyles.fontMedium,
+                  styles.text,
+                  styles.text_base,
+                ]}
               >
                 字体大小
               </Text>
@@ -231,7 +239,11 @@ export default function ThemePreview(props: {
             >
               <View style={previewStyles.p4}>
                 <TextInput
-                  style={[previewStyles.input, styles.text, styles.overlay_input__bg]}
+                  style={[
+                    previewStyles.input,
+                    styles.text,
+                    styles.overlay_input__bg,
+                  ]}
                   selectionColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.text_placeholder}
                   placeholder='用户名'
@@ -240,7 +252,11 @@ export default function ThemePreview(props: {
                   autoCapitalize='none'
                 />
                 <TextInput
-                  style={[previewStyles.input, styles.text, styles.overlay_input__bg]}
+                  style={[
+                    previewStyles.input,
+                    styles.text,
+                    styles.overlay_input__bg,
+                  ]}
                   selectionColor={theme.colors.primary}
                   placeholderTextColor={theme.colors.text_placeholder}
                   placeholder='密码'

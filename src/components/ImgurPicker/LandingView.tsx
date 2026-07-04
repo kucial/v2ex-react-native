@@ -36,11 +36,7 @@ export default function Landing(props: LandingProps) {
             </View>
             <View style={landingStyles.titleWrap}>
               <Text
-                style={[
-                  landingStyles.titleText,
-                  styles.text,
-                  styles.text_base,
-                ]}
+                style={[landingStyles.titleText, styles.text, styles.text_base]}
                 numberOfLines={1}
                 ellipsizeMode='tail'
               >

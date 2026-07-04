@@ -88,9 +88,7 @@ export default function ImagesGrid(props: ImagesGridProps) {
                   props.selected.length && context.submit()
                 }}
               >
-                <Text
-                  style={[gridStyles.textNeutral300, styles.text_base]}
-                >
+                <Text style={[gridStyles.textNeutral300, styles.text_base]}>
                   {props.selected.length ? '完成选择' : '关闭'}
                 </Text>
               </Pressable>

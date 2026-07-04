@@ -73,9 +73,7 @@ function GoogleSign(props: GoogleSigninProps) {
 
   return (
     <View style={[googleSignStyles.container, styles.overlay]}>
-      <View
-        style={[googleSignStyles.header, styles.border_b_light]}
-      >
+      <View style={[googleSignStyles.header, styles.border_b_light]}>
         <BackButton
           tintColor={theme.colors.text}
           onPress={() => {
@@ -125,9 +123,7 @@ function GoogleSign(props: GoogleSigninProps) {
           />
         )}
         {loading && (
-          <View
-            style={[googleSignStyles.loaderWrap, styles.layer1]}
-          >
+          <View style={[googleSignStyles.loaderWrap, styles.layer1]}>
             <Loader />
           </View>
         )}

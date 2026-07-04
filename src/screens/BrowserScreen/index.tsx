@@ -6,9 +6,9 @@ import {
   ChevronRightIcon,
 } from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { WebView } from 'react-native-webview'
 import { useLocalSearchParams } from 'expo-router'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import NavigationHeader from '@/components/NavigationHeader'
 

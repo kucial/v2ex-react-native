@@ -11,9 +11,7 @@ export default function ErrorNotice(props: {
   const { styles } = useTheme()
 
   return (
-    <View
-      style={[errorNoticeStyles.container, props.style, styles.layer2]}
-    >
+    <View style={[errorNoticeStyles.container, props.style, styles.layer2]}>
       <View style={errorNoticeStyles.centerRow}>
         <Text style={[errorNoticeStyles.messageText, styles.text]}>
           {props.error.message}

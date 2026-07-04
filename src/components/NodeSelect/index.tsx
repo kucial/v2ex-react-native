@@ -90,9 +90,7 @@ function NodeSelect(props: NodeSelectProps) {
             selectRef.current?.dismiss()
           }}
         >
-          <View
-            style={[nodeSelectStyles.itemRow, styles.border_b_light]}
-          >
+          <View style={[nodeSelectStyles.itemRow, styles.border_b_light]}>
             {renderLabel(item)}
           </View>
         </Pressable>

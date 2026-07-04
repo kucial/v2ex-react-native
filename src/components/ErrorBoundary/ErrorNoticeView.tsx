@@ -25,11 +25,7 @@ export default function ErrorNoticeView(props: Props) {
             </Text>
           </View>
           <Text
-            style={[
-              errorNoticeStyles.descText,
-              styles.text,
-              styles.text_base,
-            ]}
+            style={[errorNoticeStyles.descText, styles.text, styles.text_base]}
           >
             应用程序遇到问题，无法继续。 {'\n'}我们道歉对于由此造成的任何不便！
             {'\n'}

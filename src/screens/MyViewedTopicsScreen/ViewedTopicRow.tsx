@@ -16,10 +16,7 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
-        style={[
-          viewedRowStyles.pressable,
-          !isLast && styles.border_b_light,
-        ]}
+        style={[viewedRowStyles.pressable, !isLast && styles.border_b_light]}
         onPress={() => {
           router.push({
             pathname: '/topic/[id]',
@@ -108,18 +105,15 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
               style={[
                 styles.text,
                 styles.text_base,
-                props.titleStyle === 'emphasized' && viewedRowStyles.titleEmphasized,
+                props.titleStyle === 'emphasized' &&
+                  viewedRowStyles.titleEmphasized,
               ]}
             >
               {title}
             </Text>
             <View style={viewedRowStyles.metaRow}>
               <Text
-                style={[
-                  viewedRowStyles.mr2,
-                  styles.text_meta,
-                  styles.text_xs,
-                ]}
+                style={[viewedRowStyles.mr2, styles.text_meta, styles.text_xs]}
               >
                 上次查看
               </Text>

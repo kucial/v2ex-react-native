@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Share from 'react-native-share'
 import { BarcodeScanningResult, Camera } from 'expo-camera'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import colors from 'tailwindcss/colors'
 
 import CheckIcon from '@/components/CheckIcon'

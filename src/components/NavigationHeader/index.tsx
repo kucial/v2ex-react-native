@@ -106,11 +106,7 @@ export default function NavigationHeader({
       ]}
     >
       <View
-        style={[
-          navHeaderStyles.row52,
-          headerStyle,
-          shadow && styles.border_b,
-        ]}
+        style={[navHeaderStyles.row52, headerStyle, shadow && styles.border_b]}
       >
         {renderHeaderLeft()}
         <View

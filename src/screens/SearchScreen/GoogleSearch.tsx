@@ -107,9 +107,7 @@ export default function GoogleSearch() {
               : googleSearchStyles.py8,
           ]}
         >
-          <View
-            style={[googleSearchStyles.inputBg, styles.input__bg]}
-          >
+          <View style={[googleSearchStyles.inputBg, styles.input__bg]}>
             <TextInput
               style={[
                 googleSearchStyles.input,

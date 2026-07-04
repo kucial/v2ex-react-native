@@ -27,11 +27,7 @@ function SelectField({
       {label && (
         <View style={selectFieldStyles.flex1}>
           <Text
-            style={[
-              selectFieldStyles.labelText,
-              styles.text,
-              styles.text_xs,
-            ]}
+            style={[selectFieldStyles.labelText, styles.text, styles.text_xs]}
           >
             {label}
           </Text>

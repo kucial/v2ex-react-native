@@ -18,9 +18,7 @@ function CollectedNodes(props: { data: NodeExtra[] }) {
   return (
     <MaxWidthWrapper>
       <View style={collectedNodesStyles.outer}>
-        <View
-          style={[styles.layer1, collectedNodesStyles.grid]}
-        >
+        <View style={[styles.layer1, collectedNodesStyles.grid]}>
           {data.map((node) => (
             <View key={node.name} style={collectedNodesStyles.gridItem}>
               <Pressable

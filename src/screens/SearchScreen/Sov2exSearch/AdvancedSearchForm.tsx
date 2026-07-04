@@ -74,19 +74,22 @@ export default function AdvancedSearchForm(props: {
   }, [props.initialValues])
   const now = useMemo(() => new Date(), [])
 
-  const handleSubmit = useCallback((values: FormValues) => {
-    const { lte, gte, sort_str = 'sumup', node, ...rest } = values
-    const [sort, order] = sort_str.split('_')
-    const mapped = {
-      ...rest,
-      lte: lte ? lte.valueOf() / 1000 : undefined,
-      gte: gte ? gte.valueOf() / 1000 : undefined,
-      sort,
-      order,
-      node: typeof node === 'object' ? node.name : node,
-    }
-    props.onSubmit(mapped)
-  }, [props])
+  const handleSubmit = useCallback(
+    (values: FormValues) => {
+      const { lte, gte, sort_str = 'sumup', node, ...rest } = values
+      const [sort, order] = sort_str.split('_')
+      const mapped = {
+        ...rest,
+        lte: lte ? lte.valueOf() / 1000 : undefined,
+        gte: gte ? gte.valueOf() / 1000 : undefined,
+        sort,
+        order,
+        node: typeof node === 'object' ? node.name : node,
+      }
+      props.onSubmit(mapped)
+    },
+    [props],
+  )
 
   const { styles } = useTheme()
   return (
@@ -176,9 +179,7 @@ export default function AdvancedSearchForm(props: {
             </View>
             <View style={advFormStyles.sortRow}>
               <View style={advFormStyles.sortLabelWrap}>
-                <Text style={[advFormStyles.labelText, styles.text]}>
-                  排序
-                </Text>
+                <Text style={[advFormStyles.labelText, styles.text]}>排序</Text>
               </View>
               <View style={advFormStyles.flex1}>
                 <SelectField

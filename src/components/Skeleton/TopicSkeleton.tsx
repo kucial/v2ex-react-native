@@ -15,10 +15,7 @@ export default function TopicSkeleton() {
             <InlineBox style={topSkelStyles.avatarBox} />
             <View style={topSkelStyles.authorMeta}>
               <View style={topSkelStyles.py2}>
-                <InlineText
-                  style={topSkelStyles.fontMedium}
-                  width={[60, 80]}
-                />
+                <InlineText style={topSkelStyles.fontMedium} width={[60, 80]} />
               </View>
               <View style={topSkelStyles.ml2}>
                 <InlineText style={styles.text_xs} width={[40, 60]} />
@@ -32,9 +29,7 @@ export default function TopicSkeleton() {
             ></InlineBox>
           </View>
         </View>
-        <View
-          style={[topSkelStyles.titleContainer, styles.border_b_light]}
-        >
+        <View style={[topSkelStyles.titleContainer, styles.border_b_light]}>
           <BlockText style={styles.text_lg} lines={[1, 3]} />
         </View>
         <View style={topSkelStyles.mt1}>

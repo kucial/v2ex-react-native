@@ -13,9 +13,7 @@ const TideTopicRowDemo = (props: DemoRowProps) => {
     props.data
   const { showAvatar, showLastReplyMember, viewedStatus } = props
   return (
-    <View
-      style={[tideDemoStyles.row, styles.layer1, styles.border_b_light]}
-    >
+    <View style={[tideDemoStyles.row, styles.layer1, styles.border_b_light]}>
       {showAvatar ? (
         <View style={tideDemoStyles.avatarWrap}>
           <Image
@@ -47,9 +45,7 @@ const TideTopicRowDemo = (props: DemoRowProps) => {
             {title}
           </Text>
           <View style={tideDemoStyles.metaRow}>
-            <View
-              style={[tideDemoStyles.nodeTag, styles.layer2]}
-            >
+            <View style={[tideDemoStyles.nodeTag, styles.layer2]}>
               <Text style={[styles.text_desc, styles.text_xs]}>
                 {node.title}
               </Text>
@@ -60,11 +56,7 @@ const TideTopicRowDemo = (props: DemoRowProps) => {
             {showLastReplyMember && (
               <>
                 <Text
-                  style={[
-                    tideDemoStyles.px1,
-                    styles.text_meta,
-                    styles.text_xs,
-                  ]}
+                  style={[tideDemoStyles.px1, styles.text_meta, styles.text_xs]}
                 >
                   •
                 </Text>

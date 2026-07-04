@@ -1,11 +1,5 @@
 import { ReactNode, useState } from 'react'
-import {
-  StyleSheet,
-  Text,
-  TextInputProps,
-  View,
-  ViewStyle,
-} from 'react-native'
+import { StyleSheet, Text, TextInputProps, View, ViewStyle } from 'react-native'
 import DatePicker from 'react-native-date-picker'
 import { useField } from 'formik'
 import { padStart } from 'lodash'

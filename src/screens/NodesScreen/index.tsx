@@ -93,9 +93,7 @@ export default function NodesScreen() {
                 ]}
               >
                 <View style={nodesScreenStyles.titleWrap}>
-                  <Text
-                    style={[nodesScreenStyles.titleText, styles.text]}
-                  >
+                  <Text style={[nodesScreenStyles.titleText, styles.text]}>
                     {section.title}
                   </Text>
                 </View>

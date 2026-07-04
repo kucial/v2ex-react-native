@@ -192,7 +192,12 @@ export default function NewTopicScreen() {
                       </View>
                       <View>
                         <TextInput
-                          style={[newTopicStyles.input, styles.layer2, styles.text, { fontSize: 16 }]}
+                          style={[
+                            newTopicStyles.input,
+                            styles.layer2,
+                            styles.text,
+                            { fontSize: 16 },
+                          ]}
                           selectionColor={theme.colors.primary}
                           placeholderTextColor={theme.colors.text_placeholder}
                           placeholder='请输入主题标题'

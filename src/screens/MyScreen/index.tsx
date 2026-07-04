@@ -1,5 +1,12 @@
 import { useCallback } from 'react'
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 import {
   ClockIcon,
   Cog6ToothIcon,
@@ -95,11 +102,7 @@ export default function MyScreen() {
         />
         <View style={myScreenStyles.flex1}>
           <Text
-            style={[
-              myScreenStyles.username,
-              styles.text,
-              styles.text_base,
-            ]}
+            style={[myScreenStyles.username, styles.text, styles.text_base]}
           >
             {currentUser.username}
           </Text>
@@ -150,11 +153,7 @@ export default function MyScreen() {
         <Box key={authStatus} style={myScreenStyles.avatarBox} />
         <View style={myScreenStyles.flex1}>
           <Text
-            style={[
-              myScreenStyles.username,
-              styles.text,
-              styles.text_base,
-            ]}
+            style={[myScreenStyles.username, styles.text, styles.text_base]}
           >
             未登录
           </Text>
@@ -163,9 +162,7 @@ export default function MyScreen() {
     )
   } else {
     header = (
-      <View
-        style={[myScreenStyles.skeletonHeader, styles.grouped_secondary]}
-      >
+      <View style={[myScreenStyles.skeletonHeader, styles.grouped_secondary]}>
         <Box style={myScreenStyles.avatarBox} />
         <View style={myScreenStyles.flex1}>
           <InlineText

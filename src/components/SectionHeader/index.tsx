@@ -11,9 +11,7 @@ export default function SectionHeader(props: {
   const { styles } = useTheme()
   return (
     <View style={secHeaderStyles.container}>
-      <Text
-        style={[secHeaderStyles.titleText, styles.text, styles.text_base]}
-      >
+      <Text style={[secHeaderStyles.titleText, styles.text, styles.text_base]}>
         {props.title}
       </Text>
       {!!props.desc && (

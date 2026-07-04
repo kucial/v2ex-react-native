@@ -8,11 +8,7 @@ export default function TopicRowSkeleton() {
   const { styles, theme } = useTheme()
   return (
     <View
-      style={[
-        skelStyles.rowContainer,
-        styles.layer1,
-        styles.border_b_light,
-      ]}
+      style={[skelStyles.rowContainer, styles.layer1, styles.border_b_light]}
     >
       <View style={skelStyles.mainCol}>
         <View style={skelStyles.metaRow}>

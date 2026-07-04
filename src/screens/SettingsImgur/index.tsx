@@ -96,9 +96,7 @@ export default function ImgurSettings() {
                       >
                         Client ID
                       </Text>
-                      <View
-                        style={[imgurStyles.boxRow, styles.layer2]}
-                      >
+                      <View style={[imgurStyles.boxRow, styles.layer2]}>
                         <Text style={styles.text}>
                           {imgurService.credentials.client_id}
                         </Text>
@@ -114,9 +112,7 @@ export default function ImgurSettings() {
                       >
                         Account Username
                       </Text>
-                      <View
-                        style={[imgurStyles.boxRow, styles.layer2]}
-                      >
+                      <View style={[imgurStyles.boxRow, styles.layer2]}>
                         <Text style={styles.text}>
                           {imgurService.credentials.account_username}
                         </Text>

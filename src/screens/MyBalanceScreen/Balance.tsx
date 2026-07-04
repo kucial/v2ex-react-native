@@ -177,7 +177,9 @@ export default function Balance(props: { username: string }) {
           onRefresh={listQuery.refetch}
         />
       }
-      ListHeaderComponent={() => <View style={balanceStyles.headerSpacer}></View>}
+      ListHeaderComponent={() => (
+        <View style={balanceStyles.headerSpacer}></View>
+      )}
       // TODO: 在头部显示显示余额信息
       ListFooterComponent={() => {
         return <CommonListFooter data={listQuery} />

@@ -17,10 +17,7 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label='TideTopicRow'
-        style={[
-          tideViewedStyles.pressable,
-          !isLast && styles.border_b_light,
-        ]}
+        style={[tideViewedStyles.pressable, !isLast && styles.border_b_light]}
         onPress={() => {
           router.push({
             pathname: '/topic/[id]',
@@ -61,7 +58,8 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
             style={[
               styles.text,
               styles.text_base,
-              props.titleStyle === 'emphasized' && tideViewedStyles.titleEmphasized,
+              props.titleStyle === 'emphasized' &&
+                tideViewedStyles.titleEmphasized,
             ]}
           >
             {title}
@@ -85,11 +83,7 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
               </Text>
             </FixedPressable>
             <Text
-              style={[
-                tideViewedStyles.mr2,
-                styles.text_meta,
-                styles.text_xs,
-              ]}
+              style={[tideViewedStyles.mr2, styles.text_meta, styles.text_xs]}
             >
               上次查看
             </Text>

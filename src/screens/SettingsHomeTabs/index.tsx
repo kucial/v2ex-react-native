@@ -69,19 +69,14 @@ const LineItem = (props: {
       onLongPress={props.onLongPress}
     >
       <View
-        style={[
-          homeTabsStyles.lineContent,
-          !props.isLast && styles.border_b,
-        ]}
+        style={[homeTabsStyles.lineContent, !props.isLast && styles.border_b]}
       >
         <View style={homeTabsStyles.lineLeft}>
           {props.icon && <View style={homeTabsStyles.mr3}>{props.icon}</View>}
           <Text style={[styles.text, styles.text_base]}>{props.title}</Text>
         </View>
         {props.extra && (
-          <View style={homeTabsStyles.lineExtra}>
-            {props.extra}
-          </View>
+          <View style={homeTabsStyles.lineExtra}>{props.extra}</View>
         )}
       </View>
     </Pressable>
@@ -309,9 +304,7 @@ export default function HomeTabs() {
               <View>{disabledTabs.map(renderDisabledItem)}</View>
             ) : (
               <MaxWidthWrapper style={homeTabsStyles.px2}>
-                <View
-                  style={[homeTabsStyles.emptyBox, styles.layer1]}
-                >
+                <View style={[homeTabsStyles.emptyBox, styles.layer1]}>
                   <Text style={styles.text}>（空）</Text>
                 </View>
               </MaxWidthWrapper>
@@ -324,10 +317,7 @@ export default function HomeTabs() {
         keyExtractor={(item) => `${item.type}-${item.value}`}
         renderItem={renderItem}
       />
-      <View
-        style={homeTabsStyles.bottomFloat}
-        pointerEvents='box-none'
-      >
+      <View style={homeTabsStyles.bottomFloat} pointerEvents='box-none'>
         <Button
           variant='primary'
           style={homeTabsStyles.addBtn}

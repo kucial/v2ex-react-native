@@ -142,9 +142,7 @@ export default function NodeScreen() {
                 }}
               />
             ) : (
-              <View
-                style={[nodeScreenStyles.avatar, styles.layer3]}
-              />
+              <View style={[nodeScreenStyles.avatar, styles.layer3]} />
             )}
 
             <View style={nodeScreenStyles.flex1}>

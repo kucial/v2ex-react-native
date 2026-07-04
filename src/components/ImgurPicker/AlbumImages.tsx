@@ -41,11 +41,7 @@ export default function AlbumImages(props: {
         </View>
         <View style={albumImagesStyles.titleWrap}>
           <Text
-            style={[
-              albumImagesStyles.titleText,
-              styles.text,
-              styles.text_base,
-            ]}
+            style={[albumImagesStyles.titleText, styles.text, styles.text_base]}
             numberOfLines={1}
             ellipsizeMode='tail'
           >

@@ -33,11 +33,7 @@ function NodeLabel(props: {
     return null
   }
 
-  return (
-    <Text style={props.style}>
-      {node.title}
-    </Text>
-  )
+  return <Text style={props.style}>{node.title}</Text>
 }
 
 export default NodeLabel

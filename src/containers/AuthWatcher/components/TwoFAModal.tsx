@@ -141,9 +141,7 @@ export function TwoFAModal() {
               <Text style={[styles.text]}>{message}</Text>
             </View>
             <View>
-              <View
-                style={[twoFAStyles.inputBg, styles.overlay_input__bg]}
-              >
+              <View style={[twoFAStyles.inputBg, styles.overlay_input__bg]}>
                 <TextInput
                   placeholder='Enter 2FA Code'
                   value={input}

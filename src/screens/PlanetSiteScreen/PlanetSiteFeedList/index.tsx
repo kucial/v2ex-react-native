@@ -89,7 +89,13 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
       })
     }
     listQuery.refetch()
-  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics, scrollY, listQuery])
+  }, [
+    listQuery.isRefetching,
+    listQuery.data,
+    settings.refreshHaptics,
+    scrollY,
+    listQuery,
+  ])
 
   useEffect(() => {
     if (
@@ -127,7 +133,13 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
         subscription.remove()
       }
     }
-  }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration, listQuery, scrollToRefresh])
+  }, [
+    isFocused,
+    settings.autoRefresh,
+    settings.autoRefreshDuration,
+    listQuery,
+    scrollToRefresh,
+  ])
 
   useEffect(() => {
     if (currentListRef) {

@@ -13,9 +13,7 @@ const GroupWapper = (props: {
       style={[groupStyles.outer, props.style]}
       pointerEvents={props.pointerEvents}
     >
-      <View
-        style={[groupStyles.inner, props.innerStyle]}
-      >
+      <View style={[groupStyles.inner, props.innerStyle]}>
         {props.children}
       </View>
     </View>

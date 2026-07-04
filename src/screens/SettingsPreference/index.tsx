@@ -126,9 +126,7 @@ export default function PreferenceSettings() {
             </View>
 
             <View style={[prefStyles.rowWrap, styles.layer1]}>
-              <View
-                style={[prefStyles.rowContent, styles.border_b]}
-              >
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>列表布局</Text>
                 </View>
@@ -154,9 +152,7 @@ export default function PreferenceSettings() {
               </View>
             </View>
             <View style={[prefStyles.rowWrap, styles.layer1]}>
-              <View
-                style={[prefStyles.rowContent, styles.border_b]}
-              >
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>标题样式</Text>
                 </View>
@@ -182,9 +178,7 @@ export default function PreferenceSettings() {
               </View>
             </View>
             <View style={[prefStyles.rowWrap, styles.layer1]}>
-              <View
-                style={[prefStyles.rowContent, styles.border_b]}
-              >
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>显示头像</Text>
                 </View>
@@ -202,9 +196,7 @@ export default function PreferenceSettings() {
               </View>
             </View>
             <View style={[prefStyles.rowWrap, styles.layer1]}>
-              <View
-                style={[prefStyles.rowContent, styles.border_b]}
-              >
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>
                     显示最后回复用户
@@ -224,9 +216,7 @@ export default function PreferenceSettings() {
               </View>
             </View>
             <View style={[prefStyles.rowWrap, styles.layer1]}>
-              <View
-                style={[prefStyles.rowContent, styles.border_b]}
-              >
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>已读提示</Text>
                 </View>
@@ -288,9 +278,7 @@ export default function PreferenceSettings() {
               sentry-label='AutoRefrehLineItem'
               style={[prefStyles.rowWrap, styles.layer1]}
             >
-              <View
-                style={[prefStyles.rowContent, styles.border_b]}
-              >
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>自动刷新</Text>
                 </View>
@@ -327,9 +315,7 @@ export default function PreferenceSettings() {
                 }))
               }}
             >
-              <View
-                style={[prefStyles.rowContent, styles.border_b]}
-              >
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>刷新间隔</Text>
                 </View>
@@ -365,9 +351,7 @@ export default function PreferenceSettings() {
           <SectionHeader title='其他' />
           <GroupWapper>
             <View style={[prefStyles.rowWrap, styles.layer1]}>
-              <View
-                style={[prefStyles.rowContent, styles.border_b]}
-              >
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>搜索服务</Text>
                 </View>

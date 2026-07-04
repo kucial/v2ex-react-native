@@ -72,14 +72,22 @@ export default function AboutScreen() {
               <View style={aboutStyles.mb2}>
                 <View>
                   <Text
-                    style={[styles.text, styles.text_base, aboutStyles.titleText]}
+                    style={[
+                      styles.text,
+                      styles.text_base,
+                      aboutStyles.titleText,
+                    ]}
                   >
                     R2V
                   </Text>
                 </View>
                 <View>
                   <Text
-                    style={[styles.text, styles.text_xs, aboutStyles.centerText]}
+                    style={[
+                      styles.text,
+                      styles.text_xs,
+                      aboutStyles.centerText,
+                    ]}
                   >
                     V2EX 第三方客户端 ({Constants.expoConfig?.version})
                   </Text>

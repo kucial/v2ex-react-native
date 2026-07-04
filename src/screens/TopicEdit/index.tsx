@@ -77,10 +77,7 @@ export default function TopicEdit() {
 
   return (
     <View style={[editStyles.container, styles.layer1]}>
-      <KeyboardAwareView
-        animated
-        style={editStyles.kav}
-      >
+      <KeyboardAwareView animated style={editStyles.kav}>
         <Formik
           initialValues={formQuery.data.values}
           onSubmit={handleSubmit}

@@ -105,7 +105,14 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
       },
       keyExtractor: (item) => item.id,
     }),
-    [settings.feedLayout, settings.feedShowAvatar, settings.feedTitleStyle, data, removeItem, styles.layer1],
+    [
+      settings.feedLayout,
+      settings.feedShowAvatar,
+      settings.feedTitleStyle,
+      data,
+      removeItem,
+      styles.layer1,
+    ],
   )
 
   const headerRight = useMemo(
@@ -139,7 +146,14 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
         <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
       </Button>
     ),
-    [theme.colors, showActionSheetWithOptions, colorScheme, styles.layer1, insets.bottom, clear],
+    [
+      theme.colors,
+      showActionSheetWithOptions,
+      colorScheme,
+      styles.layer1,
+      insets.bottom,
+      clear,
+    ],
   )
 
   const submitFilter = useCallback(
@@ -175,10 +189,7 @@ export default function ViewedTopicsScreen(props: ScreenProps) {
         )}
         ListFooterComponent={() =>
           !!data.length && (
-            <View
-              sentry-label='ListFooter'
-              style={viewedStyles.footerWrap}
-            >
+            <View sentry-label='ListFooter' style={viewedStyles.footerWrap}>
               <View style={viewedStyles.footerInner}>
                 <Text style={styles.text_meta}>到达底部啦</Text>
               </View>

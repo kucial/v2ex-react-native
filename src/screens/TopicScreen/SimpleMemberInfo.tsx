@@ -105,9 +105,7 @@ export default function SimpleMemberInfo(props: {
                   source={{ uri: data.avatar_large }}
                 />
               ) : (
-                <Box
-                  style={[simpleMemberStyles.avatar, styles.layer2]}
-                />
+                <Box style={[simpleMemberStyles.avatar, styles.layer2]} />
               )}
             </View>
             <View style={simpleMemberStyles.flex1}>

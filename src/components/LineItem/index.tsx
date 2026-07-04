@@ -17,9 +17,7 @@ export const LineItemGroup = (props: {
 }) => {
   return (
     <View style={[lineItemStyles.groupOuter, props.style]}>
-      <View style={lineItemStyles.groupInner}>
-        {props.children}
-      </View>
+      <View style={lineItemStyles.groupInner}>{props.children}</View>
     </View>
   )
 }
@@ -44,13 +42,13 @@ export const LineItem = (props: {
         style={[lineItemStyles.contentRow, !props.isLast && styles.border_b]}
       >
         <View style={lineItemStyles.leftRow}>
-          {props.icon && <View style={lineItemStyles.iconWrap}>{props.icon}</View>}
+          {props.icon && (
+            <View style={lineItemStyles.iconWrap}>{props.icon}</View>
+          )}
           <Text style={[styles.text, styles.text_base]}>{props.title}</Text>
         </View>
         {props.extra && (
-          <View style={lineItemStyles.extraWrap}>
-            {props.extra}
-          </View>
+          <View style={lineItemStyles.extraWrap}>{props.extra}</View>
         )}
       </View>
     </FixedPressable>

@@ -14,7 +14,11 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
   const { styles } = useTheme()
   return (
     <View
-      style={[normalDemoStyles.row, styles.layer1, !isLast && styles.border_b_light]}
+      style={[
+        normalDemoStyles.row,
+        styles.layer1,
+        !isLast && styles.border_b_light,
+      ]}
     >
       {showAvatar ? (
         <View style={normalDemoStyles.avatarWrap}>
@@ -37,9 +41,7 @@ const NormalTopicRowDemo = (props: DemoRowProps) => {
       >
         <View style={normalDemoStyles.metaRow}>
           <View>
-            <View
-              style={[normalDemoStyles.nodeTag, styles.layer2]}
-            >
+            <View style={[normalDemoStyles.nodeTag, styles.layer2]}>
               <Text style={[styles.text_desc, styles.text_xs]}>
                 {node.title}
               </Text>

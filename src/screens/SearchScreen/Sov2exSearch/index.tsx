@@ -96,9 +96,7 @@ export default function Sov2exSearch() {
             {/* Base */}
             <View style={sov2exStyles.inputRow}>
               <View style={sov2exStyles.inputWrap}>
-                <View
-                  style={[sov2exStyles.inputBg, styles.input__bg]}
-                >
+                <View style={[sov2exStyles.inputBg, styles.input__bg]}>
                   <TextInput
                     style={[
                       sov2exStyles.input,

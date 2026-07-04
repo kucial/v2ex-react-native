@@ -77,9 +77,7 @@ export default function ResultRow(props: { data: SearchHit }) {
             <Text style={styles.text_meta}>·</Text>
             <View style={resultRowStyles.rel}>
               <FixedPressable
-                style={({ pressed }) => [
-                  pressed && resultRowStyles.pressed60,
-                ]}
+                style={({ pressed }) => [pressed && resultRowStyles.pressed60]}
                 hitSlop={5}
                 onPress={() => {
                   router.push({

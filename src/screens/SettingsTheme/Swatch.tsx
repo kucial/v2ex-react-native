@@ -20,9 +20,7 @@ export default function Swatch({
           shadow && styles.shadow,
         ]}
       ></View>
-      <Text
-        style={[swatchStyles.label, { color: theme.colors.text }]}
-      >
+      <Text style={[swatchStyles.label, { color: theme.colors.text }]}>
         {name}
       </Text>
     </View>

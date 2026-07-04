@@ -32,9 +32,7 @@ export default function FeedPanelSheet() {
       grabber={false}
     >
       <ScrollView contentContainerStyle={sheetStyles.scrollContent}>
-        <View
-          style={[sheetStyles.titleWrap, styles.border_b_light]}
-        >
+        <View style={[sheetStyles.titleWrap, styles.border_b_light]}>
           <Text
             style={[styles.text_title, styles.text_lg, { fontWeight: 'bold' }]}
           >

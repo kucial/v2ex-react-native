@@ -18,20 +18,11 @@ function NodeSection(props) {
     <View style={[nodeSkelStyles.sectionCard, styles.layer1]}>
       <View style={nodeSkelStyles.headerRow}>
         <View style={nodeSkelStyles.py2}>
-          <InlineText
-            style={nodeSkelStyles.fontMedium}
-            width={[56, 80]}
-          />
+          <InlineText style={nodeSkelStyles.fontMedium} width={[56, 80]} />
         </View>
         <View style={nodeSkelStyles.metaRow}>
           <InlineText style={styles.text_xs} width={[56, 80]} />
-          <Text
-            style={[
-              styles.text_meta,
-              styles.text_xs,
-              nodeSkelStyles.dot,
-            ]}
-          >
+          <Text style={[styles.text_meta, styles.text_xs, nodeSkelStyles.dot]}>
             •
           </Text>
           <InlineText style={styles.text_xs} width={64} />
