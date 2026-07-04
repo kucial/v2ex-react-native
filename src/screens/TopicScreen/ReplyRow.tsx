@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo, useRef } from 'react'
-import { Pressable, Text, View, ViewStyle } from 'react-native'
+import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { ChatBubbleLeftRightIcon } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 import { useRecyclingState } from '@shopify/flash-list'
@@ -18,7 +18,6 @@ import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { usePressBreadcrumb } from '@/utils/hooks'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
@@ -66,7 +65,7 @@ function ReplyRow(props: ReplyRowProps) {
   const [showMarkdown, setMarkdownVisible] = useRecyclingState(false, [
     data?.id,
   ])
-  const { theme, styles } = useTheme()
+  const { theme, styles, colorScheme } = useTheme()
   const router = useRouter()
 
   const heartIconRef = useRef<LottieView>(null)
@@ -137,41 +136,38 @@ function ReplyRow(props: ReplyRowProps) {
     }
   }, [data?.member?.username, onShowUserInfo, router])
 
-  const htmlRenderProps = useMemo(
+  const htmlSource = useMemo(
     () => ({
-      // FIX: Remove colorScheme from the key — HtmlRender already responds
-      // to theme changes internally via context. Including colorScheme here
-      // was causing every visible reply row to fully unmount/remount on
-      // theme switch, which is expensive (3-5ms each × N rows visible).
-      key: `${data?.id}-${showMarkdown}`,
-      source: {
-        html: showMarkdown
-          ? marked(data?.content || '')
-          : data?.content_rendered,
-        baseUrl: 'https://v2ex.com',
-      },
+      html: showMarkdown ? marked(data?.content || '') : data?.content_rendered,
+      baseUrl: 'https://v2ex.com',
     }),
-    [data?.id, data?.content, data?.content_rendered, showMarkdown],
+    [data?.content, data?.content_rendered, showMarkdown],
   )
 
   if (!data) {
     return (
       <MaxWidthWrapper style={styles.layer1}>
-        <View className='py-2' style={[styles.layer1, styles.border_b_light]}>
-          <View className='flex flex-row pl-2'>
-            {showAvatar && <Box className='w-[24px] h-[24px] rounded mr-2' />}
-            <View className='flex-1 ml-1'>
-              <View className='flex flex-row'>
-                <View className='flex flex-row items-center flex-1'>
-                  <View className=''>
+        <View
+          style={[
+            rowStyles.skeletonContainer,
+            styles.layer1,
+            styles.border_b_light,
+          ]}
+        >
+          <View style={rowStyles.skeletonRow}>
+            {showAvatar && <Box style={rowStyles.skeletonAvatar} />}
+            <View style={rowStyles.skeletonContent}>
+              <View style={rowStyles.row}>
+                <View style={rowStyles.skeletonHeaderLeft}>
+                  <View>
                     <InlineText style={styles.text_xs} width={120}></InlineText>
                   </View>
                 </View>
-                <View className='pr-2 space-x-2 justify-center'>
+                <View style={rowStyles.skeletonHeaderRight}>
                   <InlineText style={styles.text_xs} width={24}></InlineText>
                 </View>
               </View>
-              <View className='pr-2'>
+              <View style={rowStyles.pr2}>
                 <BlockText lines={[2, 4]} />
               </View>
             </View>
@@ -185,53 +181,61 @@ function ReplyRow(props: ReplyRowProps) {
   return (
     <MaxWidthWrapper style={style}>
       <View
-        className={cn('pt-2')}
-        style={[!isLast && styles.border_b_light, isPivot && styles.highlight]}
+        style={[
+          rowStyles.container,
+          !isLast && styles.border_b_light,
+          isPivot && styles.highlight,
+        ]}
       >
-        <View className='flex flex-row pl-2'>
+        <View style={rowStyles.rowPl2}>
           {showAvatar ? (
-            <View className='mr-2'>
+            <View style={rowStyles.avatarContainer}>
               {/* FIX: Use stable handleAvatarPress callback instead of inline arrow */}
               <Pressable hitSlop={3} onPress={handleAvatarPress}>
                 <Image
                   source={{ uri: member.avatar_normal }}
                   priority='low'
                   recyclingKey={`user-avatar:${member.username}`}
-                  className='w-[24px] h-[24px] rounded'
+                  style={rowStyles.avatarImage}
                 />
               </Pressable>
             </View>
           ) : (
-            <View className='mr-1'></View>
+            <View style={rowStyles.noAvatarSpacer}></View>
           )}
 
-          <View className='flex-1'>
-            <View className='flex flex-row mb-2'>
-              <View className='flex flex-row items-center flex-1'>
+          <View style={rowStyles.mainContent}>
+            <View style={rowStyles.headerRow}>
+              <View style={rowStyles.headerLeft}>
                 {/* FIX: Use stable handleAvatarPress for username too */}
                 <Pressable
                   hitSlop={4}
-                  className='active:opacity-60'
+                  style={({ pressed }) => pressed && rowStyles.pressedOpacity}
                   onPress={handleAvatarPress}
                 >
                   <Text
-                    className='font-bold'
-                    style={[styles.text_desc, styles.text_xs]}
+                    style={[
+                      rowStyles.usernameText,
+                      styles.text_desc,
+                      styles.text_xs,
+                    ]}
                   >
                     {member.username}
                   </Text>
                 </Pressable>
                 {data.member_is_op && (
                   <View
-                    className='ml-2 px-1 rounded'
                     style={[
                       styles.border,
+                      rowStyles.badgeContainer,
                       { borderColor: theme.colors.badge_bg },
                     ]}
                   >
                     <Text
-                      className='text-[10px] font-medium leading-[17px]'
-                      style={{ color: theme.colors.badge_bg }}
+                      style={[
+                        rowStyles.badgeText,
+                        { color: theme.colors.badge_bg },
+                      ]}
                     >
                       OP
                     </Text>
@@ -239,67 +243,63 @@ function ReplyRow(props: ReplyRowProps) {
                 )}
                 {data.member_is_mod && (
                   <View
-                    className='ml-2 px-1 rounded'
                     style={[
                       styles.border,
                       styles.badge__bg,
+                      rowStyles.badgeContainer,
                       {
                         borderColor: theme.colors.badge_bg,
                         backgroundColor: theme.colors.badge_border,
                       },
                     ]}
                   >
-                    <Text
-                      className='text-[10px] font-medium leading-[17px]'
-                      style={styles.badge__text}
-                    >
+                    <Text style={[rowStyles.badgeText, styles.badge__text]}>
                       MOD
                     </Text>
                   </View>
                 )}
                 {data.member_is_pro && (
                   <View
-                    className='ml-2 px-1 rounded-full'
                     style={[
                       styles.border,
                       styles.badge__bg,
+                      rowStyles.badgeContainerPro,
                       {
                         borderColor: theme.colors.badge_bg,
                         backgroundColor: theme.colors.badge_border,
                       },
                     ]}
                   >
-                    <Text
-                      className='text-[10px] font-medium leading-[17px]'
-                      style={styles.badge__text}
-                    >
+                    <Text style={[rowStyles.badgeText, styles.badge__text]}>
                       PRO
                     </Text>
                   </View>
                 )}
-                <View className='ml-2'>
+                <View style={rowStyles.ml2}>
                   <Text style={[styles.text_meta, styles.text_xs]}>
                     {data.reply_time}
                   </Text>
                 </View>
                 {data.reply_device && (
                   <Text
-                    className='ml-2'
-                    style={[styles.text_meta, styles.text_xs]}
+                    style={[rowStyles.ml2, styles.text_meta, styles.text_xs]}
                   >
                     {data.reply_device}
                   </Text>
                 )}
                 {!!data.thanks_count && (
                   <>
-                    <View className='relative top-[1px] mx-1'>
+                    <View style={rowStyles.dotContainer}>
                       <Text style={styles.text_meta}>·</Text>
                     </View>
-                    <View className='flex flex-row items-center'>
+                    <View style={rowStyles.thanksRow}>
                       <FilledHeartIcon size={14} color={likedActiveColor} />
                       <Text
-                        className='ml-1'
-                        style={[styles.text_meta, styles.text_xs]}
+                        style={[
+                          rowStyles.ml1,
+                          styles.text_meta,
+                          styles.text_xs,
+                        ]}
                       >
                         {data.thanks_count}
                       </Text>
@@ -307,8 +307,8 @@ function ReplyRow(props: ReplyRowProps) {
                   </>
                 )}
               </View>
-              <View className='pr-1 justify-center'>
-                <View className='px-[3px] rounded-full'>
+              <View style={rowStyles.headerRight}>
+                <View style={rowStyles.floorBadge}>
                   <Text style={[styles.text_meta, styles.text_xs]}>
                     #{data.num}
                   </Text>
@@ -316,96 +316,107 @@ function ReplyRow(props: ReplyRowProps) {
               </View>
             </View>
             <View
-              className='pr-2 pb-1 min-h-[28px]'
-              style={{ marginBottom: showMarkdown ? -14 : 0 }}
+              style={[
+                rowStyles.htmlContainer,
+                { marginBottom: showMarkdown ? -14 : 0 },
+              ]}
             >
               <HtmlRender
-                key={htmlRenderProps.key}
-                source={htmlRenderProps.source}
+                source={htmlSource}
                 onOpenMemberInfo={onShowUserInfo}
                 // FIX: contentWidth is pre-calculated by the parent once,
                 // rather than calling useWindowDimensions() in every row.
                 contentWidth={contentWidth}
               />
             </View>
-            <View className='py-[10px] relative flex flex-row '>
-              <View className='flex flex-row items-center flex-1'>
+            <View style={rowStyles.actionsRow}>
+              <View style={rowStyles.actionsLeft}>
                 <Pressable
                   hitSlop={2}
-                  className={cn(
-                    'h-[36px] px-2',
-                    '-m-2 flex flex-row items-center justify-center rounded-full',
-                    'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                    'relative z-10',
-                  )}
+                  style={({ pressed }) => [
+                    rowStyles.actionButton,
+                    pressed &&
+                      (colorScheme === 'dark'
+                        ? rowStyles.pressedDark
+                        : rowStyles.pressedLight),
+                  ]}
                   onPress={handleReply}
                 >
-                  <ReplyIcon size={14} color={iconColor} />
-                  <View className='ml-1'>
-                    <Text style={[styles.text_meta, styles.text_xs]}>回复</Text>
+                  <View style={rowStyles.buttonContent}>
+                    <ReplyIcon size={14} color={iconColor} />
+                    <View style={rowStyles.ml1}>
+                      <Text style={[styles.text_meta, styles.text_xs]}>回复</Text>
+                    </View>
                   </View>
                 </Pressable>
-                <View className='w-4'></View>
+                <View style={rowStyles.actionButtonSpacer}></View>
                 <Pressable
                   hitSlop={2}
-                  className={cn(
-                    'h-[36px] px-2',
-                    '-m-2 flex flex-row items-center justify-center rounded-full',
-                    'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                    'relative z-10',
-                  )}
+                  style={({ pressed }) => [
+                    rowStyles.actionButton,
+                    pressed &&
+                      (colorScheme === 'dark'
+                        ? rowStyles.pressedDark
+                        : rowStyles.pressedLight),
+                  ]}
                   onPress={handleThank}
                 >
-                  <HeartIcon
-                    size={14}
-                    liked={data.thanked}
-                    ref={heartIconRef}
-                  />
-                  <View className='ml-1'>
-                    {data.thanked ? (
-                      <Text style={[styles.text_meta, styles.text_xs]}>
-                        已感谢
-                      </Text>
-                    ) : (
-                      <Text style={[styles.text_meta, styles.text_xs]}>
-                        感谢
-                      </Text>
-                    )}
+                  <View style={rowStyles.buttonContent}>
+                    <HeartIcon
+                      size={14}
+                      liked={data.thanked}
+                      ref={heartIconRef}
+                    />
+                    <View style={rowStyles.ml1}>
+                      {data.thanked ? (
+                        <Text style={[styles.text_meta, styles.text_xs]}>
+                          已感谢
+                        </Text>
+                      ) : (
+                        <Text style={[styles.text_meta, styles.text_xs]}>
+                          感谢
+                        </Text>
+                      )}
+                    </View>
                   </View>
                 </Pressable>
 
-                <View className='w-4'></View>
+                <View style={rowStyles.actionButtonSpacer}></View>
                 {hasConversation && (
                   <Pressable
                     hitSlop={2}
-                    className={cn(
-                      'h-[36px] px-2',
-                      '-m-2 flex flex-row items-center justify-center rounded-full',
-                      'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                      'relative z-10',
-                    )}
+                    style={({ pressed }) => [
+                      rowStyles.actionButton,
+                      pressed &&
+                        (colorScheme === 'dark'
+                          ? rowStyles.pressedDark
+                          : rowStyles.pressedLight),
+                    ]}
                     onPress={handleConversation}
                   >
-                    <ChatBubbleLeftRightIcon size={14} color={iconColor} />
-                    <View className='ml-1'>
-                      <Text style={[styles.text_meta, styles.text_xs]}>
-                        会话
-                      </Text>
+                    <View style={rowStyles.buttonContent}>
+                      <ChatBubbleLeftRightIcon size={14} color={iconColor} />
+                      <View style={rowStyles.ml1}>
+                        <Text style={[styles.text_meta, styles.text_xs]}>
+                          会话
+                        </Text>
+                      </View>
                     </View>
                   </Pressable>
                 )}
               </View>
 
-              <View className='mr-1 flex flex-row'>
+              <View style={rowStyles.markdownButtonContainer}>
                 <Pressable
                   key={data.id}
                   hitSlop={2}
-                  className={cn(
-                    'h-[36px] w-[36px]',
-                    '-my-2 flex flex-row items-center justify-center rounded-full',
-                    'active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600',
-                    'relative z-10',
-                  )}
+                  style={({ pressed }) => [
+                    rowStyles.markdownButton,
+                    pressed &&
+                      (colorScheme === 'dark'
+                        ? rowStyles.pressedDark
+                        : rowStyles.pressedLight),
+                  ]}
                   onPress={toggleMarkdown}
                 >
                   {showMarkdown ? (
@@ -425,5 +436,171 @@ function ReplyRow(props: ReplyRowProps) {
     </MaxWidthWrapper>
   )
 }
+
+const rowStyles = StyleSheet.create({
+  // Skeleton / loading
+  skeletonContainer: {
+    paddingVertical: 8,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    paddingLeft: 8,
+  },
+  skeletonAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  skeletonContent: {
+    flex: 1,
+    marginLeft: 4,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  skeletonHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  skeletonHeaderRight: {
+    paddingRight: 8,
+    justifyContent: 'center',
+  },
+  pr2: {
+    paddingRight: 8,
+  },
+
+  // Main ReplyRow styles
+  container: {
+    paddingTop: 8,
+  },
+  rowPl2: {
+    flexDirection: 'row',
+    paddingLeft: 8,
+  },
+  avatarContainer: {
+    marginRight: 8,
+  },
+  noAvatarSpacer: {
+    marginRight: 4,
+  },
+  avatarImage: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  mainContent: {
+    flex: 1,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  usernameText: {
+    fontWeight: 'bold',
+  },
+  pressedOpacity: {
+    opacity: 0.6,
+  },
+  badgeContainer: {
+    marginLeft: 8,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+  },
+  badgeContainerPro: {
+    marginLeft: 8,
+    paddingHorizontal: 4,
+    borderRadius: 9999,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '500',
+    lineHeight: 17,
+  },
+  ml2: {
+    marginLeft: 8,
+  },
+  dotContainer: {
+    position: 'relative',
+    top: 1,
+    marginHorizontal: 4,
+  },
+  thanksRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ml1: {
+    marginLeft: 4,
+  },
+  headerRight: {
+    paddingRight: 4,
+    justifyContent: 'center',
+  },
+  floorBadge: {
+    paddingHorizontal: 3,
+    borderRadius: 9999,
+  },
+  htmlContainer: {
+    paddingRight: 8,
+    paddingBottom: 4,
+    minHeight: 28,
+  },
+  actionsRow: {
+    paddingVertical: 10,
+    position: 'relative',
+    flexDirection: 'row',
+  },
+  actionsLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  actionButton: {
+    height: 36,
+    paddingHorizontal: 8,
+    margin: -8,
+    borderRadius: 9999,
+    position: 'relative',
+    zIndex: 10,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionButtonSpacer: {
+    width: 16,
+  },
+  pressedLight: {
+    backgroundColor: '#e5e5e5',
+    opacity: 0.6,
+  },
+  pressedDark: {
+    backgroundColor: '#525252',
+    opacity: 0.6,
+  },
+  markdownButtonContainer: {
+    marginRight: 4,
+    flexDirection: 'row',
+  },
+  markdownButton: {
+    height: 36,
+    width: 36,
+    marginVertical: -8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 9999,
+    position: 'relative',
+    zIndex: 10,
+  },
+})
 
 export default memo(ReplyRow)
