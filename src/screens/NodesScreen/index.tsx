@@ -1,8 +1,8 @@
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { Keyboard, SectionList, StyleSheet, Text, View } from 'react-native'
-import { useFocusEffect } from '@react-navigation/native'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigation } from 'expo-router'
+import { useFocusEffect } from 'expo-router/react-navigation'
 
 import Loader from '@/components/Loader'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'

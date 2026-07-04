@@ -6,15 +6,15 @@ import {
   useRef,
   useState,
 } from 'react'
+import * as Sentry from '@sentry/react-native'
+import * as Linking from 'expo-linking'
 import {
   getStateFromPath,
   LinkingOptions,
   NavigationContainer,
   Route,
   useNavigationContainerRef,
-} from '@react-navigation/native'
-import * as Sentry from '@sentry/react-native'
-import * as Linking from 'expo-linking'
+} from 'expo-router/react-navigation'
 
 import { useTheme } from '../ThemeService'
 

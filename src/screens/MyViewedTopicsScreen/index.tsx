@@ -9,7 +9,6 @@ import SwipeableItem, {
   useSwipeableItemParams,
 } from 'react-native-swipeable-item'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { FlashList } from '@shopify/flash-list'
 
 import Button from '@/components/Button'
@@ -49,8 +48,7 @@ const Actions = (props) => {
   )
 }
 
-type ScreenProps = NativeStackScreenProps<AppStackParamList, 'viewed-topics'>
-export default function ViewedTopicsScreen(props: ScreenProps) {
+export default function ViewedTopicsScreen() {
   const items = useViewedItems()
   const clear = useClearViewedTopics()
   const removeItem = useRemoveViewedTopic()

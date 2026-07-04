@@ -1,8 +1,8 @@
 import React, { useRef } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
-import { useIsFocused } from '@react-navigation/native'
 import { useLocalSearchParams } from 'expo-router'
+import { useIsFocused } from 'expo-router/react-navigation'
 
 import AnimatedHeader from '@/components/AnimatedHeader'
 import Loader from '@/components/Loader'

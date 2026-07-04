@@ -28,8 +28,8 @@ import {
 } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import type { EventArg } from '@react-navigation/native'
 import { useNavigation, useRouter } from 'expo-router'
+import type { EventArg } from 'expo-router/react-navigation'
 
 import Button from '@/components/Button'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'

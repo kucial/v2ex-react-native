@@ -1,8 +1,8 @@
 import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 import Color from 'color'
 import { BlurView } from 'expo-blur'
+import { useBottomTabBarHeight } from 'expo-router/js-tabs'
 
 import { useTheme } from '@/containers/ThemeService'
 

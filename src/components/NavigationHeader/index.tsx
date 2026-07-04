@@ -9,8 +9,8 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
-import { useRoute } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
+import { useRoute } from 'expo-router/react-navigation'
 
 import { useTheme } from '@/containers/ThemeService'
 

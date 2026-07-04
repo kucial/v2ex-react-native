@@ -1,5 +1,5 @@
 import type { TextStyle, ViewStyle } from 'react-native'
-import type { Theme } from '@react-navigation/native'
+import type { Theme } from 'expo-router/react-navigation'
 
 interface ThemeTextStyle {
   color?: string

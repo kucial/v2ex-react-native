@@ -1,11 +1,11 @@
 import { ReactNode, useContext, useEffect, useMemo } from 'react'
 import { Platform } from 'react-native'
+import * as NavigationBar from 'expo-navigation-bar'
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider as NavigationThemeProvider,
-} from '@react-navigation/native'
-import * as NavigationBar from 'expo-navigation-bar'
+} from 'expo-router/react-navigation'
 import * as SystemUI from 'expo-system-ui'
 
 import { useAppSettings } from '../AppSettingsService'
