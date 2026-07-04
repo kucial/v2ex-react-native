@@ -41,6 +41,7 @@ export type ScrollControlApi = {
 
 const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
   (props, ref) => {
+    const { max, onNavTo, renderButton } = props
     const [action, setAction] = useState<Action>('')
     const inputModalRef = useRef<TrueSheet>(null)
     const [target, setTarget] = useState('')
@@ -54,14 +55,14 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
         return
       }
       if (action === 'to_top') {
-        props.onNavTo(0)
+        onNavTo(0)
         return
       }
       if (action === 'to_bottom') {
-        props.onNavTo(props.max)
+        onNavTo(max)
         return
       }
-    }, [action, props.max])
+    }, [action, max, onNavTo])
 
     useImperativeHandle(
       ref,
@@ -73,7 +74,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
 
     return (
       <>
-        {props.renderButton({ action, onPress: handlePress })}
+        {renderButton({ action, onPress: handlePress })}
 
         <TrueSheet
           ref={inputModalRef}
@@ -95,7 +96,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     <TextInput
                       autoFocus
                       keyboardType='number-pad'
-                      placeholder={`最大: ${props.max}`}
+                      placeholder={`最大: ${max}`}
                       placeholderTextColor={theme.colors.text_placeholder}
                       value={target}
                       onChangeText={setTarget}
@@ -116,7 +117,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     onPress={() => {
                       Keyboard.dismiss()
                       inputModalRef.current?.dismiss()
-                      props.onNavTo(0)
+                      onNavTo(0)
                     }}
                   >
                     <View
@@ -132,7 +133,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     onPress={() => {
                       Keyboard.dismiss()
                       inputModalRef.current?.dismiss()
-                      props.onNavTo(props.max)
+                      onNavTo(max)
                     }}
                   >
                     <ToBottomIcon size={24} color={styles.text_meta.color} />
@@ -145,8 +146,8 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     style={styles.btn_primary__bg}
                     onPress={(e) => {
                       const targetNum = parseInt(target, 10)
-                      if (targetNum && targetNum <= props.max) {
-                        props.onNavTo(Math.min(targetNum, props.max))
+                      if (targetNum && targetNum <= max) {
+                        onNavTo(Math.min(targetNum, max))
                       }
                       Keyboard.dismiss()
                       inputModalRef.current?.dismiss()

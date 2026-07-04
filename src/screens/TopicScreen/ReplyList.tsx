@@ -38,7 +38,7 @@ export default function ReplyList({
     [maxContainerWidth, width],
   )
 
-  const extraData = useMemo(() => ({ pivot }), [pivot?.id])
+  const extraData = useMemo(() => ({ pivot }), [pivot])
 
   const renderItem = useCallback(
     ({

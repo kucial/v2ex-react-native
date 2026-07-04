@@ -25,6 +25,7 @@ export default function TopicMovePanel(props: {
   onExit(): void
   onUpdated(topic: TopicDetail): void
 }) {
+  const { topicId, node, onExit, onUpdated } = props
   const alert = useAlertService()
   const initialValues = useMemo(
     () => ({
@@ -37,21 +38,23 @@ export default function TopicMovePanel(props: {
     async (values: FormValues, formikProps: FormikHelpers<FormValues>) => {
       try {
         formikProps.setSubmitting(true)
-        const { data: topic } = await moveTopic(props.topicId, {
-          destination: values.node.name,
-          memo: values.memo,
-        })
-        formikProps.setSubmitting(false)
-        props.onUpdated(topic)
+        if (values.node) {
+          const { data: topic } = await moveTopic(topicId, {
+            destination: values.node.name,
+            memo: values.memo,
+          })
+          formikProps.setSubmitting(false)
+          onUpdated(topic)
+        }
       } catch (err) {
         formikProps.setSubmitting(false)
         alert.show({ type: 'error', message: err.message })
         if (err.code === 'EDIT_NOT_ALLOWED') {
-          props.onExit()
+          onExit()
         }
       }
     },
-    [props.topicId],
+    [topicId, onUpdated, onExit, alert],
   )
 
   return (
@@ -67,7 +70,7 @@ export default function TopicMovePanel(props: {
               className='mb-2'
               name='node'
               label='节点'
-              placeholder={`当前节点: ${props.node.name}`}
+              placeholder={`当前节点: ${node.name}`}
             />
             <TextField name='memo' label='备注' placeholder='备注' />
             <View className='mt-7 mb-2'>

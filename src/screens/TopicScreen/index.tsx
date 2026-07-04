@@ -14,7 +14,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Share from 'react-native-share'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
-import { FlashList } from '@shopify/flash-list'
 import {
   useInfiniteQuery,
   useQuery,
@@ -38,11 +37,11 @@ import {
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
 import { useTouchViewedTopic } from '@/containers/ViewedTopicsService'
-import { useAuthStore, useCurrentUser } from '@/stores/auth'
+import { useCurrentUser } from '@/stores/auth'
 import { useTopicSheetStore } from '@/stores/topicSheet'
 import { getRelatedReplies } from '@/utils/content'
 import { useCachedState } from '@/utils/hooks'
-import { isLoading, shouldLoadMore } from '@/utils/react-query'
+import { isLoading } from '@/utils/react-query'
 import { isBouncingBottom, isBouncingTop } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
 import * as v2exClient from '@/utils/v2ex-client'
@@ -115,7 +114,7 @@ function TopicScreen() {
       }
       return data
     },
-    [id],
+    [id, queryClient],
   )
 
   const repliesQuery = useInfiniteQuery({
@@ -135,18 +134,25 @@ function TopicScreen() {
   })
 
   const { showActionSheetWithOptions } = useActionSheet()
+  // FIX: Only depend on topicQuery.data and lastIndex.
+  // - showScrollToLastPosition was in deps but is also SET inside this effect,
+  //   causing it to re-run every time it flipped to true (loop).
+  // - touchViewed should only fire once per topic load; guard with a ref.
+  const touchViewedCalledRef = useRef(false)
   useEffect(() => {
     if (topicQuery.data) {
       if (lastIndex && !showScrollToLastPosition) {
         setShowScrollToLastPosition(true)
       }
-      if (topicQuery.data) {
+      if (!touchViewedCalledRef.current) {
+        touchViewedCalledRef.current = true
         setTimeout(() => {
           touchViewed(topicQuery.data)
         }, 500)
       }
     }
-  }, [topicQuery.data])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topicQuery.data, lastIndex])
 
   const { data: settings } = useAppSettings()
   const padLayout = usePadLayout()
@@ -170,6 +176,10 @@ function TopicScreen() {
     `my-topic-replies:${id}`,
     [],
   )
+  const myRepliesRef = useRef(myReplies)
+  useEffect(() => {
+    myRepliesRef.current = myReplies
+  }, [myReplies])
 
   const composeAuthedNavigation = useComposeAuthedNavigation()
   const currentUser = useCurrentUser()
@@ -187,13 +197,14 @@ function TopicScreen() {
     if (repliesQuery.isLoading && !repliesQuery.error) {
       return new Array(10)
     }
-    const items =
-      repliesQuery.data?.pages.reduce((combined, page) => {
+    const items: TopicReply[] = [...myReplies]
+    if (repliesQuery.data?.pages) {
+      for (const page of repliesQuery.data.pages) {
         if (page.data) {
-          return [...combined, ...page.data]
+          items.push(...page.data)
         }
-        return combined
-      }, myReplies) || []
+      }
+    }
 
     // FIX: sort into a new array instead of mutating in place
     return [...items].sort((a, b) => a.num - b.num)
@@ -206,10 +217,11 @@ function TopicScreen() {
 
   // cleanup replies
   useEffect(() => {
-    if (myReplies.length && repliesQuery.data) {
-      for (let i = 0; i < myReplies.length; i += 1) {
+    const currentMyReplies = myRepliesRef.current
+    if (currentMyReplies.length && repliesQuery.data) {
+      for (let i = 0; i < currentMyReplies.length; i += 1) {
         let loaded = false
-        const myReply = myReplies[i]
+        const myReply = currentMyReplies[i]
         const page = Math.ceil(myReply.num / 100)
         const page_i = myReply.num % 100
         if (
@@ -220,7 +232,7 @@ function TopicScreen() {
         }
         if (loaded) {
           setMyReplies((prev) => {
-            const index = prev.findIndex((item) => item.id == myReply.id)
+            const index = prev.findIndex((item) => item.id === myReply.id)
             if (index > -1) {
               return [...prev.slice(0, index), ...prev.slice(index + 1)]
             }
@@ -229,10 +241,12 @@ function TopicScreen() {
         }
       }
     }
-    // FIX: removed myReplies from deps to avoid re-trigger loop.
-    // repliesQuery.data?.pages is sufficient — when a page loads we check
-    // whether any of the optimistic replies have been superseded.
-  }, [repliesQuery.data?.pages])
+    // FIX: Use repliesQuery.data?.pages, not repliesQuery.data.
+    // repliesQuery.data is a brand-new object reference on every background
+    // refetch/isFetching flip, causing this effect to run far too often and
+    // spam setMyReplies calls. data.pages only changes when a new page loads.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [repliesQuery.data?.pages, setMyReplies])
 
   const handleToggleBlock = composeAuthedNavigation(
     useCallback(() => {
@@ -264,7 +278,7 @@ function TopicScreen() {
         .finally(() => {
           alert.hide(indicator)
         })
-    }, [id, topic?.blocked]),
+    }, [id, topic?.blocked, alert, queryClient, topicQuery.data]),
   )
 
   const handleReportTopic = composeAuthedNavigation(
@@ -295,7 +309,7 @@ function TopicScreen() {
         .finally(() => {
           alert.hide(indicator)
         })
-    }, [id]),
+    }, [id, alert, queryClient, topicQuery.data]),
   )
 
   const handleToggleCollect = composeAuthedNavigation(
@@ -335,7 +349,7 @@ function TopicScreen() {
             alert.show({ type: 'error', message: err.message })
           })
       }
-    }, [id, topic?.collected]),
+    }, [id, topic, alert, queryClient]),
   )
 
   const handleThankTopic = composeAuthedNavigation(
@@ -360,7 +374,7 @@ function TopicScreen() {
           })
           alert.show({ type: 'error', message: err.message })
         })
-    }, [id, topic?.thanked]),
+    }, [id, topic, alert, queryClient]),
   )
 
   const handleShare = useCallback(async () => {
@@ -429,6 +443,7 @@ function TopicScreen() {
       showActionSheetWithOptions,
       handleToggleBlock,
       handleReportTopic,
+      insets.bottom,
     ],
   )
 
@@ -571,7 +586,7 @@ function TopicScreen() {
           alert.show({ type: 'error', message: err.message })
         })
     },
-    [id],
+    [id, alert, queryClient],
   )
 
   const handleAppend = useCallback(() => {
@@ -603,9 +618,12 @@ function TopicScreen() {
     changeNodeModalRef.current?.present()
   }, [])
 
+  // FIX: Use topicQuery.refetch (stable function) not topicQuery (new object
+  // on every render) — otherwise handleRefetch is recreated on every render.
   const handleRefetch = useCallback(() => {
     topicQuery.refetch()
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topicQuery.refetch])
 
   const openUserInfo = useCallback(
     (context: UserInfoContext) => {
@@ -666,7 +684,7 @@ function TopicScreen() {
       }
     })
     return unsubscribe
-  }, [navigation, topicQuery.data])
+  }, [navigation, topicQuery.data, setLastIndex])
 
   // FIX: Stabilise mentionedUsers — derive a primitive key first so the Set
   // object is only recreated when the actual contents change, not on every
@@ -722,6 +740,28 @@ function TopicScreen() {
     openUserInfoRef.current = openUserInfo
   }, [openUserInfo])
 
+  // FIX: Create stable callback bridges ONCE. These read the latest function
+  // from the ref on each invocation, so they never need to be recreated.
+  // Previously we were passing `(reply) => initReplyRef.current(reply)` inline
+  // inside renderReply, which created 4 new function objects on every list
+  // render — completely defeating memo(ReplyRow).
+  const stableOnReply = useCallback(
+    (reply: any) => initReplyRef.current(reply),
+    [],
+  )
+  const stableOnThank = useCallback(
+    (reply: any) => handleThankToReplyRef.current(reply),
+    [],
+  )
+  const stableOnShowConversation = useCallback(
+    (ctx: any) => openConversationRef.current(ctx),
+    [],
+  )
+  const stableOnShowUserInfo = useCallback(
+    (ctx: any) => openUserInfoRef.current?.(ctx),
+    [],
+  )
+
   const { renderReply, keyExtractor } = useMemo(() => {
     return {
       renderReply({
@@ -740,8 +780,8 @@ function TopicScreen() {
             showAvatar={settings.feedShowAvatar}
             contentWidth={extraData?.contentWidth}
             data={item}
-            onReply={(reply) => initReplyRef.current(reply)}
-            onThank={(reply) => handleThankToReplyRef.current(reply)}
+            onReply={stableOnReply}
+            onThank={stableOnThank}
             hasConversation={
               !!item?.members_mentioned?.length ||
               !!(
@@ -749,8 +789,8 @@ function TopicScreen() {
                 extraData?.mentionedUsers.has(item.member.username)
               )
             }
-            onShowConversation={(ctx) => openConversationRef.current(ctx)}
-            onShowUserInfo={(ctx) => openUserInfoRef.current(ctx)}
+            onShowConversation={stableOnShowConversation}
+            onShowUserInfo={stableOnShowUserInfo}
           />
         )
       },
@@ -759,14 +799,35 @@ function TopicScreen() {
       },
     }
     // FIX: deps are now only the truly stable values that affect how the row
-    // is rendered structurally (style, avatar). Callbacks are handled via refs.
-  }, [styles.layer1, settings.feedShowAvatar])
+    // is rendered structurally (style, avatar). Callbacks are stable refs.
+  }, [
+    styles.layer1,
+    settings.feedShowAvatar,
+    stableOnReply,
+    stableOnThank,
+    stableOnShowConversation,
+    stableOnShowUserInfo,
+  ])
+
+  const {
+    error: repliesError,
+    fetchNextPage: fetchNextRepliesPage,
+    hasNextPage: hasMoreReplies,
+    isFetchingNextPage: isFetchingNextRepliesPage,
+    isRefetching: isRefetchingReplies,
+    refetch: refetchReplies,
+  } = repliesQuery
 
   const handleReachEnd = useCallback(() => {
-    if (shouldLoadMore(repliesQuery)) {
-      repliesQuery.fetchNextPage()
+    if (hasMoreReplies && !isFetchingNextRepliesPage && !repliesError) {
+      fetchNextRepliesPage()
     }
-  }, [repliesQuery])
+  }, [
+    fetchNextRepliesPage,
+    hasMoreReplies,
+    isFetchingNextRepliesPage,
+    repliesError,
+  ])
 
   const handleNavTo = useCallback(
     (target: number) => {
@@ -807,6 +868,51 @@ function TopicScreen() {
   const handleViewableItemsChanged = useCallback(({ viewableItems }) => {
     currentIndexRef.current = viewableItems[0]?.index
   }, [])
+
+  const isTopicHeaderLoading =
+    isLoading(topicQuery) || (!topicQuery.data && isLoading(repliesQuery))
+
+  const listHeader = useMemo(
+    () => (
+      <TopicBaseInfo
+        isLoading={isTopicHeaderLoading}
+        data={topicQuery.data}
+        hasReply={!!replyItems.length}
+        fallback={brief}
+        contentWidth={contentWidth}
+        onAppend={handleAppend}
+        onEdit={handleEdit}
+        onChangeNode={handleChangeNode}
+        onRefetch={handleRefetch}
+      />
+    ),
+    [
+      brief,
+      contentWidth,
+      handleAppend,
+      handleChangeNode,
+      handleEdit,
+      handleRefetch,
+      isTopicHeaderLoading,
+      replyItems.length,
+      topicQuery.data,
+    ],
+  )
+
+  const listFooter = useMemo(
+    () => <CommonListFooter data={repliesQuery} emptyMessage='目前尚无回复' />,
+    [repliesQuery],
+  )
+
+  const refreshControl = useMemo(
+    () => (
+      <MyRefreshControl
+        refreshing={isRefetchingReplies}
+        onRefresh={refetchReplies}
+      />
+    ),
+    [isRefetchingReplies, refetchReplies],
+  )
 
   if (topicQuery.error) {
     return (
@@ -854,36 +960,14 @@ function TopicScreen() {
         extraData={extraData}
         renderItem={renderReply}
         keyExtractor={keyExtractor}
-        ListHeaderComponent={
-          <TopicBaseInfo
-            isLoading={
-              isLoading(topicQuery) ||
-              (!topicQuery.data && isLoading(repliesQuery))
-            }
-            data={topicQuery.data}
-            hasReply={!!replyItems.length}
-            fallback={brief}
-            contentWidth={contentWidth}
-            onAppend={handleAppend}
-            onEdit={handleEdit}
-            onChangeNode={handleChangeNode}
-            onRefetch={handleRefetch}
-          />
-        }
-        ListFooterComponent={
-          <CommonListFooter data={repliesQuery} emptyMessage='目前尚无回复' />
-        }
+        ListHeaderComponent={listHeader}
+        ListFooterComponent={listFooter}
         onEndReachedThreshold={0.4}
         onEndReached={handleReachEnd}
         // FIX: was an inline arrow function — caused FlashList to remount all
         // visible rows on every render. Now a stable useCallback with [] deps.
         onViewableItemsChanged={handleViewableItemsChanged}
-        refreshControl={
-          <MyRefreshControl
-            refreshing={repliesQuery.isRefetching}
-            onRefresh={repliesQuery.refetch}
-          />
-        }
+        refreshControl={refreshControl}
         onScroll={handleScroll}
         scrollEventThrottle={16}
       />

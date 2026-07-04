@@ -1,7 +1,8 @@
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useMemo, useRef } from 'react'
 import { Pressable, Text, View, ViewStyle } from 'react-native'
 import { ChatBubbleLeftRightIcon } from 'react-native-heroicons/outline'
 import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
+import { useRecyclingState } from '@shopify/flash-list'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 import LottieView from 'lottie-react-native'
@@ -44,10 +45,28 @@ type ReplyRowProps = {
 function ReplyRow(props: ReplyRowProps) {
   // FIX: contentWidth is now a prop — see TopicScreen for where it is
   // calculated once at the screen level and passed down.
-  const { data, isPivot, isLast, showAvatar = true, contentWidth } = props
+  const {
+    data,
+    isPivot,
+    isLast,
+    hasConversation,
+    showAvatar = true,
+    contentWidth,
+    onReply,
+    onThank,
+    onShowConversation,
+    onShowUserInfo,
+    style,
+  } = props
   const composeAuthedNavigation = useComposeAuthedNavigation()
-  const [showMarkdown, setMarkdownVisible] = useState(false)
-  const { theme, styles, colorScheme } = useTheme()
+  // useRecyclingState resets showMarkdown to false automatically when FlashList
+  // recycles this cell for a different reply (deps=[data?.id]).
+  // This avoids a stale markdown-visible state bleeding into the next item
+  // without the extra setState call that would happen with plain useState.
+  const [showMarkdown, setMarkdownVisible] = useRecyclingState(false, [
+    data?.id,
+  ])
+  const { theme, styles } = useTheme()
   const router = useRouter()
 
   const heartIconRef = useRef<LottieView>(null)
@@ -58,8 +77,8 @@ function ReplyRow(props: ReplyRowProps) {
   const handleReply = usePressBreadcrumb(
     composeAuthedNavigation(
       useCallback(() => {
-        props.onReply(data)
-      }, [data, props.onReply]),
+        onReply(data)
+      }, [data, onReply]),
     ),
     {
       message: '[ReplyRow] `reply` button press',
@@ -70,7 +89,7 @@ function ReplyRow(props: ReplyRowProps) {
   const toggleMarkdown = usePressBreadcrumb(
     useCallback(() => {
       setMarkdownVisible((prev) => !prev)
-    }, []),
+    }, [setMarkdownVisible]),
     {
       message: '[ReplyRow] `markdown` button press',
       data: { target: data?.id },
@@ -84,8 +103,8 @@ function ReplyRow(props: ReplyRowProps) {
           return
         }
         heartIconRef.current?.play()
-        props.onThank(data)
-      }, [data, data?.thanked, props.onThank]),
+        onThank(data)
+      }, [data, onThank]),
     ),
     {
       message: '[ReplyRow] `thank` button press',
@@ -95,20 +114,36 @@ function ReplyRow(props: ReplyRowProps) {
 
   const handleConversation = usePressBreadcrumb(
     useCallback(() => {
-      props.onShowConversation({
+      onShowConversation?.({
         type: 'reply',
         data: data,
       })
-    }, [data, props.onShowConversation]),
+    }, [data, onShowConversation]),
     {
       message: '[ReplyRow] `conversation` button press',
       data: { target: data?.id },
     },
   )
 
+  // NOTE: member is extracted below the early-return guard (const { member } = data),
+  // so it is not in scope here. Read data?.member?.username at call time instead
+  // so the callback always reflects the current prop value.
+  const handleAvatarPress = useCallback(() => {
+    const username = data?.member?.username
+    if (onShowUserInfo) {
+      onShowUserInfo({ type: 'member', data: username })
+    } else {
+      router.push(`/member/${username}`)
+    }
+  }, [data?.member?.username, onShowUserInfo, router])
+
   const htmlRenderProps = useMemo(
     () => ({
-      key: `${data?.id}-${colorScheme}-${showMarkdown}`,
+      // FIX: Remove colorScheme from the key — HtmlRender already responds
+      // to theme changes internally via context. Including colorScheme here
+      // was causing every visible reply row to fully unmount/remount on
+      // theme switch, which is expensive (3-5ms each × N rows visible).
+      key: `${data?.id}-${showMarkdown}`,
       source: {
         html: showMarkdown
           ? marked(data?.content || '')
@@ -116,13 +151,7 @@ function ReplyRow(props: ReplyRowProps) {
         baseUrl: 'https://v2ex.com',
       },
     }),
-    [
-      data?.id,
-      data?.content,
-      data?.content_rendered,
-      colorScheme,
-      showMarkdown,
-    ],
+    [data?.id, data?.content, data?.content_rendered, showMarkdown],
   )
 
   if (!data) {
@@ -154,7 +183,7 @@ function ReplyRow(props: ReplyRowProps) {
 
   const { member } = data
   return (
-    <MaxWidthWrapper style={props.style}>
+    <MaxWidthWrapper style={style}>
       <View
         className={cn('pt-2')}
         style={[!isLast && styles.border_b_light, isPivot && styles.highlight]}
@@ -162,19 +191,8 @@ function ReplyRow(props: ReplyRowProps) {
         <View className='flex flex-row pl-2'>
           {showAvatar ? (
             <View className='mr-2'>
-              <Pressable
-                hitSlop={3}
-                onPress={() => {
-                  if (props.onShowUserInfo) {
-                    props.onShowUserInfo({
-                      type: 'member',
-                      data: member.username,
-                    })
-                  } else {
-                    router.push(`/member/${member.username}`)
-                  }
-                }}
-              >
+              {/* FIX: Use stable handleAvatarPress callback instead of inline arrow */}
+              <Pressable hitSlop={3} onPress={handleAvatarPress}>
                 <Image
                   source={{ uri: member.avatar_normal }}
                   priority='low'
@@ -190,19 +208,11 @@ function ReplyRow(props: ReplyRowProps) {
           <View className='flex-1'>
             <View className='flex flex-row mb-2'>
               <View className='flex flex-row items-center flex-1'>
+                {/* FIX: Use stable handleAvatarPress for username too */}
                 <Pressable
                   hitSlop={4}
                   className='active:opacity-60'
-                  onPress={() => {
-                    if (props.onShowUserInfo) {
-                      props.onShowUserInfo({
-                        type: 'member',
-                        data: member.username,
-                      })
-                    } else {
-                      router.push(`/member/${member.username}`)
-                    }
-                  }}
+                  onPress={handleAvatarPress}
                 >
                   <Text
                     className='font-bold'
@@ -312,7 +322,7 @@ function ReplyRow(props: ReplyRowProps) {
               <HtmlRender
                 key={htmlRenderProps.key}
                 source={htmlRenderProps.source}
-                onOpenMemberInfo={props.onShowUserInfo}
+                onOpenMemberInfo={onShowUserInfo}
                 // FIX: contentWidth is pre-calculated by the parent once,
                 // rather than calling useWindowDimensions() in every row.
                 contentWidth={contentWidth}
@@ -365,7 +375,7 @@ function ReplyRow(props: ReplyRowProps) {
                 </Pressable>
 
                 <View className='w-4'></View>
-                {props.hasConversation && (
+                {hasConversation && (
                   <Pressable
                     hitSlop={2}
                     className={cn(

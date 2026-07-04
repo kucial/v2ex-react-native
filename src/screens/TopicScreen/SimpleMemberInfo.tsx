@@ -79,7 +79,7 @@ export default function SimpleMemberInfo(props: {
       .finally(() => {
         alert.hide(indicator)
       })
-  }, [memberQuery.data])
+  }, [memberQuery, alert, queryClient, username])
 
   const { data } = memberQuery
 

@@ -48,7 +48,7 @@ function ScrollToLastPosition(props: {
         clearTimeout(timer.current)
       }
     }
-  }, [])
+  }, [fadeAnim, translateYAnim])
 
   if (!visible) {
     return null

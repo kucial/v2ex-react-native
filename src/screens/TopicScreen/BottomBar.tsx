@@ -14,6 +14,17 @@ import ScrollControl from './ScrollControl'
 import { BarProps } from './types'
 
 export default function BottomBar(props: BarProps) {
+  const {
+    thanked,
+    onThankTopic,
+    collected,
+    onToggleCollect,
+    onInitReply,
+    scrollControlRef,
+    repliesCount,
+    onNavTo,
+    onShare,
+  } = props
   const { styles, theme } = useTheme()
 
   const iconColor = theme.colors.text_meta
@@ -21,21 +32,21 @@ export default function BottomBar(props: BarProps) {
   const starIconRef = useRef<LottieView>(null)
 
   const handleThank = useCallback(() => {
-    if (props.thanked) {
+    if (thanked) {
       return
     }
     heartIconRef.current?.play()
-    props.onThankTopic()
-  }, [props.onThankTopic, props.thanked])
+    onThankTopic()
+  }, [onThankTopic, thanked])
 
   const handleToggleCollect = useCallback(() => {
-    if (props.collected) {
+    if (collected) {
       starIconRef.current?.reset()
     } else {
       starIconRef.current?.play()
     }
-    props.onToggleCollect()
-  }, [props.onToggleCollect, props.collected])
+    onToggleCollect()
+  }, [onToggleCollect, collected])
 
   return (
     <View className='pb-safe' style={[styles.overlay, styles.border_t_light]}>
@@ -46,7 +57,7 @@ export default function BottomBar(props: BarProps) {
             className='h-[32px] w-full justify-center px-3 rounded-full active:opacity-60'
             style={styles.overlay_input__bg}
             onPress={() => {
-              props.onInitReply()
+              onInitReply()
             }}
           >
             <Text style={[styles.text_placeholder, styles.text_sm]}>
@@ -55,9 +66,9 @@ export default function BottomBar(props: BarProps) {
           </Pressable>
         </View>
         <ScrollControl
-          ref={props.scrollControlRef}
-          max={props.repliesCount}
-          onNavTo={props.onNavTo}
+          ref={scrollControlRef}
+          max={repliesCount}
+          onNavTo={onNavTo}
           renderButton={({ action, onPress, disabled }) => (
             <Pressable
               className='w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600 disabled:opacity-50'
@@ -93,7 +104,7 @@ export default function BottomBar(props: BarProps) {
             onPress={handleToggleCollect}
           >
             <View className='my-1'>
-              <StarIcon ref={starIconRef} size={24} filled={props.collected} />
+              <StarIcon ref={starIconRef} size={24} filled={collected} />
             </View>
             <Text className='text-[10px]' style={styles.text_meta}>
               收藏
@@ -104,7 +115,7 @@ export default function BottomBar(props: BarProps) {
             onPress={handleThank}
           >
             <View className='my-1'>
-              <HeartIcon size={24} liked={props.thanked} ref={heartIconRef} />
+              <HeartIcon size={24} liked={thanked} ref={heartIconRef} />
             </View>
             <Text className='text-[10px]' style={styles.text_meta}>
               感谢
@@ -112,7 +123,7 @@ export default function BottomBar(props: BarProps) {
           </Pressable>
           <Pressable
             className='w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600'
-            onPress={props.onShare}
+            onPress={onShare}
           >
             <View className='my-1'>
               <ShareIcon size={24} color={iconColor} />

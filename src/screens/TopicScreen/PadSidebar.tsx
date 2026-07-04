@@ -21,11 +21,23 @@ import ToBottomIcon from './ToBottomIcon'
 import { BarProps } from './types'
 
 export default function PadSidebar(props: BarProps) {
+  const {
+    isFocused,
+    onInitReply,
+    scrollControlRef,
+    repliesCount,
+    onNavTo,
+    collected,
+    onToggleCollect,
+    thanked,
+    onThankTopic,
+    onShare,
+  } = props
   const { setPageNav } = useAppLayout()
   const { theme } = useTheme()
   useEffect(() => {
     setPageNav(
-      props.isFocused ? (
+      isFocused ? (
         <>
           <AppSidebarButton
             isActive={false}
@@ -34,13 +46,13 @@ export default function PadSidebar(props: BarProps) {
             staticColor={theme.colors.text_desc}
             Icon={ChatBubbleBottomCenterTextIcon}
             onPress={() => {
-              props.onInitReply()
+              onInitReply()
             }}
           />
           <ScrollControl
-            ref={props.scrollControlRef}
-            max={props.repliesCount}
-            onNavTo={props.onNavTo}
+            ref={scrollControlRef}
+            max={repliesCount}
+            onNavTo={onNavTo}
             renderButton={({ action, onPress }) => {
               let Icon
               let label
@@ -75,20 +87,20 @@ export default function PadSidebar(props: BarProps) {
             }}
           />
           <AppSidebarButton
-            isActive={props.collected}
+            isActive={collected}
             label='收藏'
             activeColor={theme.colors.icon_collected_bg}
             staticColor={theme.colors.text_desc}
-            Icon={props.collected ? FilledStarIcon : StarIcon}
-            onPress={props.onToggleCollect}
+            Icon={collected ? FilledStarIcon : StarIcon}
+            onPress={onToggleCollect}
           />
           <AppSidebarButton
-            isActive={props.thanked}
+            isActive={thanked}
             label='感谢'
             activeColor={theme.colors.icon_liked_bg}
             staticColor={theme.colors.text_desc}
-            Icon={props.thanked ? FilledHeartIcon : HeartIcon}
-            onPress={props.onThankTopic}
+            Icon={thanked ? FilledHeartIcon : HeartIcon}
+            onPress={onThankTopic}
           />
           <AppSidebarButton
             isActive={false}
@@ -96,7 +108,7 @@ export default function PadSidebar(props: BarProps) {
             activeColor={theme.colors.text_desc}
             staticColor={theme.colors.text_desc}
             Icon={ShareIcon}
-            onPress={props.onShare}
+            onPress={onShare}
           />
         </>
       ) : null,
@@ -106,11 +118,20 @@ export default function PadSidebar(props: BarProps) {
     }
   }, [
     setPageNav,
-    props.repliesCount,
-    props.thanked,
-    props.collected,
-    props.onNavTo,
-    props.isFocused,
+    isFocused,
+    onInitReply,
+    scrollControlRef,
+    repliesCount,
+    onNavTo,
+    collected,
+    onToggleCollect,
+    thanked,
+    onThankTopic,
+    onShare,
+    theme.colors.primary,
+    theme.colors.text_desc,
+    theme.colors.icon_collected_bg,
+    theme.colors.icon_liked_bg,
   ])
 
   return null
