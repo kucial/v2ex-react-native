@@ -46,7 +46,8 @@ function TideTopicRow(props: HomeFeedRowProps) {
     )
   }
 
-  const { node, member, title, replies } = props.data
+  const { node, member, title, replies } = data
+  const lastReplyBy = data.last_reply_by
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
@@ -57,11 +58,11 @@ function TideTopicRow(props: HomeFeedRowProps) {
           pressed && rowStyles.pressed50,
         ]}
         onPress={() => {
-          preloadTopicInfo(props.data.id)
+          preloadTopicInfo(data.id)
           router.push({
             pathname: '/topic/[id]',
             params: {
-              id: props.data.id,
+              id: data.id,
             },
           })
         }}
@@ -146,7 +147,7 @@ function TideTopicRow(props: HomeFeedRowProps) {
                     •
                   </Text>
                 )}
-              {showLastReplyMember && data?.last_reply_by && (
+              {showLastReplyMember && lastReplyBy && (
                 <View style={rowStyles.rowCenter}>
                   <Text style={[styles.text_meta, styles.text_xs]}>
                     最后回复来自
@@ -161,7 +162,7 @@ function TideTopicRow(props: HomeFeedRowProps) {
                       router.push({
                         pathname: '/member/[username]',
                         params: {
-                          username: data.last_reply_by,
+                          username: lastReplyBy,
                           tab: 'replies',
                         },
                       })
@@ -174,7 +175,7 @@ function TideTopicRow(props: HomeFeedRowProps) {
                         rowStyles.font600,
                       ]}
                     >
-                      {data.last_reply_by}
+                      {lastReplyBy}
                     </Text>
                   </FixedPressable>
                 </View>

@@ -1,5 +1,13 @@
 import { ReactNode, useState } from 'react'
-import { StyleSheet, Text, TextInputProps, View, ViewStyle } from 'react-native'
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextInputProps,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native'
 import DatePicker from 'react-native-date-picker'
 import { useField } from 'formik'
 import { padStart } from 'lodash'
@@ -31,16 +39,17 @@ function DateField({
   name,
   canClear,
   ...props
-}: {
+}: Omit<TextInputProps, 'style'> & {
   label: ReactNode | false
-  inputStyle?: ViewStyle
+  inputStyle?: StyleProp<TextStyle>
   name: string
+  style?: StyleProp<ViewStyle>
   pickerMode: PickerMode
   canClear?: boolean
   minDate?: Date
   maxDate?: Date
   pickerTitle?: string
-} & TextInputProps) {
+}) {
   const { styles, theme } = useTheme()
   const [field, meta, helpers] = useField(name)
   const [open, setOpen] = useState(false)
@@ -122,7 +131,6 @@ function DateField({
         onCancel={() => {
           setOpen(false)
         }}
-        tintColor={theme.colors.primary}
       />
     </View>
   )

@@ -15,7 +15,7 @@ export default function PreRenderer(props: CustomRendererProps<TBlock>) {
       horizontal
       nestedScrollEnabled
       style={renderProps.style}
-      contentContainerClassName='px-2'
+      contentContainerStyle={{ paddingHorizontal: 8 }}
     >
       {renderProps.children}
     </ScrollView>

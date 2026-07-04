@@ -6,6 +6,7 @@ import {
   Text,
   TextInput,
   TextInputProps,
+  TextStyle,
   View,
   ViewStyle,
 } from 'react-native'
@@ -24,7 +25,7 @@ function TextField({
   ...props
 }: {
   label: ReactNode | false
-  inputStyle?: ViewStyle
+  inputStyle?: StyleProp<TextStyle>
   name: string
   style?: StyleProp<ViewStyle>
   bottomSheet?: boolean

@@ -12,7 +12,7 @@ import { TopicDetail } from '@/utils/v2ex-client/types'
 function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
   const { data: topic, contentWidth } = props
   const { member, node } = topic
-  const { styles, colorScheme } = useTheme()
+  const { styles } = useTheme()
 
   const router = useRouter()
 
@@ -143,7 +143,7 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
                   fontSize: styles.text_base.fontSize,
                 }}
                 source={{
-                  html: subtle.content_rendered,
+                  html: subtle.content_rendered ?? '',
                   baseUrl: 'https://v2ex.com',
                 }}
               />

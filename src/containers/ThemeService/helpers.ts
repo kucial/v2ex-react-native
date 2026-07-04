@@ -15,6 +15,14 @@ import * as themes from './themes'
 import { SemanticType, ThemeService, ThemeStyles } from './types'
 
 const themeServiceMap: Record<string, ThemeService> = {}
+type ActiveColorScheme = 'light' | 'dark'
+type ThemeVariant = ActiveColorScheme | 'pure_dark'
+
+const normalizeColorScheme = (
+  colorScheme?: ColorSchemeName | null,
+): ActiveColorScheme => {
+  return colorScheme === 'dark' ? 'dark' : 'light'
+}
 
 export function getThemeService(
   themeName?: string,
@@ -23,17 +31,14 @@ export function getThemeService(
   pureDarkTheme?: boolean,
 ): ThemeService {
   const scale = fontScale || getActiveFontScale()
-  const scheme = colorScheme || Appearance.getColorScheme()
+  const scheme = normalizeColorScheme(
+    colorScheme ?? Appearance.getColorScheme(),
+  )
   const name = themeName || getActiveTheme(scheme)
   const usePureDark = pureDarkTheme ?? getUsePureDarkTheme()
 
-  let subkey
-
-  if (scheme === 'dark' && usePureDark) {
-    subkey = 'pure_dark'
-  } else {
-    subkey = scheme
-  }
+  const subkey: ThemeVariant =
+    scheme === 'dark' && usePureDark ? 'pure_dark' : scheme
 
   const key = `${name}-${subkey}-${scale}`
 

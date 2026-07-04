@@ -1,5 +1,10 @@
 import { ReactElement, useCallback, useMemo } from 'react'
-import { StyleProp, useWindowDimensions, ViewStyle } from 'react-native'
+import {
+  StyleProp,
+  StyleSheet,
+  useWindowDimensions,
+  ViewStyle,
+} from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 
 import { useMaxContainerWidth } from '@/containers/AppSettingsService'
@@ -66,7 +71,7 @@ export default function ReplyList({
   return (
     <FlashList
       data={data}
-      style={style}
+      style={StyleSheet.flatten(style)}
       contentContainerStyle={contentContainerStyle}
       extraData={extraData}
       nestedScrollEnabled

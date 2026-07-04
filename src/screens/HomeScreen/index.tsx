@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ComponentProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   Pressable,
   StyleSheet,
@@ -22,6 +29,7 @@ import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useTabOptions } from '@/hooks'
 import { useCachedState } from '@/utils/hooks'
+import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import HomeDataPrefetch from './HomeDataPrefetch'
 
@@ -40,7 +48,20 @@ interface RefreshableView {
   scrollToRefresh(): void
 }
 
-export default function HomeScreen(props) {
+type HomeRoute = {
+  key: string
+  title: string
+  tab: HomeTabOption
+}
+
+type TabPressNavigation = {
+  addListener(
+    event: 'tabPress',
+    callback: (event: { preventDefault(): void }) => void,
+  ): () => void
+}
+
+export default function HomeScreen() {
   const {
     data: { homeTabs },
     initHomeTabs,
@@ -49,7 +70,7 @@ export default function HomeScreen(props) {
   const { tab: queryTab } = useLocalSearchParams<{ tab: string }>()
   const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()
-  const [error, setError] = useState<Error>(null)
+  const [error, setError] = useState<Error | null>(null)
   const { theme, styles } = useTheme()
   const routes = useMemo(() => {
     if (!homeTabs) {
@@ -67,7 +88,7 @@ export default function HomeScreen(props) {
           tab: tab,
         }
       })
-      .filter(Boolean)
+      .filter((route): route is HomeRoute => !!route)
   }, [homeTabs])
 
   const [index, setIndex] = useCachedState<number>(CACHE_KEY, 0)
@@ -90,9 +111,10 @@ export default function HomeScreen(props) {
   const normalizedIndexRef = useRef(normalizedIndex)
   normalizedIndexRef.current = normalizedIndex
 
-  const currentListRef = useRef<RefreshableView>(null)
-  const tabIdleForRefresh = useRef<string>(null)
-  const tabIdleResetTimer = useRef<NodeJS.Timeout>(null)
+  const currentListRef = useRef<RefreshableView | null>(null)
+  const inactiveListRef = useRef<RefreshableView | null>(null)
+  const tabIdleForRefresh = useRef<string | null>(null)
+  const tabIdleResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const scrollY = useSharedValue(0)
 
@@ -120,7 +142,7 @@ export default function HomeScreen(props) {
   )
 
   const renderScene = useCallback(
-    ({ route }) => {
+    ({ route }: { route: HomeRoute }) => {
       const { tab } = route
       const isFocused = pathname === '/feed'
       const isActive =
@@ -131,7 +153,7 @@ export default function HomeScreen(props) {
             <NodeTopicList
               key={`${tab.type}-${tab.value}`}
               isFocused={isActive}
-              currentListRef={isActive && currentListRef}
+              currentListRef={isActive ? currentListRef : inactiveListRef}
               name={tab.value}
               scrollY={scrollY}
             />
@@ -141,7 +163,7 @@ export default function HomeScreen(props) {
             <HomeTopicList
               key={`${tab.type}-${tab.value}`}
               isFocused={isActive}
-              currentListRef={isActive && currentListRef}
+              currentListRef={isActive ? currentListRef : inactiveListRef}
               tab={tab.value}
             />
           )
@@ -150,7 +172,7 @@ export default function HomeScreen(props) {
             <XnaTopicList
               key='xna'
               isFocused={isActive}
-              currentListRef={isActive && currentListRef}
+              currentListRef={isActive ? currentListRef : inactiveListRef}
             />
           )
         case 'planet':
@@ -158,7 +180,7 @@ export default function HomeScreen(props) {
             <PlanetFeedList
               key='planet'
               isFocused={isActive}
-              currentListRef={isActive && currentListRef}
+              currentListRef={isActive ? currentListRef : inactiveListRef}
             />
           )
         default:
@@ -173,19 +195,21 @@ export default function HomeScreen(props) {
   )
 
   const handleTabPress = useCallback(
-    ({ route }) => {
+    ({ route }: { route: HomeRoute }) => {
       const currentRoute = routes?.[normalizedIndexRef.current]
       if (currentRoute?.key === route.key) {
         if (tabIdleForRefresh.current === route.key) {
-          clearTimeout(tabIdleResetTimer.current)
+          if (tabIdleResetTimer.current) {
+            clearTimeout(tabIdleResetTimer.current)
+          }
           if (currentListRef.current) {
             currentListRef.current.scrollToRefresh()
           }
-          tabIdleForRefresh.current = undefined
+          tabIdleForRefresh.current = null
         } else {
           tabIdleForRefresh.current = route.key
           tabIdleResetTimer.current = setTimeout(() => {
-            tabIdleForRefresh.current = undefined
+            tabIdleForRefresh.current = null
           }, REFRESH_IDLE_RESET_TIMEOUT)
         }
       }
@@ -194,7 +218,7 @@ export default function HomeScreen(props) {
   )
 
   const renderTabBar = useCallback(
-    (props) => {
+    (props: ComponentProps<typeof TabBar<HomeRoute>>) => {
       return (
         <TabBar
           {...props}
@@ -204,8 +228,16 @@ export default function HomeScreen(props) {
           style={styles.layer1}
           tabStyle={TAB_STYLE}
           contentContainerStyle={contentContainerStyle}
-          activeColor={theme.colors.primary}
-          inactiveColor={theme.colors.text}
+          activeColor={
+            typeof theme.colors.primary === 'string'
+              ? theme.colors.primary
+              : undefined
+          }
+          inactiveColor={
+            typeof theme.colors.text === 'string'
+              ? theme.colors.text
+              : undefined
+          }
           onTabPress={handleTabPress}
         />
       )
@@ -230,18 +262,23 @@ export default function HomeScreen(props) {
   useEffect(() => {
     if (pathname === '/feed' && routes) {
       // TODO: fix it later.
-      const unsubscribe = navigation.addListener('tabPress', (e) => {
+      const unsubscribe = (
+        navigation as unknown as TabPressNavigation
+      ).addListener('tabPress', (e) => {
         if (tabIdleForRefresh.current) {
-          clearTimeout(tabIdleResetTimer.current)
+          if (tabIdleResetTimer.current) {
+            clearTimeout(tabIdleResetTimer.current)
+          }
           if (currentListRef.current) {
             e.preventDefault()
             currentListRef.current.scrollToRefresh()
           }
-          tabIdleForRefresh.current = undefined
+          tabIdleForRefresh.current = null
         } else {
-          tabIdleForRefresh.current = routes[normalizedIndexRef.current]?.key
+          tabIdleForRefresh.current =
+            routes[normalizedIndexRef.current]?.key ?? null
           tabIdleResetTimer.current = setTimeout(() => {
-            tabIdleForRefresh.current = undefined
+            tabIdleForRefresh.current = null
           }, REFRESH_IDLE_RESET_TIMEOUT)
         }
       })
@@ -260,7 +297,7 @@ export default function HomeScreen(props) {
   const navigationState = useMemo(
     () => ({
       index: normalizedIndex,
-      routes,
+      routes: routes ?? [],
     }),
     [normalizedIndex, routes],
   )

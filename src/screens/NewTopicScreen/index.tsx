@@ -29,17 +29,16 @@ import { SlateEditorService } from '@/components/SlateEditor/types'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { createTopic } from '@/utils/v2ex-client'
+import ApiError from '@/utils/v2ex-client/ApiError'
 
 import NodeSelect from './NodeSelect'
 
 // toolbar + extra...
 const VISIBLE_BOTTOM_OFFSET = 85
 
-const pickerSnapPoints = ['90%']
-
 export default function NewTopicScreen() {
   const { theme, styles } = useTheme()
-  const { nodeName } = useLocalSearchParams()
+  const { nodeName } = useLocalSearchParams<{ nodeName?: string }>()
   const router = useRouter()
 
   const titleInput = useRef<TextInput>(null)
@@ -48,8 +47,8 @@ export default function NewTopicScreen() {
   const alert = useAlertService()
   const scrollViewRef = useRef<ScrollView>(null)
   const scrollViewInfo = useRef({
-    height: undefined,
-    width: undefined,
+    height: 0,
+    width: 0,
     scrollY: 0,
   })
   const editorRenderContainer = useRef<View>(null)
@@ -58,12 +57,12 @@ export default function NewTopicScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [values, setValues] = useState({
     title: '',
-    node: nodeName as string,
+    node: typeof nodeName === 'string' ? nodeName : '',
     content: '',
   })
 
   const isValid = useMemo(() => {
-    return values.title && values.title.length < 120 && values.node
+    return Boolean(values.title && values.title.length < 120 && values.node)
   }, [values])
 
   useEffect(() => {
@@ -76,17 +75,23 @@ export default function NewTopicScreen() {
 
   const editorScrollIntoView = useCallback(
     debounce(() => {
+      const editor = editorRef.current
+      const scrollView = scrollViewRef.current
+      const selectionBox = editor?.selectionBox
       if (
         editorRenderContainer.current &&
-        scrollViewRef.current &&
-        editorRef.current?.hasFocus() &&
-        editorRef.current.selectionBox
+        scrollView &&
+        editor?.hasFocus() &&
+        selectionBox
       ) {
-        const scrollViewRefHandle = findNodeHandle(scrollViewRef.current)
+        const scrollViewRefHandle = findNodeHandle(scrollView)
+        if (scrollViewRefHandle === null) {
+          return
+        }
         editorRenderContainer.current.measureLayout(
           scrollViewRefHandle,
           (left, top, width, height) => {
-            const cursorOffsetTop = top + editorRef.current.selectionBox.top
+            const cursorOffsetTop = top + selectionBox.top
 
             const visibleRegion = [
               scrollViewInfo.current.scrollY,
@@ -103,7 +108,7 @@ export default function NewTopicScreen() {
               return
             }
 
-            scrollViewRef.current.scrollTo({
+            scrollView.scrollTo({
               y:
                 cursorOffsetTop -
                 (scrollViewInfo.current.height - VISIBLE_BOTTOM_OFFSET),
@@ -121,7 +126,14 @@ export default function NewTopicScreen() {
   const handleSubmit = useCallback(async () => {
     try {
       setIsSubmitting(true)
-      const content = await editorRef.current.getMarkdown()
+      const editor = editorRef.current
+      if (!editor) {
+        throw new ApiError({
+          code: 'EDITOR_NOT_READY',
+          message: '编辑器还没有准备好',
+        })
+      }
+      const content = await editor.getMarkdown()
       const { data: newTopic } = await createTopic({
         title: values.title,
         content,
@@ -142,15 +154,21 @@ export default function NewTopicScreen() {
       alert.show({ type: 'success', message: '主题创建成功' })
     } catch (err) {
       setIsSubmitting(false)
-      if (err.code == 'PROBLEMS') {
+      if (err instanceof ApiError && err.code === 'PROBLEMS') {
         alert.show({
           type: 'error',
           message:
             err.message +
-            err.data.map((line, i) => `${i + 1}. ${line}`).join('; '),
+            (Array.isArray(err.data)
+              ? err.data.map((line: string, i: number) => `${i + 1}. ${line}`)
+              : []
+            ).join('; '),
         })
       } else {
-        alert.show({ type: 'error', message: err.message })
+        alert.show({
+          type: 'error',
+          message: err instanceof Error ? err.message : '发布失败',
+        })
       }
     }
   }, [values, router, alert, queryClient])
@@ -259,10 +277,19 @@ export default function NewTopicScreen() {
                             containerStyle={{
                               overflow: 'hidden',
                               minHeight: 200,
-                              backgroundColor: theme.colors.bg_layer2,
+                              backgroundColor:
+                                typeof theme.colors.bg_layer2 === 'string'
+                                  ? theme.colors.bg_layer2
+                                  : undefined,
                               '--placeholder-color':
-                                theme.colors.text_placeholder,
-                              color: theme.colors.text,
+                                typeof theme.colors.text_placeholder ===
+                                'string'
+                                  ? theme.colors.text_placeholder
+                                  : undefined,
+                              color:
+                                typeof theme.colors.text === 'string'
+                                  ? theme.colors.text
+                                  : undefined,
                             }}
                           />
                         </View>
@@ -290,7 +317,7 @@ export default function NewTopicScreen() {
                     onOpenImageSelect={() => {
                       showImagePicker(true)
                       editorRef.current?.blur()
-                      pickerModalRef.current.present()
+                      pickerModalRef.current?.present()
                     }}
                   />
                 </View>

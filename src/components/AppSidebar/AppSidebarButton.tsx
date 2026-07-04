@@ -1,3 +1,4 @@
+import { ReactElement } from 'react'
 import {
   ColorValue,
   Pressable,
@@ -7,14 +8,19 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import { HomeIcon } from 'react-native-heroicons/outline'
 
 import { useTheme } from '@/containers/ThemeService'
 
 import { useLayoutStyle } from './context'
 
+type SidebarIconProps = {
+  color: ColorValue
+  size: number
+  style?: ViewStyle
+}
+
 function AppSidebarButton(props: {
-  Icon: typeof HomeIcon
+  Icon: (props: SidebarIconProps) => ReactElement
   label: string
   isActive: boolean
   staticColor: ColorValue
@@ -27,16 +33,7 @@ function AppSidebarButton(props: {
   style?: ViewStyle
 }) {
   const { styles, theme } = useTheme()
-  const {
-    Icon,
-    label,
-    isActive,
-    onPress,
-    staticColor,
-    activeColor,
-    iconStyle,
-    isLast,
-  } = props
+  const { Icon, isActive, onPress, staticColor, activeColor, iconStyle } = props
   const layoutStyle = useLayoutStyle()
   return (
     <Pressable
@@ -50,7 +47,7 @@ function AppSidebarButton(props: {
         if (isActive) {
           return
         }
-        onPress(e)
+        onPress?.(e)
       }}
     >
       <View style={sidebarBtnStyles.iconContainer}>

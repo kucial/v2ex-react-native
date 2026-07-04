@@ -1,5 +1,6 @@
 import { Platform } from 'react-native'
-import Networking from 'react-native/Libraries/Network/RCTNetworking'
+// @ts-expect-error React Native does not ship types for this internal module.
+import Networking from 'react-native/Libraries/Network/RCTNetworking.js'
 import CookieManager from '@react-native-cookies/cookies'
 import * as Sentry from '@sentry/react-native'
 import axios, {
@@ -103,7 +104,7 @@ const dispatch = (event: EVENT, value?: EventValue) => {
   }
 }
 
-const captureParseError = (err: Error, $: CheerioAPI) => {
+const captureParseError = (err: unknown, $: CheerioAPI): never => {
   Sentry.addBreadcrumb({
     type: 'info',
     data: {
@@ -140,9 +141,12 @@ const instance = axios.create({
 // }
 
 let n_403 = 0
-let cachedOnceToken
+let cachedOnceToken: string | undefined
 
 instance.interceptors.request.use(async (config) => {
+  config.headers = config.headers ?? ({} as AxiosRequestHeaders)
+  const headers = config.headers as AxiosRequestHeaders
+
   // handle oncp
   if (config.params?.once === ONCP || config.data?.once === ONCP) {
     let once
@@ -167,7 +171,7 @@ instance.interceptors.request.use(async (config) => {
 
   // 处理 x-www-form-urlencoded  serialize
   if (
-    config.headers['content-type'] === 'application/x-www-form-urlencoded' &&
+    headers['content-type'] === 'application/x-www-form-urlencoded' &&
     typeof config.data === 'object'
   ) {
     config.data = stringify(config.data)
@@ -189,14 +193,13 @@ instance.interceptors.response.use(
       })
     }
 
-    const contentType = res.headers['content-type']
-    let $: CheerioAPI
+    const contentType = String(res.headers['content-type'] ?? '')
+    const $ = cheerioDoc(typeof res.data === 'string' ? res.data : '')
     if (contentType.includes('text/html') && !/poll_once$/.test(responseURL)) {
-      $ = cheerioDoc(res.data)
       res.$ = $
       // once token
       const link = $('a[href^="/settings/night/toggle?once="]')
-      const onceValue = link.attr('href')?.match(/once=(\d+)$/)[1]
+      const onceValue = link.attr('href')?.match(/once=(\d+)$/)?.[1]
       if (onceValue) {
         cachedOnceToken = onceValue
       }
@@ -222,7 +225,7 @@ instance.interceptors.response.use(
     if (
       responseURL &&
       /\/signin\??/.test(responseURL) &&
-      !res.config.url.startsWith('/signin')
+      !res.config.url?.startsWith('/signin')
     ) {
       const message = $('.message').text()
       const error = new ApiError({
@@ -329,7 +332,7 @@ const ajaxHeaders = {
   Accept: 'application/json',
 }
 
-export const request = async <T>(
+export const request = async (
   config: AxiosRequestConfig,
 ): Promise<CustomAxiosResponse> => {
   try {
@@ -497,7 +500,7 @@ export async function getXnaFeeds({
         ?.split('•')[0]
         .trim()
       const source_link = $(el).find('.node').attr('href')
-      if (!/^https?:\/\//.test(url)) {
+      if (url && !/^https?:\/\//.test(url) && source_link) {
         const sourceUrl = new URL(source_link)
         sourceUrl.pathname = url
         url = sourceUrl.toString()
@@ -637,7 +640,8 @@ export async function getHotTopics(): Promise<
         return null
       }
       const topicId = Number(
-        $el.find('.item_hot_topic_title a').attr('href').replace('/t/', ''),
+        $el.find('.item_hot_topic_title a').attr('href')?.replace('/t/', '') ??
+          0,
       )
       return topicId
     })
@@ -697,7 +701,7 @@ export async function getTopicDetail({
       data: topicDetailFromPage($, id),
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 export async function collectTopic({
@@ -728,7 +732,7 @@ export async function collectTopic({
       data: topic,
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 export async function uncollectTopic({
@@ -757,7 +761,7 @@ export async function uncollectTopic({
       data: topic,
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 export async function thankTopic({
@@ -788,7 +792,7 @@ export async function thankTopic({
       data: topicDetailFromPage($, id),
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 // TODO: rename to ignore
@@ -904,6 +908,12 @@ export async function createTopic(data: {
 
   if (res.request?.responseURL && /\/t\/\d+/.test(res.request.responseURL)) {
     const match = /\/t\/(\d+)/.exec(res.request.responseURL)
+    if (!match) {
+      throw new ApiError({
+        code: 'NOT_HANDLED_RESPONSE',
+        message: '无法识别新主题地址',
+      })
+    }
     try {
       const topic = topicDetailFromPage($, Number(match[1]))
       return {
@@ -911,7 +921,7 @@ export async function createTopic(data: {
         data: topic,
       }
     } catch (err) {
-      captureParseError(err, $)
+      return captureParseError(err, $)
     }
   }
   throw new ApiError({
@@ -998,7 +1008,7 @@ export async function editTopic(
       fetchedAt: Date.now(),
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 
@@ -1043,7 +1053,7 @@ export async function moveTopic(
       fetchedAt: Date.now(),
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 
@@ -1072,7 +1082,7 @@ export async function appendTopic({
       data: topicDetailFromPage($, id),
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 
@@ -1137,7 +1147,7 @@ export async function getTopicReplies({
       fetchedAt: Date.now(),
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 
@@ -1180,7 +1190,7 @@ export async function postReply({
       data: topic,
     }
   } catch (err) {
-    captureParseError(err, $)
+    return captureParseError(err, $)
   }
 }
 
@@ -1419,7 +1429,7 @@ export async function getMemberDetail({
       data: user,
     }
   } catch (err) {
-    if (err.response.status == 404) {
+    if (axios.isAxiosError(err) && err.response?.status === 404) {
       throw new ApiError({
         code: 'NOT_FOUND',
         message: err.message,
@@ -1448,6 +1458,12 @@ export async function watchMember({
 }): Promise<StatusResponse<Pick<MemberDetail, 'meta'>>> {
   let userId = id
   if (!userId) {
+    if (!username) {
+      throw new ApiError({
+        code: 'MISSING_PARAMS',
+        message: '缺少用户',
+      })
+    }
     userId = await getMemberId(username)
   }
   const res = await request({
@@ -1477,6 +1493,12 @@ export async function unwatchMember({
 }): Promise<StatusResponse<Pick<MemberDetail, 'meta'>>> {
   let userId = id
   if (!userId) {
+    if (!username) {
+      throw new ApiError({
+        code: 'MISSING_PARAMS',
+        message: '缺少用户',
+      })
+    }
     userId = await getMemberId(username)
   }
   const { data: html } = await request({
@@ -1506,6 +1528,12 @@ export async function blockMember({
 }): Promise<StatusResponse<Pick<MemberDetail, 'meta'>>> {
   let userId = id
   if (!userId) {
+    if (!username) {
+      throw new ApiError({
+        code: 'MISSING_PARAMS',
+        message: '缺少用户',
+      })
+    }
     userId = await getMemberId(username)
   }
   const res = await request({
@@ -1535,6 +1563,12 @@ export async function unblockMember({
 }): Promise<StatusResponse<Pick<MemberDetail, 'meta'>>> {
   let userId = id
   if (!userId) {
+    if (!username) {
+      throw new ApiError({
+        code: 'MISSING_PARAMS',
+        message: '缺少用户',
+      })
+    }
     userId = await getMemberId(username)
   }
   const res = await request({
@@ -1568,8 +1602,9 @@ export async function getMemberTopics({
 
   const $ = res.$ || cheerioDoc(res.data)
   if (
-    $('#Wrapper .content .box .cell').length == 1 &&
-    $('#Wrapper .content .box .cell img').attr('src')?.indexOf('lock') > -1
+    $('#Wrapper .content .box .cell').length === 1 &&
+    ($('#Wrapper .content .box .cell img').attr('src')?.indexOf('lock') ?? -1) >
+      -1
   ) {
     throw new ApiError({
       code: 'MEMBER_LOCKED',
@@ -1583,11 +1618,12 @@ export async function getMemberTopics({
         return null
       }
       const member = {
-        username: $(el)
-          .find('td:nth-child(1) strong a')
-          .first()
-          .attr('href')
-          .replace('/member/', ''),
+        username:
+          $(el)
+            .find('td:nth-child(1) strong a')
+            .first()
+            .attr('href')
+            ?.replace('/member/', '') ?? '',
         avatar_normal: undefined,
       }
       const node = nodeFromLink($(el).find('td:nth-child(1) .node'))
@@ -1748,10 +1784,11 @@ export async function getMyCollectedTopics({
     .map(function (i, el) {
       const member = memberFromImage($(el).find('td:nth-child(1) img'))
       if (!member.username) {
-        member.username = $(el)
-          .find('td:nth-child(1) a')
-          .attr('href')
-          .replace('/member/', '')
+        member.username =
+          $(el)
+            .find('td:nth-child(1) a')
+            .attr('href')
+            ?.replace('/member/', '') ?? ''
       }
       const topic = topicFromLink($(el).find('.item_title a'))
       const node = nodeFromLink($(el).find('td:nth-child(3) a.node'))
@@ -1796,7 +1833,7 @@ export async function getMyCollectedNodes(): Promise<
   const data = $('#my-nodes .fav-node')
     .map(function (i, el) {
       const href = $(el).attr('href')
-      const name = href.replace('/go/', '')
+      const name = href?.replace('/go/', '') ?? ''
       const avatar_large = $(el).find('img').attr('src')
       const title = $(el).find('.fav-node-name').text()
       const topics = Number($(el).find('.fade').text()) || 0
@@ -1814,7 +1851,7 @@ export async function getMyCollectedNodes(): Promise<
 }
 export async function getCurrentUser(
   afterLogin = false,
-): Promise<EntityResponse<MemberDetail, { unread_count: number }>> {
+): Promise<EntityResponse<MemberDetail | null, { unread_count: number }>> {
   const res = await request({
     url: afterLogin ? '/about?init=1' : '/about',
   })
@@ -2057,23 +2094,34 @@ export async function logout(): Promise<StatusResponse> {
   }
 }
 
-const _settingsForm = ($) => {
-  const data: Record<string, any> = {}
+type SettingsFormValue = string | boolean | string[] | undefined
+
+const _settingsForm = ($: CheerioAPI) => {
+  const data: Record<string, SettingsFormValue> = {}
 
   //text
   $(`form[action="/settings"] input[type=text]`).each((i, el) => {
     const $el = $(el)
-    data[$el.attr('name')] = $el.attr('value')
+    const name = $el.attr('name')
+    if (name) {
+      data[name] = $el.attr('value')
+    }
   })
   // checkbox
   $(`form[action="/settings"] input[type=checkbox]`).each((i, el) => {
     const $el = $(el)
-    data[$el.attr('name')] = !!$el.is(':checked')
+    const name = $el.attr('name')
+    if (name) {
+      data[name] = !!$el.is(':checked')
+    }
   })
   // select
   $(`form[action="/settings"] select`).each((i, el) => {
     const $el = $(el)
-    data[$el.attr('name')] = $el.val()
+    const name = $el.attr('name')
+    if (name) {
+      data[name] = $el.val()
+    }
   })
 
   data.once = $('input[name=once]').attr('value')
@@ -2115,14 +2163,21 @@ export async function fetchSocialForm() {
     url: '/settings/social',
   })
 
-  const fields = []
-  const values = {}
+  const fields: {
+    name: string
+    label: string
+    image?: string
+  }[] = []
+  const values: Record<string, string | undefined> = {}
 
   const $ = res.$ || cheerioDoc(res.data)
   $('form[action=/settings/social] input[type=text]').each((i, el) => {
     const name = $(el).attr('name')
     const label = $(el).prev().text()
     const image = resolveUrl($(el).prev().find('img').attr('src'))
+    if (!name) {
+      return
+    }
     fields.push({
       name,
       label,
@@ -2139,7 +2194,7 @@ export async function fetchSocialForm() {
   }
 }
 
-export async function updateSocial(data) {
+export async function updateSocial(data: Record<string, string | undefined>) {
   const res = await request({
     url: '/settings/social',
     method: 'POST',
@@ -2152,10 +2207,12 @@ export async function updateSocial(data) {
   })
 
   const $ = res.$ || cheerioDoc(res.data)
-  const values = {}
+  const values: Record<string, string | undefined> = {}
   $('form[action=/settings/social] input[type=text]').each((i, el) => {
     const name = $(el).attr('name')
-    values[name] = $(el).attr('value')
+    if (name) {
+      values[name] = $(el).attr('value')
+    }
   })
 
   return {
@@ -2191,8 +2248,10 @@ export async function uploadAvatar(data: {
   once?: string
 }) {
   const formData = new FormData()
-  formData.append('avatar', data.avatar)
-  formData.append('once', data.once)
+  formData.append('avatar', data.avatar as unknown as Blob)
+  if (data.once) {
+    formData.append('once', data.once)
+  }
   const res = await request({
     url: '/settings/avatar',
     method: 'POST',
@@ -2242,7 +2301,7 @@ export async function getBalanceDetail(params: { p?: number }) {
       const time = $(columns[0]).find('.gray').text().trim()
       const amount = $(columns[1]).text().trim()
       const balance = $(columns[2]).text().trim()
-      const description = $(columns[3]).html().trim()
+      const description = $(columns[3]).html()?.trim() ?? ''
       return {
         type: typeText.replace(time, '').trim(),
         time,
@@ -2269,7 +2328,7 @@ type SearchResponse = {
   hits: SearchHit[]
   timed_out: boolean
 }
-export async function search(params) {
+export async function search(params: Record<string, string | number>) {
   const data = await request({
     baseURL: 'https://www.sov2ex.com',
     url: '/api/search',

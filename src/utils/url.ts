@@ -30,18 +30,25 @@ const hrefMap = {
 type TopicScreenInfo = {
   name: 'topic'
   pathname: '/topic/[id]'
-  params: AppStackParamList['topic']
+  params: {
+    id: string
+  }
 }
 type MemberScreenInfo = {
   name: 'member'
   pathname: '/member/[username]'
-  params: AppStackParamList['member']
+  params: {
+    username: string
+    tab?: 'topics' | 'replies'
+  }
 }
 
 type NodeScreenInfo = {
   name: 'node'
   pathname: '/node/[name]'
-  params: AppStackParamList['node']
+  params: {
+    name: string
+  }
 }
 
 type ScreenInfo =
@@ -119,7 +126,7 @@ export function isURL(str: string) {
   return pattern.test(str)
 }
 
-export function isDeepLink(str) {
+export function isDeepLink(str: string) {
   const pattern = new RegExp(
     '^[a-z][a-z0-9+.-]*://(?:[a-z\\d-]+\\.)+[a-z]{2,6}(?:/[^#?]+)?(?:\\?[^#]*)?(?:#\\w*)?$',
     'i',

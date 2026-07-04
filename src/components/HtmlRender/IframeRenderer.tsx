@@ -1,29 +1,33 @@
 import React, { useCallback, useState } from 'react'
-import { View } from 'react-native'
+import {
+  LayoutChangeEvent,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native'
 import YoutubePlayer from 'react-native-youtube-iframe'
 import { HTMLIframe, useHtmlIframeProps } from '@native-html/iframe-plugin'
 
 import { getYoutubeVideoId } from '@/utils/url'
 
-function getNumericStyleValue(style, key) {
-  if (!style) return null
-  if (Array.isArray(style)) {
-    for (let i = style.length - 1; i >= 0; i -= 1) {
-      const value = style[i]?.[key]
-      if (typeof value === 'number') return value
-    }
-    return null
-  }
-  const value = style[key]
+function getNumericStyleValue(
+  style: StyleProp<ViewStyle>,
+  key: keyof ViewStyle,
+) {
+  const flattened = StyleSheet.flatten(style)
+  const value = flattened?.[key]
   return typeof value === 'number' ? value : null
 }
 
-export default function IframeRenderer(props) {
+export default function IframeRenderer(
+  props: Parameters<typeof useHtmlIframeProps>[0],
+) {
   const iframeProps = useHtmlIframeProps(props)
   const { source } = iframeProps
   const [layoutWidth, setLayoutWidth] = useState<number | null>(null)
   const handleLayout = useCallback(
-    (event) => {
+    (event: LayoutChangeEvent) => {
       const nextWidth = event.nativeEvent.layout.width
       if (nextWidth && nextWidth !== layoutWidth) {
         setLayoutWidth(nextWidth)

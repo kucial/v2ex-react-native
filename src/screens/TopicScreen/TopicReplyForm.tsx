@@ -221,7 +221,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                     .filter(Boolean)
                     .join('\n') + '\n',
                 )
-                pickerRef.current.dismiss()
+                pickerRef.current?.dismiss()
               }}
             />
           )}

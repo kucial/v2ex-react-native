@@ -23,4 +23,11 @@ declare global {
 
 declare module 'react-native-render-html' {}
 
+declare module 'react-native/Libraries/Network/RCTNetworking.js' {
+  const Networking: {
+    clearCookies: (callback: (result: boolean) => void) => void
+  }
+  export default Networking
+}
+
 export {}

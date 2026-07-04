@@ -33,7 +33,6 @@ function NodeSelect(props: NodeSelectProps) {
   })
   const { theme, styles } = useTheme()
   const [filter, setFilter] = useState('')
-  const [open, setOpen] = useState(false)
   const selectRef = useRef<TrueSheet>(null)
 
   const filtered = useMemo(() => {
@@ -44,14 +43,14 @@ function NodeSelect(props: NodeSelectProps) {
       return nodesQuery.data.data
     }
     return nodesQuery.data.data.filter((n) =>
-      ['name', 'title', 'title_alternative'].some(
-        (key) => n[key].indexOf(filter) > -1,
-      ),
+      [n.name, n.title, 'title_alternative' in n ? n.title_alternative : '']
+        .filter((value): value is string => typeof value === 'string')
+        .some((value) => value.indexOf(filter) > -1),
     )
   }, [nodesQuery.data, filter])
 
   const renderItem = useCallback(
-    ({ item }) => {
+    ({ item }: { item: NodeDetail }) => {
       return (
         <Pressable
           style={({ pressed }) => [
@@ -84,7 +83,6 @@ function NodeSelect(props: NodeSelectProps) {
           pressed && nodeSelectStyles.pressed,
         ]}
         onPress={() => {
-          setOpen(true)
           selectRef.current?.present()
         }}
       >
@@ -101,10 +99,11 @@ function NodeSelect(props: NodeSelectProps) {
       <TrueSheet
         ref={selectRef}
         scrollable
-        backgroundColor={styles.overlay.backgroundColor}
-        onDidDismiss={() => {
-          setOpen(false)
-        }}
+        backgroundColor={
+          typeof styles.overlay.backgroundColor === 'string'
+            ? styles.overlay.backgroundColor
+            : '#000000'
+        }
         header={
           <View style={nodeSelectStyles.headerWrap}>
             <TextInput
@@ -132,7 +131,7 @@ function NodeSelect(props: NodeSelectProps) {
           nestedScrollEnabled
           data={filtered}
           renderItem={renderItem}
-          keyExtractor={(n) => n.id}
+          keyExtractor={(n) => `${n.id ?? n.name}`}
         />
       </TrueSheet>
     </>

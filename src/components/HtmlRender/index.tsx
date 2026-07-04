@@ -70,7 +70,7 @@ function HtmlRender({
   ...props
 }: RenderHTMLProps & {
   source: HTMLSourceInline
-  onOpenMemberInfo?: (data: any) => void
+  onOpenMemberInfo?: (data: { type: 'member'; data: string }) => void
   isModalView?: boolean
 }) {
   const { theme, colorScheme, styles: themeStyles } = useTheme()
@@ -102,7 +102,24 @@ function HtmlRender({
   )
 
   const [textToSelect, setTextToSelect] = useState('')
-  const [base64Options, setBase64Options] = useState([])
+  const [base64Options, setBase64Options] = useState<[string, string][]>([])
+
+  const pushAppScreen = useCallback(
+    (screen: NonNullable<ReturnType<typeof getScreenInfo>>) => {
+      switch (screen.name) {
+        case 'topic':
+          router.push({ pathname: screen.pathname, params: screen.params })
+          return
+        case 'member':
+          router.push({ pathname: screen.pathname, params: screen.params })
+          return
+        case 'node':
+          router.push({ pathname: screen.pathname, params: screen.params })
+          return
+      }
+    },
+    [router],
+  )
   const [activeModal, setActiveModal] = useState<'select' | 'base64' | null>(
     null,
   )
@@ -112,7 +129,8 @@ function HtmlRender({
       themeStyles.text_base.fontSize) as number
     return {
       body: {
-        color: theme.colors.text,
+        color:
+          typeof theme.colors.text === 'string' ? theme.colors.text : undefined,
         fontSize: baseFontSize,
         lineHeight: baseFontSize * 1.5,
       },
@@ -161,19 +179,29 @@ function HtmlRender({
       code: { fontSize: 14 },
       ul: { marginTop: 0, marginBottom: baseFontSize },
       p: { marginTop: 0, marginBottom: baseFontSize },
-      a: { textDecorationLine: 'none', color: theme.colors.text_link },
+      a: {
+        textDecorationLine: 'none' as const,
+        color:
+          typeof theme.colors.text_link === 'string'
+            ? theme.colors.text_link
+            : undefined,
+      },
       blockquote: {
         marginLeft: 0,
         paddingLeft: baseFontSize * 1.5,
         paddingVertical: baseFontSize * 0.25,
         borderLeftWidth: 3,
-        borderLeftColor: theme.colors.text,
+        borderLeftColor:
+          typeof theme.colors.text === 'string' ? theme.colors.text : undefined,
       },
-      tr: { flexDirection: 'row', width: '100%' },
+      tr: { flexDirection: 'row' as const, width: '100%' },
       td: { flex: 1 },
       th: {
         borderBottomWidth: 1,
-        borderBottomColor: theme.colors.text_meta,
+        borderBottomColor:
+          typeof theme.colors.text_meta === 'string'
+            ? theme.colors.text_meta
+            : undefined,
         flex: 1,
       },
       ...(tagsStyles || {}),
@@ -182,30 +210,32 @@ function HtmlRender({
 
   // Per-instance QR handler — passed through RenderContext so ImageRenderer
   // can hand it to the global viewer when opening, without needing a Provider.
-  const handleQrCode = useCallback((result: BarcodeScanningResult) => {
-    const { data } = result
-    if (isAppLink(data)) {
-      const screen = getScreenInfo(data)
-      if (screen) {
-        router.push({ pathname: screen.pathname, params: screen.params })
-        return
-      }
-    } else if (isURL(data) || isDeepLink(data)) {
-      Linking.openURL(data)
-    } else {
-      Alert.alert('信息', getMaxLength(data, 120), [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '复制',
-          onPress: async () => {
-            await Clipboard.setStringAsync(data)
-            alert.show({ type: 'success', message: '已复制到粘贴板' })
+  const handleQrCode = useCallback(
+    (result: BarcodeScanningResult) => {
+      const { data } = result
+      if (isAppLink(data)) {
+        const screen = getScreenInfo(data)
+        if (screen) {
+          pushAppScreen(screen)
+          return
+        }
+      } else if (isURL(data) || isDeepLink(data)) {
+        Linking.openURL(data)
+      } else {
+        Alert.alert('信息', getMaxLength(data, 120), [
+          { text: '取消', style: 'cancel' },
+          {
+            text: '复制',
+            onPress: async () => {
+              await Clipboard.setStringAsync(data)
+              alert.show({ type: 'success', message: '已复制到粘贴板' })
+            },
           },
-        },
-      ])
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+        ])
+      }
+    },
+    [alert, pushAppScreen],
+  )
 
   const renderContext = useMemo(
     () => ({
@@ -223,7 +253,7 @@ function HtmlRender({
               return
             }
             if (isModalView) return
-            router.push({ pathname: screen.pathname, params: screen.params })
+            pushAppScreen(screen)
             return
           }
         }
@@ -243,7 +273,10 @@ function HtmlRender({
         }
         if (Platform.OS === 'ios') {
           WebBrowser.openBrowserAsync(url, {
-            controlsColor: theme.colors.primary,
+            controlsColor:
+              typeof theme.colors.primary === 'string'
+                ? theme.colors.primary
+                : undefined,
             dismissButtonStyle: 'close',
             presentationStyle:
               WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
@@ -258,7 +291,14 @@ function HtmlRender({
       imageOrigins,
     }),
 
-    [onOpenMemberInfo, router, theme.colors.primary, isModalView, handleQrCode],
+    [
+      onOpenMemberInfo,
+      router,
+      theme.colors.primary,
+      isModalView,
+      handleQrCode,
+      pushAppScreen,
+    ],
   )
 
   const handleCopy = useCallback(async () => {
@@ -341,7 +381,11 @@ function HtmlRender({
                 return handleBase64Decode()
             }
           }}
-          previewBackgroundColor={themeStyles.layer1.backgroundColor}
+          previewBackgroundColor={
+            typeof themeStyles.layer1.backgroundColor === 'string'
+              ? themeStyles.layer1.backgroundColor
+              : undefined
+          }
           preview={<View></View>}
         >
           <View
@@ -368,7 +412,11 @@ function HtmlRender({
           ref={selectModalRef}
           scrollable
           grabber={false}
-          backgroundColor={themeStyles.overlay.backgroundColor}
+          backgroundColor={
+            typeof themeStyles.overlay.backgroundColor === 'string'
+              ? themeStyles.overlay.backgroundColor
+              : '#000000'
+          }
           onDidDismiss={() => setActiveModal(null)}
         >
           <ScrollView

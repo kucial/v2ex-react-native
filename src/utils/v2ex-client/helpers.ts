@@ -45,17 +45,22 @@ export function cheerioDoc(html: string) {
   // decode href hash
   const emailProtectionCode = '/cdn-cgi/l/email-protection#'
   $(`a[href^=${emailProtectionCode}]`).each(function (i, el) {
-    const email = decodeEmail(
-      $(el).attr('href').replace(emailProtectionCode, ''),
-      0,
-    )
+    const href = $(el).attr('href')
+    if (!href) {
+      return
+    }
+    const email = decodeEmail(href.replace(emailProtectionCode, ''), 0)
     $(el).replaceWith(function () {
       return `<a href="mailto:${email}">${email}</a>`
     })
   })
 
   $('.__cf_email__').each(function (i, el) {
-    const email = decodeEmail($(el).attr('data-cfemail'), 0)
+    const encodedEmail = $(el).attr('data-cfemail')
+    if (!encodedEmail) {
+      return
+    }
+    const email = decodeEmail(encodedEmail, 0)
     // console.log('.__cf_email__', i, email)
     $(el).replaceWith(function () {
       return `<a href="mailto:${email}">${email}</a>`
@@ -67,6 +72,9 @@ export function cheerioDoc(html: string) {
     const $el = $(el)
     $el.replaceWith(function () {
       const className = $el.attr('class')
+      if (!className) {
+        return $.html($el)
+      }
       const language = className.replace('language-', '')
       let highlighted
       if (language && hljs.listLanguages().includes(language)) {
@@ -94,7 +102,7 @@ export function topicFromLink($el: Cheerio<Element>): TopicBasic {
 export function nodeFromLink($el: Cheerio<Element>): NodeBasic {
   return {
     title: $el.text().trim(),
-    name: $el.attr('href').replace(/.*\/go\//, '') || '--',
+    name: $el.attr('href')?.replace(/.*\/go\//, '') || '--',
   }
 }
 
@@ -159,7 +167,7 @@ export function topicDetailFromPage($: CheerioAPI, id: string | number) {
   const metaMatch = /\sat\s(.*)/.exec(metaText)
   const created_time = metaMatch ? metaMatch[1].split('·')[0].trim() : ''
   const clicks = metaMatch
-    ? Number(/\d+/.exec(metaMatch[1].split('·')[1])![0])
+    ? Number(/\d+/.exec(metaMatch[1].split('·')[1] ?? '')?.[0] ?? 0)
     : 0
   const subtles = $('#Wrapper .content .subtle')
     .map(function (i, el) {
@@ -203,7 +211,7 @@ export function topicReplyFromCell(
   $: CheerioAPI,
 ): TopicReply {
   const member = memberFromImage($el.find('img.avatar').first())
-  const content_rendered = $el.find('.reply_content').html()
+  const content_rendered = $el.find('.reply_content').html() ?? ''
   const members_mentioned = $el
     .find('.reply_content a[href^="/member/"]')
     .map(function (j, a) {
@@ -245,7 +253,7 @@ export function topicReplyFromCell(
   const replied_to = getRepliedTo(content_rendered)
 
   return {
-    id: Number($el.attr('id').replace('r_', '')),
+    id: Number($el.attr('id')?.replace('r_', '') ?? 0),
     content,
     content_rendered,
     member,
@@ -272,7 +280,7 @@ export function userMetaForCurrentUser($: CheerioAPI) {
 export function nodeDetailFromPage($: CheerioAPI, name: string) {
   const avatar_large = $('.page-content-header img').attr('src')
 
-  const title = $('.node-breadcrumb').text().split(/\s+/).reverse()[0]
+  const title = $('.node-breadcrumb').text().split(/\s+/).reverse()[0] ?? name
   const header = $('.intro').html()
   const topics = Number($('.topic-count strong').text()) || 0
   const collected = !!$('a[href^="/unfavorite/node"]').length
@@ -286,8 +294,8 @@ export function nodeDetailFromPage($: CheerioAPI, name: string) {
   }
 }
 
-export function getMarkdown(html: string) {
-  return html
+export function getMarkdown(html?: string | null) {
+  return (html ?? '')
     .replace(/<br><br>/g, '\n\n')
     .replace(/(```\w+)<br>/g, `$1\n`)
     .replace(/<br>/g, '\n\n')

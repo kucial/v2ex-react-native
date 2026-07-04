@@ -16,6 +16,7 @@ import Share from 'react-native-share'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import {
+  InfiniteData,
   useInfiniteQuery,
   useQuery,
   useQueryClient,
@@ -30,6 +31,7 @@ import MyRefreshControl from '@/components/MyRefreshControl'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 
 import { useAlertService } from '@/containers/AlertService'
+import { AlertService } from '@/containers/AlertService/types'
 import {
   useAppSettings,
   useMaxContainerWidth,
@@ -68,6 +70,11 @@ const getMemberReplies = (pivot: string, replyList: TopicReply[]) => {
   return replyList.filter((item) => item.member.username === pivot)
 }
 
+type TopicRepliesPage = v2exClient.TopicRepliesResponse
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error)
+
 function TopicScreen() {
   const params = useLocalSearchParams()
   const router = useRouter()
@@ -75,7 +82,7 @@ function TopicScreen() {
   const insets = useSafeAreaInsets()
 
   const { id: rawId, brief: rawBrief } = params
-  const id = Array.isArray(rawId) ? rawId[0] : rawId
+  const id = (Array.isArray(rawId) ? rawId[0] : rawId) ?? ''
   const topicId = Number(id)
   const brief = Array.isArray(rawBrief)
     ? rawBrief[0]
@@ -83,7 +90,7 @@ function TopicScreen() {
       ? JSON.parse(rawBrief)
       : undefined
 
-  const alert = useAlertService()
+  const alert = useAlertService() as AlertService
   const queryClient = useQueryClient()
   const topicQuery = useQuery({
     queryKey: [`/page/t/:id/topic.json`, topicId.toString()],
@@ -97,15 +104,15 @@ function TopicScreen() {
   const topic = topicQuery.data || (brief as TopicDetail | undefined)
 
   const touchViewed = useTouchViewedTopic()
-  const [lastIndex, setLastIndex] = useCachedState(
+  const [lastIndex, setLastIndex] = useCachedState<number>(
     `$app$/topic/${id}/last-position`,
-    null,
+    0,
   )
   const [showScrollToLastPosition, setShowScrollToLastPosition] =
     useState(false)
 
   const fetchReplies = useCallback(
-    async ({ pageParam }) => {
+    async ({ pageParam }: { pageParam: number }) => {
       const data = await v2exClient.getTopicReplies({ id, p: pageParam })
       if (data.meta?.topic) {
         queryClient.setQueryData(
@@ -172,7 +179,7 @@ function TopicScreen() {
   const listRef = useRef<any>(null)
   const changeNodeModalRef = useRef<TrueSheet>(null)
   const scrollControlRef = useRef<ScrollControlApi>(null)
-  const currentIndexRef = useRef(null)
+  const currentIndexRef = useRef<number>(0)
   const [myReplies, setMyReplies] = useCachedState<TopicReply[]>(
     `my-topic-replies:${id}`,
     [],
@@ -263,6 +270,9 @@ function TopicScreen() {
 
       request({ id })
         .then(({ data }) => {
+          if (!data) {
+            return
+          }
           topicQuery.data &&
             queryClient.setQueryData(
               [`/page/t/:id/topic.json`, id.toString()],
@@ -274,7 +284,7 @@ function TopicScreen() {
           })
         })
         .catch((err) => {
-          alert.show({ type: 'error', message: err.message })
+          alert.show({ type: 'error', message: getErrorMessage(err) })
         })
         .finally(() => {
           alert.hide(indicator)
@@ -293,6 +303,9 @@ function TopicScreen() {
       v2exClient
         .reportTopic({ id })
         .then(({ data }) => {
+          if (!data) {
+            return
+          }
           topicQuery.data &&
             queryClient.setQueryData(
               [`/page/t/:id/topic.json`, id.toString()],
@@ -305,7 +318,7 @@ function TopicScreen() {
           }
         })
         .catch((err) => {
-          alert.show({ type: 'error', message: err.message })
+          alert.show({ type: 'error', message: getErrorMessage(err) })
         })
         .finally(() => {
           alert.hide(indicator)
@@ -315,6 +328,9 @@ function TopicScreen() {
 
   const handleToggleCollect = composeAuthedNavigation(
     useCallback(() => {
+      if (!topic) {
+        return
+      }
       if (topic.collected) {
         queryClient.setQueryData([`/page/t/:id/topic.json`, id.toString()], {
           ...topic,
@@ -330,7 +346,7 @@ function TopicScreen() {
               [`/page/t/:id/topic.json`, id.toString()],
               { ...topic, collected: true },
             )
-            alert.show({ type: 'error', message: err.message })
+            alert.show({ type: 'error', message: getErrorMessage(err) })
           })
       } else {
         queryClient.setQueryData([`/page/t/:id/topic.json`, id.toString()], {
@@ -347,7 +363,7 @@ function TopicScreen() {
               [`/page/t/:id/topic.json`, id.toString()],
               { ...topic, collected: false },
             )
-            alert.show({ type: 'error', message: err.message })
+            alert.show({ type: 'error', message: getErrorMessage(err) })
           })
       }
     }, [id, topic, alert, queryClient]),
@@ -355,6 +371,9 @@ function TopicScreen() {
 
   const handleThankTopic = composeAuthedNavigation(
     useCallback(() => {
+      if (!topic) {
+        return
+      }
       if (topic.thanked) {
         alert.show({ type: 'info', message: '已感谢过主题' })
         return
@@ -373,18 +392,21 @@ function TopicScreen() {
             ...topic,
             thanked: false,
           })
-          alert.show({ type: 'error', message: err.message })
+          alert.show({ type: 'error', message: getErrorMessage(err) })
         })
     }, [id, topic, alert, queryClient]),
   )
 
   const handleShare = useCallback(async () => {
+    if (!topic) {
+      return
+    }
     try {
       const url = `https://v2ex.com/t/${topic.id}`
       const message = topic.title || url
       await Share.open({ message, url })
     } catch (error) {
-      console.log(error.message)
+      console.log(getErrorMessage(error))
     }
   }, [topic])
 
@@ -475,12 +497,14 @@ function TopicScreen() {
                 id,
                 content: values.content,
               })
-              setMyReplies((prev) => [...prev, reply])
+              if (reply) {
+                setMyReplies((prev) => [...prev, reply])
+              }
               const cacheKey = getReplyFormCacheKey(context)
               setJSON(cacheKey, undefined)
               alert.show({ type: 'success', message: '回复成功' })
             } catch (err) {
-              alert.show({ type: 'error', message: err.message })
+              alert.show({ type: 'error', message: getErrorMessage(err) })
             }
             break
           case 'append':
@@ -497,7 +521,7 @@ function TopicScreen() {
               setJSON(cacheKey, undefined)
               alert.show({ type: 'success', message: '附言成功' })
             } catch (err) {
-              alert.show({ type: 'error', message: err.message })
+              alert.show({ type: 'error', message: getErrorMessage(err) })
             }
         }
       } finally {
@@ -516,8 +540,8 @@ function TopicScreen() {
   )
 
   const initReply = useCallback(
-    (reply = null) => {
-      const context = { target: reply, type: 'reply' } as ReplyContext
+    (reply?: TopicReply) => {
+      const context: ReplyContext = { target: reply, type: 'reply' }
       showReplyForm({
         context,
         cacheKey: getReplyFormCacheKey(context),
@@ -554,13 +578,22 @@ function TopicScreen() {
 
           queryClient.setQueryData(
             [`/page/t/:id/replies.json`, id],
-            (currentData) => {
+            (currentData: InfiniteData<TopicRepliesPage> | undefined) => {
+              if (!currentData || !data) {
+                return currentData
+              }
               const pages = currentData.pages
               const currentPageIndex = p - 1
               const currentPageData = pages[currentPageIndex]
+              if (!currentPageData) {
+                return currentData
+              }
               const targetIndex = pages[p - 1].data.findIndex(
                 (item: TopicReply) => item.id === reply.id,
               )
+              if (targetIndex < 0) {
+                return currentData
+              }
               const currentReply = pages[p - 1].data[targetIndex]
 
               const newPageData = {
@@ -584,7 +617,7 @@ function TopicScreen() {
           )
         })
         .catch((err) => {
-          alert.show({ type: 'error', message: err.message })
+          alert.show({ type: 'error', message: getErrorMessage(err) })
         })
     },
     [id, alert, queryClient],
@@ -681,7 +714,7 @@ function TopicScreen() {
       if (currentIndexRef.current > 10) {
         setLastIndex(currentIndexRef.current, true)
       } else {
-        setLastIndex(undefined, true)
+        setLastIndex(0, true)
       }
     })
     return unsubscribe
@@ -866,8 +899,8 @@ function TopicScreen() {
   // FIX: Stable callback — only writes to a ref so deps are [].
   // Passing an inline arrow here caused FlashList to remount the entire list
   // on every render.
-  const handleViewableItemsChanged = useCallback(({ viewableItems }) => {
-    currentIndexRef.current = viewableItems[0]?.index
+  const handleViewableItemsChanged = useCallback(({ viewableItems }: any) => {
+    currentIndexRef.current = viewableItems[0]?.index ?? 0
   }, [])
 
   const isTopicHeaderLoading =
@@ -991,9 +1024,9 @@ function TopicScreen() {
         scrollControlRef={scrollControlRef}
         repliesCount={topic.replies}
         onNavTo={handleNavTo}
-        collected={topic.collected}
+        collected={!!topic.collected}
         onToggleCollect={handleToggleCollect}
-        thanked={topic.thanked}
+        thanked={!!topic.thanked}
         onThankTopic={handleThankTopic}
         onShare={handleShare}
       />

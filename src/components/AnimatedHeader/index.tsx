@@ -60,7 +60,11 @@ function AnimatedHeader(props: {
         }}
       >
         <BackButton
-          tintColor={styles.text.color}
+          tintColor={
+            typeof styles.text.color === 'string'
+              ? styles.text.color
+              : undefined
+          }
           onPress={() => {
             if (router.canGoBack()) {
               router.back()

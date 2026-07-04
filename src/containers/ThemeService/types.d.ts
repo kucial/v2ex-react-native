@@ -2,7 +2,7 @@ import type { TextStyle, ViewStyle } from 'react-native'
 import type { Theme } from 'expo-router/react-navigation'
 
 interface ThemeTextStyle {
-  color?: string
+  color?: TextStyle['color']
   fontFamily?: string | undefined
   fontSize?: number | undefined
   fontWeight?: TextStyle['fontWeight']
@@ -13,9 +13,7 @@ interface ThemeFontSizeStyle {
   lineHeight?: number
 }
 
-interface ThemeBackgroundStyle {
-  backgroundColor?: string
-}
+type ThemeBackgroundStyle = ViewStyle & TextStyle
 
 type SemanticType =
   | 'primary'
@@ -54,6 +52,7 @@ type ThemeColors = Theme['colors'] & {
   text_danger_inverse?: string
   text_primary_inverse?: string
   text_success_inverse?: string
+  text_warning_inverse?: string
   text_info_inverse?: string
   text_badge_inverse?: string
   text_tag_inverse?: string
@@ -115,11 +114,11 @@ type ThemeStyles = {
   btn_warning__bg: ViewStyle
   btn_warning__text: TextStyle
   btn_info__bg: ViewStyle
-  btn_info__text: ViewStyle
+  btn_info__text: TextStyle
   badge__bg: ViewStyle
   badge__text: TextStyle
-  input__bg: ViewStyle
-  overlay_input__bg: ViewStyle
+  input__bg: ViewStyle & TextStyle
+  overlay_input__bg: ViewStyle & TextStyle
   layer1: ThemeBackgroundStyle
   layer2: ThemeBackgroundStyle
   layer3: ThemeBackgroundStyle

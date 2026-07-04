@@ -3,7 +3,7 @@ import Svg, { Path } from 'react-native-svg'
 
 import { useTheme } from '@/containers/ThemeService'
 
-const ToBottomIcon = (props: { size: number; color: string }) => (
+const ToBottomIcon = (props: IconProps) => (
   <Svg viewBox='0 0 18 18' width={props.size} height={props.size}>
     <Path
       strokeWidth={2}

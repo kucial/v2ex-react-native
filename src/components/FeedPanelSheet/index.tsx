@@ -27,7 +27,11 @@ export default function FeedPanelSheet() {
       detents={[1]}
       initialDetentIndex={0}
       onDidDismiss={closePanelSheet}
-      backgroundColor={styles.overlay.backgroundColor}
+      backgroundColor={
+        typeof styles.overlay.backgroundColor === 'string'
+          ? styles.overlay.backgroundColor
+          : '#000000'
+      }
       scrollable
       grabber={false}
     >
@@ -40,7 +44,10 @@ export default function FeedPanelSheet() {
           </Text>
         </View>
 
-        <HtmlRender source={{ html: data.content }} contentWidth={width - 32} />
+        <HtmlRender
+          source={{ html: data.content ?? '' }}
+          contentWidth={width - 32}
+        />
       </ScrollView>
     </TrueSheet>
   )

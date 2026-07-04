@@ -6,7 +6,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { AppState } from 'react-native'
+import { AppState, NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
 import { FlashList, FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
 import * as Haptics from 'expo-haptics'
@@ -31,12 +31,16 @@ import TopicRow from './TopicRow'
 type FeedTopicListProps = {
   tab: string
   isFocused: boolean
-  currentListRef: MutableRefObject<any>
+  currentListRef: MutableRefObject<{
+    scrollToRefresh: () => void
+  } | null>
 }
 
 function FeedTopicList(props: FeedTopicListProps) {
   const { tab, isFocused, currentListRef } = props
-  const listViewRef = useRef<FlashListRef<HomeTopicFeed> | null>(null)
+  const listViewRef = useRef<FlashListRef<HomeTopicFeed | undefined> | null>(
+    null,
+  )
   const scrollY = useRef(0)
   const { data: settings } = useAppSettings()
   const queryclient = useQueryClient()
@@ -45,7 +49,7 @@ function FeedTopicList(props: FeedTopicListProps) {
   const { refetch, data: listQueryData, isRefetching } = listQuery
 
   const handleRefresh = useCallback(() => {
-    if (listQueryData?.pages?.length > PAGE_RESET_LIMIT) {
+    if ((listQueryData?.pages?.length ?? 0) > PAGE_RESET_LIMIT) {
       queryclient.resetQueries({
         queryKey: ['/page/home/feed', tab],
         exact: true,
@@ -75,7 +79,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       isFocused &&
       shouldFetch(
         listQuery,
-        settings.autoRefresh && settings.autoRefreshDuration,
+        settings.autoRefresh ? settings.autoRefreshDuration : undefined,
       )
     ) {
       scrollToRefresh()
@@ -93,7 +97,7 @@ function FeedTopicList(props: FeedTopicListProps) {
             Date.now() - toBackgroundDate > 60 * 1000 &&
             shouldFetch(
               listQuery,
-              settings.autoRefresh && settings.autoRefreshDuration,
+              settings.autoRefresh ? settings.autoRefreshDuration : undefined,
             )
           ) {
             scrollToRefresh()
@@ -125,7 +129,7 @@ function FeedTopicList(props: FeedTopicListProps) {
   const listItems = useMemo(() => {
     if (isFocused && !listQueryData && !listQuery.error) {
       // initial loading — return skeleton placeholders
-      return new Array(20)
+      return Array.from<HomeTopicFeed | undefined>({ length: 20 })
     }
     if (!listQueryData?.pages) {
       return []
@@ -148,16 +152,17 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [listQueryData, isFocused])
 
   useEffect(() => {
+    const topicItems = listItems.filter((item): item is HomeTopicFeed => !!item)
     if (tab === 'today_hots') {
-      updateHotsFeedWidget(listItems.slice(0, 10)).catch((err) => {
+      updateHotsFeedWidget(topicItems.slice(0, 10)).catch((err) => {
         if (__DEV__) console.warn('updateHotsFeedWidget failed', err)
       })
     } else if (tab === 'recent') {
-      updateRecentWidgetFeedWidget(listItems.slice(0, 10)).catch((err) => {
+      updateRecentWidgetFeedWidget(topicItems.slice(0, 10)).catch((err) => {
         if (__DEV__) console.warn('updateRecentWidgetFeedWidget failed', err)
       })
     } else {
-      updateHomeFeedWidget(tab, listItems.slice(0, 10)).catch((err) => {
+      updateHomeFeedWidget(tab, topicItems.slice(0, 10)).catch((err) => {
         if (__DEV__) console.warn('updateHomeFeedWidget failed', err)
       })
     }
@@ -200,18 +205,22 @@ function FeedTopicList(props: FeedTopicListProps) {
         extra?.rowSettings?.feedLayout === 'tide' ? (
           <TideTopicRow
             data={item}
-            isLast={index === extra?.listLength - 1}
-            showAvatar={extra?.rowSettings?.feedShowAvatar}
-            showLastReplyMember={extra?.rowSettings?.feedShowLastReplyMember}
-            titleStyle={extra?.rowSettings?.feedTitleStyle}
+            isLast={index === (extra?.listLength ?? 0) - 1}
+            showAvatar={extra?.rowSettings?.feedShowAvatar ?? true}
+            showLastReplyMember={
+              extra?.rowSettings?.feedShowLastReplyMember ?? true
+            }
+            titleStyle={extra?.rowSettings?.feedTitleStyle ?? 'normal'}
           />
         ) : (
           <TopicRow
             data={item}
-            isLast={index === extra?.listLength - 1}
-            showAvatar={extra?.rowSettings?.feedShowAvatar}
-            showLastReplyMember={extra?.rowSettings?.feedShowLastReplyMember}
-            titleStyle={extra?.rowSettings?.feedTitleStyle}
+            isLast={index === (extra?.listLength ?? 0) - 1}
+            showAvatar={extra?.rowSettings?.feedShowAvatar ?? true}
+            showLastReplyMember={
+              extra?.rowSettings?.feedShowLastReplyMember ?? true
+            }
+            titleStyle={extra?.rowSettings?.feedTitleStyle ?? 'normal'}
           />
         ),
       keyExtractor: (item: HomeTopicFeed | undefined, index: number) =>
@@ -242,9 +251,12 @@ function FeedTopicList(props: FeedTopicListProps) {
     [handleRefresh, isRefetching],
   )
 
-  const handleScroll = useCallback((e) => {
-    scrollY.current = e.nativeEvent.contentOffset.y
-  }, [])
+  const handleScroll = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      scrollY.current = e.nativeEvent.contentOffset.y
+    },
+    [],
+  )
 
   return (
     <FlashList

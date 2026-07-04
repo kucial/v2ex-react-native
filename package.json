@@ -160,7 +160,8 @@
   "packageManager": "pnpm@10.26.0",
   "pnpm": {
     "patchedDependencies": {
-      "@thebeka/react-native-get-pixel-color": "patches/@thebeka__react-native-get-pixel-color.patch"
+      "@thebeka/react-native-get-pixel-color": "patches/@thebeka__react-native-get-pixel-color.patch",
+      "react-native-nprogress@1.1.0": "patches/react-native-nprogress@1.1.0.patch"
     },
     "ignoredBuiltDependencies": [
       "@apollo/protobufjs",

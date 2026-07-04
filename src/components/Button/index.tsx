@@ -3,6 +3,7 @@ import {
   Platform,
   Pressable,
   PressableProps,
+  PressableStateCallbackType,
   StyleSheet,
   Text,
 } from 'react-native'
@@ -41,13 +42,14 @@ function Button(props: {
   radius?: number | 'md' | 'sm' | 'full'
 }) {
   const { styles, theme } = useTheme()
-  const { size, variant, radius = 'md' } = props
+  const { size, variant = 'default', radius = 'md' } = props
 
   const {
     container: containerStyle,
-    text: textStyle,
+    text: semanticTextStyle,
     border: borderStyle,
   } = getSemanticStyle(variant, styles)
+  const textStyle = semanticTextStyle ?? styles.text
 
   const children = useMemo(() => {
     if (props.children) {
@@ -69,32 +71,39 @@ function Button(props: {
   return (
     <Pressable
       disabled={props.disabled}
-      style={({ pressed }) => [
-        btnStyles.base,
-        {
-          borderRadius: typeof radius === 'string' ? radiusNum[radius] : radius,
-        },
-        size === 'md' && btnStyles.sizeMd,
-        size === 'sm' && btnStyles.sizeSm,
-        (props.loading || props.disabled) && btnStyles.disabled,
-        containerStyle,
-        borderStyle,
-        pressed && [
-          btnStyles.pressed,
-          Platform.OS === 'ios' &&
-            variant === 'icon' && {
-              backgroundColor: theme.colors.bg_overlay,
-            },
-        ],
-        typeof props.style === 'function'
-          ? props.style({ pressed })
-          : props.style,
-      ]}
+      style={(state: PressableStateCallbackType) => {
+        const { pressed } = state
+        return [
+          btnStyles.base,
+          {
+            borderRadius:
+              typeof radius === 'string' ? radiusNum[radius] : radius,
+          },
+          size === 'md' && btnStyles.sizeMd,
+          size === 'sm' && btnStyles.sizeSm,
+          (props.loading || props.disabled) && btnStyles.disabled,
+          containerStyle,
+          borderStyle,
+          pressed && [
+            btnStyles.pressed,
+            Platform.OS === 'ios' &&
+              variant === 'icon' && {
+                backgroundColor: theme.colors.bg_overlay,
+              },
+          ],
+          typeof props.style === 'function' ? props.style(state) : props.style,
+        ]
+      }}
       onPress={props.onPress}
       android_ripple={android_ripple}
     >
       {props.loading ? (
-        <Loader size={20} color={textStyle.color as string} />
+        <Loader
+          size={20}
+          color={
+            typeof textStyle.color === 'string' ? textStyle.color : undefined
+          }
+        />
       ) : (
         children
       )}

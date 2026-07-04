@@ -7,7 +7,9 @@ import Button from '@/components/Button'
 import { NodeSelectField, TextField } from '@/components/formik'
 
 import { useAlertService } from '@/containers/AlertService'
+import { AlertService } from '@/containers/AlertService/types'
 import { moveTopic } from '@/utils/v2ex-client'
+import ApiError from '@/utils/v2ex-client/ApiError'
 import { NodeBasic, TopicDetail } from '@/utils/v2ex-client/types'
 
 const TopicMoveSchema = Yup.object().shape({
@@ -26,9 +28,9 @@ export default function TopicMovePanel(props: {
   onUpdated(topic: TopicDetail): void
 }) {
   const { topicId, node, onExit, onUpdated } = props
-  const alert = useAlertService()
+  const alert = useAlertService() as AlertService
   const initialValues = useMemo(
-    () => ({
+    (): FormValues => ({
       node: null,
       memo: '',
     }),
@@ -39,17 +41,22 @@ export default function TopicMovePanel(props: {
       try {
         formikProps.setSubmitting(true)
         if (values.node) {
-          const { data: topic } = await moveTopic(topicId, {
+          const response = await moveTopic(topicId, {
             destination: values.node.name,
             memo: values.memo,
           })
           formikProps.setSubmitting(false)
-          onUpdated(topic)
+          if (response?.data) {
+            onUpdated(response.data as TopicDetail)
+          }
         }
       } catch (err) {
         formikProps.setSubmitting(false)
-        alert.show({ type: 'error', message: err.message })
-        if (err.code === 'EDIT_NOT_ALLOWED') {
+        alert.show({
+          type: 'error',
+          message: err instanceof Error ? err.message : String(err),
+        })
+        if (err instanceof ApiError && err.code === 'EDIT_NOT_ALLOWED') {
           onExit()
         }
       }
@@ -59,7 +66,7 @@ export default function TopicMovePanel(props: {
 
   return (
     <KeyboardAvoidingView>
-      <Formik
+      <Formik<FormValues>
         initialValues={initialValues}
         onSubmit={handleSubmit}
         validationSchema={TopicMoveSchema}

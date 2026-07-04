@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useMemo } from 'react'
-import { StyleSheet, useWindowDimensions, View } from 'react-native'
+import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native'
 import {
   ClockIcon,
   DocumentPlusIcon,
@@ -76,13 +76,16 @@ export default function AppSidebar(props: {
 
   const CurrentUserIcon = useCallback(
     (props: IconProps) => {
+      if (!user?.avatar_normal) {
+        return <UserIcon {...props} />
+      }
+
       return (
         <Image
           source={{
             uri: user.avatar_normal,
           }}
           style={[
-            props.style,
             {
               width: props.size,
               height: props.size,
@@ -92,17 +95,17 @@ export default function AppSidebar(props: {
         />
       )
     },
-    [user],
+    [user?.avatar_normal],
   )
 
   const layoutStyles = useMemo(() => {
-    return StyleSheet.create({
+    return {
       wrapper:
         props.position === 'SIDE'
           ? {
               paddingTop: insets.top,
             }
-          : null,
+          : {},
       container_base: {
         justifyContent: 'space-between',
         display: 'flex',
@@ -122,7 +125,7 @@ export default function AppSidebar(props: {
         alignItems: 'center',
       },
       dynamic_wrapper:
-        props.position == 'SIDE' && height < 600
+        props.position === 'SIDE' && height < 600
           ? {
               position: 'absolute',
               width: '100%',
@@ -135,15 +138,15 @@ export default function AppSidebar(props: {
             }
           : {},
       button:
-        props.position == 'BOTTOM'
+        props.position === 'BOTTOM'
           ? {
               marginHorizontal: 2,
             }
           : {
               marginVertical: height > 500 ? 3 : 0,
             },
-    })
-  }, [insets, props.position, width, height])
+    } satisfies Record<string, ViewStyle>
+  }, [insets.bottom, insets.left, insets.top, props.position, height])
 
   return (
     <LayoutStyleContext.Provider value={layoutStyles.button}>

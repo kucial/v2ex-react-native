@@ -47,23 +47,26 @@ async function loadImage(
 
 const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   const { rendererProps } = useInternalRenderer<'img'>('img', props)
+  const uri = rendererProps.source.uri ?? ''
   const imageQuery = useQuery({
-    queryKey: ['image-cache', rendererProps.source.uri],
-    queryFn: () => loadImage(rendererProps.source.uri),
+    queryKey: ['image-cache', uri],
+    queryFn: () => loadImage(uri),
+    enabled: !!uri,
     refetchOnMount: 'always',
   })
 
-  const [containerWidth, setContainerWidth] = useState(null)
+  const [containerWidth, setContainerWidth] = useState<number | null>(null)
 
   // Use the global store directly — no per-HtmlRender Provider needed.
   const { addImage, updateImage, removeImage } = useGlobalImageViewing()
   const { handleQrCode, imageOrigins } = useContext(RenderContext)
   const { theme } = useTheme()
 
-  const uri = rendererProps.source.uri
-
   // Register this image in the global registry on mount; clean up on unmount.
   useEffect(() => {
+    if (!uri) {
+      return
+    }
     // Track insertion order so the viewer carousel is ordered correctly.
     imageOrigins.current = [
       ...imageOrigins.current.filter((u) => u !== uri),
@@ -79,7 +82,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   // Update the local-file URL once the image finishes downloading.
   useEffect(() => {
-    if (imageQuery.data?.uri) {
+    if (uri && imageQuery.data?.uri) {
       updateImage({ origin: uri, local: imageQuery.data.uri })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,7 +94,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
       const width = Math.min(
         imageQuery.data.width,
         contentWidth,
-        containerWidth,
+        containerWidth ?? contentWidth,
       )
       const height = (imageQuery.data.height / imageQuery.data.width) * width
       return { width, height }
@@ -143,9 +146,23 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
         ]}
       >
         {imageQuery.error ? (
-          <PhotoIcon size={36} color={theme.colors.danger} />
+          <PhotoIcon
+            size={36}
+            color={
+              typeof theme.colors.danger === 'string'
+                ? theme.colors.danger
+                : undefined
+            }
+          />
         ) : (
-          <PhotoIcon size={36} color={theme.colors.text_meta} />
+          <PhotoIcon
+            size={36}
+            color={
+              typeof theme.colors.text_meta === 'string'
+                ? theme.colors.text_meta
+                : undefined
+            }
+          />
         )}
       </View>
     </Pressable>

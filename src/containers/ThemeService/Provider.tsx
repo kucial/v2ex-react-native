@@ -31,7 +31,8 @@ export const ThemeProvider = (props: {
     },
   } = useAppSettings()
 
-  const activeScheme = props.colorScheme || colorScheme
+  const activeScheme =
+    props.colorScheme ?? (colorScheme === 'dark' ? 'dark' : 'light')
   const activeTheme =
     props.theme ??
     (activeScheme === 'dark' ? darkTheme : lightTheme) ??

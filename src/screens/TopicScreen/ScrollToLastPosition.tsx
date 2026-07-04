@@ -20,7 +20,7 @@ function ScrollToLastPosition(props: {
   const [visible, setVisible] = useState(true)
   const fadeAnim = useRef(new Animated.Value(0)).current
   const translateYAnim = useRef(new Animated.Value(OFFSET_Y)).current
-  const timer = useRef(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { styles } = useTheme()
 
   useEffect(() => {

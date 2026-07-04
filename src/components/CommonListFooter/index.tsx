@@ -23,6 +23,7 @@ export default function CommonListFooter(props: CommonListFooterProps) {
   const { data: listQuery, isEmpty = isEmptyList } = props
   const { styles } = useTheme()
   const insets = useSafeAreaInsets()
+  const error = listQuery.error
   if (!listQuery.data && !listQuery.error) {
     return null
   }
@@ -42,13 +43,13 @@ export default function CommonListFooter(props: CommonListFooterProps) {
           <Loader />
         </View>
       )}
-      {shouldShowError(listQuery) && (
+      {shouldShowError(listQuery) && error && (
         <View style={footerStyles.errorWrap}>
           <View style={footerStyles.my4}>
-            <Text style={styles.text}>{listQuery.error.message}</Text>
+            <Text style={styles.text}>{error.message}</Text>
           </View>
           {!['MEMBER_LOCKED', 'RESOURCE_ERROR'].includes(
-            (listQuery.error as ApiError).code,
+            (error as ApiError).code,
           ) && (
             <View style={footerStyles.retryRow}>
               <Pressable

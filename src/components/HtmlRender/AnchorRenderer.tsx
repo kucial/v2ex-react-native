@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react'
-import { Text } from 'react-native'
+import { StyleProp, Text, TextStyle } from 'react-native'
 import {
   CustomTextualRenderer,
   getNativePropsForTNode,
@@ -19,7 +19,9 @@ import {
 import { RenderContext } from './context'
 
 const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
-  const renderProps = getNativePropsForTNode(props)
+  const renderProps = getNativePropsForTNode(
+    props as Parameters<typeof getNativePropsForTNode>[0],
+  )
   const url = tailingFix(useNormalizedUrl(props.tnode.attributes.href))
   const { handleUrlPress, handleQrCode, imageOrigins } =
     useContext(RenderContext)
@@ -56,7 +58,7 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
 
   return (
     <Text
-      {...renderProps}
+      style={renderProps.style as StyleProp<TextStyle>}
       onPress={() => {
         if (isImgurResourceLink(url)) {
           const imageUri = getImgurResourceImageLink(url)
@@ -66,7 +68,9 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
         handleUrlPress({ interaction: 'default', url })
       }}
       suppressHighlighting
-    />
+    >
+      {renderProps.children}
+    </Text>
   )
 }
 

@@ -8,6 +8,7 @@ import Button from '@/components/Button'
 import { Box } from '@/components/Skeleton/Elements'
 
 import { useAlertService } from '@/containers/AlertService'
+import { AlertService } from '@/containers/AlertService/types'
 import { useTheme } from '@/containers/ThemeService'
 import { localTime } from '@/utils/time'
 import {
@@ -21,7 +22,7 @@ const AVATAR_SIZE = 48
 
 export default function SimpleMemberInfo(props: {
   username: string
-  currentUser: MemberDetail
+  currentUser: MemberDetail | null
 }) {
   const { username, currentUser } = props
   const { styles } = useTheme()
@@ -36,7 +37,7 @@ export default function SimpleMemberInfo(props: {
     queryKey: [`/page/member/:username/info.json`, username],
     queryFn: fetchMemberDetail,
   })
-  const alert = useAlertService()
+  const alert = useAlertService() as AlertService
 
   const handleBlockToggle = useCallback(() => {
     const { data } = memberQuery
@@ -60,6 +61,9 @@ export default function SimpleMemberInfo(props: {
     })
     promise
       .then(({ data: patch }) => {
+        if (!patch) {
+          return
+        }
         // notice
         alert.show({
           type: 'success',
@@ -74,7 +78,10 @@ export default function SimpleMemberInfo(props: {
         )
       })
       .catch((err) => {
-        alert.show({ type: 'error', message: err.message })
+        alert.show({
+          type: 'error',
+          message: err instanceof Error ? err.message : String(err),
+        })
       })
       .finally(() => {
         alert.hide(indicator)
@@ -101,7 +108,7 @@ export default function SimpleMemberInfo(props: {
             <View style={simpleMemberStyles.avatarWrap}>
               {data?.avatar_large ? (
                 <Image
-                  style={[simpleMemberStyles.avatar, styles.layer2]}
+                  style={simpleMemberStyles.avatar}
                   source={{ uri: data.avatar_large }}
                 />
               ) : (

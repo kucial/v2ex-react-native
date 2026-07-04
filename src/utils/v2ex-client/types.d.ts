@@ -17,15 +17,15 @@ export type NodeBasic = {
 }
 
 export type NodeExtra = NodeBasic & {
-  avatar_large: UrlString
+  avatar_large?: UrlString
   topics: number
 }
 
 export type NodeDetail = NodeBasic & {
   id?: number
   name: string
-  header: HTMLString
-  avatar_large: UrlString
+  header: HTMLString | null
+  avatar_large?: UrlString
   topics: number
   collected: boolean
   theme?: {
@@ -36,9 +36,9 @@ export type NodeDetail = NodeBasic & {
 
 export type MemberBasic = {
   username: string
-  avatar_mini: UrlString
-  avatar_normal: UrlString
-  avatar_large: UrlString
+  avatar_mini?: UrlString
+  avatar_normal?: UrlString
+  avatar_large?: UrlString
 }
 
 export type MemberProfile = {
@@ -73,7 +73,7 @@ export type MemberDetail = MemberBasic & {
 
 export type Subtle = {
   meta: string
-  content_rendered: HTMLString
+  content_rendered?: HTMLString
 }
 
 export type TopicBasic = {
@@ -90,8 +90,8 @@ export type HomeTopicFeed = TopicBasic & {
 }
 
 export type NodeTopicFeed = TopicBasic & {
-  characters: number
-  clicks: number
+  characters?: number
+  clicks?: number
   member: MemberBasic
 }
 
@@ -103,7 +103,7 @@ export type MemberTopicFeed = TopicBasic & {
 
 export type RepliedTopicFeed = TopicBasic & {
   member: MemberBasic
-  reply_content_rendered: string
+  reply_content_rendered: string | null
   reply_time: string
 }
 
@@ -160,11 +160,11 @@ export type NodeGroup = {
 export type NodeGroups = NodeGroup[]
 
 export type Notification = {
-  id: string
+  id?: string
   member: MemberBasic
   topic: TopicBasic
   action: 'reply' | 'collect' | 'thank' | 'thank_reply'
-  content_rendered: string
+  content_rendered?: string
   time: string
 }
 
@@ -199,7 +199,7 @@ export type SearchHit = {
 // API RESPONSE
 type EntityResponse<T, M = null> = {
   data: T
-  meta?: M
+  meta?: M | null
   fetchedAt?: number
 }
 
@@ -218,7 +218,7 @@ type CollectionResponse<T> = {
   fetchedAt?: number
 }
 
-type StatusResponse<T = any, M = null> = {
+type StatusResponse<T = unknown, M = null> = {
   success: boolean
   message: string
   data?: T
@@ -241,14 +241,14 @@ type XnaFeed = {
   member: MemberBasic
   source: {
     name: string
-    link: string
+    link?: string
   }
-  url: string
+  url?: string
   updated_at: string
 }
 
 type PlanetSiteBasic = {
-  avatar: string
+  avatar?: string
   site_title: string
   site_address: string
 }
@@ -256,7 +256,7 @@ type PlanetFeedItem = {
   uuid: string
   url?: string
   title: string
-  content: HTMLString
+  content?: HTMLString
   expand_label: string
   audio?: {
     url: string
@@ -272,5 +272,5 @@ type PlanetFeedItem = {
 }
 
 type PlanetInfo = PlanetSiteBasic & {
-  links: { text: string; href: string }[]
+  links: { text: string; href?: string }[]
 }

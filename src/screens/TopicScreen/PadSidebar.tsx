@@ -74,13 +74,15 @@ export default function PadSidebar(props: BarProps) {
                   isActive={false}
                   label={label}
                   iconStyle={
-                    action === 'to_top' && {
-                      transform: [{ rotate: '180deg' }],
-                    }
+                    action === 'to_top'
+                      ? {
+                          transform: [{ rotate: '180deg' }],
+                        }
+                      : undefined
                   }
                   activeColor={theme.colors.primary}
                   staticColor={theme.colors.text_desc}
-                  Icon={Icon}
+                  Icon={Icon as typeof ChatBubbleBottomCenterTextIcon}
                   onPress={onPress}
                 />
               )

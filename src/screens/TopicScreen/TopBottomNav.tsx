@@ -20,7 +20,7 @@ export default function TopBottomNav(props: {
   const { bottom } = useSafeAreaInsets()
 
   const style = useAnimatedStyle(() => {
-    if (scrollDirection.value === 'down') {
+    if (scrollDirection?.value === 'down') {
       return { opacity: 0.5 }
     }
     return { opacity: 0.9 }
@@ -55,7 +55,7 @@ export default function TopBottomNav(props: {
         variant='default'
         style={{ width: 40, height: 40 }}
         onPress={() => {
-          props.onNavTo(props.repliesCount)
+          props.onNavTo(repliesCount)
         }}
       >
         <ChevronDownIcon size={20} color={styles.text_desc.color} />

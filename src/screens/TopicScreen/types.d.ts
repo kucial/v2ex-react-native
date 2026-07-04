@@ -1,4 +1,4 @@
-import { MutableRefObject } from 'react'
+import { RefObject } from 'react'
 
 import { TopicReply } from '@/utils/v2ex-client/types'
 
@@ -8,7 +8,7 @@ export type BarProps = {
   onInitReply(): void
   repliesCount: number
   onNavTo(target: number): void
-  scrollControlRef: MutableRefObject<ScrollControlApi>
+  scrollControlRef: RefObject<ScrollControlApi | null>
   collected: boolean
   onToggleCollect(): void
   thanked: boolean
