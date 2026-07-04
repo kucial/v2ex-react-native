@@ -5,6 +5,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -14,6 +15,7 @@ import BaseRender, {
   HTMLSourceInline,
   RenderHTMLProps,
 } from 'react-native-render-html'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import WebView from 'react-native-webview'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { iframeModel } from '@native-html/iframe-plugin'
@@ -76,6 +78,7 @@ function HtmlRender({
   const selectModalRef = useRef<TrueSheet>(null)
   const base64ModalRef = useRef<TrueSheet>(null)
   const router = useRouter()
+  const insets = useSafeAreaInsets()
 
   // Tracks the insertion-ordered list of image origin URLs registered by
   // ImageRenderer / AnchorRenderer instances within this HtmlRender tree.
@@ -370,7 +373,10 @@ function HtmlRender({
         >
           <ScrollView
             nestedScrollEnabled
-            contentContainerClassName='pb-safe px-4 pt-3 rounded'
+            contentContainerStyle={[
+              htmlStyles.selectModalContent,
+              { paddingBottom: Math.max(insets.bottom, 16) },
+            ]}
           >
             {Platform.OS === 'ios' ? (
               <TextInput
@@ -402,10 +408,13 @@ function HtmlRender({
         >
           <ScrollView
             style={themeStyles.overlay}
-            contentContainerClassName='pb-safe px-4 pt-3'
+            contentContainerStyle={[
+              htmlStyles.base64ModalContent,
+              { paddingBottom: Math.max(insets.bottom, 16) },
+            ]}
           >
-            <View className='flex-row w-full'>
-              <View className='flex-1 py-2' style={themeStyles.border_b}>
+            <View style={htmlStyles.rowFull}>
+              <View style={[htmlStyles.flex1Py2, themeStyles.border_b]}>
                 <Text
                   style={[
                     themeStyles.text,
@@ -416,7 +425,7 @@ function HtmlRender({
                   字符串
                 </Text>
               </View>
-              <View className='flex-1 py-2' style={themeStyles.border_b}>
+              <View style={[htmlStyles.flex1Py2, themeStyles.border_b]}>
                 <Text
                   style={[
                     themeStyles.text,
@@ -431,25 +440,25 @@ function HtmlRender({
             {base64Options.map((item) => (
               <Pressable
                 key={item[0]}
-                className='flex-row w-full'
+                style={htmlStyles.rowFull}
                 onPress={() => {
                   base64ModalRef.current?.dismiss()
                   copyAndNotice(item[1])
                 }}
               >
-                <View className='flex-1 py-2' style={themeStyles.border_b}>
+                <View style={[htmlStyles.flex1Py2, themeStyles.border_b]}>
                   <Text style={[themeStyles.text, themeStyles.text_base]}>
                     {item[0]}
                   </Text>
                 </View>
-                <View className='flex-1 py-2' style={themeStyles.border_b}>
+                <View style={[htmlStyles.flex1Py2, themeStyles.border_b]}>
                   <Text style={[themeStyles.text, themeStyles.text_base]}>
                     {item[1]}
                   </Text>
                 </View>
               </Pressable>
             ))}
-            <View className='mt-3'>
+            <View style={htmlStyles.mt3}>
               <Text style={[themeStyles.text, themeStyles.text_sm]}>
                 点击选择复制
               </Text>
@@ -460,5 +469,28 @@ function HtmlRender({
     </RenderContext.Provider>
   )
 }
+
+const htmlStyles = StyleSheet.create({
+  selectModalContent: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    borderRadius: 4,
+  },
+  base64ModalContent: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  rowFull: {
+    flexDirection: 'row',
+    width: '100%',
+  },
+  flex1Py2: {
+    flex: 1,
+    paddingVertical: 8,
+  },
+  mt3: {
+    marginTop: 12,
+  },
+})
 
 export default memo(HtmlRender)

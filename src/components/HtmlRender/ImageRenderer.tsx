@@ -1,5 +1,5 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { Image as RNImage, Pressable, View } from 'react-native'
+import { Image as RNImage, Pressable, StyleSheet, View } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
   CustomBlockRenderer,
@@ -13,7 +13,6 @@ import {
   useGlobalImageViewing,
 } from '@/containers/ImageViewingService'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import { RenderContext } from './context'
 
@@ -105,7 +104,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   if (!containerWidth) {
     return (
       <View
-        className='w-full'
+        style={imgStyles.wFull}
         onLayout={(e) => {
           setContainerWidth(e.nativeEvent.layout.width)
         }}
@@ -116,20 +115,13 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   if (imageQuery.data) {
     return (
       <Pressable
-        className={cn(
-          'py-1 w-full items-center overflow-hidden',
-          'opacity-100',
-        )}
-        style={{
-          width: imageStyle.width,
-          alignSelf: 'flex-start',
-        }}
+        style={[imgStyles.loadedPressable, { width: imageStyle.width }]}
         onPress={() => {
           openImageViewer(uri, imageOrigins.current, handleQrCode)
         }}
       >
         <Image
-          style={[imageStyle, { borderRadius: 4 }]}
+          style={[imageStyle, imgStyles.rounded]}
           source={imageQuery.data}
         />
       </Pressable>
@@ -138,7 +130,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   return (
     <Pressable
-      className='py-1 w-full overflow-hidden'
+      style={imgStyles.loadingPressable}
       onPress={() => {
         openImageViewer(uri, imageOrigins.current, handleQrCode)
       }}
@@ -146,14 +138,9 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
       <View
         style={[
           imageStyle,
-          {
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 4,
-            backgroundColor: theme.colors.skeleton,
-          },
+          imgStyles.skeletonBox,
+          { backgroundColor: theme.colors.skeleton },
         ]}
-        className={imageQuery.error ? '' : 'animate-pulse'}
       >
         {imageQuery.error ? (
           <PhotoIcon size={36} color={theme.colors.danger} />
@@ -164,5 +151,30 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
     </Pressable>
   )
 }
+
+const imgStyles = StyleSheet.create({
+  wFull: {
+    width: '100%',
+  },
+  loadedPressable: {
+    paddingVertical: 4,
+    alignItems: 'center',
+    overflow: 'hidden',
+    alignSelf: 'flex-start',
+  },
+  loadingPressable: {
+    paddingVertical: 4,
+    width: '100%',
+    overflow: 'hidden',
+  },
+  rounded: {
+    borderRadius: 4,
+  },
+  skeletonBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+  },
+})
 
 export default ImageRenderer
