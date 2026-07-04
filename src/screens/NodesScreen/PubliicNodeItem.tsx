@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
 import { LineItem } from '@/components/LineItem'
@@ -14,7 +14,7 @@ function PubliicNodeItem({ data }: { data: NodeBasic }) {
 
   return (
     <MaxWidthWrapper>
-      <View className='mx-1'>
+      <View style={publiicNodeStyles.margin}>
         <LineItem
           onPress={() => {
             router.push({
@@ -32,5 +32,11 @@ function PubliicNodeItem({ data }: { data: NodeBasic }) {
     </MaxWidthWrapper>
   )
 }
+
+const publiicNodeStyles = StyleSheet.create({
+  margin: {
+    marginHorizontal: 4,
+  },
+})
 
 export default memo(PubliicNodeItem)

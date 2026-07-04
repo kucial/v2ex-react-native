@@ -1,5 +1,5 @@
 import { memo, useCallback, useMemo, useRef } from 'react'
-import { Keyboard, SectionList, Text, View } from 'react-native'
+import { Keyboard, SectionList, StyleSheet, Text, View } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigation } from 'expo-router'
@@ -84,13 +84,18 @@ export default function NodesScreen() {
       return (
         <View>
           <MaxWidthWrapper>
-            <View className='mx-1'>
+            <View style={nodesScreenStyles.margin}>
               <View
-                className='flex flex-row justify-between items-center px-3 rounded-t-sm'
-                style={[styles.layer1, styles.border_b]}
+                style={[
+                  nodesScreenStyles.headerRow,
+                  styles.layer1,
+                  styles.border_b,
+                ]}
               >
-                <View className='py-2'>
-                  <Text className='font-medium' style={styles.text}>
+                <View style={nodesScreenStyles.titleWrap}>
+                  <Text
+                    style={[nodesScreenStyles.titleText, styles.text]}
+                  >
                     {section.title}
                   </Text>
                 </View>
@@ -114,7 +119,7 @@ export default function NodesScreen() {
       (collectedNodesQuery.isLoading || commonNodesQuery.isLoading)
     ) {
       return (
-        <View className='flex flex-row items-center justify-center py-4'>
+        <View style={nodesScreenStyles.loaderWrap}>
           <Loader />
         </View>
       )
@@ -131,7 +136,7 @@ export default function NodesScreen() {
       collectedNodesQuery?.refetch()
     }
     commonNodesQuery?.refetch()
-  }, [hasAuthed])
+  }, [hasAuthed, collectedNodesQuery, commonNodesQuery])
 
   useFocusEffect(
     useCallback(() => {
@@ -147,12 +152,12 @@ export default function NodesScreen() {
       })
 
       return unsubscribe
-    }, [sections]),
+    }, [sections, navigation]),
   )
 
   return (
-    <View className='flex-1'>
-      <View className='h-[52px] mb-1' style={styles.layer1}>
+    <View style={nodesScreenStyles.container}>
+      <View style={[nodesScreenStyles.searchWrap, styles.layer1]}>
         <SearchInput
           placeholder='筛选'
           initialValue={filter}
@@ -188,3 +193,36 @@ export default function NodesScreen() {
     </View>
   )
 }
+
+const nodesScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  margin: {
+    marginHorizontal: 4,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+  },
+  titleWrap: {
+    paddingVertical: 8,
+  },
+  titleText: {
+    fontWeight: '500',
+  },
+  loaderWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+  },
+  searchWrap: {
+    height: 52,
+    marginBottom: 4,
+  },
+})
