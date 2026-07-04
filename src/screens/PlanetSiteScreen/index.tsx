@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import { useIsFocused } from '@react-navigation/native'
 import { useLocalSearchParams } from 'expo-router'
@@ -21,12 +21,12 @@ export default function PlanetSiteScreen() {
 
   if (error) {
     return (
-      <View className='flex-1'>
+      <View style={planetSiteStyles.container}>
         <AnimatedHeader
           title={site_address || 'Planet Site'}
           scrollY={scrollY}
         />
-        <View className='flex-1 items-center justify-center'>
+        <View style={planetSiteStyles.center}>
           <Text>{error.message}</Text>
         </View>
       </View>
@@ -35,12 +35,12 @@ export default function PlanetSiteScreen() {
 
   if (isLoading || !siteInfo) {
     return (
-      <View className='flex-1'>
+      <View style={planetSiteStyles.container}>
         <AnimatedHeader
           title={site_address || 'Planet Site'}
           scrollY={scrollY}
         />
-        <View className='flex-1 items-center justify-center'>
+        <View style={planetSiteStyles.center}>
           <Loader />
         </View>
       </View>
@@ -48,7 +48,7 @@ export default function PlanetSiteScreen() {
   }
 
   return (
-    <View className='flex-1'>
+    <View style={planetSiteStyles.container}>
       <AnimatedHeader title={siteInfo.data.site_title} scrollY={scrollY} />
       <PlanetSiteFeedList
         address={site_address}
@@ -60,3 +60,14 @@ export default function PlanetSiteScreen() {
     </View>
   )
 }
+
+const planetSiteStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})

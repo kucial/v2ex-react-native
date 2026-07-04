@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Formik } from 'formik'
 
 import Button from '@/components/Button'
@@ -86,7 +86,7 @@ export default function AdvancedSearchForm(props: {
       node: typeof node === 'object' ? node.name : node,
     }
     props.onSubmit(mapped)
-  }, [])
+  }, [props])
 
   const { styles } = useTheme()
   return (
@@ -97,10 +97,10 @@ export default function AdvancedSearchForm(props: {
     >
       {(formikProps) => (
         <KeyboardDismiss>
-          <View className='px-4 pt-2 pb-4'>
-            <View className='mb-2'>
-              <View className='mb-1'>
-                <Text className='font-medium px-2' style={styles.text}>
+          <View style={advFormStyles.container}>
+            <View style={advFormStyles.fieldWrap}>
+              <View style={advFormStyles.labelWrap}>
+                <Text style={[advFormStyles.labelText, styles.text]}>
                   关键词
                 </Text>
               </View>
@@ -112,10 +112,10 @@ export default function AdvancedSearchForm(props: {
                 canClear
               />
             </View>
-            <View className='flex-row gap-3'>
-              <View className='mb-2 flex-1'>
-                <View className='mb-1'>
-                  <Text className='font-medium px-2' style={styles.text}>
+            <View style={advFormStyles.rowGap}>
+              <View style={advFormStyles.flexCol}>
+                <View style={advFormStyles.labelWrap}>
+                  <Text style={[advFormStyles.labelText, styles.text]}>
                     节点
                   </Text>
                 </View>
@@ -127,9 +127,9 @@ export default function AdvancedSearchForm(props: {
                   renderLabel={renderLabel}
                 />
               </View>
-              <View className='mb-2 flex-1'>
-                <View className='mb-1'>
-                  <Text className='font-medium px-2' style={styles.text}>
+              <View style={advFormStyles.flexCol}>
+                <View style={advFormStyles.labelWrap}>
+                  <Text style={[advFormStyles.labelText, styles.text]}>
                     作者
                   </Text>
                 </View>
@@ -141,10 +141,10 @@ export default function AdvancedSearchForm(props: {
                 />
               </View>
             </View>
-            <View className='flex-row gap-3'>
-              <View className='flex-1'>
-                <View className='mb-1'>
-                  <Text className='font-medium px-2' style={styles.text}>
+            <View style={advFormStyles.rowGap}>
+              <View style={advFormStyles.flex1}>
+                <View style={advFormStyles.labelWrap}>
+                  <Text style={[advFormStyles.labelText, styles.text]}>
                     发帖起始时间
                   </Text>
                 </View>
@@ -157,9 +157,9 @@ export default function AdvancedSearchForm(props: {
                   maxDate={formikProps.values.lte || now}
                 />
               </View>
-              <View className='flex-1 mb-2'>
-                <View className='mb-1'>
-                  <Text className='font-medium px-2' style={styles.text}>
+              <View style={advFormStyles.flexCol}>
+                <View style={advFormStyles.labelWrap}>
+                  <Text style={[advFormStyles.labelText, styles.text]}>
                     发帖结束时间
                   </Text>
                 </View>
@@ -174,13 +174,13 @@ export default function AdvancedSearchForm(props: {
                 />
               </View>
             </View>
-            <View className='flex-row mb-2 items-center'>
-              <View className='mb-1 mr-3'>
-                <Text className='font-medium px-2' style={styles.text}>
+            <View style={advFormStyles.sortRow}>
+              <View style={advFormStyles.sortLabelWrap}>
+                <Text style={[advFormStyles.labelText, styles.text]}>
                   排序
                 </Text>
               </View>
-              <View className='flex-1'>
+              <View style={advFormStyles.flex1}>
                 <SelectField
                   label={false}
                   name='sort_str'
@@ -188,9 +188,9 @@ export default function AdvancedSearchForm(props: {
                 />
               </View>
             </View>
-            <View className='flex-row gap-3'>
+            <View style={advFormStyles.rowGap}>
               <Button
-                className='min-w-[100px]'
+                style={advFormStyles.resetBtn}
                 onPress={() => {
                   formikProps.setValues({
                     q: '',
@@ -200,16 +200,16 @@ export default function AdvancedSearchForm(props: {
                 variant='default'
                 size='md'
                 label='重置'
-              ></Button>
+              />
               <Button
-                className='flex-1'
+                style={advFormStyles.flex1}
                 onPress={() => {
                   formikProps.handleSubmit()
                 }}
                 variant='primary'
                 size='md'
                 label='搜索'
-              ></Button>
+              />
             </View>
           </View>
         </KeyboardDismiss>
@@ -217,3 +217,44 @@ export default function AdvancedSearchForm(props: {
     </Formik>
   )
 }
+
+const advFormStyles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 16,
+  },
+  fieldWrap: {
+    marginBottom: 8,
+  },
+  labelWrap: {
+    marginBottom: 4,
+  },
+  labelText: {
+    fontWeight: '500',
+    paddingHorizontal: 8,
+  },
+  rowGap: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  flexCol: {
+    marginBottom: 8,
+    flex: 1,
+  },
+  flex1: {
+    flex: 1,
+  },
+  sortRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+    alignItems: 'center',
+  },
+  sortLabelWrap: {
+    marginBottom: 4,
+    marginRight: 12,
+  },
+  resetBtn: {
+    minWidth: 100,
+  },
+})

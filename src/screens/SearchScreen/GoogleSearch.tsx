@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { InteractionManager, Platform, TextInput, View } from 'react-native'
+import {
+  InteractionManager,
+  Platform,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native'
 import { NProgress } from 'react-native-nprogress'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import WebView from 'react-native-webview'
@@ -9,7 +15,6 @@ import BackButton from '@/components/BackButton'
 import MyClearButton from '@/components/MyClearButton'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { getScreenInfo } from '@/utils/url'
 
 import { useSearchHistory } from './hooks'
@@ -72,13 +77,13 @@ export default function GoogleSearch() {
     if (searchParams.q) {
       searchHistory.addRecord(searchParams)
     }
-  }, [searchParams])
+  }, [searchParams, searchHistory])
 
   return (
-    <View className='flex-1'>
+    <View style={googleSearchStyles.container}>
       <View
-        className='w-full flex-row items-center pl-1'
         style={[
+          googleSearchStyles.header,
           {
             height: Platform.OS === 'android' ? 58 : 56 + insets.top,
             paddingTop: Platform.OS === 'android' ? 0 : insets.top,
@@ -86,7 +91,7 @@ export default function GoogleSearch() {
           styles.layer1,
         ]}
       >
-        <View className='mr-1'>
+        <View style={googleSearchStyles.backWrap}>
           <BackButton
             tintColor={theme.colors.text}
             onPress={() => {
@@ -95,21 +100,22 @@ export default function GoogleSearch() {
           />
         </View>
         <View
-          className={cn(
-            'flex flex-row flex-1 pr-3 items-center',
-            Platform.select({
-              ios: 'py-[6]',
-              android: 'py-[8]',
-            }),
-          )}
+          style={[
+            googleSearchStyles.inputContainer,
+            Platform.OS === 'ios'
+              ? googleSearchStyles.py6
+              : googleSearchStyles.py8,
+          ]}
         >
           <View
-            className={cn('flex flex-row items-center rounded-lg min-h-[40px]')}
-            style={styles.input__bg}
+            style={[googleSearchStyles.inputBg, styles.input__bg]}
           >
             <TextInput
-              className='flex-1 px-2'
-              style={[styles.text, { fontSize: styles.text_base.fontSize }]}
+              style={[
+                googleSearchStyles.input,
+                styles.text,
+                { fontSize: styles.text_base.fontSize },
+              ]}
               selectionColor={theme.colors.primary}
               placeholderTextColor={theme.colors.text_placeholder}
               defaultValue={searchParams.q || ''}
@@ -124,7 +130,7 @@ export default function GoogleSearch() {
               }}
             />
             {!!keyword && (
-              <View className='h-full flex flex-row items-center justify-center'>
+              <View style={googleSearchStyles.clearWrap}>
                 <MyClearButton
                   onPress={() => {
                     setSearchParams((prev) => ({
@@ -141,7 +147,7 @@ export default function GoogleSearch() {
           </View>
         </View>
       </View>
-      <View className='flex-1 relative'>
+      <View style={googleSearchStyles.contentWrap}>
         {!!keyword ? (
           <WebView
             injectedJavaScript={topicLinkCapture}
@@ -175,11 +181,11 @@ export default function GoogleSearch() {
                 }
               }
             }}
-          ></WebView>
+          />
         ) : (
           <SearchHistory onSelect={setSearchParams} />
         )}
-        <View className='absolute w-full top-0'>
+        <View style={googleSearchStyles.progressWrap}>
           <NProgress
             backgroundColor={theme.colors.primary}
             height={3}
@@ -190,3 +196,56 @@ export default function GoogleSearch() {
     </View>
   )
 }
+
+const googleSearchStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 4,
+  },
+  backWrap: {
+    marginRight: 4,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    paddingRight: 12,
+    alignItems: 'center',
+  },
+  py6: {
+    paddingVertical: 6,
+  },
+  py8: {
+    paddingVertical: 8,
+  },
+  inputBg: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 8,
+    minHeight: 40,
+    flex: 1,
+  },
+  input: {
+    flex: 1,
+    paddingHorizontal: 8,
+  },
+  clearWrap: {
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  contentWrap: {
+    flex: 1,
+    position: 'relative',
+  },
+  progressWrap: {
+    position: 'absolute',
+    width: '100%',
+    top: 0,
+  },
+})

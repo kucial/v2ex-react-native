@@ -1,4 +1,4 @@
-import { Text, useWindowDimensions, View } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
 import FixedPressable from '@/components/FixedPressable'
@@ -8,7 +8,6 @@ import NodeLabel from '@/components/NodeLabel'
 
 import { useMaxContainerWidth } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { localTime } from '@/utils/time'
 import { SearchHit } from '@/utils/v2ex-client/types'
 
@@ -27,8 +26,12 @@ export default function ResultRow(props: { data: SearchHit }) {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label='TopicRow'
-        className={cn('flex flex-row items-center', 'active:opacity-50')}
-        style={[styles.layer1, styles.border_b_light]}
+        style={({ pressed }) => [
+          resultRowStyles.row,
+          styles.layer1,
+          styles.border_b_light,
+          pressed && resultRowStyles.pressed,
+        ]}
         onPress={() => {
           router.push({
             pathname: '/topic/[id]',
@@ -38,12 +41,11 @@ export default function ResultRow(props: { data: SearchHit }) {
           })
         }}
       >
-        <View className='pl-3'></View>
-        <View className={cn('flex-1 py-2 pr-3')}>
+        <View style={resultRowStyles.pl3} />
+        <View style={resultRowStyles.mainCol}>
           <View>
             <Text
-              className={cn('font-[500]')}
-              style={[styles.text, styles.text_base]}
+              style={[resultRowStyles.titleText, styles.text, styles.text_base]}
             >
               {_source.title}
             </Text>
@@ -60,8 +62,8 @@ export default function ResultRow(props: { data: SearchHit }) {
               }}
             />
           </View>
-          <View className='flex flex-row items-center space-x-1 py-1'>
-            <View className='py-[2px] px-1 rounded' style={styles.layer2}>
+          <View style={resultRowStyles.metaRow}>
+            <View style={[resultRowStyles.nodeBadge, styles.layer2]}>
               <NodeLabel
                 style={[styles.text_desc, styles.text_xs]}
                 id={_source.node}
@@ -73,9 +75,11 @@ export default function ResultRow(props: { data: SearchHit }) {
               </Text>
             </View>
             <Text style={styles.text_meta}>·</Text>
-            <View className='relative'>
+            <View style={resultRowStyles.rel}>
               <FixedPressable
-                className='active:opacity-60'
+                style={({ pressed }) => [
+                  pressed && resultRowStyles.pressed60,
+                ]}
                 hitSlop={5}
                 onPress={() => {
                   router.push({
@@ -87,8 +91,11 @@ export default function ResultRow(props: { data: SearchHit }) {
                 }}
               >
                 <Text
-                  className='font-[600]'
-                  style={[styles.text_desc, styles.text_xs]}
+                  style={[
+                    resultRowStyles.memberText,
+                    styles.text_desc,
+                    styles.text_xs,
+                  ]}
                 >
                   {_source.member}
                 </Text>
@@ -106,3 +113,44 @@ export default function ResultRow(props: { data: SearchHit }) {
     </MaxWidthWrapper>
   )
 }
+
+const resultRowStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  pl3: {
+    paddingLeft: 12,
+  },
+  mainCol: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingRight: 12,
+  },
+  titleText: {
+    fontWeight: '500',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 4,
+  },
+  nodeBadge: {
+    paddingVertical: 2,
+    paddingHorizontal: 4,
+    borderRadius: 4,
+  },
+  rel: {
+    position: 'relative',
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  memberText: {
+    fontWeight: '600',
+  },
+})

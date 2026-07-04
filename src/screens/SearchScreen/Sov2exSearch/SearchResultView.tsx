@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { stringify } from 'qs'
@@ -80,7 +80,7 @@ export default function SearchResultView(props: { params: SearchParams }) {
 
   return (
     <FlashList
-      className='flex-1'
+      style={searchResultStyles.list}
       key={stringify(props.params)}
       data={items}
       renderItem={renderItem}
@@ -91,15 +91,18 @@ export default function SearchResultView(props: { params: SearchParams }) {
         if (total !== undefined) {
           return (
             <View
-              className='px-3 py-2'
-              style={[styles.layer1, styles.border_b_light]}
+              style={[
+                searchResultStyles.headerWrap,
+                styles.layer1,
+                styles.border_b_light,
+              ]}
             >
               <Text style={styles.text_meta}>共计 {total} 个结果</Text>
             </View>
           )
         }
         return (
-          <View className='py-3 w-full flex flex-row items-center justify-center'>
+          <View style={searchResultStyles.loaderWrap}>
             <Loader />
           </View>
         )
@@ -123,3 +126,20 @@ export default function SearchResultView(props: { params: SearchParams }) {
     />
   )
 }
+
+const searchResultStyles = StyleSheet.create({
+  list: {
+    flex: 1,
+  },
+  headerWrap: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  loaderWrap: {
+    paddingVertical: 12,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})

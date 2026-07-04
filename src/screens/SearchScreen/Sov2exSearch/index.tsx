@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import {
   InteractionManager,
   Platform,
-  ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -19,7 +19,6 @@ import MyClearButton from '@/components/MyClearButton'
 import NodeLabel from '@/components/NodeLabel'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { formatDate } from '@/utils/time'
 
 import { useSearchHistory } from '../hooks'
@@ -58,14 +57,14 @@ export default function Sov2exSearch() {
     if (searchParams.q) {
       searchHistory.addRecord(searchParams)
     }
-  }, [searchParams])
+  }, [searchParams, searchHistory])
 
   return (
-    <KeyboardDismiss className='flex-1'>
-      <View className='flex-1'>
+    <KeyboardDismiss style={sov2exStyles.container}>
+      <View style={sov2exStyles.container}>
         <View
-          className='w-full flex-row items-start pl-1'
           style={[
+            sov2exStyles.headerRow,
             {
               minHeight: Platform.OS === 'android' ? 58 : 56 + insets.top,
               paddingTop: Platform.OS === 'android' ? 0 : insets.top,
@@ -76,13 +75,10 @@ export default function Sov2exSearch() {
           ]}
         >
           <View
-            className={cn(
-              'mr-1',
-              Platform.select({
-                ios: 'py-[6]',
-                android: 'py-[8]',
-              }),
-            )}
+            style={[
+              sov2exStyles.backWrap,
+              Platform.OS === 'ios' ? sov2exStyles.py6 : sov2exStyles.py8,
+            ]}
           >
             <BackButton
               tintColor={theme.colors.text}
@@ -92,26 +88,20 @@ export default function Sov2exSearch() {
             />
           </View>
           <View
-            className={cn(
-              'pr-3 flex-1',
-              Platform.select({
-                ios: 'py-[6]',
-                android: 'py-[8]',
-              }),
-            )}
+            style={[
+              sov2exStyles.mainCol,
+              Platform.OS === 'ios' ? sov2exStyles.py6 : sov2exStyles.py8,
+            ]}
           >
             {/* Base */}
-            <View className='flex-row items-center'>
-              <View className={cn('relative flex-1')}>
+            <View style={sov2exStyles.inputRow}>
+              <View style={sov2exStyles.inputWrap}>
                 <View
-                  className={cn(
-                    'flex flex-row items-center rounded-lg min-h-[40px]',
-                  )}
-                  style={styles.input__bg}
+                  style={[sov2exStyles.inputBg, styles.input__bg]}
                 >
                   <TextInput
-                    className='flex-1 px-2'
                     style={[
+                      sov2exStyles.input,
                       styles.text,
                       { fontSize: styles.text_base.fontSize },
                     ]}
@@ -129,7 +119,7 @@ export default function Sov2exSearch() {
                     }}
                   />
                   {!!searchParams.q && (
-                    <View className='h-full flex flex-row items-center justify-center'>
+                    <View style={sov2exStyles.clearWrap}>
                       <MyClearButton
                         onPress={() => {
                           setSearchParams((prev) => ({
@@ -144,9 +134,9 @@ export default function Sov2exSearch() {
                   )}
                 </View>
               </View>
-              <View className='px-1 -mr-3'>
+              <View style={sov2exStyles.filterBtnWrap}>
                 <Button
-                  className='rounded-full w-[44px] h-[44px]'
+                  style={sov2exStyles.filterBtn}
                   variant='icon'
                   radius={22}
                   onPress={() => {
@@ -161,13 +151,13 @@ export default function Sov2exSearch() {
             {/* Advanced */}
             {hasAdvancedOption(searchParams) && (
               <Button
-                className='mt-1 -mb-1'
+                style={sov2exStyles.advBtn}
                 onPress={() => {
                   searchInput.current?.blur()
                   advancedSearchModalRef.current?.present()
                 }}
               >
-                <View className='flex-row w-full items-center px-1 py-2'>
+                <View style={sov2exStyles.advRow}>
                   {searchParams.gte && (
                     <>
                       <Text style={styles.text_desc}>起始日期：</Text>
@@ -223,7 +213,7 @@ export default function Sov2exSearch() {
             )}
           </View>
         </View>
-        <View className='flex-1 relative'>
+        <View style={sov2exStyles.contentWrap}>
           {searchParams.q ? (
             <SearchResultView params={searchParams} />
           ) : (
@@ -236,7 +226,7 @@ export default function Sov2exSearch() {
           scrollable
           backgroundColor={styles.overlay.backgroundColor}
         >
-          <View className='pt-4 h-[400]'>
+          <View style={sov2exStyles.sheetContent}>
             <AdvancedSearchForm
               initialValues={searchParams}
               onSubmit={(values) => {
@@ -250,3 +240,81 @@ export default function Sov2exSearch() {
     </KeyboardDismiss>
   )
 }
+
+const sov2exStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingLeft: 4,
+  },
+  backWrap: {
+    marginRight: 4,
+  },
+  py6: {
+    paddingVertical: 6,
+  },
+  py8: {
+    paddingVertical: 8,
+  },
+  mainCol: {
+    paddingRight: 12,
+    flex: 1,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputWrap: {
+    position: 'relative',
+    flex: 1,
+  },
+  inputBg: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 8,
+    minHeight: 40,
+  },
+  input: {
+    flex: 1,
+    paddingHorizontal: 8,
+  },
+  clearWrap: {
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  filterBtnWrap: {
+    paddingHorizontal: 4,
+    marginRight: -12,
+  },
+  filterBtn: {
+    borderRadius: 22,
+    width: 44,
+    height: 44,
+  },
+  advBtn: {
+    marginTop: 4,
+    marginBottom: -4,
+  },
+  advRow: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+    flexWrap: 'wrap',
+  },
+  contentWrap: {
+    flex: 1,
+    position: 'relative',
+  },
+  sheetContent: {
+    paddingTop: 16,
+    height: 400,
+  },
+})

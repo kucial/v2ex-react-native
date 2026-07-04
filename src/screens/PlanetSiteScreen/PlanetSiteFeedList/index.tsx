@@ -7,7 +7,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { AppState, useWindowDimensions, View } from 'react-native'
+import { AppState, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { SharedValue, useAnimatedScrollHandler } from 'react-native-reanimated'
 import { FlashListRef } from '@shopify/flash-list'
 import { useQueryClient } from '@tanstack/react-query'
@@ -72,7 +72,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
       })
     }
     listQuery.refetch()
-  }, [listQuery.data, address, queryclient])
+  }, [listQuery.data, address, queryclient, listQuery])
 
   const scrollToRefresh = useCallback(() => {
     if (listQuery.isRefetching) {
@@ -89,7 +89,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
       })
     }
     listQuery.refetch()
-  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics, scrollY])
+  }, [listQuery.isRefetching, listQuery.data, settings.refreshHaptics, scrollY, listQuery])
 
   useEffect(() => {
     if (
@@ -127,7 +127,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
         subscription.remove()
       }
     }
-  }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration])
+  }, [isFocused, settings.autoRefresh, settings.autoRefreshDuration, listQuery, scrollToRefresh])
 
   useEffect(() => {
     if (currentListRef) {
@@ -135,7 +135,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
         scrollToRefresh,
       }
     }
-  }, [isFocused, scrollToRefresh])
+  }, [isFocused, scrollToRefresh, currentListRef])
 
   const listItems = useMemo(() => {
     if (listQuery.isLoading && !listQuery.error) {
@@ -173,7 +173,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
         index: any
         extraData?: any
       }) => (
-        <View className='px-2 py-1'>
+        <View style={planetSiteFeedStyles.cardWrap}>
           <TopicCard
             data={item}
             isLast={index === extra?.listLength - 1}
@@ -196,7 +196,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
     if (shouldLoadMore(listQuery)) {
       listQuery.fetchNextPage()
     }
-  }, [listQuery.hasNextPage, listQuery.isFetchingNextPage])
+  }, [listQuery])
 
   const listFooter = useMemo(
     () => <CommonListFooter data={listQuery} />,
@@ -207,7 +207,7 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
     <AnimatedFlashList
       scrollToOverflowEnabled
       ref={listViewRef}
-      className='flex-1'
+      style={planetSiteFeedStyles.list}
       data={listItems}
       extraData={extraData}
       renderItem={renderItem}
@@ -226,4 +226,15 @@ function PlanetSiteFeedList(props: PlanetSiteFeedListProps) {
     />
   )
 }
+
+const planetSiteFeedStyles = StyleSheet.create({
+  list: {
+    flex: 1,
+  },
+  cardWrap: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+})
+
 export default memo(PlanetSiteFeedList)

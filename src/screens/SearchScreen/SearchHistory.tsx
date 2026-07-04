@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -9,8 +9,8 @@ export default function SearchHistory(props) {
   const { styles } = useTheme()
   if (searchHistory.records.length) {
     return (
-      <View className='pt-4'>
-        <View className='pl-4 pr-1 py-1 flex-row justify-between items-center'>
+      <View style={searchHistoryStyles.container}>
+        <View style={searchHistoryStyles.headerRow}>
           <View>
             <Text style={[styles.text, { fontSize: 20, fontWeight: 'bold' }]}>
               搜索历史
@@ -18,7 +18,10 @@ export default function SearchHistory(props) {
           </View>
           <View>
             <Pressable
-              className='px-3 h-[24] justify-center active:opacity-50'
+              style={({ pressed }) => [
+                searchHistoryStyles.clearBtn,
+                pressed && searchHistoryStyles.pressed,
+              ]}
               hitSlop={10}
               onPress={searchHistory.clear}
             >
@@ -29,15 +32,17 @@ export default function SearchHistory(props) {
         <View>
           {searchHistory.records.map((item) => (
             <Pressable
-              className='pl-4 active:opacity-50'
+              style={({ pressed }) => [
+                searchHistoryStyles.itemPressable,
+                pressed && searchHistoryStyles.pressed,
+              ]}
               key={item.q}
               onPress={() => {
                 props.onSelect(item)
               }}
             >
               <View
-                className='pr-4 h-[44] justify-center'
-                style={styles.border_b_light}
+                style={[searchHistoryStyles.itemRow, styles.border_b_light]}
               >
                 <Text style={[styles.text, styles.text_base]}>{item.q}</Text>
               </View>
@@ -50,3 +55,33 @@ export default function SearchHistory(props) {
 
   return null
 }
+
+const searchHistoryStyles = StyleSheet.create({
+  container: {
+    paddingTop: 16,
+  },
+  headerRow: {
+    paddingLeft: 16,
+    paddingRight: 4,
+    paddingVertical: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  clearBtn: {
+    paddingHorizontal: 12,
+    height: 24,
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  itemPressable: {
+    paddingLeft: 16,
+  },
+  itemRow: {
+    paddingRight: 16,
+    height: 44,
+    justifyContent: 'center',
+  },
+})
