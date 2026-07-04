@@ -1,80 +1,33 @@
-# SlateEditor in webview
+# SlateEditor
 
-```typescript
-interface Editor {
-  metaState: {
-    canUndo: boolean
-    canRedo: boolean
-    blockTypes: Array<string> // blockTypes in depth
-    inlineStyles: Array<string> // lineStyles in depth
-  }
-  isBlockActive(type: string): boolean
-  isMarkActive(type: string): boolean
-  toggleBlockType(type: string): Promise<boolean>
-  toggleInlineStyle(type: string): Promise<boolean>
-  insertImage(src: string): Promise<boolean>
-  insertIframe(config: any): Promise<boolean>
-  listIndent(): Promise<boolean>
-  listOutdent(): Promise<boolean>
-  getHTML(): Promise<string>
-  setHTML(html: string): Promise<boolean>
-  init(config: {
-    placeholder?: string
-    data?: any // slate state
-    html?: string //
-  }): Promise<boolean>
-  webviewRef: any // react ref to a webview
-}
-```
+The editor uses an Expo DOM component for the Slate runtime:
 
-## 组件及通讯机制
-
-相关组件
-
-1. EditorProvider
-2. WebView, (ref, onMessage)
-3. Toolbar
-
-### EditorProvider
-
-1. 提供 editor 示例上下文，提供可用的编辑器接口
-2. 一个 react ref 用于绑定 webview 实例
-3. 一个 handleMessage 用于设置 webview onMessage
-
-###
-
-```jsx
+```tsx
 <EditorProvider>
   <EditorRender />
   <EditorToolbar />
 </EditorProvider>
 ```
 
-预期调用方式
+## Architecture
 
-```js
-const requestManager = {
-  requests = new Map();
-  generateRequestId() {
+1. `EditorRender` renders `dom/SlateEditorDOM.tsx`, a `'use dom'` component.
+2. `EditorProvider` owns the native editor service and exposes it through context.
+3. The native service calls DOM methods through `useDOMImperativeHandle`.
+4. The DOM editor emits serializable events back to native through `onEvent`.
 
-  },
-  setRequestHandler(requestid, resolve, reject) {
+The public native API is intentionally stable for screens that submit Markdown
+or control the toolbar:
 
-  },
-  handleMessage(message) {
-
-  }
-}
-function init(config) {
-  return new Promise((resolve, reject) => {
-    const requestId = requestManager.generateRequestId();
-    requestManager.setRequestHandler(requestId, { resolve, reject });
-    this.webview.postMessage(JSON.stringify({
-      requestId,
-      method: 'init',
-      params: config
-    }))
-  })
-}
-
+```ts
+editor.focus()
+editor.blur()
+editor.getHTML()
+editor.getMarkdown()
+editor.toggleMark('bold')
+editor.toggleBlock('unordered-list')
+editor.insertImage({ url, width, height })
 ```
+
+`webview` and `handleMessage` remain as deprecated compatibility fields. New
+code should use the service methods and DOM event bridge instead.

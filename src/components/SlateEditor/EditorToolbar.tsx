@@ -1,10 +1,13 @@
+import { ReactElement } from 'react'
 import {
+  ColorValue,
   GestureResponderEvent,
   Keyboard,
   Pressable,
   ScrollView,
   StyleSheet,
   View,
+  ViewStyle,
 } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -30,7 +33,7 @@ import {
 type ToolbarButtonProps = {
   active?: boolean
   disabled?: boolean
-  Icon: (props: IconProps) => JSX.Element
+  Icon: (props: IconProps) => ReactElement
   iconProps?: IconProps
   onPress?(e: GestureResponderEvent): void
 }
@@ -43,7 +46,7 @@ function ToolbarButton({
   iconProps,
 }: ToolbarButtonProps) {
   const { theme, styles } = useTheme()
-  let color
+  let color: IconProps['color']
   if (active) {
     color = styles.btn_primary__text.color
   } else {
@@ -76,7 +79,13 @@ function ToolbarButton({
   )
 }
 
-function Divider({ margin = true, color }) {
+function Divider({
+  margin = true,
+  color,
+}: {
+  color: ColorValue
+  margin?: boolean
+}) {
   return (
     <View
       style={[
@@ -90,9 +99,16 @@ function Divider({ margin = true, color }) {
   )
 }
 
-export default function EditorToolbar(props) {
+type EditorToolbarProps = {
+  onOpenImageSelect?(): void
+  showOnFocus?: boolean
+  style?: ViewStyle
+}
+
+export default function EditorToolbar(props: EditorToolbarProps) {
   const editor = useEditor()
   const { theme, styles } = useTheme()
+  const onOpenImageSelect = props.onOpenImageSelect
 
   if (props.showOnFocus && !editor.hasFocus()) {
     return null
@@ -171,12 +187,12 @@ export default function EditorToolbar(props) {
           }}
           Icon={TitleIcon}
         />
-        {props.onOpenImageSelect && (
+        {onOpenImageSelect && (
           <ToolbarButton
             active={editor.isBlockActive('image')}
             onPress={() => {
               // TODO: open image select modal
-              props.onOpenImageSelect()
+              onOpenImageSelect()
             }}
             Icon={ImageIcon}
           />

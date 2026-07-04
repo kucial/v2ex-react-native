@@ -11,7 +11,6 @@ const {
 
 const config = getSentryExpoConfig(__dirname)
 
-config.resolver.assetExts.push('html')
 config.transformer.assetPlugins = ['expo-asset/tools/hashAssetFiles']
 
 module.exports = withRozenite(

@@ -4,7 +4,7 @@
 - `src/app` holds Expo Router entry points; screens and stacks live in `src/screens` and composed containers in `src/containers`.
 - Shared UI is under `src/components`; shared logic sits in `src/hooks`, `src/stores` (Zustand), `src/lib`, and `src/utils` (with unit tests in `src/utils/__test__`).
 - Static assets for the app live in `src/assets`; marketing images stay in `public/`. Native configs are under `android/` and `ios/`.
-- Editor-related web tooling and experiments live in `packages/simple-slate-editor`; keep mobile app code in `src/`.
+- Editor-related DOM runtime code lives in `src/components/SlateEditor/dom`; keep mobile app code in `src/`.
 - Expo, Metro, Tailwind, and TypeScript configs are at the repo root; import aliases use `@/*` (see `tsconfig.json`).
 
 ## Build, Test, and Development Commands
@@ -20,7 +20,7 @@
 - Tailwind (via NativeWind) is allowed for layout; co-locate styles with components when practical. Avoid inline magic numbers—extract to constants where reused.
 
 ## Testing Guidelines
-- Jest is the unit-test runner; existing suites live in `src/utils/__test__` and `packages/simple-slate-editor/**/tests`. Follow the `*.test.{js,ts}` pattern.
+- Jest is the unit-test runner; existing suites live in `src/utils/__test__` and component-local `**/tests` folders. Follow the `*.test.{js,ts}` pattern.
 - Add focused unit tests for new utilities and parsing logic; for UI-heavy changes, cover pure helpers and stateful hooks.
 - Keep tests deterministic (mock network and time) and prefer snapshot updates only when visual structure meaningfully changes.
 

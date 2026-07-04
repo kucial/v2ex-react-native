@@ -2,7 +2,7 @@ import ImgurPicker, { ImgurPickerProps } from '../ImgurPicker'
 import { SlateEditorService } from './types'
 
 type Props = ImgurPickerProps & {
-  editor: SlateEditorService
+  editor: SlateEditorService | null
 }
 export default function EditorImagePicker(props: Props) {
   const { editor } = props
@@ -12,7 +12,7 @@ export default function EditorImagePicker(props: Props) {
       maxCount={1}
       onSubmit={(data) => {
         const image = data[0]
-        editor.insertImage({
+        editor?.insertImage({
           url: image.link,
           width: image.width,
           height: image.height,

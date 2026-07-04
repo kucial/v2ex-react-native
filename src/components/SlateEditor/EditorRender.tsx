@@ -1,39 +1,53 @@
-import { CSSProperties, useEffect, useState } from 'react'
+import { CSSProperties, useEffect } from 'react'
 import { LayoutChangeEvent, Pressable } from 'react-native'
-import WebView from 'react-native-webview'
-import { useAssets } from 'expo-asset'
 
 import { useEditor } from './context'
+// 'use dom' component — Expo will bundle this as an in-app DOM component
+// transparently, so we just import and use it like any React component.
+import SlateEditorDOM from './dom/SlateEditorDOM'
 
 type EditorRenderProps = {
   placeholder: string
   html?: string
-  containerStyle: CSSProperties & { '--placeholder-color': string }
+  containerStyle: CSSProperties & { '--placeholder-color'?: string }
   onCursorPositionUpdate?(): void
-  onLayout(e: LayoutChangeEvent): void
+  onLayout?(e: LayoutChangeEvent): void
 }
 
 export default function EditorRender(props: EditorRenderProps) {
-  const [assets, error] = useAssets([require('./assets/editor.html')])
-  const [editorHtml, setEditorHTML] = useState('')
-
+  const {
+    containerStyle,
+    html,
+    onCursorPositionUpdate,
+    onLayout,
+    placeholder,
+  } = props
   const editor = useEditor()
+
+  // Set the initial config once on mount; the 'ready' event from the DOM
+  // component triggers init (via setInitialConfig stored in EditorProvider).
   useEffect(() => {
     editor.setInitialConfig({
-      placeholder: props.placeholder,
-      html: props.html,
-      containerStyle: props.containerStyle,
+      placeholder,
+      html,
+      containerStyle,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    props.onCursorPositionUpdate?.()
-  }, [editor.selectionBox?.top, editor.selectionBox?.bottom])
+    onCursorPositionUpdate?.()
+  }, [
+    editor.selectionBox?.top,
+    editor.selectionBox?.bottom,
+    onCursorPositionUpdate,
+  ])
 
   useEffect(() => {
     return () => {
       editor.blur()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -42,27 +56,23 @@ export default function EditorRender(props: EditorRenderProps) {
       onPress={(e) => {
         e.stopPropagation()
       }}
-      onLayout={props.onLayout}
+      onLayout={onLayout}
     >
-      {!!assets?.length && (
-        <WebView
-          originWhitelist={['*']}
-          allowFileAccess={true}
-          source={{
-            uri: assets[0].localUri,
-          }}
-          // source={{ uri: 'http://192.168.1.102:3000/editor.html' }}
-          ref={editor.webview}
-          onMessage={editor.handleMessage}
-          allowingReadAccessToURL='file://'
-          style={{
+      <SlateEditorDOM
+        ref={editor.domRef}
+        onEvent={editor.handleEvent}
+        dom={{
+          // Disable DOM scrolling since we manage it in RN
+          scrollEnabled: false,
+          // Resize to match the HTML content height
+          matchContents: true,
+          style: {
             opacity: editor.isReady() ? 1 : 0,
-            backgroundColor: props.containerStyle?.backgroundColor,
-            minHeight: props.containerStyle?.minHeight,
-          }}
-          scrollEnabled={false}
-        />
-      )}
+            backgroundColor:
+              (containerStyle?.backgroundColor as string) ?? 'transparent',
+          },
+        }}
+      />
     </Pressable>
   )
 }

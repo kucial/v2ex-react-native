@@ -1,11 +1,11 @@
 import { CSSProperties, Ref } from 'react'
-import WebView, { WebViewMessageEvent } from 'react-native-webview'
 
 type SlateEditorInitOptions = {
   placeholder?: string
   html?: string
   containerStyle?: CSSProperties
 }
+
 export interface SlateEditorMethods {
   init(data: SlateEditorInitOptions): Promise<void>
   focus(): Promise<void>
@@ -41,18 +41,20 @@ export interface SlateEditorState {
     canUndo?: boolean
     canRedo?: boolean
     blockTypes?: string[]
-    inlineStyles?: string[]
+    inlineStyles?: Record<string, boolean>
   }
 }
 
 export type SlateEditorService = SlateEditorState &
   SlateEditorMethods & {
-    webview: Ref<WebView>
+    /** @internal – the ref passed to the DOM component */
+    webview: Ref<any>
 
     setInitialConfig(data: SlateEditorInitOptions): void
     hasFocus(): boolean
     isReady(): boolean
-    handleMessage(e: WebViewMessageEvent): void
+    /** @deprecated kept for old WebView callsites; DOM events use handleEvent */
+    handleMessage(e: any): void
     canUndo(): boolean
     canRedo(): boolean
     canIndent(): boolean
