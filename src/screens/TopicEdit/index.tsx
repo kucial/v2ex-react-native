@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Formik, FormikProps } from 'formik'
@@ -56,12 +56,12 @@ export default function TopicEdit() {
         alert.show({ type: 'error', message: err.message })
       }
     },
-    [topicId],
+    [alert, queryClient, router, topicId],
   )
 
   if (formQuery.error) {
     return (
-      <View className='flex flex-row justify-center py-8'>
+      <View style={editStyles.centerPy8}>
         <Text style={styles.text}>{formQuery.error.message}</Text>
       </View>
     )
@@ -69,19 +69,17 @@ export default function TopicEdit() {
 
   if (!formQuery.data) {
     return (
-      <View className='flex flex-row justify-center py-8'>
+      <View style={editStyles.centerPy8}>
         <Loader />
       </View>
     )
   }
 
   return (
-    <View className='flex-1' style={styles.layer1}>
+    <View style={[editStyles.container, styles.layer1]}>
       <KeyboardAwareView
         animated
-        style={{
-          height: '100%',
-        }}
+        style={editStyles.kav}
       >
         <Formik
           initialValues={formQuery.data.values}
@@ -90,12 +88,11 @@ export default function TopicEdit() {
         >
           {(formikProps) => (
             <ScrollView
-              style={styles.layer1}
-              className='flex-1'
+              style={[editStyles.container, styles.layer1]}
               ref={scrollViewRef}
               scrollEventThrottle={16}
             >
-              <View className='py-3 px-2 flex-1'>
+              <View style={editStyles.formWrap}>
                 <TextField name='title' label='标题' />
                 <SelectField
                   name='syntax'
@@ -110,7 +107,7 @@ export default function TopicEdit() {
                   inputStyle={{ minHeight: 200 }}
                 />
                 <Button
-                  className='mt-4'
+                  style={editStyles.submitBtn}
                   size='md'
                   variant='primary'
                   label='更新'
@@ -128,3 +125,25 @@ export default function TopicEdit() {
     </View>
   )
 }
+
+const editStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  centerPy8: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 32,
+  },
+  kav: {
+    height: '100%',
+  },
+  formWrap: {
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    flex: 1,
+  },
+  submitBtn: {
+    marginTop: 16,
+  },
+})
