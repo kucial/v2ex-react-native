@@ -1,11 +1,16 @@
 import { ReactNode, useMemo } from 'react'
-import { Platform, Pressable, PressableProps, Text } from 'react-native'
+import {
+  Platform,
+  Pressable,
+  PressableProps,
+  StyleSheet,
+  Text,
+} from 'react-native'
 import Color from 'color'
 
 import Loader from '@/components/Loader'
 
 import { getSemanticStyle, useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 type ButtonVariant =
   | 'primary'
@@ -18,11 +23,6 @@ type ButtonVariant =
   | 'icon'
   | 'default'
 
-const radiusMap = {
-  md: 'rounded-md',
-  sm: 'rounded-sm',
-  full: 'rounded-full',
-}
 const radiusNum = {
   md: 6,
   sm: 4,
@@ -38,13 +38,11 @@ function Button(props: {
   style?: PressableProps['style']
   variant?: ButtonVariant
   size?: 'md' | 'sm'
-  className?: string
   radius?: number | 'md' | 'sm' | 'full'
 }) {
   const { styles, theme } = useTheme()
   const { size, variant, radius = 'md' } = props
 
-  // const [bgStyle, textStyle, bdStyle] = getSemanticStyle(variant, styles)
   const {
     container: containerStyle,
     text: textStyle,
@@ -71,21 +69,27 @@ function Button(props: {
   return (
     <Pressable
       disabled={props.disabled}
-      className={cn(
-        'flex items-center justify-center',
-        'active:opacity-60',
-        Platform.OS === 'ios' &&
-          variant === 'icon' &&
-          'active:bg-neutral-100 dark:active:bg-neutral-600',
-        radiusMap[radius],
-        size === 'md' && 'h-[44] px-3',
-        size === 'sm' && 'h-[36] px-2',
-        props.className,
+      style={({ pressed }) => [
+        btnStyles.base,
         {
-          'opacity-60': props.loading || props.disabled,
+          borderRadius: typeof radius === 'string' ? radiusNum[radius] : radius,
         },
-      )}
-      style={[containerStyle, borderStyle, props.style]}
+        size === 'md' && btnStyles.sizeMd,
+        size === 'sm' && btnStyles.sizeSm,
+        (props.loading || props.disabled) && btnStyles.disabled,
+        containerStyle,
+        borderStyle,
+        pressed && [
+          btnStyles.pressed,
+          Platform.OS === 'ios' &&
+            variant === 'icon' && {
+              backgroundColor: theme.colors.bg_overlay,
+            },
+        ],
+        typeof props.style === 'function'
+          ? props.style({ pressed })
+          : props.style,
+      ]}
       onPress={props.onPress}
       android_ripple={android_ripple}
     >
@@ -97,5 +101,26 @@ function Button(props: {
     </Pressable>
   )
 }
+
+const btnStyles = StyleSheet.create({
+  base: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sizeMd: {
+    height: 44,
+    paddingHorizontal: 12,
+  },
+  sizeSm: {
+    height: 36,
+    paddingHorizontal: 8,
+  },
+  disabled: {
+    opacity: 0.6,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+})
 
 export default Button

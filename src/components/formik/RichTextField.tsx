@@ -1,12 +1,11 @@
 import { MutableRefObject, ReactNode, useMemo } from 'react'
-import { Text, View, ViewProps, ViewStyle } from 'react-native'
+import { StyleSheet, Text, View, ViewProps, ViewStyle } from 'react-native'
 import { useField } from 'formik'
 import { marked } from 'marked'
 
 import { EditorRender } from '@/components/SlateEditor'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 function RichTextField({
   label,
@@ -40,26 +39,33 @@ function RichTextField({
   return (
     <View style={style}>
       {label !== false && (
-        <View className='flex flex-row'>
+        <View style={richFieldStyles.labelRow}>
           <Text
-            className={cn('pl-2 pb-[2px]', {
-              'opacity-0': !field.value,
-            })}
-            style={[styles.text, styles.text_xs]}
+            style={[
+              richFieldStyles.labelText,
+              !field.value && richFieldStyles.opacity0,
+              styles.text,
+              styles.text_xs,
+            ]}
           >
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className='ml-2' style={[styles.text_danger, styles.text_xs]}>
+            <Text
+              style={[
+                richFieldStyles.errorText,
+                styles.text_danger,
+                styles.text_xs,
+              ]}
+            >
               {meta.error}
             </Text>
           )}
         </View>
       )}
       <View
-        className='mb-2 rounded-md overflow-hidden px-2 py-[10px]'
-        style={styles.input__bg}
+        style={[richFieldStyles.editorWrap, styles.input__bg]}
         ref={editorRenderContainerRef}
       >
         <EditorRender
@@ -77,5 +83,28 @@ function RichTextField({
     </View>
   )
 }
+
+const richFieldStyles = StyleSheet.create({
+  labelRow: {
+    flexDirection: 'row',
+  },
+  labelText: {
+    paddingLeft: 8,
+    paddingBottom: 2,
+  },
+  opacity0: {
+    opacity: 0,
+  },
+  errorText: {
+    marginLeft: 8,
+  },
+  editorWrap: {
+    marginBottom: 8,
+    borderRadius: 6,
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+  },
+})
 
 export default RichTextField

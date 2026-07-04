@@ -1,25 +1,24 @@
 import { ReactNode } from 'react'
-import { Text, View } from 'react-native'
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { useField } from 'formik'
 
 import NodeSelect from '@/components/NodeSelect'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { NodeDetail } from '@/utils/v2ex-client/types'
 
 function NodeSelectField({
   name,
   label,
   placeholder,
-  className,
+  style,
   canClear,
   renderLabel,
 }: {
   name: string
   label: ReactNode | false
   placeholder: string
-  className?: string
+  style?: StyleProp<ViewStyle>
   canClear?: boolean
   renderLabel?: (node: NodeDetail) => ReactNode
 }) {
@@ -27,22 +26,30 @@ function NodeSelectField({
   const [field, meta, helpers] = useField(name)
 
   return (
-    <View className={className}>
+    <View style={style}>
       {label !== false && (
-        <View className='flex flex-row'>
-          <View className='flex-1'>
+        <View style={nodeSelectStyles.labelRow}>
+          <View style={nodeSelectStyles.flex1}>
             <Text
-              className={cn('pl-2 pb-[2px]', {
-                'opacity-0': !field.value,
-              })}
-              style={[styles.text, styles.text_xs]}
+              style={[
+                nodeSelectStyles.labelText,
+                !field.value && nodeSelectStyles.opacity0,
+                styles.text,
+                styles.text_xs,
+              ]}
             >
               {label}
             </Text>
           </View>
 
           {meta.error && meta.touched && (
-            <Text className='ml-2' style={[styles.text_danger, styles.text_xs]}>
+            <Text
+              style={[
+                nodeSelectStyles.errorText,
+                styles.text_danger,
+                styles.text_xs,
+              ]}
+            >
               {meta.error}
             </Text>
           )}
@@ -61,5 +68,24 @@ function NodeSelectField({
     </View>
   )
 }
+
+const nodeSelectStyles = StyleSheet.create({
+  labelRow: {
+    flexDirection: 'row',
+  },
+  flex1: {
+    flex: 1,
+  },
+  labelText: {
+    paddingLeft: 8,
+    paddingBottom: 2,
+  },
+  opacity0: {
+    opacity: 0,
+  },
+  errorText: {
+    marginLeft: 8,
+  },
+})
 
 export default NodeSelectField

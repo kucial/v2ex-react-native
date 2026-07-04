@@ -1,20 +1,19 @@
 import { ReactNode, useMemo } from 'react'
-import { Text, View, ViewStyle } from 'react-native'
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { useField } from 'formik'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 function SelectField({
   label,
-  className,
+  style,
   name,
   options,
   ...props
 }: {
   label: ReactNode | false
-  className?: string
+  style?: StyleProp<ViewStyle>
   name: string
   options: { label: string; value: string }[]
 }) {
@@ -24,18 +23,21 @@ function SelectField({
   const labels = useMemo(() => options.map((o) => o.label), [options])
 
   return (
-    <View className={cn('flex flex-row w-full items-center py-3', className)}>
+    <View style={[selectFieldStyles.container, style]}>
       {label && (
-        <View className='flex-1'>
+        <View style={selectFieldStyles.flex1}>
           <Text
-            className={cn('pl-2 pb-[2px]')}
-            style={[styles.text, styles.text_xs]}
+            style={[
+              selectFieldStyles.labelText,
+              styles.text,
+              styles.text_xs,
+            ]}
           >
             {label}
           </Text>
         </View>
       )}
-      <View className='flex-1'>
+      <View style={selectFieldStyles.flex1}>
         <SegmentedControl
           values={labels}
           selectedIndex={options.findIndex(
@@ -52,4 +54,21 @@ function SelectField({
     </View>
   )
 }
+
+const selectFieldStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  flex1: {
+    flex: 1,
+  },
+  labelText: {
+    paddingLeft: 8,
+    paddingBottom: 2,
+  },
+})
+
 export default SelectField

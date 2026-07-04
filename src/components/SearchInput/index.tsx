@@ -5,11 +5,17 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Pressable, Text, TextInput, View, ViewStyle } from 'react-native'
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  ViewStyle,
+} from 'react-native'
 import { XMarkIcon } from 'react-native-heroicons/outline'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 type SearchInputProps = {
   placeholder: string
@@ -58,18 +64,15 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
   useImperativeHandle(ref, () => service, [service])
 
   return (
-    <View
-      className='flex flex-row flex-1 px-2 items-center'
-      style={props.style}
-    >
-      <View className='relative flex-1 pt-1 pb-2'>
-        <View
-          className='flex flex-row rounded-lg'
-          style={props.style || styles.layer2}
-        >
+    <View style={[searchStyles.container, props.style]}>
+      <View style={searchStyles.inputWrap}>
+        <View style={[searchStyles.inputBox, props.style || styles.layer2]}>
           <TextInput
-            className='flex-1 px-2 min-h-[40px]'
-            style={[styles.text, { fontSize: styles.text_base.fontSize }]}
+            style={[
+              searchStyles.textInput,
+              styles.text,
+              { fontSize: styles.text_base.fontSize },
+            ]}
             selectionColor={theme.colors.primary}
             placeholderTextColor={theme.colors.text_placeholder}
             ref={searchInput}
@@ -80,9 +83,12 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
             onSubmitEditing={service.submit}
           />
           {!!text && (
-            <View className='h-full items-center justify-center'>
+            <View style={searchStyles.clearWrap}>
               <Pressable
-                className='rounded-full w-[40px] h-[40px] active:bg-neutral-100 active:opacity-30 items-center justify-center'
+                style={({ pressed }) => [
+                  searchStyles.clearBtn,
+                  pressed && searchStyles.pressed,
+                ]}
                 onPress={() => {
                   service.reset()
                 }}
@@ -96,18 +102,15 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
       {props.showSearchBtn && (
         <Pressable
           hitSlop={6}
-          className={cn(
-            'ml-2',
-            'rounded-lg h-[36px] px-3 items-center justify-center',
-            'active:bg-neutral-100 active:opacity-60',
-          )}
+          style={({ pressed }) => [
+            searchStyles.submitBtn,
+            pressed && searchStyles.pressed,
+          ]}
           onPress={() => {
             service.submit()
           }}
         >
-          <Text className='text-neutral-900 font-medium tracking-wide'>
-            搜索
-          </Text>
+          <Text style={[styles.text, searchStyles.submitText]}>搜索</Text>
         </Pressable>
       )}
     </View>
@@ -115,5 +118,56 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
 })
 
 SearchInput.displayName = 'SearchInput'
+
+const searchStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    flex: 1,
+    paddingHorizontal: 8,
+    alignItems: 'center',
+  },
+  inputWrap: {
+    position: 'relative',
+    flex: 1,
+    paddingTop: 4,
+    paddingBottom: 8,
+  },
+  inputBox: {
+    flexDirection: 'row',
+    borderRadius: 8,
+  },
+  textInput: {
+    flex: 1,
+    paddingHorizontal: 8,
+    minHeight: 40,
+  },
+  clearWrap: {
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clearBtn: {
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitBtn: {
+    marginLeft: 8,
+    borderRadius: 8,
+    height: 36,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitText: {
+    fontWeight: '500',
+    letterSpacing: 0.5,
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+})
 
 export default SearchInput

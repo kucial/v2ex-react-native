@@ -1,11 +1,16 @@
 import { ReactNode, useState } from 'react'
-import { Text, TextInputProps, View, ViewStyle } from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  TextInputProps,
+  View,
+  ViewStyle,
+} from 'react-native'
 import DatePicker from 'react-native-date-picker'
 import { useField } from 'formik'
 import { padStart } from 'lodash'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import Button from '../Button'
 import MyClearButton from '../MyClearButton'
@@ -49,24 +54,32 @@ function DateField({
   return (
     <View style={style}>
       {label !== false && (
-        <View className='flex flex-row'>
+        <View style={formFieldStyles.labelRow}>
           <Text
-            className={cn('pl-2 pb-[2px]', {
-              'opacity-0': !field.value,
-            })}
-            style={[styles.text, styles.text_xs]}
+            style={[
+              formFieldStyles.labelText,
+              !field.value && formFieldStyles.opacity0,
+              styles.text,
+              styles.text_xs,
+            ]}
           >
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className='ml-2' style={[styles.text_danger, styles.text_xs]}>
+            <Text
+              style={[
+                formFieldStyles.errorText,
+                styles.text_danger,
+                styles.text_xs,
+              ]}
+            >
               {meta.error}
             </Text>
           )}
         </View>
       )}
-      <View className='relative'>
+      <View style={formFieldStyles.relative}>
         <Button
           size='md'
           variant='input'
@@ -74,7 +87,7 @@ function DateField({
             setOpen(true)
           }}
         >
-          <View className='w-full'>
+          <View style={formFieldStyles.wFull}>
             {field.value ? (
               <Text style={[styles.text, styles.text_base]}>
                 {formatDate(field.value, props.pickerMode)}
@@ -87,7 +100,7 @@ function DateField({
           </View>
         </Button>
         {canClear && field.value && (
-          <View className='absolute right-0 h-full flex flex-row items-center justify-center'>
+          <View style={formFieldStyles.clearWrap}>
             <MyClearButton
               onPress={() => {
                 helpers.setValue(undefined)
@@ -120,5 +133,35 @@ function DateField({
     </View>
   )
 }
+
+const formFieldStyles = StyleSheet.create({
+  labelRow: {
+    flexDirection: 'row',
+  },
+  labelText: {
+    paddingLeft: 8,
+    paddingBottom: 2,
+  },
+  opacity0: {
+    opacity: 0,
+  },
+  errorText: {
+    marginLeft: 8,
+  },
+  relative: {
+    position: 'relative',
+  },
+  wFull: {
+    width: '100%',
+  },
+  clearWrap: {
+    position: 'absolute',
+    right: 0,
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})
 
 export default DateField

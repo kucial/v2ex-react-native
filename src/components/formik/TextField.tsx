@@ -1,6 +1,8 @@
 import { ReactNode } from 'react'
 import {
   Platform,
+  StyleProp,
+  StyleSheet,
   Text,
   TextInput,
   TextInputProps,
@@ -10,13 +12,12 @@ import {
 import { useField } from 'formik'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import MyClearButton from '../MyClearButton'
 
 function TextField({
   label,
-  className,
+  style,
   inputStyle,
   name,
   canClear,
@@ -25,6 +26,7 @@ function TextField({
   label: ReactNode | false
   inputStyle?: ViewStyle
   name: string
+  style?: StyleProp<ViewStyle>
   bottomSheet?: boolean
   canClear?: boolean
 } & TextInputProps) {
@@ -33,35 +35,37 @@ function TextField({
 
   const Component = TextInput
   return (
-    <View className={className}>
+    <View style={style}>
       {label !== false && (
-        <View className='flex flex-row'>
+        <View style={textFieldStyles.labelRow}>
           <Text
-            className={cn('pl-2 pb-[2px]', {
-              'opacity-0': !field.value,
-            })}
-            style={[styles.text, styles.text_xs]}
+            style={[
+              textFieldStyles.labelText,
+              !field.value && textFieldStyles.opacity0,
+              styles.text,
+              styles.text_xs,
+            ]}
           >
             {label}
           </Text>
 
           {field.value && meta.touched && (
-            <Text className='ml-2' style={[styles.text_danger, styles.text_xs]}>
+            <Text
+              style={[
+                textFieldStyles.errorText,
+                styles.text_danger,
+                styles.text_xs,
+              ]}
+            >
               {meta.error}
             </Text>
           )}
         </View>
       )}
-      <View className='relative'>
+      <View style={textFieldStyles.relative}>
         <Component
-          className={cn(
-            'px-2 rounded-md',
-            Platform.select({
-              android: 'min-h-[44px] align-top py-2',
-              ios: 'min-h-[44px] py-2',
-            }),
-          )}
           style={[
+            textFieldStyles.input,
             styles.text,
             styles.text_base,
             styles.input__bg,
@@ -80,7 +84,7 @@ function TextField({
           }}
         />
         {canClear && field.value && (
-          <View className='absolute right-0 h-full flex flex-row items-center justify-center'>
+          <View style={textFieldStyles.clearWrap}>
             <MyClearButton
               onPress={() => {
                 helpers.setValue(undefined)
@@ -92,5 +96,43 @@ function TextField({
     </View>
   )
 }
+
+const textFieldStyles = StyleSheet.create({
+  labelRow: {
+    flexDirection: 'row',
+  },
+  labelText: {
+    paddingLeft: 8,
+    paddingBottom: 2,
+  },
+  opacity0: {
+    opacity: 0,
+  },
+  errorText: {
+    marginLeft: 8,
+  },
+  relative: {
+    position: 'relative',
+  },
+  input: {
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    minHeight: 44,
+    paddingVertical: 8,
+    ...Platform.select({
+      android: {
+        textAlignVertical: 'top',
+      },
+    }),
+  },
+  clearWrap: {
+    position: 'absolute',
+    right: 0,
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})
 
 export default TextField
