@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -9,23 +9,20 @@ export default function HomeSkeleton() {
   const { styles } = useTheme()
   return (
     <View>
-      <View
-        className='h-[46px] flex flex-row overflow-hidden'
-        style={styles.layer1}
-      >
-        <View className='px-[12px] flex flex-row items-center justify-center'>
+      <View style={[homeSkelStyles.headerBar, styles.layer1]}>
+        <View style={homeSkelStyles.tabCol}>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
-        <View className='px-[12px] flex flex-row items-center justify-center'>
+        <View style={homeSkelStyles.tabCol}>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
-        <View className='px-[12px] flex flex-row items-center justify-center'>
+        <View style={homeSkelStyles.tabCol}>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
-        <View className='px-[12px] flex flex-row items-center justify-center'>
+        <View style={homeSkelStyles.tabCol}>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
-        <View className='px-[12px] flex flex-row items-center justify-center'>
+        <View style={homeSkelStyles.tabCol}>
           <InlineText style={styles.text_base} width={[48, 64]} />
         </View>
       </View>
@@ -45,3 +42,17 @@ export default function HomeSkeleton() {
     </View>
   )
 }
+
+const homeSkelStyles = StyleSheet.create({
+  headerBar: {
+    height: 46,
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
+  tabCol: {
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+})

@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -9,33 +9,85 @@ export default function TopicSkeleton() {
   const { styles } = useTheme()
   return (
     <MaxWidthWrapper style={styles.layer1}>
-      <View className='py-3 px-4 mb-2'>
-        <View className='flex flex-row mb-2'>
-          <View className='flex flex-row flex-1'>
-            <InlineBox className='w-[32px] h-[32px] rounded' />
-            <View className='pl-2 flex flex-row items-center'>
-              <View className='py-[2px]'>
-                <InlineText className='font-medium' width={[60, 80]} />
+      <View style={topSkelStyles.container}>
+        <View style={topSkelStyles.headerRow}>
+          <View style={topSkelStyles.authorCol}>
+            <InlineBox style={topSkelStyles.avatarBox} />
+            <View style={topSkelStyles.authorMeta}>
+              <View style={topSkelStyles.py2}>
+                <InlineText
+                  style={topSkelStyles.fontMedium}
+                  width={[60, 80]}
+                />
               </View>
-              <View className='ml-2'>
+              <View style={topSkelStyles.ml2}>
                 <InlineText style={styles.text_xs} width={[40, 60]} />
               </View>
             </View>
           </View>
           <View>
             <InlineBox
-              className='py-1 px-[6px] rounded'
+              style={topSkelStyles.nodeBox}
               width={[48, 72]}
             ></InlineBox>
           </View>
         </View>
-        <View className='pb-2 mb-2' style={[styles.border_b_light]}>
+        <View
+          style={[topSkelStyles.titleContainer, styles.border_b_light]}
+        >
           <BlockText style={styles.text_lg} lines={[1, 3]} />
         </View>
-        <View className='mt-1'>
+        <View style={topSkelStyles.mt1}>
           <BlockText lines={[5, 10]} />
         </View>
       </View>
     </MaxWidthWrapper>
   )
 }
+
+const topSkelStyles = StyleSheet.create({
+  container: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  authorCol: {
+    flexDirection: 'row',
+    flex: 1,
+  },
+  avatarBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 4,
+  },
+  authorMeta: {
+    paddingLeft: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  py2: {
+    paddingVertical: 2,
+  },
+  fontMedium: {
+    fontWeight: '500',
+  },
+  ml2: {
+    marginLeft: 8,
+  },
+  nodeBox: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  titleContainer: {
+    paddingBottom: 8,
+    marginBottom: 8,
+  },
+  mt1: {
+    marginTop: 4,
+  },
+})

@@ -1,7 +1,6 @@
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import { BlockText, InlineBox, InlineText } from './Elements'
 
@@ -9,30 +8,73 @@ export default function NodeTopicRowSkeleton() {
   const { styles } = useTheme()
   return (
     <View
-      className={cn('flex flex-row items-center p-2', 'active:opacity-60')}
-      style={[styles.layer1, styles.border_b_light]}
+      style={[
+        nodeSkelStyles.rowContainer,
+        styles.layer1,
+        styles.border_b_light,
+      ]}
     >
-      <View className='mr-2 self-start'>
-        <InlineBox className='w-[24px] h-[24px] rounded' />
+      <View style={nodeSkelStyles.leftCol}>
+        <InlineBox style={nodeSkelStyles.avatarBox} />
       </View>
-      <View className='flex-1 relative top-[-2px]'>
+      <View style={nodeSkelStyles.mainCol}>
         <BlockText
-          className='font-medium mb-2 leading-none'
-          style={styles.text_base}
+          style={[styles.text_base, nodeSkelStyles.titleText]}
           lines={[1, 3]}
         />
-        <View className='flex flex-row space-x-1'>
+        <View style={nodeSkelStyles.metaRow}>
           <InlineText style={styles.text_xs} width={[58, 80]} />
         </View>
       </View>
 
-      <View className='w-[80px] flex flex-row items-center justify-end pr-2'>
+      <View style={nodeSkelStyles.rightCol}>
         <InlineText
-          className='rounded-full px-2 bg-neutral-400'
-          style={styles.text_xs}
+          style={[styles.text_xs, nodeSkelStyles.badgeText]}
           width={[18, 32]}
         />
       </View>
     </View>
   )
 }
+
+const nodeSkelStyles = StyleSheet.create({
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+  },
+  leftCol: {
+    marginRight: 8,
+    alignSelf: 'flex-start',
+  },
+  avatarBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 4,
+  },
+  mainCol: {
+    flex: 1,
+    position: 'relative',
+    top: -2,
+  },
+  titleText: {
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  rightCol: {
+    width: 80,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingRight: 8,
+  },
+  badgeText: {
+    borderRadius: 9999,
+    paddingHorizontal: 8,
+    backgroundColor: '#a3a3a3',
+  },
+})
