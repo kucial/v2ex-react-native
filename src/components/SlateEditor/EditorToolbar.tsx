@@ -3,11 +3,11 @@ import {
   Keyboard,
   Pressable,
   ScrollView,
+  StyleSheet,
   View,
 } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 import { useEditor } from './context'
 import {
@@ -52,15 +52,15 @@ function ToolbarButton({
   return (
     <Pressable
       disabled={disabled}
-      className={cn('w-[38px] h-[42px] py-1 px-[2px]', {
-        'active:opacity-60': !disabled,
-        'opacity-50': disabled,
-      })}
+      style={({ pressed }) => [
+        toolbarStyles.button,
+        disabled ? toolbarStyles.disabled : pressed && toolbarStyles.pressed,
+      ]}
       onPress={onPress}
     >
       <View
-        className='rounded-md flex items-center justify-center'
         style={[
+          toolbarStyles.iconWrap,
           {
             width: 34,
             height: 34,
@@ -79,10 +79,13 @@ function ToolbarButton({
 function Divider({ margin = true, color }) {
   return (
     <View
-      className={cn('h-[18px] w-[1px]', margin && 'mx-1')}
-      style={{
-        backgroundColor: color,
-      }}
+      style={[
+        toolbarStyles.divider,
+        margin && toolbarStyles.dividerMargin,
+        {
+          backgroundColor: color,
+        },
+      ]}
     ></View>
   )
 }
@@ -97,8 +100,8 @@ export default function EditorToolbar(props) {
   return (
     <View
       sentry-label='EditorToolbar'
-      className='flex flex-row'
       style={[
+        toolbarStyles.container,
         props.style,
         styles.border_t_light,
         {
@@ -223,7 +226,7 @@ export default function EditorToolbar(props) {
         />
       </ScrollView>
 
-      <View className='flex flex-row items-center flex-shrink-0'>
+      <View style={toolbarStyles.rightActions}>
         <Divider margin={false} color={theme.colors.border} />
         <ToolbarButton
           onPress={() => {
@@ -236,3 +239,38 @@ export default function EditorToolbar(props) {
     </View>
   )
 }
+
+const toolbarStyles = StyleSheet.create({
+  button: {
+    width: 38,
+    height: 42,
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  iconWrap: {
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  divider: {
+    height: 18,
+    width: 1,
+  },
+  dividerMargin: {
+    marginHorizontal: 4,
+  },
+  container: {
+    flexDirection: 'row',
+  },
+  rightActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 0,
+  },
+})

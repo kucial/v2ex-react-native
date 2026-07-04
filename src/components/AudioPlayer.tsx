@@ -200,12 +200,12 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
   )
 
   return (
-    <View
-      className='flex-row items-center p-2 rounded-lg'
-      style={styles.layer2}
-    >
+    <View style={[audioStyles.container, styles.layer2]}>
       <Pressable
-        className='w-8 h-8 items-center justify-center active:opacity-50'
+        style={({ pressed }) => [
+          audioStyles.playBtn,
+          pressed && audioStyles.pressed,
+        ]}
         hitSlop={8}
         onPress={handlePress}
         accessibilityLabel={showPlayIcon ? 'Play audio' : 'Pause audio'}
@@ -218,15 +218,15 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
           <PauseIcon size={20} color={theme.colors.text} />
         )}
       </Pressable>
-      <View className='ml-2 flex-1'>
-        <View className='flex-1 flex-row items-center gap-1'>
-          <Text className='text-caption-2 px-1' style={styles.text_meta}>
+      <View style={audioStyles.contentWrap}>
+        <View style={audioStyles.row}>
+          <Text style={[audioStyles.timeText, styles.text_meta]}>
             {currentTimeFormatted}
           </Text>
 
           <GestureDetector gesture={composedGesture}>
             <View
-              className='flex-1 h-6 justify-center'
+              style={audioStyles.trackContainer}
               onLayout={(event) => {
                 const { width } = event.nativeEvent.layout
                 setTrackWidth(width)
@@ -235,11 +235,16 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
               accessibilityLabel='Audio progress bar'
               accessibilityRole='adjustable'
             >
-              <View className='h-1 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden'>
+              <View
+                style={[
+                  audioStyles.trackBg,
+                  { backgroundColor: theme.dark ? '#404040' : '#e5e5e5' },
+                ]}
+              >
                 {!!isCurrentAudio && (
                   <Animated.View
-                    className='h-1 rounded-full'
                     style={[
+                      audioStyles.progressBar,
                       progressBarAnimatedStyle,
                       { backgroundColor: theme.colors.primary },
                     ]}
@@ -248,14 +253,13 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
               </View>
               {!!isCurrentAudio && (
                 <Animated.View
-                  className='absolute w-3 h-3 rounded-full bg-white left-0 shadow-sm'
-                  style={thumbAnimatedStyle}
+                  style={[audioStyles.thumb, thumbAnimatedStyle]}
                 />
               )}
             </View>
           </GestureDetector>
 
-          <Text className='text-caption-2 px-1' style={styles.text_meta}>
+          <Text style={[audioStyles.timeText, styles.text_meta]}>
             {durationFormatted}
           </Text>
         </View>
@@ -272,3 +276,62 @@ function formatTime(seconds: number): string {
   const secs = Math.floor(seconds % 60)
   return `${mins}:${secs.toString().padStart(2, '0')}`
 }
+
+const audioStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 8,
+  },
+  playBtn: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.5,
+  },
+  contentWrap: {
+    marginLeft: 8,
+    flex: 1,
+  },
+  row: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  timeText: {
+    fontSize: 11,
+    paddingHorizontal: 4,
+  },
+  trackContainer: {
+    flex: 1,
+    height: 24,
+    justifyContent: 'center',
+  },
+  trackBg: {
+    height: 4,
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: 4,
+    borderRadius: 2,
+  },
+  thumb: {
+    position: 'absolute',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#ffffff',
+    left: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+})

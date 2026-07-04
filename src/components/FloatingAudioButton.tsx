@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Pressable, View } from 'react-native'
+import { Pressable, StyleSheet, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import { PauseIcon, PlayIcon } from 'react-native-heroicons/outline'
 import Animated, {
@@ -60,21 +60,18 @@ export default function FloatingAudioButton() {
   const composedGesture = Gesture.Simultaneous(panGesture)
 
   return (
-    <View className='absolute bottom-safe pb-16 right-4 z-50'>
+    <View style={floatingStyles.container}>
       <GestureDetector gesture={composedGesture}>
         <Animated.View style={animatedStyle}>
           <Pressable
             onPress={() => togglePlayPause()}
-            className='w-[58px] h-[58px] rounded-full items-center justify-center shadow-lg active:opacity-80'
-            style={[
+            style={({ pressed }) => [
+              floatingStyles.button,
               styles.btn_primary__bg,
               {
                 shadowColor: theme.colors.text,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 4,
-                elevation: 8,
               },
+              pressed && floatingStyles.pressed,
             ]}
           >
             {isPlaying ? (
@@ -88,3 +85,27 @@ export default function FloatingAudioButton() {
     </View>
   )
 }
+
+const floatingStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 34, // safe area bottom approximation + padding
+    paddingBottom: 64,
+    right: 16,
+    zIndex: 50,
+  },
+  button: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
+  },
+  pressed: {
+    opacity: 0.8,
+  },
+})
