@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
@@ -84,11 +84,11 @@ export default function SimpleMemberInfo(props: {
   const { data } = memberQuery
 
   return (
-    <View className='px-2 pt-1 pb-3' style={styles.border_b_light}>
-      <View className='flex flex-row'>
-        <View className='flex-1'>
+    <View style={[simpleMemberStyles.container, styles.border_b_light]}>
+      <View style={simpleMemberStyles.row}>
+        <View style={simpleMemberStyles.flex1}>
           <Button
-            className='flex-row'
+            style={simpleMemberStyles.row}
             onPress={() => {
               router.push({
                 pathname: '/member/[username]',
@@ -98,41 +98,30 @@ export default function SimpleMemberInfo(props: {
               })
             }}
           >
-            <View className='mr-3'>
+            <View style={simpleMemberStyles.avatarWrap}>
               {data?.avatar_large ? (
                 <Image
-                  className='w-full h-full rounded-md'
-                  style={[
-                    {
-                      width: AVATAR_SIZE,
-                      height: AVATAR_SIZE,
-                    },
-                    styles.layer2,
-                  ]}
+                  style={[simpleMemberStyles.avatar, styles.layer2]}
                   source={{ uri: data.avatar_large }}
                 />
               ) : (
                 <Box
-                  className='rounded-md'
-                  style={[
-                    {
-                      width: AVATAR_SIZE,
-                      height: AVATAR_SIZE,
-                    },
-                    styles.layer2,
-                  ]}
+                  style={[simpleMemberStyles.avatar, styles.layer2]}
                 />
               )}
             </View>
-            <View className='flex-1'>
+            <View style={simpleMemberStyles.flex1}>
               <Text
-                className='font-bold'
-                style={[styles.text_primary, styles.text_lg]}
+                style={[
+                  simpleMemberStyles.bold,
+                  styles.text_primary,
+                  styles.text_lg,
+                ]}
               >
                 {username}
               </Text>
               <Text style={[styles.text_meta, styles.text_sm]}>
-                <Text className='pl-2 mb-1'>
+                <Text style={simpleMemberStyles.joinedText}>
                   {data?.created
                     ? `${localTime(data.created * 1000)} 加入`
                     : ''}
@@ -141,8 +130,8 @@ export default function SimpleMemberInfo(props: {
             </View>
           </Button>
         </View>
-        <View className='flex flex-col justify-center'>
-          <View className='flex flex-row'>
+        <View style={simpleMemberStyles.rightCol}>
+          <View style={simpleMemberStyles.row}>
             {data && currentUser && username !== currentUser.username && (
               <Button
                 size='sm'
@@ -157,3 +146,36 @@ export default function SimpleMemberInfo(props: {
     </View>
   )
 }
+
+const simpleMemberStyles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 8,
+    paddingTop: 4,
+    paddingBottom: 12,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  flex1: {
+    flex: 1,
+  },
+  avatarWrap: {
+    marginRight: 12,
+  },
+  avatar: {
+    width: AVATAR_SIZE,
+    height: AVATAR_SIZE,
+    borderRadius: 6,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  joinedText: {
+    paddingLeft: 8,
+    marginBottom: 4,
+  },
+  rightCol: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+})

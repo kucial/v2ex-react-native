@@ -11,6 +11,7 @@ import {
   Keyboard,
   Platform,
   Pressable,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -20,7 +21,6 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import ToBottomIcon from '@/components/ToBottomIcon'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 export type ScrollControlProps = {
   max: number
@@ -82,17 +82,20 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
           backgroundColor={styles.overlay.backgroundColor}
           grabber={false}
         >
-          <View className={cn(Platform.OS === 'android' && 'pb-16')}>
-            <View className={cn('px-4 py-4 flex flex-col flex-1')}>
-              <View className='flex flex-row'>
+          <View style={Platform.OS === 'android' && scrollControlStyles.pb16}>
+            <View style={scrollControlStyles.modalContent}>
+              <View style={scrollControlStyles.row}>
                 <View
-                  className='rounded-lg flex flex-row items-center flex-1 h-12'
-                  style={[styles.border, styles.overlay_input__bg]}
+                  style={[
+                    scrollControlStyles.inputBox,
+                    styles.border,
+                    styles.overlay_input__bg,
+                  ]}
                 >
-                  <View className='pl-3'>
+                  <View style={scrollControlStyles.pl3}>
                     <Text style={styles.text_desc}>#</Text>
                   </View>
-                  <View className='flex-1'>
+                  <View style={scrollControlStyles.flex1}>
                     <TextInput
                       autoFocus
                       keyboardType='number-pad'
@@ -101,11 +104,8 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                       value={target}
                       onChangeText={setTarget}
                       style={[
+                        scrollControlStyles.input,
                         {
-                          width: '100%',
-                          borderRadius: 8,
-                          paddingHorizontal: 8,
-                          minHeight: 36,
                           color: theme.colors.text,
                         },
                       ]}
@@ -113,7 +113,11 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     />
                   </View>
                   <Pressable
-                    className='w-[40px] h-[40px] rounded-full items-center justify-center active:opacity-60 dark:active:bg-neutral-600 -mr-1'
+                    style={({ pressed }) => [
+                      scrollControlStyles.circleBtn,
+                      scrollControlStyles.mrNeg1,
+                      pressed && scrollControlStyles.pressed60,
+                    ]}
                     onPress={() => {
                       Keyboard.dismiss()
                       inputModalRef.current?.dismiss()
@@ -129,7 +133,10 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     </View>
                   </Pressable>
                   <Pressable
-                    className='w-[40px] h-[40px] rounded-full items-center justify-center active:opacity-60 dark:active:bg-neutral-600'
+                    style={({ pressed }) => [
+                      scrollControlStyles.circleBtn,
+                      pressed && scrollControlStyles.pressed60,
+                    ]}
                     onPress={() => {
                       Keyboard.dismiss()
                       inputModalRef.current?.dismiss()
@@ -139,11 +146,11 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     <ToBottomIcon size={24} color={styles.text_meta.color} />
                   </Pressable>
                   <Pressable
-                    className={cn(
-                      'h-[34px] w-[64px] items-center justify-center rounded-md ml-[3px] mr-[6px]',
-                      'active:opacity-60',
-                    )}
-                    style={styles.btn_primary__bg}
+                    style={({ pressed }) => [
+                      scrollControlStyles.confirmBtn,
+                      styles.btn_primary__bg,
+                      pressed && scrollControlStyles.pressed60,
+                    ]}
                     onPress={(e) => {
                       const targetNum = parseInt(target, 10)
                       if (targetNum && targetNum <= max) {
@@ -166,5 +173,61 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
 )
 
 ScrollControl.displayName = 'ScrollControl'
+
+const scrollControlStyles = StyleSheet.create({
+  pb16: {
+    paddingBottom: 64,
+  },
+  modalContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    flexDirection: 'column',
+    flex: 1,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  inputBox: {
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    height: 48,
+  },
+  pl3: {
+    paddingLeft: 12,
+  },
+  flex1: {
+    flex: 1,
+  },
+  input: {
+    width: '100%',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    minHeight: 36,
+  },
+  circleBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mrNeg1: {
+    marginRight: -4,
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  confirmBtn: {
+    height: 34,
+    width: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+    marginLeft: 3,
+    marginRight: 6,
+  },
+})
 
 export default memo(ScrollControl)

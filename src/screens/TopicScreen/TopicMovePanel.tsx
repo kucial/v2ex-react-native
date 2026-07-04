@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { KeyboardAvoidingView, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, View } from 'react-native'
 import { Formik, FormikHelpers } from 'formik'
 import * as Yup from 'yup'
 
@@ -65,15 +65,15 @@ export default function TopicMovePanel(props: {
         validationSchema={TopicMoveSchema}
       >
         {(formikProps) => (
-          <View className='p-3 pb-5'>
+          <View style={topicMoveStyles.container}>
             <NodeSelectField
-              className='mb-2'
+              style={topicMoveStyles.mb2}
               name='node'
               label='节点'
               placeholder={`当前节点: ${node.name}`}
             />
             <TextField name='memo' label='备注' placeholder='备注' />
-            <View className='mt-7 mb-2'>
+            <View style={topicMoveStyles.btnWrap}>
               <Button
                 variant='primary'
                 size='md'
@@ -84,14 +84,6 @@ export default function TopicMovePanel(props: {
                   formikProps.handleSubmit()
                 }}
               />
-              {/* <Button
-                className="mt-4"
-                label="取消"
-                variant="secondary"
-                onPress={() => {
-                  props.onExit()
-                }}
-              /> */}
             </View>
           </View>
         )}
@@ -99,3 +91,17 @@ export default function TopicMovePanel(props: {
     </KeyboardAvoidingView>
   )
 }
+
+const topicMoveStyles = StyleSheet.create({
+  container: {
+    padding: 12,
+    paddingBottom: 20,
+  },
+  mb2: {
+    marginBottom: 8,
+  },
+  btnWrap: {
+    marginTop: 28,
+    marginBottom: 8,
+  },
+})

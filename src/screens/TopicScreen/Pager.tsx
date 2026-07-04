@@ -1,10 +1,9 @@
-import { Pressable, View } from 'react-native'
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
-const ToBottomIcon = (props: IconProps) => (
+const ToBottomIcon = (props: { size: number; color: string }) => (
   <Svg viewBox='0 0 18 18' width={props.size} height={props.size}>
     <Path
       strokeWidth={2}
@@ -18,19 +17,22 @@ type PagerProps = {
   max: number
   current?: number
   onSelect(page: number): void
-  className?: string
+  style?: StyleProp<ViewStyle>
   disabled?: boolean
 }
 
 const Pager = (props: PagerProps) => {
   const { styles } = useTheme()
   return (
-    <View className={cn('flex', props.className)}>
+    <View style={[pagerStyles.container, props.style]}>
       <Pressable
         disabled={props.disabled}
         hitSlop={6}
-        className='w-6 h-6 items-center justify-center rounded active:opacity-60'
-        style={styles.layer2}
+        style={({ pressed }) => [
+          pagerStyles.btn,
+          styles.layer2,
+          pressed && pagerStyles.pressed,
+        ]}
         onPress={() => {
           props.onSelect(Infinity)
         }}
@@ -41,5 +43,19 @@ const Pager = (props: PagerProps) => {
     </View>
   )
 }
+
+const pagerStyles = StyleSheet.create({
+  container: {},
+  btn: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+})
 
 export default Pager

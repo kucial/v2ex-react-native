@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
 import ErrorNotice from '@/components/ErrorNotice'
@@ -8,7 +8,6 @@ import { BlockText } from '@/components/Skeleton/Elements'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import ApiError from '@/utils/v2ex-client/ApiError'
 import { TopicBasic, TopicDetail } from '@/utils/v2ex-client/types'
 
@@ -35,28 +34,28 @@ function TopicBaseInfo(props: {
 
   return (
     <>
-      <View className='pt-3' style={[styles.layer1]}>
+      <View style={[topicBaseStyles.container, styles.layer1]}>
         <MaxWidthWrapper>
           <View
-            className={cn({
-              'px-4': !padLayout.active,
-              'mb-2': props.hasReply,
-            })}
-            style={props.hasReply && styles.border_b_light}
+            style={[
+              !padLayout.active && topicBaseStyles.px4,
+              props.hasReply && topicBaseStyles.mb2,
+              props.hasReply && styles.border_b_light,
+            ]}
           >
             {!data && error && !isLoading ? (
               <ErrorNotice
                 error={error}
                 extra={
-                  <View className='mt-2 flex flex-row justify-center'>
+                  <View style={topicBaseStyles.errExtra}>
                     {error instanceof ApiError &&
                     error?.code === 'AUTH_REQUIRED' ? (
                       <Pressable
-                        className={cn(
-                          'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
-                          'active:opacity-60',
-                        )}
-                        style={[styles.btn_primary__bg]}
+                        style={({ pressed }) => [
+                          topicBaseStyles.actionBtn,
+                          styles.btn_primary__bg,
+                          pressed && topicBaseStyles.pressed60,
+                        ]}
                         onPress={() => {
                           router.push('/signin')
                         }}
@@ -65,11 +64,11 @@ function TopicBaseInfo(props: {
                       </Pressable>
                     ) : (
                       <Pressable
-                        className={cn(
-                          'px-4 h-[44px] w-[120px] rounded-full items-center justify-center',
-                          'active:opacity-60',
-                        )}
-                        style={[styles.btn_primary__bg]}
+                        style={({ pressed }) => [
+                          topicBaseStyles.actionBtn,
+                          styles.btn_primary__bg,
+                          pressed && topicBaseStyles.pressed60,
+                        ]}
                         onPress={props.onRefetch}
                       >
                         <Text style={styles.btn_primary__text}>重试</Text>
@@ -82,16 +81,19 @@ function TopicBaseInfo(props: {
               <TopicInfo data={topic} contentWidth={props.contentWidth} />
             )}
             {isFallback && isLoading && (
-              <View className='mt-1'>
+              <View style={topicBaseStyles.mt1}>
                 <BlockText lines={[5, 10]} />
               </View>
             )}
             {(topic.canAppend || topic.canEdit || topic.canMove) && (
-              <View className='flex flex-row justify-end relative bottom-[-6px]'>
+              <View style={topicBaseStyles.actionsRow}>
                 {topic.canAppend && (
                   <Pressable
-                    className='px-3 h-[36px] rounded items-center justify-center active:opacity-60'
-                    style={styles.layer2}
+                    style={({ pressed }) => [
+                      topicBaseStyles.smBtn,
+                      styles.layer2,
+                      pressed && topicBaseStyles.pressed60,
+                    ]}
                     onPress={props.onAppend}
                   >
                     <Text style={styles.text}>附言</Text>
@@ -99,8 +101,12 @@ function TopicBaseInfo(props: {
                 )}
                 {topic.canEdit && (
                   <Pressable
-                    className='px-3 h-[36px] rounded items-center justify-center active:opacity-60 ml-2'
-                    style={styles.layer2}
+                    style={({ pressed }) => [
+                      topicBaseStyles.smBtn,
+                      topicBaseStyles.ml2,
+                      styles.layer2,
+                      pressed && topicBaseStyles.pressed60,
+                    ]}
                     onPress={props.onEdit}
                   >
                     <Text style={styles.text}>修改</Text>
@@ -108,8 +114,12 @@ function TopicBaseInfo(props: {
                 )}
                 {topic.canMove && (
                   <Pressable
-                    className='px-3 h-[36px] rounded items-center justify-center active:opacity-60 ml-2'
-                    style={styles.layer2}
+                    style={({ pressed }) => [
+                      topicBaseStyles.smBtn,
+                      topicBaseStyles.ml2,
+                      styles.layer2,
+                      pressed && topicBaseStyles.pressed60,
+                    ]}
                     onPress={props.onChangeNode}
                   >
                     <Text style={styles.text}>移动</Text>
@@ -119,10 +129,13 @@ function TopicBaseInfo(props: {
             )}
 
             {!!topic.replies || !!topic.clicks ? (
-              <View className='flex flex-row py-3 pl-1 mt-3'>
+              <View style={topicBaseStyles.statsRow}>
                 <Text
-                  className='pr-4'
-                  style={[styles.text_desc, styles.text_xs]}
+                  style={[
+                    topicBaseStyles.pr4,
+                    styles.text_desc,
+                    styles.text_xs,
+                  ]}
                 >
                   {topic.replies} 条回复
                 </Text>
@@ -133,7 +146,7 @@ function TopicBaseInfo(props: {
                 )}
               </View>
             ) : (
-              <View className='py-3' />
+              <View style={topicBaseStyles.py3} />
             )}
           </View>
         </MaxWidthWrapper>
@@ -141,5 +154,64 @@ function TopicBaseInfo(props: {
     </>
   )
 }
+
+const topicBaseStyles = StyleSheet.create({
+  container: {
+    paddingTop: 12,
+  },
+  px4: {
+    paddingHorizontal: 16,
+  },
+  mb2: {
+    marginBottom: 8,
+  },
+  errExtra: {
+    marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  actionBtn: {
+    paddingHorizontal: 16,
+    height: 44,
+    width: 120,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  mt1: {
+    marginTop: 4,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    position: 'relative',
+    bottom: -6,
+  },
+  smBtn: {
+    paddingHorizontal: 12,
+    height: 36,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ml2: {
+    marginLeft: 8,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingLeft: 4,
+    marginTop: 12,
+  },
+  pr4: {
+    paddingRight: 16,
+  },
+  py3: {
+    paddingVertical: 12,
+  },
+})
 
 export default memo(TopicBaseInfo)

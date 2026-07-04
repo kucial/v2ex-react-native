@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { ShareIcon } from 'react-native-heroicons/outline'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 
 import HeartIcon from '@/components/HeartIcon'
@@ -26,6 +27,7 @@ export default function BottomBar(props: BarProps) {
     onShare,
   } = props
   const { styles, theme } = useTheme()
+  const insets = useSafeAreaInsets()
 
   const iconColor = theme.colors.text_meta
   const heartIconRef = useRef<LottieView>(null)
@@ -49,13 +51,22 @@ export default function BottomBar(props: BarProps) {
   }, [onToggleCollect, collected])
 
   return (
-    <View className='pb-safe' style={[styles.overlay, styles.border_t_light]}>
-      <View className='h-[48px] flex flex-row items-center pl-3 pr-1'>
-        <View className='flex-1 mr-2'>
+    <View
+      style={[
+        styles.overlay,
+        styles.border_t_light,
+        { paddingBottom: insets.bottom },
+      ]}
+    >
+      <View style={bottomBarStyles.row}>
+        <View style={bottomBarStyles.inputWrap}>
           <Pressable
             hitSlop={5}
-            className='h-[32px] w-full justify-center px-3 rounded-full active:opacity-60'
-            style={styles.overlay_input__bg}
+            style={({ pressed }) => [
+              bottomBarStyles.inputBtn,
+              styles.overlay_input__bg,
+              pressed && bottomBarStyles.pressed60,
+            ]}
             onPress={() => {
               onInitReply()
             }}
@@ -71,11 +82,15 @@ export default function BottomBar(props: BarProps) {
           onNavTo={onNavTo}
           renderButton={({ action, onPress, disabled }) => (
             <Pressable
-              className='w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600 disabled:opacity-50'
+              style={({ pressed }) => [
+                bottomBarStyles.iconBtn,
+                disabled && bottomBarStyles.disabled50,
+                pressed && bottomBarStyles.pressed60,
+              ]}
               disabled={disabled}
               onPress={onPress}
             >
-              <View className='my-1'>
+              <View style={bottomBarStyles.iconMargin}>
                 {action ? (
                   <View
                     style={
@@ -90,7 +105,7 @@ export default function BottomBar(props: BarProps) {
                   <NumberIcon size={24} color={styles.text_meta.color} />
                 )}
               </View>
-              <Text className='text-[10px]' style={styles.text_meta}>
+              <Text style={[bottomBarStyles.iconText, styles.text_meta]}>
                 {action === 'to_top' && '至顶'}
                 {action === 'to_bottom' && '至底'}
                 {!action && '定位'}
@@ -98,37 +113,46 @@ export default function BottomBar(props: BarProps) {
             </Pressable>
           )}
         />
-        <View className='flex flex-row px-1'>
+        <View style={bottomBarStyles.rightGroup}>
           <Pressable
-            className='w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600'
+            style={({ pressed }) => [
+              bottomBarStyles.iconBtn,
+              pressed && bottomBarStyles.pressed60,
+            ]}
             onPress={handleToggleCollect}
           >
-            <View className='my-1'>
+            <View style={bottomBarStyles.iconMargin}>
               <StarIcon ref={starIconRef} size={24} filled={collected} />
             </View>
-            <Text className='text-[10px]' style={styles.text_meta}>
+            <Text style={[bottomBarStyles.iconText, styles.text_meta]}>
               收藏
             </Text>
           </Pressable>
           <Pressable
-            className='w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600'
+            style={({ pressed }) => [
+              bottomBarStyles.iconBtn,
+              pressed && bottomBarStyles.pressed60,
+            ]}
             onPress={handleThank}
           >
-            <View className='my-1'>
+            <View style={bottomBarStyles.iconMargin}>
               <HeartIcon size={24} liked={thanked} ref={heartIconRef} />
             </View>
-            <Text className='text-[10px]' style={styles.text_meta}>
+            <Text style={[bottomBarStyles.iconText, styles.text_meta]}>
               感谢
             </Text>
           </Pressable>
           <Pressable
-            className='w-[46px] h-[48px] rounded-md items-center justify-center active:bg-neutral-100 active:opacity-60 dark:active:bg-neutral-600'
+            style={({ pressed }) => [
+              bottomBarStyles.iconBtn,
+              pressed && bottomBarStyles.pressed60,
+            ]}
             onPress={onShare}
           >
-            <View className='my-1'>
+            <View style={bottomBarStyles.iconMargin}>
               <ShareIcon size={24} color={iconColor} />
             </View>
-            <Text className='text-[10px]' style={styles.text_meta}>
+            <Text style={[bottomBarStyles.iconText, styles.text_meta]}>
               分享
             </Text>
           </Pressable>
@@ -137,3 +161,47 @@ export default function BottomBar(props: BarProps) {
     </View>
   )
 }
+
+const bottomBarStyles = StyleSheet.create({
+  row: {
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 12,
+    paddingRight: 4,
+  },
+  inputWrap: {
+    flex: 1,
+    marginRight: 8,
+  },
+  inputBtn: {
+    height: 32,
+    width: '100%',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    borderRadius: 999,
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  disabled50: {
+    opacity: 0.5,
+  },
+  iconBtn: {
+    width: 46,
+    height: 48,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconMargin: {
+    marginVertical: 4,
+  },
+  iconText: {
+    fontSize: 10,
+  },
+  rightGroup: {
+    flexDirection: 'row',
+    paddingHorizontal: 4,
+  },
+})

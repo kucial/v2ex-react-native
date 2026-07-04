@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
@@ -18,9 +18,9 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
 
   return (
     <>
-      <View className='flex flex-row mb-2'>
+      <View style={topicInfoStyles.headerRow}>
         {member && (
-          <View className='flex flex-row flex-1'>
+          <View style={topicInfoStyles.memberRow}>
             <Pressable
               hitSlop={4}
               onPress={() => {
@@ -38,14 +38,14 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
                     uri: member.avatar_large,
                   }}
                   priority='low'
-                  className='w-[32px] h-[32px] rounded'
+                  style={topicInfoStyles.avatar}
                 />
               ) : (
-                <Box className='w-[32px] h-[32px] rounded' />
+                <Box style={topicInfoStyles.avatar} />
               )}
             </Pressable>
-            <View className='pl-2 flex flex-row items-center'>
-              <View className='py-[2px]'>
+            <View style={topicInfoStyles.memberMetaWrap}>
+              <View style={topicInfoStyles.py05}>
                 <Pressable
                   hitSlop={4}
                   onPress={() => {
@@ -58,14 +58,17 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
                   }}
                 >
                   <Text
-                    className='font-medium'
-                    style={[styles.text_meta, styles.text_xs]}
+                    style={[
+                      topicInfoStyles.medium,
+                      styles.text_meta,
+                      styles.text_xs,
+                    ]}
                   >
                     {member.username}
                   </Text>
                 </Pressable>
               </View>
-              <View className='ml-2'>
+              <View style={topicInfoStyles.ml2}>
                 <Text style={[styles.text_meta, styles.text_xs]}>
                   {topic.created_time}
                 </Text>
@@ -76,8 +79,11 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
         <View>
           {node && (
             <Pressable
-              className='py-1 px-[6px] rounded active:opacity-50'
-              style={styles.layer2}
+              style={({ pressed }) => [
+                topicInfoStyles.nodeBtn,
+                styles.layer2,
+                pressed && topicInfoStyles.pressed50,
+              ]}
               hitSlop={6}
               onPress={() => {
                 router.push({
@@ -94,11 +100,10 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
           )}
         </View>
       </View>
-      <View className='pb-2 border-solid mb-2' style={[styles.border_b]}>
+      <View style={[topicInfoStyles.titleWrap, styles.border_b]}>
         <Text
           selectable
-          className='font-semibold'
-          style={[styles.text, styles.text_lg]}
+          style={[topicInfoStyles.semibold, styles.text, styles.text_lg]}
         >
           {topic.title}
         </Text>
@@ -117,14 +122,17 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
       )}
       {topic.content_rendered === undefined && <BlockText lines={5} />}
       {!!topic.subtles?.length && (
-        <View className='mt-2'>
+        <View style={topicInfoStyles.mt2}>
           {topic.subtles.map((subtle, index) => (
             <View
-              className='-mx-2 pl-4 pr-2 py-2'
-              style={[styles.border_t_light, styles.highlight]}
+              style={[
+                topicInfoStyles.subtleBox,
+                styles.border_t_light,
+                styles.highlight,
+              ]}
               key={index}
             >
-              <View className='mb-1'>
+              <View style={topicInfoStyles.mb1}>
                 <Text style={[styles.text_meta, styles.text_xs]}>
                   {subtle.meta}
                 </Text>
@@ -146,5 +154,62 @@ function TopicInfo(props: { data: TopicDetail; contentWidth: number }) {
     </>
   )
 }
+
+const topicInfoStyles = StyleSheet.create({
+  headerRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  memberRow: {
+    flexDirection: 'row',
+    flex: 1,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 4,
+  },
+  memberMetaWrap: {
+    paddingLeft: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  py05: {
+    paddingVertical: 2,
+  },
+  medium: {
+    fontWeight: '500',
+  },
+  ml2: {
+    marginLeft: 8,
+  },
+  nodeBtn: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  pressed50: {
+    opacity: 0.5,
+  },
+  titleWrap: {
+    paddingBottom: 8,
+    marginBottom: 8,
+  },
+  semibold: {
+    fontWeight: '600',
+  },
+  mt2: {
+    marginTop: 8,
+  },
+  subtleBox: {
+    marginHorizontal: -8,
+    paddingLeft: 16,
+    paddingRight: 8,
+    paddingVertical: 8,
+  },
+  mb1: {
+    marginBottom: 4,
+  },
+})
 
 export default memo(TopicInfo)

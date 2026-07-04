@@ -4,6 +4,7 @@ import {
   Keyboard,
   Platform,
   Pressable,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -17,7 +18,6 @@ import ImgurPicker from '@/components/ImgurPicker'
 import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
 
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { useCachedState } from '@/utils/hooks'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
@@ -95,7 +95,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
   const iconColor = theme.colors.text
 
   return (
-    <View className='px-3 flex flex-col flex-1 h-full'>
+    <View style={replyFormStyles.container}>
       <Controller
         control={control}
         render={({
@@ -104,8 +104,8 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
         }) => {
           return (
             <View
-              className={cn('flex-1 w-full rounded-lg')}
               style={[
+                replyFormStyles.inputWrap,
                 styles.border,
                 styles.overlay_input__bg,
                 isTouched &&
@@ -117,15 +117,9 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
               <TextInput
                 ref={inputRef}
                 style={[
+                  replyFormStyles.input,
                   {
-                    width: '100%',
-                    height: '100%',
-                    borderRadius: 8,
-                    paddingHorizontal: 8,
-                    paddingVertical: Platform.OS === 'android' ? 8 : 4,
                     color: theme.colors.text,
-                    verticalAlign:
-                      Platform.OS === 'android' ? 'top' : undefined,
                   },
                   isTouched &&
                     error && {
@@ -150,10 +144,13 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
         name='content'
         rules={{ required: true }}
       />
-      <View className='h-[48px] flex flex-row items-center'>
-        <View className='flex-1 flex flex-row'>
+      <View style={replyFormStyles.toolbar}>
+        <View style={replyFormStyles.leftTools}>
           <Pressable
-            className='w-[40px] h-[40px] items-center justify-center rounded-full active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600'
+            style={({ pressed }) => [
+              replyFormStyles.iconBtn,
+              pressed && replyFormStyles.pressed60,
+            ]}
             onPress={() => {
               showImagePicker(true)
               Keyboard.dismiss()
@@ -163,7 +160,10 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
             <PhotoIcon size={22} color={iconColor} />
           </Pressable>
           <Pressable
-            className='w-[40px] h-[40px] items-center justify-center rounded-full active:bg-neutral-200 active:opacity-60 dark:active:bg-neutral-600'
+            style={({ pressed }) => [
+              replyFormStyles.iconBtn,
+              pressed && replyFormStyles.pressed60,
+            ]}
             onPress={() => {
               const selection = inputSelection.current
               if (selection) {
@@ -183,13 +183,13 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
           </Pressable>
         </View>
 
-        <View className='pr-1'>
+        <View style={replyFormStyles.pr1}>
           <Pressable
-            className={cn(
-              'h-[40px] min-w-[80px] items-center justify-center px-3 rounded-md',
-              'active:opacity-60',
-            )}
-            style={styles.btn_primary__bg}
+            style={({ pressed }) => [
+              replyFormStyles.submitBtn,
+              styles.btn_primary__bg,
+              pressed && replyFormStyles.pressed60,
+            ]}
             onPress={(e) => {
               Keyboard.dismiss()
               handleSubmit(props.onSubmit)(e)
@@ -231,3 +231,55 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
     </View>
   )
 }
+
+const replyFormStyles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 12,
+    flexDirection: 'column',
+    flex: 1,
+    height: '100%',
+  },
+  inputWrap: {
+    flex: 1,
+    width: '100%',
+    borderRadius: 8,
+  },
+  input: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: Platform.OS === 'android' ? 8 : 4,
+    verticalAlign: Platform.OS === 'android' ? 'top' : undefined,
+  },
+  toolbar: {
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  leftTools: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+  },
+  pressed60: {
+    opacity: 0.6,
+  },
+  pr1: {
+    paddingRight: 4,
+  },
+  submitBtn: {
+    height: 40,
+    minWidth: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+})
