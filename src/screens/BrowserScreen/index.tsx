@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Linking, Pressable, View } from 'react-native'
+import { Linking, Pressable, StyleSheet, View } from 'react-native'
 import {
   ArrowTopRightOnSquareIcon,
   ChevronLeftIcon,
@@ -8,12 +8,12 @@ import {
 import { NProgress } from 'react-native-nprogress'
 import { WebView } from 'react-native-webview'
 import { useLocalSearchParams } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import NavigationHeader from '@/components/NavigationHeader'
 
 import { USER_AGENT } from '@/constants'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 
 export default function BrowserScreen() {
   const [loading, setLoading] = useState(false)
@@ -25,15 +25,19 @@ export default function BrowserScreen() {
   })
   const params = useLocalSearchParams()
   const url = params.url as string
+  const insets = useSafeAreaInsets()
 
   console.log(url)
   return (
-    <View className='flex-1'>
+    <View style={browserStyles.container}>
       <NavigationHeader
         canGoBack
         headerRight={() => (
           <Pressable
-            className='h-[44px] w-[44px] items-center justify-center active:opacity-60'
+            style={({ pressed }) => [
+              browserStyles.headerBtn,
+              pressed && browserStyles.pressed,
+            ]}
             onPress={() => {
               Linking.openURL(url)
             }}
@@ -60,7 +64,7 @@ export default function BrowserScreen() {
           })
         }}
       />
-      <View className='absolute w-full top-0'>
+      <View style={browserStyles.progressWrap}>
         <NProgress
           backgroundColor={theme.colors.primary}
           height={3}
@@ -68,15 +72,17 @@ export default function BrowserScreen() {
         />
       </View>
       {(historyState.canGoBack || historyState.canGoForward) && (
-        <View className='pb-safe' style={styles.overlay}>
-          <View className='h-[44px] flex flex-row items-center justify-center'>
+        <View style={[{ paddingBottom: insets.bottom }, styles.overlay]}>
+          <View style={browserStyles.navRow}>
             <Pressable
-              className={cn(
-                'basis-1/2 h-[44px] items-center justify-center active:opacity-50 active:bg-neutral-100 dark:active:bg-neutral-600',
-                {
-                  'opacity-50': !historyState.canGoBack,
-                },
-              )}
+              style={({ pressed }) => [
+                browserStyles.navBtn,
+                !historyState.canGoBack && browserStyles.disabled,
+                pressed && [
+                  browserStyles.navBtnPressed,
+                  { backgroundColor: theme.colors.overlay_input_bg },
+                ],
+              ]}
               disabled={!historyState.canGoBack}
               onPress={() => {
                 webviewRef.current?.goBack()
@@ -85,12 +91,14 @@ export default function BrowserScreen() {
               <ChevronLeftIcon color={styles.text_meta.color} size={22} />
             </Pressable>
             <Pressable
-              className={cn(
-                'basis-1/2 h-[44px] items-center justify-center active:opacity-50 active:bg-neutral-100 dark:active:bg-neutral-600',
-                {
-                  'opacity-50': !historyState.canGoForward,
-                },
-              )}
+              style={({ pressed }) => [
+                browserStyles.navBtn,
+                !historyState.canGoForward && browserStyles.disabled,
+                pressed && [
+                  browserStyles.navBtnPressed,
+                  { backgroundColor: theme.colors.overlay_input_bg },
+                ],
+              ]}
               disabled={!historyState.canGoForward}
               onPress={() => {
                 webviewRef.current?.goForward()
@@ -104,3 +112,41 @@ export default function BrowserScreen() {
     </View>
   )
 }
+
+const browserStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerBtn: {
+    height: 44,
+    width: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  progressWrap: {
+    position: 'absolute',
+    width: '100%',
+    top: 0,
+  },
+  navRow: {
+    height: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  navBtn: {
+    flex: 1,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  navBtnPressed: {
+    opacity: 0.5,
+  },
+})

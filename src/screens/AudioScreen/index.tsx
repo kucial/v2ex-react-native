@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useWindowDimensions, View } from 'react-native'
+import { StyleSheet, useWindowDimensions, View } from 'react-native'
 import { TabBar, TabView } from 'react-native-tab-view'
 
 import NavigationHeader from '@/components/NavigationHeader'
@@ -47,7 +47,7 @@ export default function AudioScreen() {
   const navigationState = useMemo(() => ({ index, routes }), [index])
 
   return (
-    <View className='flex-1'>
+    <View style={audioStyles.container}>
       <NavigationHeader canGoBack title='音频资源' shadow={false} />
       <TabView
         navigationState={navigationState}
@@ -59,3 +59,9 @@ export default function AudioScreen() {
     </View>
   )
 }
+
+const audioStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})

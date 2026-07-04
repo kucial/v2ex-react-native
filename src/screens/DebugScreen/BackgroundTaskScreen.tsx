@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, View } from 'react-native'
 import * as BackgroundTask from 'expo-background-task'
 import * as TaskManager from 'expo-task-manager'
 
+import { useTheme } from '@/containers/ThemeService'
 import {
   BACKGROUND_TASK_IDENTIFIER,
   registerBackgroundTaskAsync,
@@ -10,6 +11,7 @@ import {
 } from '@/lib/widget-background-task'
 
 export default function BackgroundTaskScreen() {
+  const { styles } = useTheme()
   const [isRegistered, setIsRegistered] = useState<boolean>(false)
   const [status, setStatus] =
     useState<BackgroundTask.BackgroundTaskStatus | null>(null)
@@ -45,11 +47,11 @@ export default function BackgroundTaskScreen() {
   }
 
   return (
-    <View className='flex-1 justify-center items-center'>
-      <View className=''>
-        <Text className='dark:text-white'>
+    <View style={bgStyles.container}>
+      <View>
+        <Text style={styles.text}>
           Background Task Service Availability:{' '}
-          <Text className='font-bold'>
+          <Text style={{ fontWeight: 'bold' }}>
             {status ? BackgroundTask.BackgroundTaskStatus[status] : null}
           </Text>
         </Text>
@@ -67,3 +69,11 @@ export default function BackgroundTaskScreen() {
     </View>
   )
 }
+
+const bgStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+})

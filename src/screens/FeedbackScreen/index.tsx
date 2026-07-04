@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { Pressable, Text, TextInput, View } from 'react-native'
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import * as Sentry from '@sentry/react-native'
 import { useRouter } from 'expo-router'
@@ -13,7 +13,6 @@ import NavigationHeader from '@/components/NavigationHeader'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
-import { cn } from '@/lib/utils'
 import { useCurrentUser } from '@/stores/auth'
 
 type FormValues = {
@@ -44,15 +43,15 @@ export default function FeedbackScreen() {
       alert.show({ type: 'success', message: '反馈已提交' })
       router.back()
     },
-    [],
+    [alert, router],
   )
 
   return (
-    <View className='flex-1'>
+    <View style={feedbackStyles.container}>
       <NavigationHeader canGoBack title='意见反馈' />
-      <ScrollView className='flex-1'>
-        <MaxWidthWrapper className='flex-1'>
-          <View className='flex-1 px-2 py-4'>
+      <ScrollView style={feedbackStyles.container}>
+        <MaxWidthWrapper style={feedbackStyles.container}>
+          <View style={feedbackStyles.formWrap}>
             <GroupWapper innerStyle={styles.layer1}>
               <Formik<FormValues>
                 initialValues={{
@@ -73,18 +72,23 @@ export default function FeedbackScreen() {
                   errors,
                   touched,
                 }) => (
-                  <View className='py-4 px-4 w-full'>
+                  <View style={feedbackStyles.formInner}>
                     <Text
-                      className={cn('pl-2 pb-[2px]', {
-                        'opacity-0': !values.name,
-                      })}
-                      style={[styles.text, styles.text_xs]}
+                      style={[
+                        styles.text,
+                        styles.text_xs,
+                        feedbackStyles.label,
+                        !values.name && feedbackStyles.hidden,
+                      ]}
                     >
                       名称
                     </Text>
                     <TextInput
-                      className='h-[44px] px-2 mb-2 rounded-md'
-                      style={[styles.text, styles.input__bg]}
+                      style={[
+                        styles.text,
+                        styles.input__bg,
+                        feedbackStyles.input,
+                      ]}
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       placeholder='名称'
@@ -96,20 +100,25 @@ export default function FeedbackScreen() {
                       autoCapitalize='none'
                       // ref={nameInput}
                     />
-                    <View className='flex flex-row'>
+                    <View style={feedbackStyles.row}>
                       <Text
-                        className={cn('pl-2 pb-[2px]', {
-                          'opacity-0': !values.email,
-                        })}
-                        style={[styles.text, styles.text_xs]}
+                        style={[
+                          styles.text,
+                          styles.text_xs,
+                          feedbackStyles.label,
+                          !values.email && feedbackStyles.hidden,
+                        ]}
                       >
                         邮箱
                       </Text>
 
                       {values.email && touched.email && (
                         <Text
-                          className='ml-2'
-                          style={[styles.text_danger, styles.text_xs]}
+                          style={[
+                            styles.text_danger,
+                            styles.text_xs,
+                            feedbackStyles.errorText,
+                          ]}
                         >
                           {errors.email}
                         </Text>
@@ -117,8 +126,11 @@ export default function FeedbackScreen() {
                     </View>
 
                     <TextInput
-                      className='h-[44px] px-2 mb-2 rounded-md'
-                      style={[styles.text, styles.input__bg]}
+                      style={[
+                        styles.text,
+                        styles.input__bg,
+                        feedbackStyles.input,
+                      ]}
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       placeholder='邮箱'
@@ -132,17 +144,22 @@ export default function FeedbackScreen() {
                     />
 
                     <Text
-                      className={cn('pl-2 pb-[2px]', {
-                        'opacity-0': !values.comments,
-                      })}
-                      style={[styles.text, styles.text_xs]}
+                      style={[
+                        styles.text,
+                        styles.text_xs,
+                        feedbackStyles.label,
+                        !values.comments && feedbackStyles.hidden,
+                      ]}
                     >
                       留言
                     </Text>
                     <TextInput
                       multiline
-                      className='min-h-[120px] px-2 py-[13px] mb-2 rounded-md'
-                      style={[styles.text, styles.input__bg]}
+                      style={[
+                        styles.text,
+                        styles.input__bg,
+                        feedbackStyles.textarea,
+                      ]}
                       selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       value={values.comments}
@@ -151,16 +168,14 @@ export default function FeedbackScreen() {
                     />
 
                     <Pressable
-                      className={cn(
-                        'h-[44px] rounded-md flex items-center justify-center mt-3 mb-2',
-                        'active:opacity-60',
-                        {
-                          'opacity-60': isSubmitting,
-                          'opacity-50': !isValid,
-                        },
-                      )}
+                      style={({ pressed }) => [
+                        feedbackStyles.submitBtn,
+                        styles.btn_primary__bg,
+                        isSubmitting && feedbackStyles.submitting,
+                        !isValid && feedbackStyles.disabled,
+                        pressed && feedbackStyles.pressed,
+                      ]}
                       disabled={isSubmitting}
-                      style={styles.btn_primary__bg}
                       onPress={(e) => {
                         handleSubmit()
                       }}
@@ -188,3 +203,62 @@ export default function FeedbackScreen() {
     </View>
   )
 }
+
+const feedbackStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  formWrap: {
+    flex: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 16,
+  },
+  formInner: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    width: '100%',
+  },
+  label: {
+    paddingLeft: 8,
+    paddingBottom: 2,
+  },
+  hidden: {
+    opacity: 0,
+  },
+  input: {
+    height: 44,
+    paddingHorizontal: 8,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  errorText: {
+    marginLeft: 8,
+  },
+  textarea: {
+    minHeight: 120,
+    paddingHorizontal: 8,
+    paddingVertical: 13,
+    marginBottom: 8,
+    borderRadius: 6,
+  },
+  submitBtn: {
+    height: 44,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  submitting: {
+    opacity: 0.6,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+})

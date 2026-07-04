@@ -4,6 +4,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   View,
 } from 'react-native'
@@ -28,7 +29,6 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { IOS_APP_ID } from '@/env'
-import { cn } from '@/lib/utils'
 import { clearCache, reset } from '@/utils/app-state'
 
 export default function AboutScreen() {
@@ -45,54 +45,58 @@ export default function AboutScreen() {
       }))
       alert.show({ type: 'success', message: '😁 Google 登陆已启用' })
     }
-  }, [count])
+  }, [count, alert, settings])
   return (
-    <View className='flex-1'>
+    <View style={aboutStyles.container}>
       <NavigationHeader canGoBack title='关于' />
-      <ScrollView className='flex-1 pt-5'>
-        <MaxWidthWrapper className='px-2'>
+      <ScrollView style={aboutStyles.scrollView}>
+        <MaxWidthWrapper style={aboutStyles.maxWidth}>
           <GroupWapper>
             <Pressable
-              className='pt-6 active:opacity-80'
-              style={styles.grouped_secondary}
+              style={({ pressed }) => [
+                aboutStyles.brandBtn,
+                styles.grouped_secondary,
+                pressed && aboutStyles.pressed,
+              ]}
               onPress={() => {
                 setCount((prev) => prev + 1)
               }}
             >
-              <View className='mb-3'>
-                <View className='flex-1 flex flex-row justify-center'>
-                  <View className=''>
+              <View style={aboutStyles.mb3}>
+                <View style={aboutStyles.centerRow}>
+                  <View>
                     <AppBrandIcon width={72} />
                   </View>
                 </View>
               </View>
-              <View className='mb-2'>
+              <View style={aboutStyles.mb2}>
                 <View>
                   <Text
-                    className='font-medium text-center'
-                    style={[styles.text, styles.text_base]}
+                    style={[styles.text, styles.text_base, aboutStyles.titleText]}
                   >
                     R2V
                   </Text>
                 </View>
                 <View>
                   <Text
-                    className='text-center'
-                    style={[styles.text, styles.text_xs]}
+                    style={[styles.text, styles.text_xs, aboutStyles.centerText]}
                   >
                     V2EX 第三方客户端 ({Constants.expoConfig?.version})
                   </Text>
                 </View>
-                <View className='mt-1'>
+                <View style={aboutStyles.mt1}>
                   <Text
-                    className='text-center'
-                    style={[styles.text_meta, styles.text_xs]}
+                    style={[
+                      styles.text_meta,
+                      styles.text_xs,
+                      aboutStyles.centerText,
+                    ]}
                   >
                     {Constants.expoConfig?.extra.buildTag}
                   </Text>
                 </View>
               </View>
-              <View className='ml-4 h-2' style={styles.border_b} />
+              <View style={[aboutStyles.divider, styles.border_b]} />
             </Pressable>
 
             <LineItem
@@ -160,29 +164,29 @@ export default function AboutScreen() {
             />
           </GroupWapper>
 
-          <View className='py-2 w-full flex flex-row'>
-            <View className='basis-1/2 pr-2'>
+          <View style={aboutStyles.btnRow}>
+            <View style={aboutStyles.btnColLeft}>
               <GroupWapper>
                 <Pressable
-                  className={cn(
-                    'h-[50px] rounded-md flex items-center justify-center mt-4',
-                    'active:opacity-60',
-                  )}
-                  style={[styles.grouped_secondary]}
+                  style={({ pressed }) => [
+                    aboutStyles.actionBtn,
+                    styles.grouped_secondary,
+                    pressed && aboutStyles.pressed,
+                  ]}
                   onPress={clearCache}
                 >
                   <Text style={styles.text}>清除缓存</Text>
                 </Pressable>
               </GroupWapper>
             </View>
-            <View className='basis-1/2 pl-2'>
+            <View style={aboutStyles.btnColRight}>
               <GroupWapper>
                 <Pressable
-                  className={cn(
-                    'h-[50px] rounded-md flex items-center justify-center mt-4',
-                    'active:opacity-60',
-                  )}
-                  style={[styles.grouped_secondary]}
+                  style={({ pressed }) => [
+                    aboutStyles.actionBtn,
+                    styles.grouped_secondary,
+                    pressed && aboutStyles.pressed,
+                  ]}
                   onPress={reset}
                 >
                   <Text style={styles.text_danger}>重置</Text>
@@ -195,3 +199,67 @@ export default function AboutScreen() {
     </View>
   )
 }
+
+const aboutStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+    paddingTop: 20,
+  },
+  maxWidth: {
+    paddingHorizontal: 8,
+  },
+  brandBtn: {
+    paddingTop: 24,
+  },
+  pressed: {
+    opacity: 0.8,
+  },
+  mb3: {
+    marginBottom: 12,
+  },
+  centerRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  mb2: {
+    marginBottom: 8,
+  },
+  titleText: {
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  centerText: {
+    textAlign: 'center',
+  },
+  mt1: {
+    marginTop: 4,
+  },
+  divider: {
+    marginLeft: 16,
+    height: 8,
+  },
+  btnRow: {
+    paddingVertical: 8,
+    width: '100%',
+    flexDirection: 'row',
+  },
+  btnColLeft: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  btnColRight: {
+    flex: 1,
+    paddingLeft: 8,
+  },
+  actionBtn: {
+    height: 50,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+  },
+})

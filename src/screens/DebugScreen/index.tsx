@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { Dimensions, Text, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import Button from '@/components/Button'
 import HeartIcon from '@/components/HeartIcon'
@@ -23,6 +24,7 @@ const p = {
 export default function DebugScreen() {
   // ref
   const { theme, styles } = useTheme()
+  const insets = useSafeAreaInsets()
 
   const user = useCurrentUser()
   const starIconRef = useRef()
@@ -42,9 +44,20 @@ export default function DebugScreen() {
   // return null
 
   return (
-    <View className='p-safe' style={[{ flex: 1 }, styles.layer1]}>
+    <View
+      style={[
+        debugStyles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+        styles.layer1,
+      ]}
+    >
       <View>
-        <Text>Current User: {user?.username}</Text>
+        <Text style={styles.text}>Current User: {user?.username}</Text>
       </View>
       <View>
         <HtmlRender
@@ -76,3 +89,9 @@ export default function DebugScreen() {
     </View>
   )
 }
+
+const debugStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})

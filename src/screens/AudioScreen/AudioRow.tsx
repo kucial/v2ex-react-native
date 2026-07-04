@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { PlayIcon } from 'react-native-heroicons/outline'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -16,8 +16,12 @@ export function AudioRow({ item }: { item: AudioItem }) {
 
   return (
     <Pressable
-      className='flex-row items-center px-4 py-3 active:opacity-60'
-      style={[styles.layer1, styles.border_b_light]}
+      style={({ pressed }) => [
+        audioRowStyles.row,
+        styles.layer1,
+        styles.border_b_light,
+        pressed && audioRowStyles.pressed,
+      ]}
       onPress={() => {
         if (isActive && isPlaying) {
           pauseAudio()
@@ -26,13 +30,18 @@ export function AudioRow({ item }: { item: AudioItem }) {
         }
       }}
     >
-      <View className='w-10 h-10 rounded-full items-center justify-center mr-3 bg-neutral-100 dark:bg-neutral-800'>
+      <View
+        style={[
+          audioRowStyles.iconWrap,
+          { backgroundColor: theme.colors.overlay_input_bg },
+        ]}
+      >
         <PlayIcon
           size={20}
           color={isActive ? theme.colors.primary : theme.colors.text}
         />
       </View>
-      <View className='flex-1'>
+      <View style={audioRowStyles.flex1}>
         <Text
           style={[
             styles.text,
@@ -52,3 +61,26 @@ export function AudioRow({ item }: { item: AudioItem }) {
     </Pressable>
   )
 }
+
+const audioRowStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  iconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  flex1: {
+    flex: 1,
+  },
+})
