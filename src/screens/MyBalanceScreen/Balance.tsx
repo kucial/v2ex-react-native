@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
@@ -84,7 +84,7 @@ export default function Balance(props: { username: string }) {
                 },
               ]}
             >
-              <View className='flex flex-row'>
+              <View style={balanceStyles.row}>
                 <View
                   style={{ flex: 2, paddingHorizontal: 4, paddingVertical: 6 }}
                 >
@@ -157,7 +157,7 @@ export default function Balance(props: { username: string }) {
         return item ? `${item.type}-${item.time}` : index
       },
     }),
-    [styles],
+    [styles, theme.colors],
   )
 
   return (
@@ -177,7 +177,7 @@ export default function Balance(props: { username: string }) {
           onRefresh={listQuery.refetch}
         />
       }
-      ListHeaderComponent={() => <View className='h-[16]'></View>}
+      ListHeaderComponent={() => <View style={balanceStyles.headerSpacer}></View>}
       // TODO: 在头部显示显示余额信息
       ListFooterComponent={() => {
         return <CommonListFooter data={listQuery} />
@@ -185,3 +185,12 @@ export default function Balance(props: { username: string }) {
     />
   )
 }
+
+const balanceStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+  },
+  headerSpacer: {
+    height: 16,
+  },
+})

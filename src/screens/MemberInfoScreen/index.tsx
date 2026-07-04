@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import { useLocalSearchParams } from 'expo-router'
 
@@ -23,7 +23,7 @@ export default function MemberInfoScreen() {
   const { styles } = useTheme()
 
   return (
-    <ScrollView className='flex-1' style={styles.layer1}>
+    <ScrollView style={[memberInfoStyles.container, styles.layer1]}>
       {[
         ['username', '用户名'],
         ['location', '位置'],
@@ -47,13 +47,38 @@ export default function MemberInfoScreen() {
 function Field({ label, value }: { label: string; value: string }) {
   const { styles } = useTheme()
   return (
-    <View className='flex flex-row' style={[styles.border_b_light]}>
-      <View className='py-4 px-4 w-[120px] flex flex-row items-center'>
-        <Text style={[styles.text]}>{label}</Text>
+    <View style={[memberInfoStyles.row, styles.border_b_light]}>
+      <View style={memberInfoStyles.labelCol}>
+        <Text style={styles.text}>{label}</Text>
       </View>
-      <View className='py-2 pr-4 flex flex-row items-center flex-1'>
-        <Text selectable>{value}</Text>
+      <View style={memberInfoStyles.valCol}>
+        <Text style={styles.text} selectable>
+          {value}
+        </Text>
       </View>
     </View>
   )
 }
+
+const memberInfoStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  labelCol: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    width: 120,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  valCol: {
+    paddingVertical: 8,
+    paddingRight: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+})

@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { MapPinIcon } from 'react-native-heroicons/outline'
 import * as Sentry from '@sentry/react-native'
 import * as WebBrowser from 'expo-web-browser'
@@ -17,9 +17,9 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
     return null
   }
   return (
-    <View className='flex flex-row -ml-2'>
+    <View style={linkStyles.row}>
       {data.location && (
-        <View className='flex flex-row items-center mr-3 pl-2'>
+        <View style={linkStyles.locationWrap}>
           <MapPinIcon
             size={18}
             style={{ marginRight: 4 }}
@@ -32,7 +32,7 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
         <Button
           variant='icon'
           size='sm'
-          className='flex flex-row items-center mr-2'
+          style={linkStyles.btnWrap}
           onPress={() => {
             const url = `https://twitter.com/${data.twitter}`
             WebBrowser.openBrowserAsync(url, {
@@ -53,7 +53,7 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
         <Button
           variant='icon'
           size='sm'
-          className='flex flex-row items-center mr-2'
+          style={linkStyles.btnWrap}
           onPress={() => {
             const url = `https://github.com/${data.github}`
             WebBrowser.openBrowserAsync(url, {
@@ -77,3 +77,21 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
     </View>
   )
 }
+
+const linkStyles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    marginLeft: -8,
+  },
+  locationWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 12,
+    paddingLeft: 8,
+  },
+  btnWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+})

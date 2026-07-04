@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
@@ -75,10 +75,10 @@ export default function NotificationScreen() {
   }, [])
 
   return (
-    <View className='flex-1'>
+    <View style={notifStyles.container}>
       <NavigationHeader canGoBack title='消息' />
       <FlashList
-        className='flex-1'
+        style={notifStyles.container}
         data={listItems}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
@@ -101,3 +101,9 @@ export default function NotificationScreen() {
     </View>
   )
 }
+
+const notifStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})

@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Pressable, Text, useWindowDimensions, View } from 'react-native'
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabBar, TabView } from 'react-native-tab-view'
@@ -261,11 +267,20 @@ export default function HomeScreen(props) {
 
   if (error) {
     return (
-      <View className='flex-1 flex flex-row items-center justify-center bg-white'>
-        <View className='px-4 flex items-center justify-center'>
-          <Text>{error?.message || '数据加载失败'}</Text>
+      <View
+        style={[
+          homeStyles.errorContainer,
+          { backgroundColor: theme.colors.bg_layer1 },
+        ]}
+      >
+        <View style={homeStyles.errorInner}>
+          <Text style={styles.text}>{error?.message || '数据加载失败'}</Text>
           <Pressable
-            className='mt-4 px-4 h-[44px] w-[200px] rounded-full bg-neutral-900 text-white items-center justify-center active:opacity-60'
+            style={({ pressed }) => [
+              homeStyles.retryBtn,
+              { backgroundColor: theme.colors.primary },
+              pressed && homeStyles.pressed,
+            ]}
             onPress={() => {
               setError(null)
               initHomeTabs().catch((err) => {
@@ -273,7 +288,7 @@ export default function HomeScreen(props) {
               })
             }}
           >
-            <Text className='text-white'>重试</Text>
+            <Text style={{ color: '#ffffff' }}>重试</Text>
           </Pressable>
         </View>
       </View>
@@ -297,3 +312,29 @@ export default function HomeScreen(props) {
     </>
   )
 }
+
+const homeStyles = StyleSheet.create({
+  errorContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorInner: {
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  retryBtn: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    height: 44,
+    width: 200,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+})

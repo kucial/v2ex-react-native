@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
@@ -70,10 +70,10 @@ export default function CollectedTopicsScreen() {
   }, [settings.feedTitleStyle, listItems.length])
 
   return (
-    <View className='flex-1'>
+    <View style={collectedStyles.container}>
       <NavigationHeader canGoBack title='收藏的主题' />
       <FlashList
-        className='flex-1'
+        style={collectedStyles.container}
         data={listItems}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
@@ -96,3 +96,9 @@ export default function CollectedTopicsScreen() {
     </View>
   )
 }
+
+const collectedStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})

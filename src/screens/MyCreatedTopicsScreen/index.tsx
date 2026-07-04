@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useSharedValue } from 'react-native-reanimated'
 
 import NavigationHeader from '@/components/NavigationHeader'
@@ -17,7 +17,7 @@ export default function CreatedTopicsScreen() {
   const scrollY = useSharedValue(0)
 
   return (
-    <View className='flex-1'>
+    <View style={createdStyles.container}>
       <NavigationHeader canGoBack title='创建的主题' />
       <MemberTopics
         username={user.username}
@@ -29,3 +29,9 @@ export default function CreatedTopicsScreen() {
     </View>
   )
 }
+
+const createdStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})

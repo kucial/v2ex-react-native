@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import Animated, {
   Extrapolation,
   interpolate,
@@ -135,7 +135,7 @@ export default function MemberScreenHeader(props: {
       .finally(() => {
         alert.hide(indicator)
       })
-  }, [memberQuery.data, username])
+  }, [memberQuery, username, alert, queryClient])
 
   const handleWatchToggle = useCallback(() => {
     const { data } = memberQuery
@@ -178,7 +178,7 @@ export default function MemberScreenHeader(props: {
       .finally(() => {
         alert.hide(indicator)
       })
-  }, [memberQuery.data, username])
+  }, [memberQuery, username, alert, queryClient])
 
   const topBannerHeight = HEADER_CANVAS_HEIGHT + insets.top
 
@@ -205,7 +205,7 @@ export default function MemberScreenHeader(props: {
       transform: [{ translateY }],
       zIndex: scrollY.value >= topDelta ? 1 : 3,
     }
-  }, [headerHeight])
+  }, [headerHeight, topDelta])
 
   const layer1OffsetStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
@@ -220,7 +220,7 @@ export default function MemberScreenHeader(props: {
     return {
       transform: [{ translateY }],
     }
-  })
+  }, [topDelta])
 
   const avatarSizeStyle = useAnimatedStyle(() => {
     const size = interpolate(
@@ -236,7 +236,7 @@ export default function MemberScreenHeader(props: {
       width: size,
       height: size,
     }
-  })
+  }, [topDelta])
 
   const headerTitleStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -321,8 +321,8 @@ export default function MemberScreenHeader(props: {
               }}
             >
               <AnimatedImage
-                className='w-full h-full rounded-full'
                 style={[
+                  headerStyles.avatarImg,
                   {
                     borderWidth: 4,
                     borderColor: theme.colors.bg_layer1,
@@ -336,13 +336,15 @@ export default function MemberScreenHeader(props: {
           </View>
           <View style={styles.layer1}>
             <View
-              className='flex flex-row'
-              style={{
-                marginLeft: AVATAR_SIZE + 16 + 12,
-                minHeight: Math.round(AVATAR_SIZE * 0.7),
-              }}
+              style={[
+                headerStyles.actionRow,
+                {
+                  marginLeft: AVATAR_SIZE + 16 + 12,
+                  minHeight: Math.round(AVATAR_SIZE * 0.7),
+                },
+              ]}
             >
-              <View className='flex flex-row pr-3 pt-2 ml-auto'>
+              <View style={headerStyles.actionBtns}>
                 {data && currentUser && username !== currentUser.username && (
                   <Button
                     size='md'
@@ -355,18 +357,21 @@ export default function MemberScreenHeader(props: {
                   <Button
                     size='md'
                     variant='default'
-                    className='ml-3'
+                    style={headerStyles.watchBtn}
                     onPress={handleWatchToggle}
                     label={data.meta?.watched ? '取消关注' : '关注'}
                   ></Button>
                 )}
               </View>
             </View>
-            <View className='px-3 pb-2'>
-              <View className='flex-1 pb-2'>
+            <View style={headerStyles.infoWrap}>
+              <View style={headerStyles.infoInner}>
                 <Text
-                  className='font-bold'
-                  style={[styles.text_primary, styles.text_lg]}
+                  style={[
+                    styles.text_primary,
+                    styles.text_lg,
+                    headerStyles.username,
+                  ]}
                 >
                   {username}
                 </Text>
@@ -417,3 +422,34 @@ export default function MemberScreenHeader(props: {
     </>
   )
 }
+
+const headerStyles = StyleSheet.create({
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 9999,
+  },
+  actionRow: {
+    flexDirection: 'row',
+  },
+  actionBtns: {
+    flexDirection: 'row',
+    paddingRight: 12,
+    paddingTop: 8,
+    marginLeft: 'auto',
+  },
+  watchBtn: {
+    marginLeft: 12,
+  },
+  infoWrap: {
+    paddingHorizontal: 12,
+    paddingBottom: 8,
+  },
+  infoInner: {
+    flex: 1,
+    paddingBottom: 8,
+  },
+  username: {
+    fontWeight: 'bold',
+  },
+})
