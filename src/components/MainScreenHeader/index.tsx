@@ -194,8 +194,8 @@ const mainHeaderStyles = StyleSheet.create({
   actionsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingRight: 4,
+    gap: 12,
+    paddingRight: 12,
   },
   iconBtn: {
     width: 44,

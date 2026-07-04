@@ -3,7 +3,6 @@ import type { ViewProps, ViewStyle } from 'react-native'
 import { StyleSheet, View } from 'react-native'
 
 const GroupWapper = (props: {
-  className?: string
   children: ReactNode
   innerStyle?: ViewStyle | ViewStyle[]
   style?: ViewStyle | ViewStyle[]

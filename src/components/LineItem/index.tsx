@@ -12,7 +12,6 @@ import { useTheme } from '@/containers/ThemeService'
 import FixedPressable from '../FixedPressable'
 
 export const LineItemGroup = (props: {
-  className?: string
   style?: ViewStyle | ViewStyle[]
   children: ReactNode
 }) => {
@@ -33,7 +32,6 @@ export const LineItem = (props: {
   title: string
   extra?: ReactElement
   style?: ViewStyle | ViewStyle[]
-  className?: string
 }) => {
   const { styles } = useTheme()
   return (

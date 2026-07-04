@@ -7,7 +7,6 @@ import { getNodes } from '@/utils/v2ex-client'
 function NodeLabel(props: {
   id?: number
   name?: string
-  className?: string
   style?: TextStyle | TextStyle[]
 }) {
   const nodesQuery = useQuery({

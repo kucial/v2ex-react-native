@@ -6,7 +6,6 @@ import { CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
 export default function MaxWidthWrapper(props: {
   children: ReactNode
   style?: ViewStyle | ViewStyle[]
-  className?: string
 }) {
   return (
     <View style={[styles.wrapper, props.style]}>
