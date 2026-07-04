@@ -23,13 +23,11 @@ import { BarcodeScanningResult } from 'expo-camera'
 import * as Clipboard from 'expo-clipboard'
 import { useRouter } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
-// import { convert as htmlToMarkdown } from 'react-native-html-to-markdown'
 import htmlToMarkdown from 'html-to-md'
 
 import { USER_AGENT } from '@/constants'
 import { useAlertService } from '@/containers/AlertService'
-import type { ImageViewingService } from '@/containers/ImageViewingService'
-import ImageViewingServiceProvider from '@/containers/ImageViewingService'
+import { openImageViewer } from '@/containers/ImageViewingService'
 import { useTheme } from '@/containers/ThemeService'
 import { extractBase64Decoded, getMaxLength } from '@/utils/content'
 import {
@@ -70,15 +68,19 @@ function HtmlRender({
   ...props
 }: RenderHTMLProps & {
   source: HTMLSourceInline
-  onOpenMemberInfo?: (data) => void
+  onOpenMemberInfo?: (data: any) => void
   isModalView?: boolean
 }) {
   const { theme, colorScheme, styles: themeStyles } = useTheme()
   const alert = useAlertService()
-  const viewingRef = useRef<ImageViewingService>(null)
   const selectModalRef = useRef<TrueSheet>(null)
   const base64ModalRef = useRef<TrueSheet>(null)
   const router = useRouter()
+
+  // Tracks the insertion-ordered list of image origin URLs registered by
+  // ImageRenderer / AnchorRenderer instances within this HtmlRender tree.
+  // Shared via RenderContext so renderers can build the carousel in order.
+  const imageOrigins = useRef<string[]>([])
 
   const renderersProps = useMemo(
     () => ({
@@ -89,15 +91,9 @@ function HtmlRender({
           userAgent: USER_AGENT,
         },
       },
-      table: {
-        tableRenderers: true,
-      },
-      ul: {
-        markerBoxStyle: { paddingRight: 4 },
-      },
-      ol: {
-        markerBoxStyle: { paddingRight: 2 },
-      },
+      table: { tableRenderers: true },
+      ul: { markerBoxStyle: { paddingRight: 4 } },
+      ol: { markerBoxStyle: { paddingRight: 2 } },
     }),
     [themeStyles],
   )
@@ -148,33 +144,18 @@ function HtmlRender({
         lineHeight: (14 / 16) * baseFontSize * 1.1,
         marginVertical: baseFontSize / 2,
       },
-      hr: {
-        marginVertical: baseFontSize,
-      },
+      hr: { marginVertical: baseFontSize },
       pre: {
         backgroundColor: theme.colors.html_pre_bg,
         paddingVertical: baseFontSize * 0.8,
         lineHeight: 1.25 * baseFontSize,
         borderRadius: 4,
       },
-      br: {
-        backgroundColor: 'orange',
-      },
-      code: {
-        fontSize: 14,
-      },
-      ul: {
-        marginTop: 0,
-        marginBottom: baseFontSize,
-      },
-      p: {
-        marginTop: 0,
-        marginBottom: baseFontSize,
-      },
-      a: {
-        textDecorationLine: 'none',
-        color: theme.colors.text_link,
-      },
+      br: { backgroundColor: 'orange' },
+      code: { fontSize: 14 },
+      ul: { marginTop: 0, marginBottom: baseFontSize },
+      p: { marginTop: 0, marginBottom: baseFontSize },
+      a: { textDecorationLine: 'none', color: theme.colors.text_link },
       blockquote: {
         marginLeft: 0,
         paddingLeft: baseFontSize * 1.5,
@@ -182,13 +163,8 @@ function HtmlRender({
         borderLeftWidth: 3,
         borderLeftColor: theme.colors.text,
       },
-      tr: {
-        flexDirection: 'row',
-        width: '100%',
-      },
-      td: {
-        flex: 1,
-      },
+      tr: { flexDirection: 'row', width: '100%' },
+      td: { flex: 1 },
       th: {
         borderBottomWidth: 1,
         borderBottomColor: theme.colors.text_meta,
@@ -198,39 +174,61 @@ function HtmlRender({
     }
   }, [tagsStyles, baseStyle, themeStyles, theme])
 
+  // Per-instance QR handler — passed through RenderContext so ImageRenderer
+  // can hand it to the global viewer when opening, without needing a Provider.
+  const handleQrCode = useCallback((result: BarcodeScanningResult) => {
+    const { data } = result
+    if (isAppLink(data)) {
+      const screen = getScreenInfo(data)
+      if (screen) {
+        router.push({ pathname: screen.pathname, params: screen.params })
+        return
+      }
+    } else if (isURL(data) || isDeepLink(data)) {
+      Linking.openURL(data)
+    } else {
+      Alert.alert('信息', getMaxLength(data, 120), [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '复制',
+          onPress: async () => {
+            await Clipboard.setStringAsync(data)
+            alert.show({ type: 'success', message: '已复制到粘贴板' })
+          },
+        },
+      ])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const renderContext = useMemo(
     () => ({
       handleUrlPress: (payload: {
         interaction: 'default' | 'preview' | 'default'
         url: string
       }) => {
-        if (payload.interaction !== 'default') {
-          return
-        }
+        if (payload.interaction !== 'default') return
         const { url } = payload
         if (isAppLink(url)) {
           const screen = getScreenInfo(url)
           if (screen) {
             if (screen.name === 'member' && onOpenMemberInfo) {
-              onOpenMemberInfo({
-                type: 'member',
-                data: screen.params.username,
-              })
+              onOpenMemberInfo({ type: 'member', data: screen.params.username })
               return
             }
-            if (isModalView) {
-              // TODO: open screen in sheet
-              return
-            }
-            router.push({
-              pathname: screen.pathname,
-              params: screen.params,
-            })
+            if (isModalView) return
+            router.push({ pathname: screen.pathname, params: screen.params })
             return
           }
         }
-        if (isImgurResourceLink(url) && viewingRef.current) {
-          viewingRef.current.open(getImgurResourceImageLink(url))
+        if (isImgurResourceLink(url)) {
+          // Imgur resource anchor taps are handled by AnchorRenderer directly
+          // via openImageViewer(). If reached here it means no registered image.
+          openImageViewer(
+            getImgurResourceImageLink(url),
+            imageOrigins.current,
+            handleQrCode,
+          )
           return
         }
         if (url.startsWith('mailto:')) {
@@ -247,159 +245,110 @@ function HtmlRender({
             Sentry.captureException(err)
           })
         } else {
-          router.push({
-            pathname: '/browser',
-            params: {
-              url,
-            },
-          })
+          router.push({ pathname: '/browser', params: { url } })
         }
       },
+      handleQrCode,
+      imageOrigins,
     }),
-    [onOpenMemberInfo, router, theme.colors.primary, isModalView],
-  )
 
-  const handleQrCode = useCallback((result: BarcodeScanningResult) => {
-    const { data } = result
-    if (isAppLink(data)) {
-      const screen = getScreenInfo(data)
-      if (screen) {
-        router.push({
-          pathname: screen.pathname,
-          params: screen.params,
-        })
-        return
-      }
-    } else if (isURL(data) || isDeepLink(data)) {
-      Linking.openURL(data)
-    } else {
-      Alert.alert('信息', getMaxLength(data, 120), [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '复制',
-          onPress: async () => {
-            await Clipboard.setStringAsync(data)
-            alert.show({
-              type: 'success',
-              message: '已复制到粘贴板',
-            })
-          },
-        },
-      ])
-    }
-  }, [])
+    [onOpenMemberInfo, router, theme.colors.primary, isModalView, handleQrCode],
+  )
 
   const handleCopy = useCallback(async () => {
     try {
       const content = htmlToMarkdown(props.source.html)
       await Clipboard.setStringAsync(content)
-      alert.show({
-        type: 'success',
-        message: '已复制到粘贴板',
-        duration: 500,
-      })
+      alert.show({ type: 'success', message: '已复制到粘贴板', duration: 500 })
     } catch (err) {
       Sentry.captureException(err)
     }
-  }, [props.source.html])
+  }, [props.source.html, alert])
 
-  const copyAndNotice = useCallback(async (text) => {
-    await Clipboard.setStringAsync(text)
-    alert.show({
-      type: 'success',
-      message: '已复制到粘贴板: ' + text,
-    })
-  }, [])
+  const copyAndNotice = useCallback(
+    async (text: string) => {
+      await Clipboard.setStringAsync(text)
+      alert.show({ type: 'success', message: '已复制到粘贴板: ' + text })
+    },
+    [alert],
+  )
 
   const handleBase64Decode = useCallback(() => {
     try {
       const content = htmlToMarkdown(props.source.html)
       const result = extractBase64Decoded(content)
       if (result && result.length) {
-        if (result.length == 1) {
-          const item = result[0]
-          copyAndNotice(item[1])
+        if (result.length === 1) {
+          copyAndNotice(result[0][1])
         } else {
           setBase64Options(result)
           base64ModalRef.current?.present()
         }
       } else {
-        alert.show({
-          type: 'info',
-          message: '未找到 base64 字符串',
-        })
+        alert.show({ type: 'info', message: '未找到 base64 字符串' })
       }
     } catch (err) {
-      alert.show({
-        type: 'error',
-        message: '未识别到有效内容',
-      })
-      Sentry.addBreadcrumb({
-        data: {
-          text: props.source.html,
-        },
-      })
+      alert.show({ type: 'error', message: '未识别到有效内容' })
+      Sentry.addBreadcrumb({ data: { text: props.source.html } })
       Sentry.captureException(err)
     }
-  }, [props.source.html])
+  }, [props.source.html, copyAndNotice, alert])
 
   const handleSelect = useCallback(() => {
     const content = htmlToMarkdown(props.source.html)
     setTextToSelect(content)
-    selectModalRef.current.present()
+    selectModalRef.current?.present()
   }, [props.source.html])
 
   const source = useMemo(
-    () => ({
-      ...props.source,
-      html: htmlMinifier(props.source.html),
-    }),
-    [props.source.html],
+    () => ({ ...props.source, html: htmlMinifier(props.source.html) }),
+    [props.source],
   )
 
   return (
-    <ImageViewingServiceProvider ref={viewingRef} handleQrCode={handleQrCode}>
-      <RenderContext.Provider value={renderContext}>
-        <View style={{ margin: -6 }}>
-          <ContextMenu
-            actions={[
-              { title: '复制', systemIcon: 'doc.on.doc' },
-              { title: '选择文本', systemIcon: 'hand.point.up.left.and.text' },
-              { title: 'base64 提取', systemIcon: 'text.viewfinder' },
-            ]}
-            onPress={({ nativeEvent }) => {
-              switch (nativeEvent.index) {
-                case 0:
-                  return handleCopy()
-                case 1:
-                  return handleSelect()
-                case 2:
-                  return handleBase64Decode()
-              }
-            }}
-            previewBackgroundColor={themeStyles.layer1.backgroundColor}
-            preview={<View></View>}
+    // No ImageViewingServiceProvider wrapper — image registry lives in the
+    // global Zustand store. Each HtmlRender instance only provides its
+    // per-instance handleQrCode and the imageOrigins ref via RenderContext.
+    <RenderContext.Provider value={renderContext}>
+      <View style={{ margin: -6 }}>
+        <ContextMenu
+          actions={[
+            { title: '复制', systemIcon: 'doc.on.doc' },
+            { title: '选择文本', systemIcon: 'hand.point.up.left.and.text' },
+            { title: 'base64 提取', systemIcon: 'text.viewfinder' },
+          ]}
+          onPress={({ nativeEvent }) => {
+            switch (nativeEvent.index) {
+              case 0:
+                return handleCopy()
+              case 1:
+                return handleSelect()
+              case 2:
+                return handleBase64Decode()
+            }
+          }}
+          previewBackgroundColor={themeStyles.layer1.backgroundColor}
+          preview={<View></View>}
+        >
+          <View
+            nativeID='CONTEXT_WORK_ARROUND'
+            style={[{ padding: 6, borderRadius: 8 }]}
           >
-            <View
-              nativeID='CONTEXT_WORK_ARROUND'
-              style={[{ padding: 6, borderRadius: 8 }]}
-            >
-              <BaseRender
-                WebView={WebView}
-                tagsStyles={styles}
-                renderers={renderers}
-                renderersProps={renderersProps}
-                defaultTextProps={defaultTextProps}
-                customHTMLElementModels={customHTMLElementModels}
-                classesStyles={atomOne[colorScheme]}
-                {...props}
-                source={source}
-                dangerouslyDisableWhitespaceCollapsing
-              />
-            </View>
-          </ContextMenu>
-        </View>
-      </RenderContext.Provider>
+            <BaseRender
+              WebView={WebView}
+              tagsStyles={styles}
+              renderers={renderers}
+              renderersProps={renderersProps}
+              defaultTextProps={defaultTextProps}
+              customHTMLElementModels={customHTMLElementModels}
+              classesStyles={atomOne[colorScheme]}
+              {...props}
+              source={source}
+              dangerouslyDisableWhitespaceCollapsing
+            />
+          </View>
+        </ContextMenu>
+      </View>
       <TrueSheet
         ref={selectModalRef}
         scrollable
@@ -420,12 +369,7 @@ function HtmlRender({
             />
           ) : (
             <Text
-              style={[
-                styles.body,
-                {
-                  backgroundColor: 'transparent',
-                },
-              ]}
+              style={[styles.body, { backgroundColor: 'transparent' }]}
               selectable
               selectionColor={Color(theme.colors.primary)
                 .alpha(0.15)
@@ -493,7 +437,7 @@ function HtmlRender({
           </View>
         </ScrollView>
       </TrueSheet>
-    </ImageViewingServiceProvider>
+    </RenderContext.Provider>
   )
 }
 

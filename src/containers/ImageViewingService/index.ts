@@ -1,5 +1,5 @@
 export * from './types'
-export { useGlobalImageViewing } from './store'
+export { useGlobalImageViewing, openImageViewer } from './store'
 export { GlobalImageViewingModal } from './GlobalModal'
 export {
   default as ImageViewingServiceProvider,

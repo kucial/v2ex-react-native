@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { Image as RNImage, Pressable, View } from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
@@ -8,9 +8,14 @@ import {
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 
-import { useImageViewing } from '@/containers/ImageViewingService'
+import {
+  openImageViewer,
+  useGlobalImageViewing,
+} from '@/containers/ImageViewingService'
 import { useTheme } from '@/containers/ThemeService'
 import { cn } from '@/lib/utils'
+
+import { RenderContext } from './context'
 
 async function loadImage(
   uri: string,
@@ -51,24 +56,35 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   const [containerWidth, setContainerWidth] = useState(null)
 
-  const service = useImageViewing()
+  // Use the global store directly — no per-HtmlRender Provider needed.
+  const { addImage, updateImage, removeImage } = useGlobalImageViewing()
+  const { handleQrCode, imageOrigins } = useContext(RenderContext)
   const { theme } = useTheme()
-  useEffect(() => {
-    service.add({
-      origin: rendererProps.source.uri,
-      local: imageQuery.data?.uri,
-    })
-    return () => {
-      service.remove(rendererProps.source.uri)
-    }
-  }, [rendererProps.source.uri])
 
+  const uri = rendererProps.source.uri
+
+  // Register this image in the global registry on mount; clean up on unmount.
   useEffect(() => {
-    service.update({
-      origin: rendererProps.source.uri,
-      local: imageQuery.data?.uri,
-    })
-  }, [imageQuery.data?.uri, rendererProps.source.uri])
+    // Track insertion order so the viewer carousel is ordered correctly.
+    imageOrigins.current = [
+      ...imageOrigins.current.filter((u) => u !== uri),
+      uri,
+    ]
+    addImage({ origin: uri, local: imageQuery.data?.uri })
+    return () => {
+      removeImage(uri)
+      imageOrigins.current = imageOrigins.current.filter((u) => u !== uri)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uri])
+
+  // Update the local-file URL once the image finishes downloading.
+  useEffect(() => {
+    if (imageQuery.data?.uri) {
+      updateImage({ origin: uri, local: imageQuery.data.uri })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uri, imageQuery.data?.uri])
 
   const contentWidth = rendererProps.contentWidth || 320
   const imageStyle = useMemo(() => {
@@ -79,16 +95,10 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
         containerWidth,
       )
       const height = (imageQuery.data.height / imageQuery.data.width) * width
-      return {
-        width,
-        height,
-      }
+      return { width, height }
     } else {
       const width = contentWidth
-      return {
-        width: width,
-        height: width * 0.66667,
-      }
+      return { width, height: width * 0.66667 }
     }
   }, [imageQuery.data, contentWidth, containerWidth])
 
@@ -115,16 +125,11 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
           alignSelf: 'flex-start',
         }}
         onPress={() => {
-          service.open(rendererProps.source.uri)
+          openImageViewer(uri, imageOrigins.current, handleQrCode)
         }}
       >
         <Image
-          style={[
-            imageStyle,
-            {
-              borderRadius: 4,
-            },
-          ]}
+          style={[imageStyle, { borderRadius: 4 }]}
           source={imageQuery.data}
         />
       </Pressable>
@@ -135,7 +140,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
     <Pressable
       className='py-1 w-full overflow-hidden'
       onPress={() => {
-        service.open(rendererProps.source.uri)
+        openImageViewer(uri, imageOrigins.current, handleQrCode)
       }}
     >
       <View

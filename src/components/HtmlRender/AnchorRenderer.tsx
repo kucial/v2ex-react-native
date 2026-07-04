@@ -1,12 +1,15 @@
 import { useContext, useEffect } from 'react'
-import { Pressable, Text } from 'react-native'
+import { Text } from 'react-native'
 import {
   CustomTextualRenderer,
   getNativePropsForTNode,
   useNormalizedUrl,
 } from 'react-native-render-html'
 
-import { useImageViewing } from '@/containers/ImageViewingService'
+import {
+  openImageViewer,
+  useGlobalImageViewing,
+} from '@/containers/ImageViewingService'
 import {
   getImgurResourceImageLink,
   isImgurResourceLink,
@@ -18,21 +21,32 @@ import { RenderContext } from './context'
 const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
   const renderProps = getNativePropsForTNode(props)
   const url = tailingFix(useNormalizedUrl(props.tnode.attributes.href))
-  const { handleUrlPress } = useContext(RenderContext)
-  const service = useImageViewing()
+  const { handleUrlPress, handleQrCode, imageOrigins } =
+    useContext(RenderContext)
+  const { addImage, removeImage } = useGlobalImageViewing()
+
   const hasImageChild = props.tnode.children?.some(
     (child) => child.tagName === 'img',
   )
+
+  // Register imgur resource links in the global image registry so they appear
+  // in the carousel alongside inline <img> tags.
   useEffect(() => {
     if (isImgurResourceLink(url)) {
       const imageUri = getImgurResourceImageLink(url)
-      service.add({
-        origin: imageUri,
-      })
+      imageOrigins.current = [
+        ...imageOrigins.current.filter((u) => u !== imageUri),
+        imageUri,
+      ]
+      addImage({ origin: imageUri })
       return () => {
-        service.remove(imageUri)
+        removeImage(imageUri)
+        imageOrigins.current = imageOrigins.current.filter(
+          (u) => u !== imageUri,
+        )
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url])
 
   if (hasImageChild) {
@@ -44,10 +58,12 @@ const AnchorRenderer: CustomTextualRenderer = function AnchorRenderer(props) {
     <Text
       {...renderProps}
       onPress={() => {
-        handleUrlPress({
-          interaction: 'default',
-          url,
-        })
+        if (isImgurResourceLink(url)) {
+          const imageUri = getImgurResourceImageLink(url)
+          openImageViewer(imageUri, imageOrigins.current, handleQrCode)
+          return
+        }
+        handleUrlPress({ interaction: 'default', url })
       }}
       suppressHighlighting
     />
