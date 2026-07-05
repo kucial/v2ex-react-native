@@ -1,7 +1,7 @@
 import { memo, useCallback, useRef, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
+import CookieManager from 'react-native-nitro-cookies'
 import WebView from 'react-native-webview'
-import CookieManager from '@react-native-cookies/cookies'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 

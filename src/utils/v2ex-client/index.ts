@@ -1,7 +1,7 @@
 import { Platform } from 'react-native'
 // @ts-expect-error React Native does not ship types for this internal module.
 import Networking from 'react-native/Libraries/Network/RCTNetworking.js'
-import CookieManager from '@react-native-cookies/cookies'
+import CookieManager from 'react-native-nitro-cookies'
 import * as Sentry from '@sentry/react-native'
 import axios, {
   AxiosRequestConfig,

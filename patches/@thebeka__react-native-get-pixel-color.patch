@@ -1,6 +1,6 @@
 diff --git a/android/.classpath b/android/.classpath
 new file mode 100644
-index 0000000..bbe97e5
+index 0000000000000000000000000000000000000000..bbe97e501d368d5d897c1c277d850a9d405188e7
 --- /dev/null
 +++ b/android/.classpath
 @@ -0,0 +1,6 @@
@@ -12,7 +12,7 @@ index 0000000..bbe97e5
 +</classpath>
 diff --git a/android/.project b/android/.project
 new file mode 100644
-index 0000000..3555a1d
+index 0000000000000000000000000000000000000000..3555a1d6fe15298f897a6fb166aee3552ed83054
 --- /dev/null
 +++ b/android/.project
 @@ -0,0 +1,23 @@
@@ -41,45 +41,25 @@ index 0000000..3555a1d
 +</projectDescription>
 diff --git a/android/.settings/org.eclipse.buildship.core.prefs b/android/.settings/org.eclipse.buildship.core.prefs
 new file mode 100644
-index 0000000..68c9fab
+index 0000000000000000000000000000000000000000..68c9fab275739b0619300897b5d1c7d695543c7e
 --- /dev/null
 +++ b/android/.settings/org.eclipse.buildship.core.prefs
 @@ -0,0 +1,2 @@
 +connection.project.dir=../../../../android
 +eclipse.preferences.version=1
-diff --git a/android/build.gradle b/android/build.gradle
-index 9b309d5..2a68bdc 100644
---- a/android/build.gradle
-+++ b/android/build.gradle
-@@ -114,12 +114,12 @@ afterEvaluate { project ->
-     }
-
-     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
--        classifier = 'javadoc'
-+        archiveClassifier = 'javadoc'
-         from androidJavadoc.destinationDir
-     }
-
-     task androidSourcesJar(type: Jar) {
--        classifier = 'sources'
-+        archiveClassifier = 'sources'
-         from android.sourceSets.main.java.srcDirs
-         include '**/*.java'
-     }
 diff --git a/android/build/.transforms/8214ee9222203f56e7ca2699979be48a/results.bin b/android/build/.transforms/8214ee9222203f56e7ca2699979be48a/results.bin
 new file mode 100644
-index 0000000..0d259dd
+index 0000000000000000000000000000000000000000..0d259ddcb5285213d1cea7f8b100ffc94c66a69d
 --- /dev/null
 +++ b/android/build/.transforms/8214ee9222203f56e7ca2699979be48a/results.bin
 @@ -0,0 +1 @@
 +o/classes
 diff --git a/android/build/.transforms/8214ee9222203f56e7ca2699979be48a/transformed/classes/classes_dex/classes.dex b/android/build/.transforms/8214ee9222203f56e7ca2699979be48a/transformed/classes/classes_dex/classes.dex
 new file mode 100644
-index 0000000..3dd7288
-Binary files /dev/null and b/android/build/.transforms/8214ee9222203f56e7ca2699979be48a/transformed/classes/classes_dex/classes.dex differ
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/android/build/generated/source/buildConfig/debug/com/reactlibrary/BuildConfig.java b/android/build/generated/source/buildConfig/debug/com/reactlibrary/BuildConfig.java
 new file mode 100644
-index 0000000..4381f65
+index 0000000000000000000000000000000000000000..4381f656bdda692aa2b8db75c7d37933ea177680
 --- /dev/null
 +++ b/android/build/generated/source/buildConfig/debug/com/reactlibrary/BuildConfig.java
 @@ -0,0 +1,10 @@
@@ -95,7 +75,7 @@ index 0000000..4381f65
 +}
 diff --git a/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
 new file mode 100644
-index 0000000..4c1dd64
+index 0000000000000000000000000000000000000000..4c1dd646ec35ee7290e844a74233d1ea2b12cbc8
 --- /dev/null
 +++ b/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
 @@ -0,0 +1,7 @@
@@ -109,7 +89,7 @@ index 0000000..4c1dd64
 \ No newline at end of file
 diff --git a/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output-metadata.json b/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output-metadata.json
 new file mode 100644
-index 0000000..99bfe68
+index 0000000000000000000000000000000000000000..99bfe6896280c8706aae3c5415d3ceba246613a1
 --- /dev/null
 +++ b/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output-metadata.json
 @@ -0,0 +1,18 @@
@@ -134,7 +114,7 @@ index 0000000..99bfe68
 \ No newline at end of file
 diff --git a/android/build/intermediates/aar_metadata/debug/aar-metadata.properties b/android/build/intermediates/aar_metadata/debug/aar-metadata.properties
 new file mode 100644
-index 0000000..1211b1e
+index 0000000000000000000000000000000000000000..1211b1ef0cfce28b279372c248df8e9a37685146
 --- /dev/null
 +++ b/android/build/intermediates/aar_metadata/debug/aar-metadata.properties
 @@ -0,0 +1,6 @@
@@ -146,7 +126,7 @@ index 0000000..1211b1e
 +coreLibraryDesugaringEnabled=false
 diff --git a/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
 new file mode 100644
-index 0000000..9e26dfe
+index 0000000000000000000000000000000000000000..9e26dfeeb6e641a33dae4961196235bdb965b21b
 --- /dev/null
 +++ b/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
 @@ -0,0 +1 @@
@@ -154,25 +134,23 @@ index 0000000..9e26dfe
 \ No newline at end of file
 diff --git a/android/build/intermediates/compile_library_classes_jar/debug/classes.jar b/android/build/intermediates/compile_library_classes_jar/debug/classes.jar
 new file mode 100644
-index 0000000..afd5ca6
-Binary files /dev/null and b/android/build/intermediates/compile_library_classes_jar/debug/classes.jar differ
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/android/build/intermediates/compile_r_class_jar/debug/R.jar b/android/build/intermediates/compile_r_class_jar/debug/R.jar
 new file mode 100644
-index 0000000..89780f8
-Binary files /dev/null and b/android/build/intermediates/compile_r_class_jar/debug/R.jar differ
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/android/build/intermediates/compile_symbol_list/debug/R.txt b/android/build/intermediates/compile_symbol_list/debug/R.txt
 new file mode 100644
-index 0000000..e69de29
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
 new file mode 100644
-index 0000000..8a58348
+index 0000000000000000000000000000000000000000..8a583486f4782d9d598c8fc574110cd3508c8bfa
 --- /dev/null
 +++ b/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
 @@ -0,0 +1 @@
 +#Sat Oct 05 23:20:27 CST 2024
 diff --git a/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
 new file mode 100644
-index 0000000..3e67dac
+index 0000000000000000000000000000000000000000..6c7094bf3f385fb8d82407efcdaa6f0331fe8d60
 --- /dev/null
 +++ b/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
 @@ -0,0 +1,2 @@
@@ -181,19 +159,16 @@ index 0000000..3e67dac
 \ No newline at end of file
 diff --git a/android/build/intermediates/javac/debug/classes/com/reactlibrary/BuildConfig.class b/android/build/intermediates/javac/debug/classes/com/reactlibrary/BuildConfig.class
 new file mode 100644
-index 0000000..ef22f74
-Binary files /dev/null and b/android/build/intermediates/javac/debug/classes/com/reactlibrary/BuildConfig.class differ
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/android/build/intermediates/javac/debug/classes/com/reactlibrary/GetPixelColorModule.class b/android/build/intermediates/javac/debug/classes/com/reactlibrary/GetPixelColorModule.class
 new file mode 100644
-index 0000000..bd5cdbe
-Binary files /dev/null and b/android/build/intermediates/javac/debug/classes/com/reactlibrary/GetPixelColorModule.class differ
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/android/build/intermediates/javac/debug/classes/com/reactlibrary/GetPixelColorPackage.class b/android/build/intermediates/javac/debug/classes/com/reactlibrary/GetPixelColorPackage.class
 new file mode 100644
-index 0000000..6b3fccd
-Binary files /dev/null and b/android/build/intermediates/javac/debug/classes/com/reactlibrary/GetPixelColorPackage.class differ
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/android/build/intermediates/local_only_symbol_list/debug/R-def.txt b/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
 new file mode 100644
-index 0000000..78ac5b8
+index 0000000000000000000000000000000000000000..78ac5b8befe332ed81b26e325fdd18037d83cac5
 --- /dev/null
 +++ b/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
 @@ -0,0 +1,2 @@
@@ -201,7 +176,7 @@ index 0000000..78ac5b8
 +local
 diff --git a/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 new file mode 100644
-index 0000000..5010783
+index 0000000000000000000000000000000000000000..5010783519f16b78bcb1bd5c87e7dfcf19d5241c
 --- /dev/null
 +++ b/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 @@ -0,0 +1,7 @@
@@ -214,7 +189,7 @@ index 0000000..5010783
 +7</manifest>
 diff --git a/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml b/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml
 new file mode 100644
-index 0000000..4c1dd64
+index 0000000000000000000000000000000000000000..4c1dd646ec35ee7290e844a74233d1ea2b12cbc8
 --- /dev/null
 +++ b/android/build/intermediates/merged_manifest/debug/AndroidManifest.xml
 @@ -0,0 +1,7 @@
@@ -228,7 +203,7 @@ index 0000000..4c1dd64
 \ No newline at end of file
 diff --git a/android/build/intermediates/navigation_json/debug/navigation.json b/android/build/intermediates/navigation_json/debug/navigation.json
 new file mode 100644
-index 0000000..0637a08
+index 0000000000000000000000000000000000000000..0637a088a01e8ddab3bf3fa98dbe804cbde1a0dc
 --- /dev/null
 +++ b/android/build/intermediates/navigation_json/debug/navigation.json
 @@ -0,0 +1 @@
@@ -236,18 +211,17 @@ index 0000000..0637a08
 \ No newline at end of file
 diff --git a/android/build/intermediates/runtime_library_classes_jar/debug/classes.jar b/android/build/intermediates/runtime_library_classes_jar/debug/classes.jar
 new file mode 100644
-index 0000000..c2f2854
-Binary files /dev/null and b/android/build/intermediates/runtime_library_classes_jar/debug/classes.jar differ
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt b/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
 new file mode 100644
-index 0000000..4a700b6
+index 0000000000000000000000000000000000000000..4a700b6fcfe2bff965c2d757b7a64214e1719ec6
 --- /dev/null
 +++ b/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
 @@ -0,0 +1 @@
 +com.reactlibrary
 diff --git a/android/build/outputs/logs/manifest-merger-debug-report.txt b/android/build/outputs/logs/manifest-merger-debug-report.txt
 new file mode 100644
-index 0000000..58e8331
+index 0000000000000000000000000000000000000000..5a826d93200b26fe5fde97274d9e140c4031a6ff
 --- /dev/null
 +++ b/android/build/outputs/logs/manifest-merger-debug-report.txt
 @@ -0,0 +1,17 @@
@@ -270,5 +244,32 @@ index 0000000..58e8331
 +		INJECTED from /Users/kongkx/Projects/v2ex-react-native/android/src/main/AndroidManifest.xml
 diff --git a/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
 new file mode 100644
-index 0000000..d100775
-Binary files /dev/null and b/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/android/build.gradle b/android/build.gradle
+index 9b309d5ef3cb47a59eb2036833350de66bacabce..6df732331877af67e46f5588d83791daf764700b 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -114,12 +114,12 @@ afterEvaluate { project ->
+     }
+ 
+     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
+-        classifier = 'javadoc'
++        archiveClassifier = 'javadoc'
+         from androidJavadoc.destinationDir
+     }
+ 
+     task androidSourcesJar(type: Jar) {
+-        classifier = 'sources'
++        archiveClassifier = 'sources'
+         from android.sourceSets.main.java.srcDirs
+         include '**/*.java'
+     }
+@@ -129,7 +129,7 @@ afterEvaluate { project ->
+         def javaCompileTask = variant.javaCompileProvider.get()
+ 
+         task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
+-            from javaCompileTask.destinationDir
++            from javaCompileTask.destinationDirectory
+         }
+     }
+ 

@@ -1,4 +1,4 @@
-import CookieManager from '@react-native-cookies/cookies'
+import CookieManager from 'react-native-nitro-cookies'
 import { Cheerio, CheerioAPI, Element, load } from 'cheerio'
 import hljs from 'highlight.js'
 import { fromUint8Array } from 'js-base64'
