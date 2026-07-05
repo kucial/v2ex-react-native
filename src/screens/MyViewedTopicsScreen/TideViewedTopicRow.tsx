@@ -3,7 +3,6 @@ import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
 import FixedPressable from '@/components/FixedPressable'
-import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import TimeAgo from '@/components/TimeAgo'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -14,86 +13,82 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
   const { node, member, title } = data
   const { styles } = useTheme()
   return (
-    <MaxWidthWrapper style={styles.layer1}>
-      <FixedPressable
-        sentry-label='TideTopicRow'
-        style={[tideViewedStyles.pressable, !isLast && styles.border_b_light]}
-        onPress={() => {
-          router.push({
-            pathname: '/topic/[id]',
-            params: {
-              id: props.data.id,
-              // brief: props.data,
-            },
-          })
-        }}
-      >
-        {showAvatar ? (
-          <View style={tideViewedStyles.avatarCol}>
-            <FixedPressable
-              onPress={() => {
-                router.push({
-                  pathname: '/member/[username]',
-                  params: {
-                    username: member.username,
-                    // brief: member,
-                  },
-                })
-              }}
-            >
-              <Image
-                recyclingKey={`user-avatar:${member.username}`}
-                source={{
-                  uri: member.avatar_normal,
-                }}
-                style={tideViewedStyles.avatar}
-              />
-            </FixedPressable>
-          </View>
-        ) : (
-          <View style={tideViewedStyles.pl3} />
-        )}
-        <View style={tideViewedStyles.contentCol}>
-          <Text
-            style={[
-              styles.text,
-              styles.text_base,
-              props.titleStyle === 'emphasized' &&
-                tideViewedStyles.titleEmphasized,
-            ]}
+    <FixedPressable
+      sentry-label='TideTopicRow'
+      style={[tideViewedStyles.pressable, !isLast && styles.border_b_light]}
+      onPress={() => {
+        router.push({
+          pathname: '/topic/[id]',
+          params: {
+            id: props.data.id,
+            // brief: props.data,
+          },
+        })
+      }}
+    >
+      {showAvatar ? (
+        <View style={tideViewedStyles.avatarCol}>
+          <FixedPressable
+            onPress={() => {
+              router.push({
+                pathname: '/member/[username]',
+                params: {
+                  username: member.username,
+                  // brief: member,
+                },
+              })
+            }}
           >
-            {title}
-          </Text>
-          <View style={tideViewedStyles.metaRow}>
-            <FixedPressable
-              hitSlop={4}
-              style={[tideViewedStyles.nodeTag, styles.layer2]}
-              onPress={() => {
-                router.push({
-                  pathname: '/node/[name]',
-                  params: {
-                    name: node.name,
-                    // brief: node,
-                  },
-                })
+            <Image
+              recyclingKey={`user-avatar:${member.username}`}
+              source={{
+                uri: member.avatar_normal,
               }}
-            >
-              <Text style={[styles.text_desc, styles.text_xs]}>
-                {node.title}
-              </Text>
-            </FixedPressable>
-            <Text
-              style={[tideViewedStyles.mr2, styles.text_meta, styles.text_xs]}
-            >
-              上次查看
-            </Text>
-            <Text style={[styles.text_meta, styles.text_xs]}>
-              <TimeAgo date={data.viewed_at} />
-            </Text>
-          </View>
+              style={tideViewedStyles.avatar}
+            />
+          </FixedPressable>
         </View>
-      </FixedPressable>
-    </MaxWidthWrapper>
+      ) : (
+        <View style={tideViewedStyles.pl3} />
+      )}
+      <View style={tideViewedStyles.contentCol}>
+        <Text
+          style={[
+            styles.text,
+            styles.text_base,
+            props.titleStyle === 'emphasized' &&
+              tideViewedStyles.titleEmphasized,
+          ]}
+        >
+          {title}
+        </Text>
+        <View style={tideViewedStyles.metaRow}>
+          <FixedPressable
+            hitSlop={4}
+            style={[tideViewedStyles.nodeTag, styles.layer2]}
+            onPress={() => {
+              router.push({
+                pathname: '/node/[name]',
+                params: {
+                  name: node.name,
+                  // brief: node,
+                },
+              })
+            }}
+          >
+            <Text style={[styles.text_desc, styles.text_xs]}>{node.title}</Text>
+          </FixedPressable>
+          <Text
+            style={[tideViewedStyles.mr2, styles.text_meta, styles.text_xs]}
+          >
+            上次查看
+          </Text>
+          <Text style={[styles.text_meta, styles.text_xs]}>
+            <TimeAgo date={data.viewed_at} />
+          </Text>
+        </View>
+      </View>
+    </FixedPressable>
   )
 }
 

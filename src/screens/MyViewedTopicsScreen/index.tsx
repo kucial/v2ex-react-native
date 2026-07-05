@@ -1,19 +1,16 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Swipeable } from 'react-native-gesture-handler'
 import {
   EllipsisHorizontalIcon,
   TrashIcon,
 } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import SwipeableItem, {
-  useSwipeableItemParams,
-} from 'react-native-swipeable-item'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import { FlashList } from '@shopify/flash-list'
 
 import Button from '@/components/Button'
-import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 
+import { CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import {
@@ -27,7 +24,6 @@ import TideViewedTopicRow from './TideViewedTopicRow'
 import ViewedTopicRow from './ViewedTopicRow'
 
 const Actions = (props) => {
-  const params = useSwipeableItemParams()
   const { styles } = useTheme()
   return (
     <View style={[viewedStyles.actionsWrap, styles.btn_danger__bg]}>
@@ -37,9 +33,7 @@ const Actions = (props) => {
           pressed && viewedStyles.pressed,
         ]}
         onPress={() => {
-          params.close().then(() => {
-            props.onDelete(params.item)
-          })
+          props.onDelete(props.item)
         }}
       >
         <TrashIcon color={styles.btn_danger__text.color} />
@@ -87,18 +81,19 @@ export default function ViewedTopicsScreen() {
           )
 
         return (
-          <MaxWidthWrapper style={styles.layer1}>
-            <SwipeableItem
-              item={item}
-              key={item.id}
-              swipeEnabled
-              snapPointsLeft={[60]}
-              overSwipe={60}
-              renderUnderlayLeft={() => <Actions onDelete={removeItem} />}
-            >
-              <View style={styles.layer1}>{inner}</View>
-            </SwipeableItem>
-          </MaxWidthWrapper>
+          <View style={[styles.layer1, viewedStyles.rowWrap]}>
+            <View style={viewedStyles.rowInner}>
+              <Swipeable
+                key={item.id}
+                overshootRight={false}
+                renderRightActions={() => (
+                  <Actions item={item} onDelete={removeItem} />
+                )}
+              >
+                <View style={styles.layer1}>{inner}</View>
+              </Swipeable>
+            </View>
+          </View>
         )
       },
       keyExtractor: (item) => item.id,
@@ -175,8 +170,7 @@ export default function ViewedTopicsScreen() {
         onSubmitFilter={submitFilter}
         headerRight={headerRight}
       />
-      <FlashList
-        contentInsetAdjustmentBehavior='automatic'
+      <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
@@ -204,9 +198,18 @@ const viewedStyles = StyleSheet.create({
     flex: 1,
   },
   actionsWrap: {
-    height: '100%',
+    width: 60,
     flexDirection: 'row',
     justifyContent: 'flex-end',
+  },
+  rowWrap: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  rowInner: {
+    width: '100%',
+    maxWidth: CONTENT_CONTAINER_MAX_WIDTH,
   },
   deleteBtn: {
     width: 56,

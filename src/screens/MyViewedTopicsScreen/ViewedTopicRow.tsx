@@ -3,7 +3,6 @@ import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
 import FixedPressable from '@/components/FixedPressable'
-import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import TimeAgo from '@/components/TimeAgo'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -14,22 +13,69 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
   const { node, member, title } = data
   const { styles } = useTheme()
   return (
-    <MaxWidthWrapper style={styles.layer1}>
-      <FixedPressable
-        style={[viewedRowStyles.pressable, !isLast && styles.border_b_light]}
-        onPress={() => {
-          router.push({
-            pathname: '/topic/[id]',
-            params: {
-              id: data.id,
-              // brief: data,
-            },
-          })
-        }}
-      >
-        {showAvatar ? (
-          <View style={viewedRowStyles.avatarCol}>
+    <FixedPressable
+      style={[viewedRowStyles.pressable, !isLast && styles.border_b_light]}
+      onPress={() => {
+        router.push({
+          pathname: '/topic/[id]',
+          params: {
+            id: data.id,
+            // brief: data,
+          },
+        })
+      }}
+    >
+      {showAvatar ? (
+        <View style={viewedRowStyles.avatarCol}>
+          <FixedPressable
+            onPress={() => {
+              router.push({
+                pathname: '/member/[username]',
+                params: {
+                  username: member.username,
+                  // brief: member,
+                },
+              })
+            }}
+          >
+            <Image
+              recyclingKey={`user-avatar:${member.username}`}
+              source={{
+                uri: member.avatar_normal,
+              }}
+              style={viewedRowStyles.avatar}
+            />
+          </FixedPressable>
+        </View>
+      ) : (
+        <View style={viewedRowStyles.pl3} />
+      )}
+
+      <View style={viewedRowStyles.contentCol}>
+        <View style={viewedRowStyles.headerRow}>
+          <View>
             <FixedPressable
+              hitSlop={4}
+              style={[viewedRowStyles.nodeTag, styles.layer2]}
+              onPress={() => {
+                router.push({
+                  pathname: '/node/[name]',
+                  params: {
+                    name: node.name,
+                    // brief: node,
+                  },
+                })
+              }}
+            >
+              <Text style={[styles.text_desc, styles.text_xs]}>
+                {node.title}
+              </Text>
+            </FixedPressable>
+          </View>
+          <Text style={[styles.text_meta, viewedRowStyles.dot]}>·</Text>
+          <View style={viewedRowStyles.usernameWrap}>
+            <FixedPressable
+              hitSlop={5}
               onPress={() => {
                 router.push({
                   pathname: '/member/[username]',
@@ -40,91 +86,42 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
                 })
               }}
             >
-              <Image
-                recyclingKey={`user-avatar:${member.username}`}
-                source={{
-                  uri: member.avatar_normal,
-                }}
-                style={viewedRowStyles.avatar}
-              />
+              <Text
+                style={[
+                  styles.text_desc,
+                  styles.text_xs,
+                  viewedRowStyles.usernameText,
+                ]}
+              >
+                {member.username}
+              </Text>
             </FixedPressable>
           </View>
-        ) : (
-          <View style={viewedRowStyles.pl3} />
-        )}
-
-        <View style={viewedRowStyles.contentCol}>
-          <View style={viewedRowStyles.headerRow}>
-            <View>
-              <FixedPressable
-                hitSlop={4}
-                style={[viewedRowStyles.nodeTag, styles.layer2]}
-                onPress={() => {
-                  router.push({
-                    pathname: '/node/[name]',
-                    params: {
-                      name: node.name,
-                      // brief: node,
-                    },
-                  })
-                }}
-              >
-                <Text style={[styles.text_desc, styles.text_xs]}>
-                  {node.title}
-                </Text>
-              </FixedPressable>
-            </View>
-            <Text style={[styles.text_meta, viewedRowStyles.dot]}>·</Text>
-            <View style={viewedRowStyles.usernameWrap}>
-              <FixedPressable
-                hitSlop={5}
-                onPress={() => {
-                  router.push({
-                    pathname: '/member/[username]',
-                    params: {
-                      username: member.username,
-                      // brief: member,
-                    },
-                  })
-                }}
-              >
-                <Text
-                  style={[
-                    styles.text_desc,
-                    styles.text_xs,
-                    viewedRowStyles.usernameText,
-                  ]}
-                >
-                  {member.username}
-                </Text>
-              </FixedPressable>
-            </View>
-          </View>
-          <View>
+        </View>
+        <View>
+          <Text
+            style={[
+              styles.text,
+              styles.text_base,
+              props.titleStyle === 'emphasized' &&
+                viewedRowStyles.titleEmphasized,
+            ]}
+          >
+            {title}
+          </Text>
+          <View style={viewedRowStyles.metaRow}>
             <Text
-              style={[
-                styles.text,
-                styles.text_base,
-                props.titleStyle === 'emphasized' &&
-                  viewedRowStyles.titleEmphasized,
-              ]}
+              style={[viewedRowStyles.mr2, styles.text_meta, styles.text_xs]}
             >
-              {title}
+              上次查看
             </Text>
-            <View style={viewedRowStyles.metaRow}>
-              <Text
-                style={[viewedRowStyles.mr2, styles.text_meta, styles.text_xs]}
-              >
-                上次查看
-              </Text>
-              <Text style={[styles.text_meta, styles.text_xs]}>
-                <TimeAgo date={data.viewed_at} />
-              </Text>
-            </View>
+            <Text style={[styles.text_meta, styles.text_xs]}>
+              <TimeAgo date={data.viewed_at} />
+            </Text>
           </View>
         </View>
-      </FixedPressable>
-    </MaxWidthWrapper>
+      </View>
+    </FixedPressable>
   )
 }
 
