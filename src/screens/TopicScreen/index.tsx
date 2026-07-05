@@ -192,13 +192,13 @@ function TopicScreen() {
 
   const composeAuthedNavigation = useComposeAuthedNavigation()
   const currentUser = useCurrentUser()
-  const {
-    showConversation,
-    showUserInfo,
-    showReplyForm,
-    dismissReplyForm,
-    dismissAll,
-  } = useTopicSheetStore()
+  // Subscribe to the stable actions only — destructuring the whole store
+  // re-rendered the entire screen every time any sheet opened or closed.
+  const showConversation = useTopicSheetStore((state) => state.showConversation)
+  const showUserInfo = useTopicSheetStore((state) => state.showUserInfo)
+  const showReplyForm = useTopicSheetStore((state) => state.showReplyForm)
+  const dismissReplyForm = useTopicSheetStore((state) => state.dismissReplyForm)
+  const dismissAll = useTopicSheetStore((state) => state.dismissAll)
 
   const { styles, colorScheme } = useTheme()
 

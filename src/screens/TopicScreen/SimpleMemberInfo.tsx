@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
@@ -39,8 +39,10 @@ export default function SimpleMemberInfo(props: {
   })
   const alert = useAlertService() as AlertService
 
+  const memberData = memberQuery.data
+
   const handleBlockToggle = useCallback(() => {
-    const { data } = memberQuery
+    const data = memberData
     if (!data) {
       return
     }
@@ -71,10 +73,8 @@ export default function SimpleMemberInfo(props: {
         })
         queryClient.setQueryData(
           [`/page/member/:username/info.json`, username],
-          {
-            ...memberQuery.data,
-            meta: patch.meta,
-          },
+          (prev: MemberDetail | undefined) =>
+            prev ? { ...prev, meta: patch.meta } : prev,
         )
       })
       .catch((err) => {
@@ -86,15 +86,15 @@ export default function SimpleMemberInfo(props: {
       .finally(() => {
         alert.hide(indicator)
       })
-  }, [memberQuery, alert, queryClient, username])
+  }, [memberData, alert, queryClient, username])
 
-  const { data } = memberQuery
+  const data = memberData
 
   return (
     <View style={[simpleMemberStyles.container, styles.border_b_light]}>
       <View style={simpleMemberStyles.row}>
         <View style={simpleMemberStyles.flex1}>
-          <Button
+          <Pressable
             style={simpleMemberStyles.row}
             onPress={() => {
               router.push({
@@ -133,7 +133,7 @@ export default function SimpleMemberInfo(props: {
                 </Text>
               </Text>
             </View>
-          </Button>
+          </Pressable>
         </View>
         <View style={simpleMemberStyles.rightCol}>
           <View style={simpleMemberStyles.row}>
@@ -166,6 +166,7 @@ const simpleMemberStyles = StyleSheet.create({
   },
   avatarWrap: {
     marginRight: 12,
+    paddingTop: 4,
   },
   avatar: {
     width: AVATAR_SIZE,

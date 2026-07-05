@@ -32,8 +32,8 @@ importers:
         specifier: ^1.0.14
         version: 1.0.14(react-native@0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
       '@lodev09/react-native-true-sheet':
-        specifier: 3.0.4
-        version: 3.0.4(0a5f3b2096e128c51a87a5893277ff3e)
+        specifier: 3.11.2
+        version: 3.11.2(b8f3603c0f8ccee07ffed769eb950959)
       '@native-html/iframe-plugin':
         specifier: ^2.6.1
         version: 2.6.1(react-native-render-html@6.3.4(@types/react-native@0.73.0(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(@types/react@19.2.17)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
@@ -1603,14 +1603,23 @@ packages:
       react: '*'
       react-native: '*'
 
-  '@lodev09/react-native-true-sheet@3.0.4':
-    resolution: {integrity: sha512-FfBmEfnt0jD5+dng6u/dt90BBgr9BHDfW8NE1LgaRTsaZLGs/5bc+sDYjMEgKoKVKhuDZGxftAG2k/rGU+BsoA==}
+  '@lodev09/react-native-true-sheet@3.11.2':
+    resolution: {integrity: sha512-ENSHnX0juBtrqElTKz4WMas9CLYPlv/y5GuATK325GuVIYFxHE8uo5ttCmXPksCGzQTrkiPtmL8Jw0QvtwQi5g==}
     peerDependencies:
+      '@radix-ui/react-dialog': '>=1'
+      '@radix-ui/react-presence': '>=1'
+      '@react-navigation/core': '>=7'
       react: '*'
       react-native: '*'
-      react-native-reanimated: '>=4.0.0'
+      react-native-reanimated: '>=4'
       react-native-worklets: '*'
     peerDependenciesMeta:
+      '@radix-ui/react-dialog':
+        optional: true
+      '@radix-ui/react-presence':
+        optional: true
+      '@react-navigation/core':
+        optional: true
       react-native-reanimated:
         optional: true
       react-native-worklets:
@@ -10077,11 +10086,14 @@ snapshots:
       react: 19.2.3
       react-native: 0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)
 
-  '@lodev09/react-native-true-sheet@3.0.4(0a5f3b2096e128c51a87a5893277ff3e)':
+  '@lodev09/react-native-true-sheet@3.11.2(b8f3603c0f8ccee07ffed769eb950959)':
     dependencies:
       react: 19.2.3
       react-native: 0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)
     optionalDependencies:
+      '@radix-ui/react-dialog': 1.1.15(@types/react@19.2.17)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@radix-ui/react-presence': 1.1.5(@types/react@19.2.17)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@react-navigation/core': 7.13.7(react@19.2.3)
       react-native-reanimated: 4.3.1(react-native-worklets@0.8.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(react-native@0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3))(react-native@0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
       react-native-worklets: 0.8.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(react-native@0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
 
@@ -10536,7 +10548,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
