@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { PlayIcon } from 'react-native-heroicons/outline'
+import { Image } from 'expo-image'
 
 import { useTheme } from '@/containers/ThemeService'
 import { AudioItem } from '@/stores/audio'
@@ -36,10 +37,14 @@ export function AudioRow({ item }: { item: AudioItem }) {
           { backgroundColor: theme.colors.overlay_input_bg },
         ]}
       >
-        <PlayIcon
-          size={20}
-          color={isActive ? theme.colors.primary : theme.colors.text}
-        />
+        {item.artworkUrl ? (
+          <Image source={item.artworkUrl} style={audioRowStyles.artworkImage} />
+        ) : (
+          <PlayIcon
+            size={20}
+            color={isActive ? theme.colors.primary : theme.colors.text}
+          />
+        )}
       </View>
       <View style={audioRowStyles.flex1}>
         <Text
@@ -82,5 +87,9 @@ const audioRowStyles = StyleSheet.create({
   },
   flex1: {
     flex: 1,
+  },
+  artworkImage: {
+    width: 20,
+    height: 20,
   },
 })

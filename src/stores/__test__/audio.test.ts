@@ -1,4 +1,4 @@
-import { useAudioStore } from '@/stores/audio'
+import { getAudioResourcesFromPages, useAudioStore } from '@/stores/audio'
 
 jest.mock('@/utils/remoteDevtools', () => ({
   remoteDevtools: (initializer: unknown) => initializer,
@@ -71,5 +71,35 @@ describe('audio store', () => {
       artist: 'Planet',
       artworkUrl: 'https://example.com/cover.jpg',
     })
+  })
+
+  it('maps planet avatar to intercepted audio artwork', () => {
+    expect(
+      getAudioResourcesFromPages([
+        {
+          data: [
+            {
+              title: 'Post title',
+              planet: {
+                site_title: 'Planet',
+                avatar: 'https://example.com/artist-cover.png',
+              },
+              audio: {
+                url: 'https://example.com/audio.mp3',
+                title: 'Episode 1',
+                author: 'Author',
+              },
+            },
+          ],
+        },
+      ]),
+    ).toEqual([
+      {
+        title: 'Episode 1',
+        url: 'https://example.com/audio.mp3',
+        artist: 'Author',
+        artworkUrl: 'https://example.com/artist-cover.png',
+      },
+    ])
   })
 })

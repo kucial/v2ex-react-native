@@ -14,7 +14,6 @@ export function HistoryTab() {
 
   return (
     <FlashList
-      contentContainerClassName='pb-safe'
       data={historyList}
       renderItem={({ item }) => <AudioRow item={item} />}
       keyExtractor={(item) => item.url}

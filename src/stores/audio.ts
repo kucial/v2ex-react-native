@@ -121,21 +121,28 @@ export const useAudioStore = create<AudioStore>()(
   ),
 )
 
+export function getAudioResourcesFromPages(pages?: any[]): AudioItem[] {
+  if (!pages) return []
+
+  const newItems: AudioItem[] = []
+  pages.forEach((page) => {
+    page?.data?.forEach((item: any) => {
+      if (item.audio && item.audio.url) {
+        newItems.push({
+          url: item.audio.url,
+          title: item.audio.title || item.title || 'Audio',
+          artist: item.audio.author || item.planet?.site_title,
+          artworkUrl: item.planet?.avatar,
+        })
+      }
+    })
+  })
+  return newItems
+}
+
 export function useAudioResourceInterceptor(pages?: any[]) {
   useEffect(() => {
-    if (!pages) return
-    const newItems: AudioItem[] = []
-    pages.forEach((page) => {
-      page?.data?.forEach((item: any) => {
-        if (item.audio && item.audio.url) {
-          newItems.push({
-            url: item.audio.url,
-            title: item.audio.title || item.title || 'Audio',
-            artist: item.audio.author || item.planet?.site_title,
-          })
-        }
-      })
-    })
+    const newItems = getAudioResourcesFromPages(pages)
     if (newItems.length > 0) {
       useAudioStore.getState().addResources(newItems)
     }

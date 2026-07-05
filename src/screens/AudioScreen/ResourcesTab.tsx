@@ -1,12 +1,12 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ArrowsUpDownIcon } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useActionSheet } from '@expo/react-native-action-sheet'
-import { FlashList } from '@shopify/flash-list'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
 
 import { useTheme } from '@/containers/ThemeService'
-import { useAudioStore } from '@/stores/audio'
+import { AudioResourceItem, useAudioStore } from '@/stores/audio'
 import { useCachedState } from '@/utils/hooks'
 
 import { AudioRow } from './AudioRow'
@@ -62,6 +62,12 @@ export function ResourcesTab() {
     'discovered_desc',
   )
   const [artistFilter, setArtistFilter] = useState<string | null>(null)
+  const listRef = useRef<FlashListRef<AudioResourceItem>>(null)
+
+  // Jump back to the top whenever the ordering/filter changes
+  useEffect(() => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: false })
+  }, [sortKey, artistFilter])
 
   const artists = useMemo(() => {
     const values = new Set<string>()
@@ -118,10 +124,19 @@ export function ResourcesTab() {
     setSortKey,
   ])
 
+  console.log(items[0])
+
   return (
     <View style={tabStyles.container}>
       <View style={[tabStyles.toolbar, styles.border_b_light]}>
-        <Pressable onPress={handleSortPress} style={tabStyles.sortButton}>
+        <Pressable
+          onPress={handleSortPress}
+          hitSlop={8}
+          style={({ pressed }) => [
+            tabStyles.sortButton,
+            pressed && tabStyles.pressed,
+          ]}
+        >
           <ArrowsUpDownIcon size={16} color={theme.colors.text_desc} />
           <Text style={[styles.text_meta, styles.text_sm]}>
             {SORT_LABELS[sortKey] || SORT_LABELS.discovered_desc}
@@ -151,10 +166,13 @@ export function ResourcesTab() {
         )}
       </View>
       <FlashList
-        contentContainerClassName='pb-safe'
+        ref={listRef}
         data={items}
         renderItem={({ item }) => <AudioRow item={item} />}
         keyExtractor={(item) => item.url}
+        // chat-style position anchoring leaves the list over-scrolled after
+        // a re-sort, showing a single item
+        maintainVisibleContentPosition={{ disabled: true }}
       />
     </View>
   )
@@ -168,15 +186,19 @@ const tabStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 4,
     gap: 8,
   },
   sortButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingVertical: 4,
-    paddingRight: 4,
+    minHeight: 36,
+    paddingHorizontal: 4,
+    width: '100%',
+  },
+  pressed: {
+    opacity: 0.6,
   },
   chipScroll: {
     flex: 1,
