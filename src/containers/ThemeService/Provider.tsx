@@ -1,5 +1,6 @@
 import { ReactNode, useContext, useEffect, useMemo } from 'react'
-import { Platform } from 'react-native'
+import { AppState, Platform } from 'react-native'
+import { getAppIcon, setAppIcon } from '@howincodes/expo-dynamic-app-icon'
 import * as NavigationBar from 'expo-navigation-bar'
 import {
   DarkTheme,
@@ -12,6 +13,29 @@ import { useAppSettings } from '../AppSettingsService'
 import { ThemeContext } from './context'
 import { getThemeService } from './helpers'
 import { useColorScheme } from './hooks'
+
+// Themes that ship an alternate Icon Composer bundle
+// (src/assets/icons/composer/AppIcon-<theme>.icon, wired up by
+// plugins/withAlternateAppIcons). `r2v` is the primary icon.
+const ICON_THEMES = new Set([
+  'gin_blue',
+  'gin_dark_purple',
+  'gin_purple',
+  'gin_green',
+  'gin_teal',
+  'gin_red',
+  'gin_orange',
+  'gin_yellow',
+  'gin_pink',
+])
+
+async function syncAppIconWithTheme(themeName: string) {
+  const target = ICON_THEMES.has(themeName) ? themeName : null
+  const current = await getAppIcon()
+  if ((current === 'DEFAULT' ? null : current) !== target) {
+    await setAppIcon(target, true)
+  }
+}
 
 export const ThemeProvider = (props: {
   theme?: string
@@ -50,6 +74,23 @@ export const ThemeProvider = (props: {
       SystemUI.setBackgroundColorAsync(service.theme.colors.bg_overlay)
     }
   }, [service])
+
+  useEffect(() => {
+    if (Platform.OS !== 'ios') {
+      return
+    }
+    // Apply the icon only while the app is in the background: iOS shows a
+    // "You have changed the icon" alert when the change happens in the
+    // foreground (the old private-API silencing no longer works on iOS 26).
+    const subscription = AppState.addEventListener('change', (state) => {
+      syncAppIconWithTheme(themeName).catch(() => {
+        // alternate icons unavailable (e.g. outdated native build) — ignore
+      })
+    })
+    return () => {
+      subscription.remove()
+    }
+  }, [themeName])
 
   const theme = useMemo(() => {
     if (activeScheme === 'dark') {

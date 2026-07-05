@@ -18,6 +18,7 @@
     "@bacons/apple-targets": "^3.0.6",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@gorhom/portal": "^1.0.14",
+    "@howincodes/expo-dynamic-app-icon": "^3.0.2",
     "@lodev09/react-native-true-sheet": "3.11.2",
     "@native-html/iframe-plugin": "^2.6.1",
     "@prezly/slate-lists": "^0.57.1",
