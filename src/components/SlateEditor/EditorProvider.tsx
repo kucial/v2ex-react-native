@@ -49,13 +49,36 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
     const pendingHTML = useRef<((v: string) => void) | null>(null)
     const pendingMarkdown = useRef<((v: string) => void) | null>(null)
 
+    // The DOM component's webview loads asynchronously: its imperative
+    // methods only exist after it posts 'ready'. Config set before that is
+    // buffered here and applied on 'ready'.
+    type InitConfig = Parameters<SlateEditorMethods['init']>[0]
+    const domReadyRef = useRef(false)
+    const pendingInitConfig = useRef<InitConfig | null>(null)
+
+    const applyInitConfig = useCallback((config: InitConfig) => {
+      domRef.current?.init?.({
+        html: config.html,
+        placeholder: config.placeholder,
+        containerStyle: config.containerStyle as Record<
+          string,
+          string | number
+        >,
+      })
+    }, [])
+
     // ── Event handler: receives events from the DOM component ──────────────
 
     const handleEvent = useCallback(
       (event: EditorEventPayload) => {
         switch (event.type) {
           case 'ready':
-            // DOM component is mounted and ready; init will be called by EditorRender
+            // DOM component is mounted; apply any config buffered before the
+            // webview finished loading
+            domReadyRef.current = true
+            if (pendingInitConfig.current) {
+              applyInitConfig(pendingInitConfig.current)
+            }
             setState((prev) => ({ ...prev, _ready: false })) // will become true after init
             break
           case 'focus':
@@ -83,10 +106,24 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
             }))
             break
           case 'selection':
-            setState((prev) => ({
-              ...prev,
-              selectionBox: event.selectionBox ?? undefined,
-            }))
+            setState((prev) => {
+              const next = event.selectionBox ?? undefined
+              const current = prev.selectionBox
+              // bail out when unchanged to avoid re-render churn (each
+              // render re-emits props to the DOM webview)
+              if (!current && !next) {
+                return prev
+              }
+              if (
+                current &&
+                next &&
+                current.top === next.top &&
+                current.bottom === next.bottom
+              ) {
+                return prev
+              }
+              return { ...prev, selectionBox: next }
+            })
             break
           case 'html':
             pendingHTML.current?.(event.value)
@@ -102,7 +139,7 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
             }
         }
       },
-      [props],
+      [props, applyInitConfig],
     )
 
     // ── Build the editor service object ────────────────────────────────────
@@ -110,16 +147,10 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
     const methods: SlateEditorMethods = useMemo(
       () => ({
         init: (config) => {
-          if (!domRef.current)
-            return Promise.reject(new Error('DOM component not ready'))
-          domRef.current.init({
-            html: config.html,
-            placeholder: config.placeholder,
-            containerStyle: config.containerStyle as Record<
-              string,
-              string | number
-            >,
-          })
+          pendingInitConfig.current = config
+          if (domReadyRef.current) {
+            applyInitConfig(config)
+          }
           return Promise.resolve()
         },
         focus: () => {
@@ -173,7 +204,7 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
           return Promise.resolve()
         },
       }),
-      [],
+      [applyInitConfig],
     )
 
     const editor: SlateEditorService = useMemo(
@@ -203,16 +234,13 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
         isMarkActive(type) {
           return !!state.meta.inlineStyles?.[type]
         },
-        // kept for EditorRender to call after ready event
+        // Called by EditorRender on mount — buffered until the DOM 'ready'
+        // event if the webview hasn't loaded yet
         setInitialConfig(config) {
-          domRef.current?.init({
-            html: config.html,
-            placeholder: config.placeholder,
-            containerStyle: config.containerStyle as Record<
-              string,
-              string | number
-            >,
-          })
+          pendingInitConfig.current = config
+          if (domReadyRef.current) {
+            applyInitConfig(config)
+          }
         },
         webview: domRef as any,
         handleMessage: () => {
@@ -220,7 +248,7 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
         },
         ...methods,
       }),
-      [state, methods],
+      [state, methods, applyInitConfig],
     )
 
     useImperativeHandle(ref, () => editor)

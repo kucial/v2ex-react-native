@@ -246,6 +246,9 @@ export default function SlateEditorDOM({ onEvent, ref }: Props) {
     throttle(() => {
       const editor = editorRef.current
       if (!editor) return
+      // skip when unchanged — including null -> null, otherwise every
+      // rerender posts a selection event and feeds a RN <-> DOM render loop
+      if (!lastSelectionRef.current && !editor.selection) return
       if (
         lastSelectionRef.current &&
         editor.selection &&
@@ -313,6 +316,16 @@ export default function SlateEditorDOM({ onEvent, ref }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // After init sets a value, report meta once so the RN side flips to
+  // ready (otherwise meta is only reported on user edits and the editor
+  // stays hidden at opacity 0)
+  React.useEffect(() => {
+    if (editorState.value) {
+      reportMeta()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editorState.refreshKey])
+
   // ── Value change handler ────────────────────────────────────────────────────
 
   const handleChange = React.useCallback(
@@ -335,7 +348,9 @@ export default function SlateEditorDOM({ onEvent, ref }: Props) {
       ref={domRef}
       onClick={() => {
         const editor = editorRef.current
-        if (!shouldSkipFocusRef.current && editor?.selection) {
+        // focus even when there is no selection yet (fresh editor) —
+        // Slate places the cursor at the start
+        if (!shouldSkipFocusRef.current && editor) {
           ReactEditor.focus(editor)
         }
       }}

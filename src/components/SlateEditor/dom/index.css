@@ -16,6 +16,19 @@ body,
   min-height: 100%;
 }
 
+/* Expo's DOM component template sets `#root { display: flex; flex: 1 }`
+   (row direction), which shrinks the editor container to its content
+   width — zero for an empty editor, hiding the placeholder and leaving
+   nothing tappable. Stack instead and make the container fill. */
+#root {
+  flex-direction: column;
+}
+
+#root > div {
+  width: 100%;
+  flex: 1 0 auto;
+}
+
 body {
   background: transparent;
   color: inherit;

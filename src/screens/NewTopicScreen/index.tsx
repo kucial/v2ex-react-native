@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  findNodeHandle,
   InteractionManager,
   ScrollView,
   StyleSheet,
@@ -85,12 +84,14 @@ export default function NewTopicScreen() {
         editor?.hasFocus() &&
         selectionBox
       ) {
-        const scrollViewRefHandle = findNodeHandle(scrollView)
-        if (scrollViewRefHandle === null) {
+        // Fabric: measureLayout requires a native component ref, not a
+        // findNodeHandle number
+        const scrollViewNativeRef = scrollView.getNativeScrollRef?.()
+        if (!scrollViewNativeRef) {
           return
         }
         editorRenderContainer.current.measureLayout(
-          scrollViewRefHandle,
+          scrollViewNativeRef,
           (left, top, width, height) => {
             const cursorOffsetTop = top + selectionBox.top
 
