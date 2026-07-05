@@ -5,14 +5,16 @@ import {
   DocumentPlusIcon,
   EnvelopeIcon,
   MagnifyingGlassIcon,
+  UserIcon,
 } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
-import { useAuthMeta } from '@/stores/auth'
+import { useAuthMeta, useCurrentUser } from '@/stores/auth'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 import Button from '../Button'
@@ -43,6 +45,7 @@ export const useNavigationWithBreadcrumb = (
 export default function MainScreenHeader(props) {
   const { options } = props
   const meta = useAuthMeta()
+  const user = useCurrentUser()
   const { theme, styles } = useTheme()
   const insets = useSafeAreaInsets()
   const padLayout = usePadLayout()
@@ -68,6 +71,12 @@ export default function MainScreenHeader(props) {
     'MainScreenHeader',
     'viewed-topics',
     '/me/viewed-topics',
+  )
+  // not auth-gated: MyScreen handles the visitor state itself
+  const handleMyScreenPress = useNavigationWithBreadcrumb(
+    'MainScreenHeader',
+    'my',
+    '/my',
   )
   const iconColor = theme.colors.text_desc
 
@@ -156,6 +165,22 @@ export default function MainScreenHeader(props) {
           >
             <ClockIcon size={24} color={iconColor} />
           </Button>
+
+          <Button
+            style={mainHeaderStyles.iconBtn}
+            variant='icon'
+            radius={22}
+            onPress={handleMyScreenPress}
+          >
+            {user?.avatar_normal ? (
+              <Image
+                source={{ uri: user.avatar_normal }}
+                style={mainHeaderStyles.avatar}
+              />
+            ) : (
+              <UserIcon size={24} color={iconColor} />
+            )}
+          </Button>
         </View>
       )}
     </View>
@@ -190,6 +215,11 @@ const mainHeaderStyles = StyleSheet.create({
     position: 'relative',
     width: 24,
     height: 24,
+  },
+  avatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 999,
   },
   badge: {
     position: 'absolute',

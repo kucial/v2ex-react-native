@@ -32,7 +32,7 @@ import {
   useUiMetricsStore,
 } from '@/stores/uiMetrics'
 
-const TAB_PATHS = ['/feed', '/nodes', '/my', '/audio']
+const TAB_PATHS = ['/feed', '/nodes', '/audio']
 
 // Three placements are handled:
 // 1. Main tab screens — a `dock` instance rendered inside the tab bar slot,

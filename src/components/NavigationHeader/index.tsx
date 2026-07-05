@@ -9,8 +9,8 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
-import { useRoute } from 'expo-router/react-navigation'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -49,9 +49,8 @@ export default function NavigationHeader({
 }: NavigationHeaderProps) {
   const router = useRouter()
   const { styles } = useTheme()
+  const insets = useSafeAreaInsets()
 
-  const route = useRoute()
-  console.log(route)
   const displayTitle = headerTitle || title || ''
 
   const handleBack = useMemo(() => {
@@ -99,7 +98,7 @@ export default function NavigationHeader({
   return (
     <View
       style={[
-        modal ? navHeaderStyles.ptModal : navHeaderStyles.ptSafe,
+        modal ? navHeaderStyles.ptModal : { paddingTop: insets.top },
         navHeaderStyles.flexShrink,
         styles.layer1,
         style,
@@ -170,9 +169,6 @@ const navHeaderStyles = StyleSheet.create({
   ptModal: {
     paddingTop: 4,
   },
-  ptSafe: {
-    paddingTop: 44,
-  },
   flexShrink: {
     flexShrink: 0,
   },
@@ -185,10 +181,12 @@ const navHeaderStyles = StyleSheet.create({
   titleWrap: {
     position: 'absolute',
     alignItems: 'center',
+    justifyContent: 'center',
     left: 80,
     right: 80,
+    top: 0,
+    bottom: 0,
     zIndex: 0,
-    bottom: 1,
   },
   actionBtn: {
     height: 44,

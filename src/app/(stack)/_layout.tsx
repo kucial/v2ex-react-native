@@ -165,6 +165,12 @@ export default function StackLayout() {
           title: '意见反馈',
         }}
       />
+      <Stack.Screen
+        name='my'
+        options={{
+          title: '我的',
+        }}
+      />
     </Stack>
   )
 }
