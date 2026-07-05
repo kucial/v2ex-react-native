@@ -32,7 +32,6 @@
     "@tanstack/query-async-storage-persister": "^5.90.14",
     "@tanstack/react-query": "^5.90.10",
     "@tanstack/react-query-persist-client": "^5.90.12",
-    "@thebeka/react-native-get-pixel-color": "^1.1.4",
     "axios": "^0.27.2",
     "cheerio": "1.0.0-rc.12",
     "clsx": "^2.1.1",
@@ -148,7 +147,6 @@
   "packageManager": "pnpm@10.26.0",
   "pnpm": {
     "patchedDependencies": {
-      "@thebeka/react-native-get-pixel-color": "patches/@thebeka__react-native-get-pixel-color.patch",
       "react-native-nprogress@1.1.0": "patches/react-native-nprogress@1.1.0.patch"
     },
     "ignoredBuiltDependencies": [

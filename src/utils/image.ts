@@ -1,11 +1,7 @@
 import 'react-native-url-polyfill/auto'
 
-import { Image, Platform } from 'react-native'
-import GetPixelColor from '@thebeka/react-native-get-pixel-color'
-import Color from 'color'
 import * as FileSystem from 'expo-file-system'
-
-import PixelTally from './PixelTally'
+import { Image } from 'expo-image'
 
 /**
  * Downloads an image and returns the local file URI, using cache if available.
@@ -55,160 +51,85 @@ export function getFilename(uri: string): string {
   return basename.split('?')[0]
 }
 
+const BASE83_ALPHABET =
+  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~'
+
+function decode83(str: string): number {
+  let value = 0
+  for (const char of str) {
+    const index = BASE83_ALPHABET.indexOf(char)
+    if (index === -1) {
+      throw new Error(`Invalid blurhash character: ${char}`)
+    }
+    value = value * 83 + index
+  }
+  return value
+}
+
+const srgbToLinear = (channel: number) => {
+  const c = channel / 255
+  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+}
+
+const linearToSrgb = (y: number) => {
+  const c = y <= 0.0031308 ? y * 12.92 : 1.055 * Math.pow(y, 1 / 2.4) - 0.055
+  return Math.round(Math.min(1, Math.max(0, c)) * 255)
+}
+
+// WCAG contrast ratio to aim for: comfortably above the 4.5:1 AA threshold.
+const TARGET_CONTRAST = 9
+// Background linear luminance above which dark text yields more contrast
+// than light text: solves (Y+0.05)/0.05 = 1.05/(Y+0.05).
+const DARK_TEXT_THRESHOLD = 0.179
+
 /**
- * Gets the size of an image from its file URI.
- * @param fileUri - The file URI
- * @returns Promise resolving to width and height
+ * Picks a grayscale color that contrasts with a background of the given
+ * average luminosity (0-255, e.g. from `getImageLuminosity`).
+ *
+ * Solves for the gray whose WCAG contrast ratio against the background hits
+ * TARGET_CONTRAST: ambiguous mid-tone backgrounds get pushed toward pure
+ * black/white, while clearly dark or light backgrounds keep a softer gray.
+ *
+ * @param luminosity - Average background luminosity (0-255)
+ * @returns Hex grayscale color, e.g. '#c9c9c9'
  */
-async function getImageSize(
-  fileUri: string,
-): Promise<{ width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    Image.getSize(
-      fileUri,
-      (width, height) => {
-        resolve({
-          width,
-          height,
-        })
-      },
-      reject,
-    )
-  })
-}
-
-type Options = {
-  xStepCount?: number
-  yStepCount?: number
-  greyscaleDistance?: number
-  start?: [number, number] // 0 - 100 [x, y]
-  end?: [number, number]
+export function getContrastGrayscale(luminosity: number): string {
+  const bgY = srgbToLinear(luminosity)
+  let textY: number
+  if (bgY > DARK_TEXT_THRESHOLD) {
+    // dark text: contrast = (bgY + 0.05) / (textY + 0.05)
+    textY = (bgY + 0.05) / TARGET_CONTRAST - 0.05
+  } else {
+    // light text: contrast = (textY + 0.05) / (bgY + 0.05)
+    textY = TARGET_CONTRAST * (bgY + 0.05) - 0.05
+  }
+  const channel = linearToSrgb(textY)
+  const hex = channel.toString(16).padStart(2, '0')
+  return `#${hex}${hex}${hex}`
 }
 
 /**
- * Calculates the average luminosity of an image by sampling pixels in a grid.
+ * Calculates the average luminosity of an image.
+ *
+ * Uses expo-image's blurhash encoder with a single 1x1 component: the DC
+ * component of a blurhash is the image's average color, so one native call
+ * (served from expo-image's cache) replaces downloading the file and
+ * sampling pixels one by one over the bridge.
+ *
  * @param url - Image URL to analyze
- * @param options - Sampling options
  * @returns Average luminosity value (0-255)
  */
-export async function getImageLuminosity(
-  url: string,
-  options: Options = {},
-): Promise<number> {
-  try {
-    // Download the image
-    const fileUri = await downloadOrUseCachedImage(url)
-
-    // Extract sampling parameters
-    const xStep = options.xStepCount || 5
-    const yStep = options.yStepCount || 5
-    const greyscaleDistance = options.greyscaleDistance || 15
-
-    // Get image dimensions
-    const { width, height } = await getImageSize(fileUri)
-
-    // Initialize pixel tally
-    const tally = new PixelTally({ greyscaleDistance })
-
-    // Initialize pixel color library based on platform
-    if (Platform.OS === 'ios') {
-      await GetPixelColor.init(fileUri)
-    } else {
-      const base64 = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: 'base64',
-      })
-      await GetPixelColor.init(base64)
-    }
-
-    // Calculate sampling region
-    const { xOffset, yOffset, xRange, yRange } = calculateSamplingRegion(
-      options,
-      width,
-      height,
-    )
-
-    // Generate sampling points
-    const samplingPoints = generateSamplingPoints(
-      xOffset,
-      yOffset,
-      xRange,
-      yRange,
-      xStep,
-      yStep,
-    )
-
-    // Sample pixels and record colors
-    for (const { x, y } of samplingPoints) {
-      const hex = await GetPixelColor.pickColorAt(x, y)
-      const color = new Color(hex)
-      tally.record({
-        red: color.red(),
-        blue: color.blue(),
-        green: color.green(),
-      })
-    }
-
-    return tally.getLuminosityAverage()
-  } catch (error) {
-    console.error('Error calculating image luminosity:', error)
-    throw error
+export async function getImageLuminosity(url: string): Promise<number> {
+  const blurhash = await Image.generateBlurhashAsync(url, [1, 1])
+  if (!blurhash || blurhash.length < 6) {
+    throw new Error(`Failed to generate blurhash for image: ${url}`)
   }
-}
-
-/**
- * Calculates the sampling region based on options.
- * @param options - Sampling options
- * @param width - Image width
- * @param height - Image height
- * @returns Sampling region parameters
- */
-function calculateSamplingRegion(
-  options: Options,
-  width: number,
-  height: number,
-): { xOffset: number; yOffset: number; xRange: number; yRange: number } {
-  if (options.start && options.end) {
-    const xOffset = (Math.min(options.start[0], options.end[0]) / 100) * width
-    const yOffset = (Math.min(options.start[1], options.end[1]) / 100) * height
-    const xRange = (Math.abs(options.start[0] - options.end[0]) / 100) * width
-    const yRange = (Math.abs(options.start[1] - options.end[1]) / 100) * height
-    return { xOffset, yOffset, xRange, yRange }
-  }
-  return { xOffset: 0, yOffset: 0, xRange: width, yRange: height }
-}
-
-/**
- * Generates evenly distributed sampling points within the specified region.
- * @param xOffset - X offset of the region
- * @param yOffset - Y offset of the region
- * @param xRange - Width of the region
- * @param yRange - Height of the region
- * @param xStep - Number of steps in X direction
- * @param yStep - Number of steps in Y direction
- * @returns Array of sampling points
- */
-function generateSamplingPoints(
-  xOffset: number,
-  yOffset: number,
-  xRange: number,
-  yRange: number,
-  xStep: number,
-  yStep: number,
-): { x: number; y: number }[] {
-  const points: { x: number; y: number }[] = []
-
-  // Calculate intervals to evenly distribute points across the range
-  // For n steps, we need (n-1) intervals to span the full range
-  const xInterval = xStep > 1 ? xRange / (xStep - 1) : 0
-  const yInterval = yStep > 1 ? yRange / (yStep - 1) : 0
-
-  for (let i = 0; i < xStep; i++) {
-    const x = Math.round(xOffset + i * xInterval)
-    for (let j = 0; j < yStep; j++) {
-      const y = Math.round(yOffset + j * yInterval)
-      points.push({ x, y })
-    }
-  }
-
-  return points
+  // Blurhash layout: [size flag][quant max][4 chars average color as
+  // base83-encoded 24-bit sRGB]
+  const rgb = decode83(blurhash.slice(2, 6))
+  const red = (rgb >> 16) & 255
+  const green = (rgb >> 8) & 255
+  const blue = rgb & 255
+  // Rec. 601 luma
+  return 0.299 * red + 0.587 * green + 0.114 * blue
 }

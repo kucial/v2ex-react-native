@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  '@thebeka/react-native-get-pixel-color':
-    hash: b93def45bfdc8404084010baa7c4629ff8a4748ecf8110ce9d2ae46d01ed9e38
-    path: patches/@thebeka__react-native-get-pixel-color.patch
   react-native-nprogress@1.1.0:
     hash: a49ced9d5a3fac57f2e9c2ce754a3514982af477f4fd66ad6454d1a6201d4875
     path: patches/react-native-nprogress@1.1.0.patch
@@ -67,9 +64,6 @@ importers:
       '@tanstack/react-query-persist-client':
         specifier: ^5.90.12
         version: 5.90.18(@tanstack/react-query@5.90.16(react@19.2.3))(react@19.2.3)
-      '@thebeka/react-native-get-pixel-color':
-        specifier: ^1.1.4
-        version: 1.1.4(patch_hash=b93def45bfdc8404084010baa7c4629ff8a4748ecf8110ce9d2ae46d01ed9e38)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
       axios:
         specifier: ^0.27.2
         version: 0.27.2(debug@4.4.3)
@@ -2378,12 +2372,6 @@ packages:
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
       '@testing-library/dom': '>=7.21.4'
-
-  '@thebeka/react-native-get-pixel-color@1.1.4':
-    resolution: {integrity: sha512-bE047oIrqB+J7Y9uSUN/r9fmMefpIzdgNcLnvpetPKLck8FR1EjAmR9Tz6ukD0oqxzNV0Os2LP/XmwMnJanAmg==}
-    peerDependencies:
-      react: ^16.8.1
-      react-native: '>=0.60.0-rc.0 <1.0.x'
 
   '@tootallnate/once@1.1.2':
     resolution: {integrity: sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==}
@@ -10752,11 +10740,6 @@ snapshots:
   '@testing-library/user-event@14.6.1(@testing-library/dom@10.4.1)':
     dependencies:
       '@testing-library/dom': 10.4.1
-
-  '@thebeka/react-native-get-pixel-color@1.1.4(patch_hash=b93def45bfdc8404084010baa7c4629ff8a4748ecf8110ce9d2ae46d01ed9e38)(react-native@0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)':
-    dependencies:
-      react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/jest-preset@0.85.3(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3)
 
   '@tootallnate/once@1.1.2':
     optional: true

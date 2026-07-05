@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Animated, {
   Extrapolation,
@@ -7,7 +7,6 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import * as Sentry from '@sentry/react-native'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
@@ -18,7 +17,7 @@ import Button from '@/components/Button'
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import { useCurrentUser } from '@/stores/auth'
-import { getImageLuminosity } from '@/utils/image'
+import { getContrastGrayscale, getImageLuminosity } from '@/utils/image'
 import { localTime } from '@/utils/time'
 import {
   blockMember,
@@ -79,20 +78,16 @@ export default function MemberScreenHeader(props: {
   const avatar = data?.avatar_large || brief?.avatar_large
   const { theme, styles } = useTheme()
   const alert = useAlertService()
-  const [avatarLuminosity, setAvatarLuminosity] = useState(0)
 
-  useEffect(() => {
-    if (avatar) {
-      getImageLuminosity(avatar, {
-        start: [0, 25],
-        end: [50, 75],
-      })
-        .then(setAvatarLuminosity)
-        .catch((err) => {
-          Sentry.captureException(err)
-        })
-    }
-  }, [avatar])
+  // Average luminosity of the banner (blurred avatar), cached per URL.
+  const luminosityQuery = useQuery({
+    queryKey: ['image-luminosity', avatar],
+    queryFn: () => getImageLuminosity(avatar as string),
+    enabled: !!avatar,
+    staleTime: Infinity,
+    retry: 1,
+  })
+  const avatarLuminosity = luminosityQuery.data
 
   const handleBlockToggle = useCallback(() => {
     const { data } = memberQuery
@@ -250,7 +245,13 @@ export default function MemberScreenHeader(props: {
     return { opacity }
   }, [headerHeight])
 
-  const headerContractColor = avatarLuminosity > 130 ? '#1C1C1E' : '#d4d4d4'
+  // Contrast color for the back button / collapsed title rendered over the
+  // banner. Until the banner luminosity is known, follow the theme (the
+  // header shows a plain layer1 background before the avatar loads).
+  const headerContrastColor =
+    avatarLuminosity === undefined
+      ? (theme.colors.text as string)
+      : getContrastGrayscale(avatarLuminosity)
 
   return (
     <>
@@ -263,7 +264,7 @@ export default function MemberScreenHeader(props: {
         }}
       >
         <BackButton
-          tintColor={headerContractColor}
+          tintColor={headerContrastColor}
           style={{
             width: 36,
             height: 36,
@@ -412,7 +413,7 @@ export default function MemberScreenHeader(props: {
             {
               fontSize: 17,
               fontWeight: '500',
-              color: headerContractColor,
+              color: headerContrastColor,
             },
           ]}
         >
