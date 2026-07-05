@@ -1,6 +1,7 @@
 import CookieManager from '@react-native-cookies/cookies'
 import { Cheerio, CheerioAPI, Element, load } from 'cheerio'
 import hljs from 'highlight.js'
+import { fromUint8Array } from 'js-base64'
 
 import {
   MemberBasic,
@@ -315,14 +316,12 @@ export async function base64File(
   url: string,
   headers?: HeadersInit,
 ): Promise<string> {
-  const data = await fetch(url, { headers })
-  const blob = await data.blob()
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(blob)
-    reader.onloadend = () => {
-      const base64data = reader.result
-      resolve(base64data as string)
-    }
-  })
+  // Read as ArrayBuffer and encode manually — response.blob() + FileReader
+  // fails on React Native ("Creating blobs from 'ArrayBuffer' ... are not
+  // supported").
+  const res = await fetch(url, { headers })
+  const contentType =
+    res.headers.get('content-type')?.split(';')[0] || 'application/octet-stream'
+  const buffer = await res.arrayBuffer()
+  return `data:${contentType};base64,${fromUint8Array(new Uint8Array(buffer))}`
 }
