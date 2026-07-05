@@ -6,6 +6,7 @@ import {
   EnvelopeIcon,
   HomeIcon,
   MagnifyingGlassIcon,
+  MusicalNoteIcon,
   RectangleStackIcon,
   UserIcon,
 } from 'react-native-heroicons/outline'
@@ -71,6 +72,14 @@ export default function AppSidebar(props: {
     }, []),
     {
       message: '[AppSidebar] `Viewed-Topic` button pressed',
+    },
+  )
+  const handleAudioButtonPress = usePressBreadcrumb(
+    useCallback(() => {
+      router.push('/audio')
+    }, []),
+    {
+      message: '[AppSidebar] `Audio` button pressed',
     },
   )
 
@@ -198,6 +207,14 @@ export default function AppSidebar(props: {
               staticColor={theme.colors.text_desc}
               Icon={MagnifyingGlassIcon}
               onPress={handleSearchButtonPress}
+            />
+            <AppSidebarButton
+              isActive={pathname === '/audio'}
+              label='音频'
+              activeColor={theme.colors.primary}
+              staticColor={theme.colors.text_desc}
+              Icon={MusicalNoteIcon}
+              onPress={handleAudioButtonPress}
             />
             {props.position === 'BOTTOM' && width > 730 && (
               <View

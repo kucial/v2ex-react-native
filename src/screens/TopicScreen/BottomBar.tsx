@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { ShareIcon } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useIsFocused } from 'expo-router/react-navigation'
 import LottieView from 'lottie-react-native'
 
 import HeartIcon from '@/components/HeartIcon'
@@ -10,6 +11,7 @@ import StarIcon from '@/components/StarIcon'
 import ToBottomIcon from '@/components/ToBottomIcon'
 
 import { useTheme } from '@/containers/ThemeService'
+import { useScreenBottomBarReporter } from '@/stores/uiMetrics'
 
 import ScrollControl from './ScrollControl'
 import { BarProps } from './types'
@@ -28,6 +30,10 @@ export default function BottomBar(props: BarProps) {
   } = props
   const { styles, theme } = useTheme()
   const insets = useSafeAreaInsets()
+  const isFocused = useIsFocused()
+  // Publish the bar height so MiniPlayerBar docks above it instead of
+  // covering it.
+  const handleBarLayout = useScreenBottomBarReporter(isFocused)
 
   const iconColor = theme.colors.text_meta
   const heartIconRef = useRef<LottieView>(null)
@@ -52,6 +58,7 @@ export default function BottomBar(props: BarProps) {
 
   return (
     <View
+      onLayout={handleBarLayout}
       style={[
         styles.overlay,
         styles.border_t_light,

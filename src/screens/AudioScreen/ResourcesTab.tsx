@@ -1,25 +1,202 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ArrowsUpDownIcon } from 'react-native-heroicons/outline'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useActionSheet } from '@expo/react-native-action-sheet'
 import { FlashList } from '@shopify/flash-list'
 
+import { useTheme } from '@/containers/ThemeService'
 import { useAudioStore } from '@/stores/audio'
+import { useCachedState } from '@/utils/hooks'
 
 import { AudioRow } from './AudioRow'
 
-export function ResourcesTab() {
-  const resourcesMap = useAudioStore((state) => state.resources)
+type SortKey = 'discovered_desc' | 'discovered_asc' | 'title'
 
-  const sortedResources = useMemo(() => {
-    return Object.values(resourcesMap).sort(
-      (a, b) => b.discoveredAt - a.discoveredAt,
-    )
-  }, [resourcesMap])
+const SORT_KEYS: SortKey[] = ['discovered_desc', 'discovered_asc', 'title']
+const SORT_LABELS: Record<SortKey, string> = {
+  discovered_desc: '最新发现',
+  discovered_asc: '最早发现',
+  title: '标题',
+}
 
+function FilterChip(props: {
+  label: string
+  active: boolean
+  onPress: () => void
+}) {
+  const { theme, styles } = useTheme()
   return (
-    <FlashList
-      contentContainerClassName='pb-safe'
-      data={sortedResources}
-      renderItem={({ item }) => <AudioRow item={item} />}
-      keyExtractor={(item) => item.url}
-    />
+    <Pressable
+      onPress={props.onPress}
+      style={[
+        chipStyles.chip,
+        props.active
+          ? { borderColor: theme.colors.primary }
+          : [styles.layer2, chipStyles.chipInactive],
+      ]}
+    >
+      <Text
+        style={[
+          styles.text_sm,
+          {
+            color: props.active ? theme.colors.primary : theme.colors.text_desc,
+          },
+        ]}
+        numberOfLines={1}
+      >
+        {props.label}
+      </Text>
+    </Pressable>
   )
 }
+
+export function ResourcesTab() {
+  const resourcesMap = useAudioStore((state) => state.resources)
+  const { theme, styles, colorScheme } = useTheme()
+  const insets = useSafeAreaInsets()
+  const { showActionSheetWithOptions } = useActionSheet()
+
+  const [sortKey, setSortKey] = useCachedState<SortKey>(
+    '$app$/audio-resources-sort',
+    'discovered_desc',
+  )
+  const [artistFilter, setArtistFilter] = useState<string | null>(null)
+
+  const artists = useMemo(() => {
+    const values = new Set<string>()
+    for (const item of Object.values(resourcesMap)) {
+      if (item.artist) {
+        values.add(item.artist)
+      }
+    }
+    return [...values].sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'))
+  }, [resourcesMap])
+
+  const items = useMemo(() => {
+    let list = Object.values(resourcesMap)
+    if (artistFilter) {
+      list = list.filter((item) => item.artist === artistFilter)
+    }
+    switch (sortKey) {
+      case 'discovered_asc':
+        return [...list].sort((a, b) => a.discoveredAt - b.discoveredAt)
+      case 'title':
+        return [...list].sort((a, b) =>
+          (a.title || '').localeCompare(b.title || '', 'zh-Hans-CN'),
+        )
+      default:
+        return [...list].sort((a, b) => b.discoveredAt - a.discoveredAt)
+    }
+  }, [resourcesMap, sortKey, artistFilter])
+
+  const handleSortPress = useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        title: '排序方式',
+        options: ['取消', ...SORT_KEYS.map((key) => SORT_LABELS[key])],
+        cancelButtonIndex: 0,
+        tintColor: styles.text_primary.color as string,
+        userInterfaceStyle: colorScheme,
+        containerStyle: {
+          ...styles.layer1,
+          paddingBlock: insets.bottom,
+        },
+        titleTextStyle: styles.text,
+      },
+      (buttonIndex) => {
+        if (buttonIndex && buttonIndex > 0) {
+          setSortKey(SORT_KEYS[buttonIndex - 1])
+        }
+      },
+    )
+  }, [
+    showActionSheetWithOptions,
+    styles,
+    colorScheme,
+    insets.bottom,
+    setSortKey,
+  ])
+
+  return (
+    <View style={tabStyles.container}>
+      <View style={[tabStyles.toolbar, styles.border_b_light]}>
+        <Pressable onPress={handleSortPress} style={tabStyles.sortButton}>
+          <ArrowsUpDownIcon size={16} color={theme.colors.text_desc} />
+          <Text style={[styles.text_meta, styles.text_sm]}>
+            {SORT_LABELS[sortKey] || SORT_LABELS.discovered_desc}
+          </Text>
+        </Pressable>
+        {artists.length >= 2 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={tabStyles.chipScroll}
+            contentContainerStyle={tabStyles.chipRow}
+          >
+            <FilterChip
+              label='全部'
+              active={!artistFilter}
+              onPress={() => setArtistFilter(null)}
+            />
+            {artists.map((artist) => (
+              <FilterChip
+                key={artist}
+                label={artist}
+                active={artistFilter === artist}
+                onPress={() => setArtistFilter(artist)}
+              />
+            ))}
+          </ScrollView>
+        )}
+      </View>
+      <FlashList
+        contentContainerClassName='pb-safe'
+        data={items}
+        renderItem={({ item }) => <AudioRow item={item} />}
+        keyExtractor={(item) => item.url}
+      />
+    </View>
+  )
+}
+
+const tabStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  toolbar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 8,
+  },
+  sortButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 4,
+    paddingRight: 4,
+  },
+  chipScroll: {
+    flex: 1,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+})
+
+const chipStyles = StyleSheet.create({
+  chip: {
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    maxWidth: 160,
+  },
+  chipInactive: {
+    borderColor: 'transparent',
+  },
+})

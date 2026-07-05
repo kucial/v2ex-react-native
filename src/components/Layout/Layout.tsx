@@ -6,7 +6,7 @@ import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 
 import AppSidebar from '../AppSidebar'
-import FloatingAudioButton from '../FloatingAudioButton'
+import MiniPlayerBar from '../MiniPlayerBar'
 import { AppLayoutContext } from './context'
 
 const ANIMATE_DURATION = 300
@@ -100,7 +100,7 @@ export default function Layout(props: { children: ReactNode }) {
           ]}
         >
           {props.children}
-          <FloatingAudioButton />
+          <MiniPlayerBar />
         </View>
         {padLayout.active && (
           <AppSidebar
