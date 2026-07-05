@@ -21,6 +21,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import ToBottomIcon from '@/components/ToBottomIcon'
 
 import { useTheme } from '@/containers/ThemeService'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 
 export type ScrollControlProps = {
   max: number
@@ -51,7 +52,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
     const handlePress = useCallback(() => {
       if (!action) {
         setTarget('')
-        inputModalRef.current?.present()
+        presentSheet(inputModalRef.current)
         return
       }
       if (action === 'to_top') {
@@ -120,7 +121,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     ]}
                     onPress={() => {
                       Keyboard.dismiss()
-                      inputModalRef.current?.dismiss()
+                      dismissSheet(inputModalRef.current)
                       onNavTo(0)
                     }}
                   >
@@ -139,7 +140,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                     ]}
                     onPress={() => {
                       Keyboard.dismiss()
-                      inputModalRef.current?.dismiss()
+                      dismissSheet(inputModalRef.current)
                       onNavTo(max)
                     }}
                   >
@@ -157,7 +158,7 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                         onNavTo(Math.min(targetNum, max))
                       }
                       Keyboard.dismiss()
-                      inputModalRef.current?.dismiss()
+                      dismissSheet(inputModalRef.current)
                     }}
                   >
                     <Text style={styles.btn_primary__text}>定位</Text>

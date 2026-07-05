@@ -1,3 +1,20 @@
+import TimeAgo from 'javascript-time-ago'
+import zh from 'javascript-time-ago/locale/zh.json'
+
+TimeAgo.addDefaultLocale(zh)
+const timeAgo = new TimeAgo('zh')
+
+export const formatTimeAgo = (val: number | string | Date) => {
+  if (!val) {
+    return ''
+  }
+  const date =
+    typeof val === 'number' && val < 10000000000
+      ? new Date(val * 1000)
+      : new Date(val)
+  return timeAgo.format(date)
+}
+
 export const localTime = (val: string | number) => {
   return new Date(val).toLocaleString()
 }

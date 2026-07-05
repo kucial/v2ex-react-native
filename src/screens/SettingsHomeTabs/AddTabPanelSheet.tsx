@@ -20,6 +20,7 @@ import { useQuery } from '@tanstack/react-query'
 import CheckIcon from '@/components/CheckIcon'
 
 import { useTheme } from '@/containers/ThemeService'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 import { getNodes } from '@/utils/v2ex-client'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
@@ -48,10 +49,10 @@ const AddTabPanelSheet = forwardRef<AddTabPanelSheetRef, Props>(
 
     useImperativeHandle(ref, () => ({
       present: () => {
-        sheetRef.current?.present()
+        presentSheet(sheetRef.current)
       },
       dismiss: () => {
-        return sheetRef.current?.dismiss()
+        dismissSheet(sheetRef.current)
       },
     }))
 

@@ -18,6 +18,7 @@ import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
 
 import { useTheme } from '@/containers/ThemeService'
 import { useCachedState } from '@/utils/hooks'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 import { TopicReply } from '@/utils/v2ex-client/types'
 
 type TextSelection = {
@@ -153,7 +154,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
             onPress={() => {
               showImagePicker(true)
               Keyboard.dismiss()
-              pickerRef.current?.present()
+              presentSheet(pickerRef.current)
             }}
           >
             <PhotoIcon size={22} color={iconColor} />
@@ -221,7 +222,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                     .filter(Boolean)
                     .join('\n') + '\n',
                 )
-                pickerRef.current?.dismiss()
+                dismissSheet(pickerRef.current)
               }}
             />
           )}

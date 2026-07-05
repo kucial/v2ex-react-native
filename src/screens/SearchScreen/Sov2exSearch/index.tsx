@@ -20,6 +20,7 @@ import NodeLabel from '@/components/NodeLabel'
 
 import { useTheme } from '@/containers/ThemeService'
 import { formatDate } from '@/utils/time'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 
 import { useSearchHistory } from '../hooks'
 import SearchHistory from '../SearchHistory'
@@ -139,7 +140,7 @@ export default function Sov2exSearch() {
                   radius={22}
                   onPress={() => {
                     searchInput.current?.blur()
-                    advancedSearchModalRef.current?.present()
+                    presentSheet(advancedSearchModalRef.current)
                   }}
                 >
                   <FunnelIcon size={20} color={theme.colors.text} />
@@ -152,7 +153,7 @@ export default function Sov2exSearch() {
                 style={sov2exStyles.advBtn}
                 onPress={() => {
                   searchInput.current?.blur()
-                  advancedSearchModalRef.current?.present()
+                  presentSheet(advancedSearchModalRef.current)
                 }}
               >
                 <View style={sov2exStyles.advRow}>
@@ -229,7 +230,7 @@ export default function Sov2exSearch() {
               initialValues={searchParams}
               onSubmit={(values) => {
                 setSearchParams(values)
-                advancedSearchModalRef.current?.dismiss()
+                dismissSheet(advancedSearchModalRef.current)
               }}
             />
           </View>

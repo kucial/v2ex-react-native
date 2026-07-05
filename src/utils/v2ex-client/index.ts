@@ -11,6 +11,7 @@ import axios, {
 import { CheerioAPI } from 'cheerio'
 import { stringify } from 'qs'
 
+import { formatTimeAgo } from '@/utils/time'
 import {
   BalanceBrief,
   CollectedTopicFeed,
@@ -37,7 +38,6 @@ import {
   TopicDetail,
   TopicId,
   TopicReply,
-  XnaFeed,
 } from '@/utils/v2ex-client/types'
 
 import ApiError from './ApiError'
@@ -46,7 +46,6 @@ import {
   ONCP,
   REQUEST_TIMEOUT,
   USER_AGENT_ANDROID,
-  USER_AGENT_DESKTOP,
   USER_AGENT_IOS,
 } from './constants'
 import {
@@ -625,37 +624,17 @@ export async function getPlanetFeeds({
 export async function getHotTopics(): Promise<
   PaginatedResponse<HomeTopicFeed>
 > {
-  const res = await request({
-    url: '/',
-    headers: {
-      'user-agent': USER_AGENT_DESKTOP,
-    },
+  const { data } = await request({
+    url: '/api/topics/hot.json',
   })
-  const $ = res.$ || cheerioDoc(res.data)
-  const ids = $('#TopicsHot .cell')
-    .map(function (i, el) {
-      const $el = $(el)
-      const title = $el.find('.item_hot_topic_title').text()
-      if (!title) {
-        return null
-      }
-      const topicId = Number(
-        $el.find('.item_hot_topic_title a').attr('href')?.replace('/t/', '') ??
-          0,
-      )
-      return topicId
-    })
-    .toArray()
-    .filter(Boolean)
 
-  const topics = await Promise.all(
-    ids.map((id) =>
-      request({
-        url: '/api/topics/show.json',
-        params: { id },
-      }).then((res) => res.data[0]),
-    ),
-  )
+  const topics: HomeTopicFeed[] = (data || []).map((item: any) => ({
+    ...item,
+    last_reply_time:
+      item.last_touched || item.last_modified || item.created
+        ? formatTimeAgo(item.last_touched || item.last_modified || item.created)
+        : undefined,
+  }))
 
   return {
     data: topics,

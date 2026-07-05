@@ -16,6 +16,7 @@ import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler'
 import Animated, {
+  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
@@ -70,9 +71,9 @@ type ZoomableImageItemProps = {
   onRequestClose: () => void
   onZoomChange?: (zoomed: boolean) => void
   isActive: boolean
-  shouldCloseSV: Animated.SharedValue<boolean>
-  scrollEnabledSV: Animated.SharedValue<boolean>
-  zoomChangeSV: Animated.SharedValue<boolean | null>
+  shouldCloseSV: SharedValue<boolean>
+  scrollEnabledSV: SharedValue<boolean>
+  zoomChangeSV: SharedValue<boolean | null>
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -410,11 +411,7 @@ function ZoomableImageItem({
     <View style={[styles.page, { backgroundColor }]}>
       <Animated.View
         pointerEvents='none'
-        style={[
-          StyleSheet.absoluteFillObject,
-          { backgroundColor },
-          overlayStyle,
-        ]}
+        style={[StyleSheet.absoluteFill, { backgroundColor }, overlayStyle]}
       />
       <GestureDetector gesture={composedGesture}>
         <Animated.View style={[styles.imageWrap, imageStyle]}>
@@ -519,17 +516,24 @@ export function ImageViewing({
     onImageIndexChangeRef.current = onImageIndexChange
   }, [onImageIndexChange])
 
+  const imagesCount = images.length
+  const safeImageIndex =
+    imagesCount > 0 ? Math.min(Math.max(imageIndex, 0), imagesCount - 1) : 0
+
   useEffect(() => {
-    if (!visible) return
-    setCurrentIndex(imageIndex)
+    if (!visible || imagesCount === 0) return
+    setCurrentIndex(safeImageIndex)
     setScrollEnabled(true)
     scrollEnabledSV.value = true
     zoomChangeSV.value = null
     shouldCloseSV.value = false
     requestAnimationFrame(() => {
-      listRef.current?.scrollToIndex({ index: imageIndex, animated: false })
+      listRef.current?.scrollToIndex({
+        index: safeImageIndex,
+        animated: false,
+      })
     })
-  }, [visible, imageIndex])
+  }, [visible, imagesCount, safeImageIndex])
 
   const onViewableItemsChanged = useCallback(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -545,9 +549,8 @@ export function ImageViewing({
   )
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 70 }).current
-  const imagesCount = images.length
 
-  if (!visible) return null
+  if (!visible || imagesCount === 0) return null
 
   const content = (
     <GestureHandlerRootView style={styles.modalRoot}>
@@ -580,7 +583,7 @@ export function ImageViewing({
           data={images}
           horizontal
           pagingEnabled
-          initialScrollIndex={imageIndex}
+          initialScrollIndex={safeImageIndex}
           keyExtractor={(item, index) => `${item.uri}-${index}`}
           renderItem={({ item, index }) => (
             <ZoomableImageItem
@@ -611,9 +614,13 @@ export function ImageViewing({
           viewabilityConfig={viewabilityConfig}
           scrollEnabled={scrollEnabled}
           onScrollToIndexFailed={(info) => {
+            if (imagesCount === 0) {
+              return
+            }
+            const nextIndex = Math.min(Math.max(info.index, 0), imagesCount - 1)
             requestAnimationFrame(() => {
               listRef.current?.scrollToIndex({
-                index: info.index,
+                index: nextIndex,
                 animated: false,
               })
             })

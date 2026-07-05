@@ -127,7 +127,7 @@ function FeedTopicList(props: FeedTopicListProps) {
   }, [isFocused, scrollToRefresh])
 
   const listItems = useMemo(() => {
-    if (isFocused && !listQueryData && !listQuery.error) {
+    if (listQuery.isLoading && !listQuery.error) {
       // initial loading — return skeleton placeholders
       return Array.from<HomeTopicFeed | undefined>({ length: 20 })
     }
@@ -149,7 +149,7 @@ function FeedTopicList(props: FeedTopicListProps) {
       }
     }
     return items
-  }, [listQueryData, isFocused])
+  }, [listQueryData, listQuery.isLoading, listQuery.error])
 
   useEffect(() => {
     const topicItems = listItems.filter((item): item is HomeTopicFeed => !!item)

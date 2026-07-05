@@ -61,8 +61,11 @@ const ImageViewingFooter = (props: {
               pressed && modalStyles.pressed,
             ]}
             hitSlop={6}
-            disabled={saveStatus === 'loading'}
+            disabled={saveStatus === 'loading' || !displayUri}
             onPress={async () => {
+              if (!displayUri) {
+                return
+              }
               try {
                 setSaveStatus('loading')
                 setSaveStatus('')
@@ -98,11 +101,16 @@ export function GlobalImageViewingModal() {
     }))
   }, [images])
 
+  const hasImages = renderImages.length > 0
+  const safeViewIndex = hasImages
+    ? Math.min(Math.max(viewIndex, 0), renderImages.length - 1)
+    : 0
+
   return (
     <ImageViewing
       images={renderImages}
-      imageIndex={viewIndex}
-      visible={visible && viewIndex > -1}
+      imageIndex={safeViewIndex}
+      visible={visible && viewIndex > -1 && hasImages}
       onRequestClose={close}
       FooterComponent={({ imageIndex }) => (
         <ImageViewingFooter

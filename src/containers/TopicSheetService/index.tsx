@@ -7,6 +7,7 @@ import { useTheme } from '@/containers/ThemeService'
 import ReplyList from '@/screens/TopicScreen/ReplyList'
 import TopicReplyForm from '@/screens/TopicScreen/TopicReplyForm'
 import { useTopicSheetStore } from '@/stores/topicSheet'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 
 const conversationDetents = [0.8]
 
@@ -30,23 +31,23 @@ export default function TopicSheetModal() {
 
   useEffect(() => {
     if (conversationOptions) {
-      conversationModalRef.current?.present()
+      presentSheet(conversationModalRef.current)
     }
   }, [conversationOptions])
 
   useEffect(() => {
     if (userInfoOptions) {
-      userInfoModalRef.current?.present()
+      presentSheet(userInfoModalRef.current)
     } else {
-      userInfoModalRef.current?.dismiss()
+      dismissSheet(userInfoModalRef.current)
     }
   }, [userInfoOptions])
 
   useEffect(() => {
     if (replyOptions) {
-      replyModalRef.current?.present()
+      presentSheet(replyModalRef.current)
     } else {
-      replyModalRef.current?.dismiss()
+      dismissSheet(replyModalRef.current)
     }
   }, [replyOptions])
 

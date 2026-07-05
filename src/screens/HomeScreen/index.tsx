@@ -27,7 +27,6 @@ import XnaTopicList from '@/components/XnaTopicList'
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { useTabOptions } from '@/hooks'
 import { useCachedState } from '@/utils/hooks'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
@@ -339,6 +338,8 @@ export default function HomeScreen() {
   return (
     <>
       <TabView
+        lazy
+        lazyPreloadDistance={1}
         navigationState={navigationState}
         renderScene={renderScene}
         renderTabBar={renderTabBar}

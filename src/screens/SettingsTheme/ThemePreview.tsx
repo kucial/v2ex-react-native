@@ -28,6 +28,7 @@ import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
 import * as themes from '@/containers/ThemeService/themes'
 import NormalTopicRowDemo from '@/screens/SettingsPreference/NormalTopicRowDemo'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 
 import { html, topic } from './mock'
 import Swatch from './Swatch'
@@ -207,7 +208,7 @@ export default function ThemePreview(props: {
                 variant='primary'
                 label='Open Sheet'
                 onPress={(e) => {
-                  sheetRef.current?.present()
+                  presentSheet(sheetRef.current)
                 }}
               ></Button>
 
@@ -271,7 +272,7 @@ export default function ThemePreview(props: {
                     pressed && previewStyles.pressed60,
                   ]}
                   onPress={(e) => {
-                    sheetRef.current?.dismiss()
+                    dismissSheet(sheetRef.current)
                   }}
                 >
                   <Text style={[styles.btn_primary__text, styles.text_base]}>

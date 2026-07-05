@@ -32,6 +32,7 @@ import { useAlertService } from '@/containers/AlertService'
 import { openImageViewer } from '@/containers/ImageViewingService'
 import { useTheme } from '@/containers/ThemeService'
 import { extractBase64Decoded, getMaxLength } from '@/utils/content'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 import {
   getImgurResourceImageLink,
   getScreenInfo,
@@ -348,9 +349,9 @@ function HtmlRender({
 
   useEffect(() => {
     if (activeModal === 'select') {
-      selectModalRef.current?.present()
+      presentSheet(selectModalRef.current)
     } else if (activeModal === 'base64') {
-      base64ModalRef.current?.present()
+      presentSheet(base64ModalRef.current)
     }
   }, [activeModal])
 
@@ -490,7 +491,7 @@ function HtmlRender({
                 key={item[0]}
                 style={htmlStyles.rowFull}
                 onPress={() => {
-                  base64ModalRef.current?.dismiss()
+                  dismissSheet(base64ModalRef.current)
                   copyAndNotice(item[1])
                 }}
               >

@@ -47,6 +47,7 @@ import { useCachedState } from '@/utils/hooks'
 import { isLoading } from '@/utils/react-query'
 import { isBouncingBottom, isBouncingTop } from '@/utils/scroll'
 import { setJSON } from '@/utils/storage'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 import * as v2exClient from '@/utils/v2ex-client'
 import ApiError from '@/utils/v2ex-client/ApiError'
 import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
@@ -649,7 +650,7 @@ function TopicScreen() {
   }, [topic, router])
 
   const handleChangeNode = useCallback(() => {
-    changeNodeModalRef.current?.present()
+    presentSheet(changeNodeModalRef.current)
   }, [])
 
   // FIX: Use topicQuery.refetch (stable function) not topicQuery (new object
@@ -1047,7 +1048,7 @@ function TopicScreen() {
               topicId={topicQuery.data.id}
               node={topicQuery.data.node}
               onExit={() => {
-                changeNodeModalRef.current?.dismiss()
+                dismissSheet(changeNodeModalRef.current)
               }}
               onUpdated={(topic) => {
                 queryClient.setQueryData(

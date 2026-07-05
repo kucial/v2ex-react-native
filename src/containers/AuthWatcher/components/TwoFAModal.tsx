@@ -7,6 +7,7 @@ import Button from '@/components/Button'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
+import { dismissSheet } from '@/utils/trueSheet'
 import { logout, subscribe, verify2faCode } from '@/utils/v2ex-client'
 import ApiError from '@/utils/v2ex-client/ApiError'
 import { TFA_Error } from '@/utils/v2ex-client/types'
@@ -17,7 +18,6 @@ type TwoFAState = {
   once: string
   resolve: ((value: any) => void) | null
   showModal: (message: string, once: string) => Promise<any>
-  hideModal: () => void
   setModalState: (state: Partial<TwoFAState>) => void
   handleModalDismiss: () => void
 }
@@ -34,9 +34,6 @@ export const useTwoFAStore = create<TwoFAState>((set, get) => ({
     return new Promise((resolve) => {
       set({ visible: true, message, once, resolve })
     })
-  },
-  hideModal: () => {
-    set({ visible: false, resolve: null })
   },
   setModalState: (state) => set(state),
   handleModalDismiss: () => {
@@ -78,24 +75,8 @@ export function TwoFAModal() {
   const alert = useAlertService()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const {
-    visible,
-    message,
-    once,
-    resolve,
-    hideModal,
-    handleModalDismiss,
-    setModalState,
-  } = useTwoFAStore()
-
-  useEffect(() => {
-    if (visible) {
-      bottomSheetModalRef.current?.present()
-    } else {
-      bottomSheetModalRef.current?.dismiss()
-      setInput('')
-    }
-  }, [visible])
+  const { visible, message, once, resolve, handleModalDismiss, setModalState } =
+    useTwoFAStore()
 
   const handleSubmit = async () => {
     try {
@@ -105,7 +86,7 @@ export function TwoFAModal() {
         state: '2fa_verified',
       })
       alert.show({ type: 'success', message: '2FA 验证成功' })
-      hideModal()
+      dismissSheet(bottomSheetModalRef.current)
     } catch (err) {
       setModalState({
         once: (err as ApiError).data.once,
@@ -120,7 +101,7 @@ export function TwoFAModal() {
     try {
       await logout()
       resolve?.({ state: 'logout' })
-      hideModal()
+      dismissSheet(bottomSheetModalRef.current)
       alert.show({ type: 'success', message: '已退出登录，请刷新...' })
     } catch (err) {
       resolve?.(err)
@@ -129,62 +110,69 @@ export function TwoFAModal() {
 
   return (
     <>
-      <TrueSheet
-        ref={bottomSheetModalRef}
-        detents={['auto']}
-        onDidDismiss={handleModalDismiss}
-        backgroundColor={styles.overlay.backgroundColor}
-      >
-        <View style={twoFAStyles.container}>
-          <View style={twoFAStyles.contentWrap}>
-            <View style={twoFAStyles.msgRow}>
-              <Text style={[styles.text]}>{message}</Text>
-            </View>
-            <View>
-              <View style={[twoFAStyles.inputBg, styles.overlay_input__bg]}>
-                <TextInput
-                  placeholder='Enter 2FA Code'
-                  value={input}
-                  onChangeText={setInput}
-                  keyboardType='numeric'
-                  autoFocus
-                  style={[
-                    {
-                      width: '100%',
-                      height: 44,
-                      paddingHorizontal: 8,
-                      textAlign: 'center',
-                      fontSize: 16,
-                      paddingVertical: Platform.OS === 'android' ? 8 : 4,
-                      color: theme.colors.text,
-                      verticalAlign:
-                        Platform.OS === 'android' ? 'top' : undefined,
-                    },
-                  ]}
-                  placeholderTextColor={theme.colors.text_meta}
-                  selectionColor={theme.colors.primary}
-                  onSubmitEditing={handleSubmit}
-                />
+      {visible && (
+        <TrueSheet
+          ref={bottomSheetModalRef}
+          detents={['auto']}
+          initialDetentIndex={0}
+          onDidDismiss={handleModalDismiss}
+          backgroundColor={styles.overlay.backgroundColor}
+          onDidPresent={() => {
+            setInput('')
+          }}
+        >
+          <View style={twoFAStyles.container}>
+            <View style={twoFAStyles.contentWrap}>
+              <View style={twoFAStyles.msgRow}>
+                <Text style={[styles.text]}>{message}</Text>
               </View>
+              <View>
+                <View style={[twoFAStyles.inputBg, styles.overlay_input__bg]}>
+                  <TextInput
+                    placeholder='Enter 2FA Code'
+                    value={input}
+                    onChangeText={setInput}
+                    keyboardType='numeric'
+                    autoFocus
+                    style={[
+                      {
+                        width: '100%',
+                        height: 44,
+                        paddingHorizontal: 8,
+                        textAlign: 'center',
+                        fontSize: 16,
+                        paddingVertical: Platform.OS === 'android' ? 8 : 4,
+                        color: theme.colors.text,
+                        verticalAlign:
+                          Platform.OS === 'android' ? 'top' : undefined,
+                      },
+                    ]}
+                    placeholderTextColor={theme.colors.text_meta}
+                    selectionColor={theme.colors.primary}
+                    onSubmitEditing={handleSubmit}
+                  />
+                </View>
+              </View>
+              <Button
+                size='md'
+                variant='primary'
+                label='提交'
+                onPress={handleSubmit}
+                loading={isSubmitting}
+                disabled={isSubmitting}
+              />
+              <Button
+                size='md'
+                variant='secondary'
+                label='退出登录'
+                onPress={handleLogout}
+                disabled={isSubmitting}
+              />
             </View>
-            <Button
-              size='md'
-              variant='primary'
-              label='提交'
-              onPress={handleSubmit}
-              loading={isSubmitting}
-              disabled={isSubmitting}
-            />
-            <Button
-              size='md'
-              variant='secondary'
-              label='退出登录'
-              onPress={handleLogout}
-              disabled={isSubmitting}
-            />
           </View>
-        </View>
-      </TrueSheet>
+        </TrueSheet>
+      )}
+
       <TwoFAWatcher />
     </>
   )

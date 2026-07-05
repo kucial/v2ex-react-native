@@ -40,6 +40,7 @@ import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
 import { useTabOptions } from '@/hooks'
+import { presentSheet } from '@/utils/trueSheet'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import AddTabPanelSheet, { AddTabPanelSheetRef } from './AddTabPanelSheet'
@@ -323,7 +324,7 @@ export default function HomeTabs() {
           style={homeTabsStyles.addBtn}
           radius={31}
           onPress={() => {
-            sheetRef.current?.present()
+            presentSheet(sheetRef.current)
           }}
         >
           <PlusIcon color={styles.btn_primary__text.color} size={24} />

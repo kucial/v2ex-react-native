@@ -14,6 +14,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { useQuery } from '@tanstack/react-query'
 
 import { useTheme } from '@/containers/ThemeService'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 import { getNodes } from '@/utils/v2ex-client'
 import { NodeDetail } from '@/utils/v2ex-client/types'
 
@@ -59,7 +60,7 @@ function NodeSelect(props: NodeSelectProps) {
           ]}
           onPress={() => {
             props.onChange(item)
-            selectRef.current?.dismiss()
+            dismissSheet(selectRef.current)
           }}
         >
           <View style={[nodeSelectStyles.itemRow, styles.border_b_light]}>
@@ -83,7 +84,7 @@ function NodeSelect(props: NodeSelectProps) {
           pressed && nodeSelectStyles.pressed,
         ]}
         onPress={() => {
-          selectRef.current?.present()
+          presentSheet(selectRef.current)
         }}
       >
         {selectedValue ? (

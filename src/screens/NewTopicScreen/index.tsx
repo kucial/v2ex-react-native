@@ -28,6 +28,7 @@ import { SlateEditorService } from '@/components/SlateEditor/types'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
+import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 import { createTopic } from '@/utils/v2ex-client'
 import ApiError from '@/utils/v2ex-client/ApiError'
 
@@ -317,7 +318,7 @@ export default function NewTopicScreen() {
                     onOpenImageSelect={() => {
                       showImagePicker(true)
                       editorRef.current?.blur()
-                      pickerModalRef.current?.present()
+                      presentSheet(pickerModalRef.current)
                     }}
                   />
                 </View>
@@ -334,7 +335,7 @@ export default function NewTopicScreen() {
                   <EditorImagePicker
                     editor={editorRef.current}
                     onConfigSettings={() => {
-                      pickerModalRef.current?.dismiss()
+                      dismissSheet(pickerModalRef.current)
                       router.push({
                         pathname: '/imgur-settings',
                         params: {
@@ -343,7 +344,7 @@ export default function NewTopicScreen() {
                       })
                     }}
                     onSubmit={() => {
-                      pickerModalRef.current?.dismiss()
+                      dismissSheet(pickerModalRef.current)
                     }}
                   />
                 )}

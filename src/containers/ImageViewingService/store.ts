@@ -75,6 +75,10 @@ export function openImageViewer(
   const images = orderedOrigins
     .filter((o) => registry.has(o))
     .map((o) => registry.get(o)!)
+  if (images.length === 0) {
+    open(0, [{ origin }], handleQrCode)
+    return
+  }
   const index = images.findIndex((img) => img.origin === origin)
   open(index >= 0 ? index : 0, images, handleQrCode)
 }
