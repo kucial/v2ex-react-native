@@ -7,6 +7,7 @@ import {
   DefaultTheme,
   ThemeProvider as NavigationThemeProvider,
 } from 'expo-router/react-navigation'
+import { StatusBar } from 'expo-status-bar'
 import * as SystemUI from 'expo-system-ui'
 
 import { useAppSettings } from '../AppSettingsService'
@@ -108,6 +109,7 @@ export const ThemeProvider = (props: {
   return (
     <ThemeContext.Provider value={service}>
       <NavigationThemeProvider value={theme}>
+        <StatusBar style={activeScheme === 'dark' ? 'light' : 'dark'} />
         {props.children}
       </NavigationThemeProvider>
     </ThemeContext.Provider>
