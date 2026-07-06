@@ -97,7 +97,7 @@ function GoogleSign(props: GoogleSigninProps) {
             userAgent={USER_AGENT}
             originWhitelist={['*']}
             sharedCookiesEnabled={true}
-            decelerationRate='normal'
+            decelerationRate={0.998}
             javaScriptEnabled={true}
             domStorageEnabled={true}
             startInLoadingState={true}

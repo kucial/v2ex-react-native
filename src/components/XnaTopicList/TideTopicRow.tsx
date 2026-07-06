@@ -124,7 +124,7 @@ function TideTopicRow(props: XnaFeedRowProps) {
                   pressed && rowStyles.pressed60,
                 ]}
                 onPress={() => {
-                  if (Platform.OS == 'ios') {
+                  if (Platform.OS === 'ios') {
                     WebBrowser.openBrowserAsync(source.link, {
                       controlsColor: theme.colors.primary,
                       dismissButtonStyle: 'close',

@@ -158,7 +158,7 @@ export default function GoogleSearch() {
               styles.layer1,
               loading && !onceLoaded.current && { opacity: 0 },
             ]}
-            decelerationRate='normal'
+            decelerationRate={0.998}
             onLoadStart={() => setLoading(true)}
             onLoadEnd={() => {
               setLoading(false)

@@ -55,7 +55,7 @@ export default function BrowserScreen() {
         source={{ uri: url }}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
-        decelerationRate='normal'
+        decelerationRate={0.998}
         sharedCookiesEnabled={true}
         onNavigationStateChange={(navState) => {
           setHistoryState({
