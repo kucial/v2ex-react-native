@@ -140,10 +140,10 @@ export default function MemberScreenHeader(props: {
     let promise: Promise<StatusResponse<Pick<MemberDetail, 'meta'>>>
     let successMsg: string
     if (data.meta?.watched) {
-      promise = unwatchMember({ id: data.id })
+      promise = unwatchMember({ id: data.id, username: data.username })
       successMsg = '成功取消用户关注'
     } else {
-      promise = watchMember({ id: data.id })
+      promise = watchMember({ id: data.id, username: data.username })
       successMsg = '成功关注'
     }
     const indicator = alert.show({

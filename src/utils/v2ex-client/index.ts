@@ -1450,6 +1450,10 @@ export async function watchMember({
     params: {
       once,
     },
+    headers: {
+      referer: `https://v2ex.com/member/${username}`,
+      accept: 'text/html',
+    },
   })
   const $ = res.$ || cheerioDoc(res.data)
   const meta = userMetaForCurrentUser($)

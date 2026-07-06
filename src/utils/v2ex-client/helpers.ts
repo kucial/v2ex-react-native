@@ -274,7 +274,7 @@ export function topicReplyFromCell(
 export function userMetaForCurrentUser($: CheerioAPI) {
   return {
     blocked: !!$('.button[value=Unblock]').length,
-    watched: !!$('.inverse[value=取消特别关注]').length,
+    watched: !!$('.inverse[value=取消关注]').length,
   }
 }
 
