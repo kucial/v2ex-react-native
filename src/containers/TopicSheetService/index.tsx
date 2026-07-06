@@ -116,23 +116,14 @@ function ReplyFormSheet() {
         }
       }}
     >
-      <KeyboardAvoidingView>
-        <View
-          style={[
-            sheetStyles.replyFormContainer,
-            Platform.OS === 'android' && sheetStyles.pb7,
-          ]}
-        >
-          {options && (
-            <TopicReplyForm
-              cacheKey={options.cacheKey}
-              context={options.context}
-              onSubmit={options.onSubmit}
-              onInitImgurSettings={options.onInitImgurSettings}
-            />
-          )}
-        </View>
-      </KeyboardAvoidingView>
+      {!!options && (
+        <TopicReplyForm
+          cacheKey={options.cacheKey}
+          context={options.context}
+          onSubmit={options.onSubmit}
+          onInitImgurSettings={options.onInitImgurSettings}
+        />
+      )}
     </TrueSheet>
   )
 }
@@ -158,7 +149,7 @@ const sheetStyles = StyleSheet.create({
     paddingBottom: 16,
   },
   replyFormContainer: {
-    paddingTop: 16,
+    paddingTop: 12,
     height: 220,
   },
   pb7: {

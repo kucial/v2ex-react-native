@@ -181,15 +181,15 @@ const scrollControlStyles = StyleSheet.create({
   },
   modalContent: {
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 12,
     flexDirection: 'column',
-    flex: 1,
   },
   row: {
     flexDirection: 'row',
   },
   inputBox: {
-    borderRadius: 8,
+    borderRadius:
+      Platform.OS === 'ios' && Number(Platform.Version) > 18 ? 20 : 8,
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
@@ -221,13 +221,14 @@ const scrollControlStyles = StyleSheet.create({
     opacity: 0.6,
   },
   confirmBtn: {
-    height: 34,
+    height: 36,
     width: 64,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 6,
-    marginLeft: 3,
-    marginRight: 6,
+    borderRadius:
+      Platform.OS === 'ios' && Number(Platform.Version) > 18 ? 14 : 6,
+    marginLeft: 4,
+    marginRight: 7,
   },
 })
 

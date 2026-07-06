@@ -235,25 +235,26 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
 const replyFormStyles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
-    flexDirection: 'column',
-    flex: 1,
-    height: '100%',
+    paddingVertical: 12,
+    height: 180,
   },
   inputWrap: {
     flex: 1,
     width: '100%',
-    borderRadius: 8,
+    borderRadius:
+      Platform.OS === 'ios' && Number(Platform.Version) > 18 ? 24 : 8,
   },
   input: {
     width: '100%',
     height: '100%',
     borderRadius: 8,
     paddingHorizontal: 8,
-    paddingVertical: Platform.OS === 'android' ? 8 : 4,
+    paddingVertical: Platform.OS === 'android' ? 8 : 8,
     verticalAlign: Platform.OS === 'android' ? 'top' : undefined,
   },
   toolbar: {
     height: 48,
+    marginTop: 4,
     flexDirection: 'row',
     alignItems: 'center',
   },
