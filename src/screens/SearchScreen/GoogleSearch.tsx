@@ -85,8 +85,8 @@ export default function GoogleSearch() {
         style={[
           googleSearchStyles.header,
           {
-            height: Platform.OS === 'android' ? 58 : 56 + insets.top,
-            paddingTop: Platform.OS === 'android' ? 0 : insets.top,
+            height: 56 + insets.top,
+            paddingTop: insets.top,
           },
           styles.layer1,
         ]}

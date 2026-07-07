@@ -67,8 +67,8 @@ export default function Sov2exSearch() {
           style={[
             sov2exStyles.headerRow,
             {
-              minHeight: Platform.OS === 'android' ? 58 : 56 + insets.top,
-              paddingTop: Platform.OS === 'android' ? 0 : insets.top,
+              minHeight: 56 + insets.top,
+              paddingTop: insets.top,
               flexShrink: 0,
             },
             styles.layer1,
