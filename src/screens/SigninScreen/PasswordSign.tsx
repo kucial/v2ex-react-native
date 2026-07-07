@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
@@ -32,6 +33,7 @@ type PasswordSigninProps = {
 function PasswordSignin(props: PasswordSigninProps) {
   const router = useRouter()
   const { theme, styles } = useTheme()
+  const insets = useSafeAreaInsets()
 
   const formQuery = useQuery({
     queryKey: ['$tmp$/password-login'],
@@ -110,7 +112,9 @@ function PasswordSignin(props: PasswordSigninProps) {
       <View
         style={[
           pwdSignStyles.backWrap,
-          Platform.OS === 'android' && pwdSignStyles.ptSafe,
+          Platform.OS === 'android' && {
+            marginTop: insets.top,
+          },
         ]}
       >
         <BackButton
@@ -337,11 +341,8 @@ const pwdSignStyles = StyleSheet.create({
   },
   backWrap: {
     paddingLeft: 4,
-    paddingTop: 4,
+    paddingTop: 8,
     zIndex: 10,
-  },
-  ptSafe: {
-    paddingTop: 32,
   },
   scrollView: {
     flex: 1,

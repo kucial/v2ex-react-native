@@ -22,7 +22,7 @@ export default function SigninScreen() {
 
   const handleSuccess = useCallback(
     async (state?: { code: '2fa'; once: string; message: string }) => {
-      await fetchCurrentUser(true)
+      await fetchCurrentUser()
       alert.show({ type: 'success', message: '登录成功' })
       extraState.current = state
     },
