@@ -243,7 +243,7 @@ export default function PreferenceSettings() {
               </View>
             </View>
             <View style={[prefStyles.rowWrap, styles.layer1]}>
-              <View style={prefStyles.rowContent}>
+              <View style={[prefStyles.rowContent, styles.border_b]}>
                 <View style={prefStyles.flex1}>
                   <Text style={[styles.text, styles.text_base]}>
                     帖子新回复提示
@@ -266,6 +266,26 @@ export default function PreferenceSettings() {
                       } else {
                         setViewedStatus(undefined)
                       }
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
+              <View style={prefStyles.rowContent}>
+                <View style={prefStyles.flex1}>
+                  <Text style={[styles.text, styles.text_base]}>
+                    自动滚动到上次浏览位置
+                  </Text>
+                </View>
+                <View style={prefStyles.switchWrap}>
+                  <MySwitch
+                    value={state.autoScrollToLastPosition}
+                    onValueChange={(val) => {
+                      setState((prev) => ({
+                        ...prev,
+                        autoScrollToLastPosition: val,
+                      }))
                     }}
                   />
                 </View>

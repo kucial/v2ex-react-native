@@ -4,6 +4,7 @@ export type AppSettings = {
   homeTabs?: HomeTabOption[]
   showHasViewed: boolean
   showHasNewReply: boolean
+  autoScrollToLastPosition: boolean
   colorScheme?: 'light' | 'dark' | 'system'
   theme: string
   lightTheme?: string

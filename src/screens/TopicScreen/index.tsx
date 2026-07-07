@@ -1009,11 +1009,12 @@ function TopicScreen() {
       {showScrollToLastPosition && (
         <ScrollToLastPosition
           style={screenStyles.scrollToLast}
-          onPress={() => {
+          scrollY={scrollY}
+          onPress={(animated = true) => {
             InteractionManager.runAfterInteractions(() => {
               listRef.current?.scrollToIndex({
                 index: lastIndex,
-                animated: true,
+                animated,
               })
             })
           }}

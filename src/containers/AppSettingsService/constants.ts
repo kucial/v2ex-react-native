@@ -5,6 +5,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   homeTabs: undefined, // Array<TabDesc>
   showHasViewed: true,
   showHasNewReply: true,
+  autoScrollToLastPosition: false,
 
   theme: 'r2v',
   lightTheme: 'r2v',

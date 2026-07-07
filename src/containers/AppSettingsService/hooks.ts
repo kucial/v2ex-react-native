@@ -40,3 +40,6 @@ export const usePadLayout = () => {
 
   return info as PadLayoutInfo
 }
+
+export const useAutoScrollToLastPosition = () =>
+  useAppSettingsStore((state) => state.data.autoScrollToLastPosition)
