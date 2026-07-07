@@ -86,3 +86,18 @@ expo-env.d.ts
 
 /ios/
 /android
+
+# AI Assistants / IDEs / Tools
+.agents/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.opencode/
+.vscode/
+.mcp.json
+opencode.json
+skills-lock.json
+
+# Profiling / Coverage
+*.profraw
