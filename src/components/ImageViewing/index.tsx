@@ -20,6 +20,7 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
+  withDecay,
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
@@ -71,6 +72,7 @@ type ZoomableImageItemProps = {
   onRequestClose: () => void
   onZoomChange?: (zoomed: boolean) => void
   isActive: boolean
+  scrollEnabled: boolean
   shouldCloseSV: SharedValue<boolean>
   scrollEnabledSV: SharedValue<boolean>
   zoomChangeSV: SharedValue<boolean | null>
@@ -123,6 +125,7 @@ function ZoomableImageItem({
   doubleTapToZoomEnabled,
   maxScale,
   isActive,
+  scrollEnabled,
   shouldCloseSV,
   scrollEnabledSV,
   zoomChangeSV,
@@ -218,7 +221,8 @@ function ZoomableImageItem({
     () =>
       Gesture.Pan()
         .enabled(isActive)
-        .minPointers(2)
+        .minPointers(scrollEnabled ? 2 : 1)
+        .maxPointers(2)
         .onStart(() => {
           'worklet'
           startX.value = translateX.value
@@ -244,7 +248,7 @@ function ZoomableImageItem({
             boundY,
           )
         })
-        .onEnd(() => {
+        .onEnd((e) => {
           'worklet'
           if (scale.value <= 1) return
 
@@ -253,15 +257,20 @@ function ZoomableImageItem({
             renderedHeight.value,
             scale.value,
           )
-          translateX.value = withSpring(
-            clamp(translateX.value, -boundX, boundX),
-          )
-          translateY.value = withSpring(
-            clamp(translateY.value, -boundY, boundY),
-          )
+          translateX.value = withDecay({
+            velocity: e.velocityX * 0.5,
+            clamp: [-boundX, boundX],
+            rubberBandEffect: true,
+          })
+          translateY.value = withDecay({
+            velocity: e.velocityY * 0.5,
+            clamp: [-boundY, boundY],
+            rubberBandEffect: true,
+          })
         }),
     [
       isActive,
+      scrollEnabled,
       renderedWidth,
       renderedHeight,
       scale,
@@ -357,8 +366,8 @@ function ZoomableImageItem({
 
           const tapOffsetX = e.x - SCREEN_WIDTH / 2
           const tapOffsetY = e.y - SCREEN_HEIGHT / 2
-          const desiredX = (-tapOffsetX * (targetScale - 1)) / targetScale
-          const desiredY = (-tapOffsetY * (targetScale - 1)) / targetScale
+          const desiredX = -tapOffsetX
+          const desiredY = -tapOffsetY
 
           scale.value = withSpring(targetScale)
           savedScale.value = targetScale
@@ -595,6 +604,7 @@ export function ImageViewing({
               onRequestClose={onRequestClose}
               onZoomChange={onZoomChange}
               isActive={index === currentIndex}
+              scrollEnabled={scrollEnabled}
               shouldCloseSV={shouldCloseSV}
               scrollEnabledSV={scrollEnabledSV}
               zoomChangeSV={index === currentIndex ? zoomChangeSV : dummyZoomSV}
