@@ -41,6 +41,7 @@ import {
   isImgurResourceLink,
   isURL,
 } from '@/utils/url'
+import { replaceImgurImagesWithTrueEmoji } from '@/utils/v2ex-polish-emojis'
 
 import AnchorRenderer from './AnchorRenderer'
 import { RenderContext } from './context'
@@ -355,10 +356,14 @@ function HtmlRender({
     }
   }, [activeModal])
 
-  const source = useMemo(
-    () => ({ ...props.source, html: htmlMinifier(props.source.html) }),
-    [props.source],
-  )
+  const source = useMemo(() => {
+    if (!props.source?.html) {
+      return props.source
+    }
+    const minified = htmlMinifier(props.source.html)
+    const replaced = replaceImgurImagesWithTrueEmoji(minified)
+    return { ...props.source, html: replaced }
+  }, [props.source])
 
   return (
     // No ImageViewingServiceProvider wrapper — image registry lives in the

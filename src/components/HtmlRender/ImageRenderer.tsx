@@ -1,5 +1,11 @@
 import { useContext, useEffect, useMemo, useState } from 'react'
-import { Image as RNImage, Pressable, StyleSheet, View } from 'react-native'
+import {
+  Image as RNImage,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
   CustomBlockRenderer,
@@ -13,6 +19,11 @@ import {
   useGlobalImageViewing,
 } from '@/containers/ImageViewingService'
 import { useTheme } from '@/containers/ThemeService'
+import {
+  getEmojiTextFromImgurUrl,
+  getTrueEmojiFromImgurUrl,
+  isV2exPolishImgurEmoji,
+} from '@/utils/v2ex-polish-emojis'
 
 import { RenderContext } from './context'
 
@@ -98,11 +109,35 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
       )
       const height = (imageQuery.data.height / imageQuery.data.width) * width
       return { width, height }
+    } else if (isV2exPolishImgurEmoji(uri)) {
+      return { width: 36, height: 36 }
     } else {
       const width = contentWidth
       return { width, height: width * 0.66667 }
     }
-  }, [imageQuery.data, contentWidth, containerWidth])
+  }, [imageQuery.data, contentWidth, containerWidth, uri])
+
+  const isSticker = useMemo(() => {
+    if (
+      uri.includes('/sticker/') ||
+      uri.includes('/emoji/') ||
+      uri.includes('/emoticon/') ||
+      uri.includes('/smilies/') ||
+      uri.includes('twemoji') ||
+      isV2exPolishImgurEmoji(uri)
+    ) {
+      return true
+    }
+    if (imageQuery.data) {
+      return imageQuery.data.width <= 140 && imageQuery.data.height <= 140
+    }
+    const attrW = Number(props.tnode?.attributes?.width)
+    const attrH = Number(props.tnode?.attributes?.height)
+    if (!isNaN(attrW) && !isNaN(attrH) && attrW <= 140 && attrH <= 140) {
+      return true
+    }
+    return false
+  }, [uri, imageQuery.data, props.tnode?.attributes])
 
   if (!containerWidth) {
     return (
@@ -118,7 +153,9 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
   if (imageQuery.data) {
     return (
       <Pressable
-        style={[imgStyles.loadedPressable, { width: imageStyle.width }]}
+        style={
+          isSticker ? imgStyles.stickerPressable : imgStyles.loadedPressable
+        }
         onPress={() => {
           openImageViewer(uri, imageOrigins.current, handleQrCode)
         }}
@@ -133,7 +170,9 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
 
   return (
     <Pressable
-      style={imgStyles.loadingPressable}
+      style={
+        isSticker ? imgStyles.stickerPressable : imgStyles.loadingPressable
+      }
       onPress={() => {
         openImageViewer(uri, imageOrigins.current, handleQrCode)
       }}
@@ -146,14 +185,25 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
         ]}
       >
         {imageQuery.error ? (
-          <PhotoIcon
-            size={36}
-            color={
-              typeof theme.colors.danger === 'string'
-                ? theme.colors.danger
-                : undefined
-            }
-          />
+          isV2exPolishImgurEmoji(uri) ? (
+            <Text
+              style={[
+                imgStyles.fallbackEmojiText,
+                { color: theme.colors.text },
+              ]}
+            >
+              {getTrueEmojiFromImgurUrl(uri) || getEmojiTextFromImgurUrl(uri)}
+            </Text>
+          ) : (
+            <PhotoIcon
+              size={36}
+              color={
+                typeof theme.colors.danger === 'string'
+                  ? theme.colors.danger
+                  : undefined
+              }
+            />
+          )
         ) : (
           <PhotoIcon
             size={36}
@@ -175,13 +225,20 @@ const imgStyles = StyleSheet.create({
   },
   loadedPressable: {
     paddingVertical: 4,
+    width: '100%',
     alignItems: 'center',
     overflow: 'hidden',
+  },
+  stickerPressable: {
+    paddingVertical: 4,
     alignSelf: 'flex-start',
+    alignItems: 'flex-start',
+    overflow: 'hidden',
   },
   loadingPressable: {
     paddingVertical: 4,
     width: '100%',
+    alignItems: 'center',
     overflow: 'hidden',
   },
   rounded: {
@@ -191,6 +248,10 @@ const imgStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 4,
+  },
+  fallbackEmojiText: {
+    fontSize: 13,
+    fontWeight: '500',
   },
 })
 
