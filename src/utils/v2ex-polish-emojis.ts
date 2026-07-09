@@ -5,6 +5,13 @@ export type V2exPolishEmoji = {
   hd: string
 }
 
+export type V2exClassicEmoticon = {
+  text: string
+  emoji: string
+  ld: string
+  hd: string
+}
+
 export const V2EX_POLISH_EMOJIS: V2exPolishEmoji[] = [
   // B 站表情
   {
@@ -262,11 +269,148 @@ export const V2EX_POLISH_EMOJIS: V2exPolishEmoji[] = [
   },
 ]
 
+export const V2NEXT_CLASSIC_EMOTICONS: V2exClassicEmoticon[] = [
+  {
+    text: '[狗头]',
+    emoji: '🐶',
+    ld: 'https://i.imgur.com/io2SM1h.png',
+    hd: 'https://i.imgur.com/0icl60r.png',
+  },
+  {
+    text: '[doge]',
+    emoji: '🐶',
+    ld: 'https://i.imgur.com/duWRpIu.png',
+    hd: 'https://i.imgur.com/HyphI6d.png',
+  },
+  {
+    text: '[受虐滑稽]',
+    emoji: '🥴',
+    ld: 'https://i.imgur.com/Iy0taMy.png',
+    hd: 'https://i.imgur.com/PS1pxd9.png',
+  },
+  {
+    text: '[马]',
+    emoji: '🐴',
+    ld: 'https://i.imgur.com/8EKZv7I.png',
+    hd: 'https://i.imgur.com/ANFUX52.png',
+  },
+  {
+    text: '[二哈]',
+    emoji: '🐶',
+    ld: 'https://i.imgur.com/XKj1Tkx.png',
+    hd: 'https://i.imgur.com/dOeP4XD.png',
+  },
+  {
+    text: '[舔屏]',
+    emoji: '🤤',
+    ld: 'https://i.imgur.com/Cvl7dyN.png',
+    hd: 'https://i.imgur.com/LmETy9N.png',
+  },
+  {
+    text: '[辣眼睛]',
+    emoji: '🙈',
+    ld: 'https://i.imgur.com/cPNPYD5.png',
+    hd: 'https://i.imgur.com/3fSUmi8.png',
+  },
+  {
+    text: '[吃瓜]',
+    emoji: '🍉',
+    ld: 'https://i.imgur.com/ee8Lq7H.png',
+    hd: 'https://i.imgur.com/0L26og9.png',
+  },
+  {
+    text: '[不高兴]',
+    emoji: '😒',
+    ld: 'https://i.imgur.com/huX6coX.png',
+    hd: 'https://i.imgur.com/N7JEuvc.png',
+  },
+  {
+    text: '[真棒]',
+    emoji: '👍',
+    ld: 'https://i.imgur.com/xr1UOz1.png',
+    hd: 'https://i.imgur.com/w8YEw9Q.png',
+  },
+  {
+    text: '[鄙视]',
+    emoji: '😒',
+    ld: 'https://i.imgur.com/u6jlqVq.png',
+    hd: 'https://i.imgur.com/8JFNANq.png',
+  },
+  {
+    text: '[疑问]',
+    emoji: '❓',
+    ld: 'https://i.imgur.com/F29pmQ6.png',
+    hd: 'https://i.imgur.com/EbbTQAR.png',
+  },
+  {
+    text: '[吐舌]',
+    emoji: '😛',
+    ld: 'https://i.imgur.com/InmIzl9.png',
+    hd: 'https://i.imgur.com/Ovj56Cd.png',
+  },
+  {
+    text: '[笑眼]',
+    emoji: '😊',
+    ld: 'https://i.imgur.com/ZveiiGy.png',
+    hd: 'https://i.imgur.com/PI1CfEr.png',
+  },
+  {
+    text: '[大哭]',
+    emoji: '😭',
+    ld: 'https://i.imgur.com/hu4oR6C.png',
+    hd: 'https://i.imgur.com/b4X9XLE.png',
+  },
+  {
+    text: '[喷]',
+    emoji: '🤣',
+    ld: 'https://i.imgur.com/bkw3VRr.png',
+    hd: 'https://i.imgur.com/wnZL13L.png',
+  },
+  {
+    text: '[苦笑]',
+    emoji: '😅',
+    ld: 'https://i.imgur.com/VUWFktU.png',
+    hd: 'https://i.imgur.com/NAfspZ1.png',
+  },
+  {
+    text: '[喝酒]',
+    emoji: '🍺',
+    ld: 'https://i.imgur.com/2ZZSapE.png',
+    hd: 'https://i.imgur.com/rVbSVak.png',
+  },
+  {
+    text: '[捂脸]',
+    emoji: '🤦',
+    ld: 'https://i.imgur.com/krir4IG.png',
+    hd: 'https://i.imgur.com/qqBqgVm.png',
+  },
+  {
+    text: '[阴险]',
+    emoji: '😏',
+    ld: 'https://i.imgur.com/MA8YqTP.png',
+    hd: 'https://i.imgur.com/e94jbaT.png',
+  },
+  {
+    text: '[怒]',
+    emoji: '😡',
+    ld: 'https://i.imgur.com/n4kWfGB.png',
+    hd: 'https://i.imgur.com/iMXxNxh.png',
+  },
+]
+
 export const IMGUR_TO_EMOJI_TEXT_MAP = new Map<string, string>()
 export const IMGUR_TO_TRUE_EMOJI_MAP = new Map<string, string>()
 export const EMOJI_TEXT_TO_TRUE_EMOJI_MAP = new Map<string, string>()
 
 V2EX_POLISH_EMOJIS.forEach(({ text, emoji, ld, hd }) => {
+  IMGUR_TO_EMOJI_TEXT_MAP.set(ld, text)
+  IMGUR_TO_EMOJI_TEXT_MAP.set(hd, text)
+  IMGUR_TO_TRUE_EMOJI_MAP.set(ld, emoji)
+  IMGUR_TO_TRUE_EMOJI_MAP.set(hd, emoji)
+  EMOJI_TEXT_TO_TRUE_EMOJI_MAP.set(text, emoji)
+})
+
+V2NEXT_CLASSIC_EMOTICONS.forEach(({ text, emoji, ld, hd }) => {
   IMGUR_TO_EMOJI_TEXT_MAP.set(ld, text)
   IMGUR_TO_EMOJI_TEXT_MAP.set(hd, text)
   IMGUR_TO_TRUE_EMOJI_MAP.set(ld, emoji)
@@ -288,6 +432,8 @@ export function isV2exPolishImgurEmoji(url: string): boolean {
   if (!url) return false
   return IMGUR_TO_EMOJI_TEXT_MAP.has(url)
 }
+
+export const isKnownImgurEmoji = isV2exPolishImgurEmoji
 
 export function replaceImgurImagesWithTrueEmoji(html: string): string {
   if (!html) return html
