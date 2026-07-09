@@ -112,7 +112,9 @@ export default function GoogleSearch() {
               style={[
                 googleSearchStyles.input,
                 styles.text,
-                { fontSize: styles.text_base.fontSize },
+                Platform.OS === 'ios'
+                  ? { fontSize: styles.text_base.fontSize }
+                  : styles.text_base,
               ]}
               selectionColor={theme.colors.primary}
               placeholderTextColor={theme.colors.text_placeholder}
@@ -229,7 +231,10 @@ const googleSearchStyles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    height: 40,
     paddingHorizontal: 8,
+    paddingVertical: 0,
+    textAlignVertical: 'center',
   },
   clearWrap: {
     height: '100%',

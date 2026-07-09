@@ -138,8 +138,10 @@ const searchStyles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
+    height: 40,
     paddingHorizontal: 8,
-    minHeight: 40,
+    paddingVertical: 0,
+    textAlignVertical: 'center',
   },
   clearWrap: {
     height: '100%',
