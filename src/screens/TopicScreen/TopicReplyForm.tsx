@@ -242,7 +242,7 @@ const replyFormStyles = StyleSheet.create({
     flex: 1,
     width: '100%',
     borderRadius:
-      Platform.OS === 'ios' && Number(Platform.Version) > 18 ? 24 : 8,
+      Platform.OS === 'ios' && Number(Platform.Version) > 18 ? 26 : 8,
   },
   input: {
     width: '100%',

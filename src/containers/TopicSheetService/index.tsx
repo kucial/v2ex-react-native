@@ -110,6 +110,7 @@ function ReplyFormSheet() {
       detents={['auto']}
       backgroundColor={styles.overlay.backgroundColor}
       grabber={false}
+      insetAdjustment='never'
       onDidDismiss={() => {
         if (useTopicSheetStore.getState().replyOptions) {
           useTopicSheetStore.getState().dismissReplyForm()
