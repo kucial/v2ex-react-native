@@ -45,48 +45,54 @@ export function cheerioDoc(html: string) {
 
   // decode href hash
   const emailProtectionCode = '/cdn-cgi/l/email-protection#'
-  $(`a[href^=${emailProtectionCode}]`).each(function (i, el) {
-    const href = $(el).attr('href')
-    if (!href) {
-      return
-    }
-    const email = decodeEmail(href.replace(emailProtectionCode, ''), 0)
-    $(el).replaceWith(function () {
-      return `<a href="mailto:${email}">${email}</a>`
+  if (html.includes(emailProtectionCode)) {
+    $(`a[href^=${emailProtectionCode}]`).each(function (i, el) {
+      const href = $(el).attr('href')
+      if (!href) {
+        return
+      }
+      const email = decodeEmail(href.replace(emailProtectionCode, ''), 0)
+      $(el).replaceWith(function () {
+        return `<a href="mailto:${email}">${email}</a>`
+      })
     })
-  })
+  }
 
-  $('.__cf_email__').each(function (i, el) {
-    const encodedEmail = $(el).attr('data-cfemail')
-    if (!encodedEmail) {
-      return
-    }
-    const email = decodeEmail(encodedEmail, 0)
-    // console.log('.__cf_email__', i, email)
-    $(el).replaceWith(function () {
-      return `<a href="mailto:${email}">${email}</a>`
+  if (html.includes('__cf_email__') || html.includes('data-cfemail')) {
+    $('.__cf_email__').each(function (i, el) {
+      const encodedEmail = $(el).attr('data-cfemail')
+      if (!encodedEmail) {
+        return
+      }
+      const email = decodeEmail(encodedEmail, 0)
+      // console.log('.__cf_email__', i, email)
+      $(el).replaceWith(function () {
+        return `<a href="mailto:${email}">${email}</a>`
+      })
     })
-  })
+  }
 
   // handle code block
-  $('pre code[class^=language]').each(function (i, el) {
-    const $el = $(el)
-    $el.replaceWith(function () {
-      const className = $el.attr('class')
-      if (!className) {
-        return $.html($el)
-      }
-      const language = className.replace('language-', '')
-      let highlighted
-      if (language && hljs.listLanguages().includes(language)) {
-        highlighted = hljs.highlight($el.text(), { language }).value
-      } else {
-        highlighted = hljs.highlightAuto($el.text()).value
-      }
+  if (html.includes('language-')) {
+    $('pre code[class^=language]').each(function (i, el) {
+      const $el = $(el)
+      $el.replaceWith(function () {
+        const className = $el.attr('class')
+        if (!className) {
+          return $.html($el)
+        }
+        const language = className.replace('language-', '')
+        let highlighted
+        if (language && hljs.listLanguages().includes(language)) {
+          highlighted = hljs.highlight($el.text(), { language }).value
+        } else {
+          highlighted = hljs.highlightAuto($el.text()).value
+        }
 
-      return `<code class="hljs">${highlighted}</code>`
+        return `<code class="hljs">${highlighted}</code>`
+      })
     })
-  })
+  }
 
   return $
 }
@@ -143,18 +149,18 @@ export function paginationFromText(str: string) {
 }
 
 export function topicDetailFromPage($: CheerioAPI, id: string | number) {
-  const member = memberFromImage(
-    $('#Wrapper .header a[href^="/member"] img').first(),
-  )
-  const node = nodeFromLink($('#Wrapper .header a[href^="/go"]').first())
-  const title = $('#Wrapper .header h1').text().trim()
+  const $header = $('#Wrapper .header')
+  const member = memberFromImage($header.find('a[href^="/member"] img').first())
+  const node = nodeFromLink($header.find('a[href^="/go"]').first())
+  const title = $header.find('h1').text().trim()
   const content_rendered =
     $('#Wrapper .cell .topic_content').html()?.trim() || ''
 
   let replies = 0
   let last_reply_time
-  if ($('.cell[id^=r_]').length) {
-    const compos = $('.cell[id^=r_]')
+  const $firstReplyCell = $('.cell[id^=r_]').first()
+  if ($firstReplyCell.length) {
+    const compos = $firstReplyCell
       .parent()
       .children()
       .first()
@@ -164,7 +170,7 @@ export function topicDetailFromPage($: CheerioAPI, id: string | number) {
     replies = Number(compos[0].replace('条回复', ''))
     last_reply_time = compos[1] && compos[1].trim()
   }
-  const metaText = $('#Wrapper .header > small.gray').text()
+  const metaText = $header.find('small.gray').text()
   const metaMatch = /\sat\s(.*)/.exec(metaText)
   const created_time = metaMatch ? metaMatch[1].split('·')[0].trim() : ''
   const clicks = metaMatch
@@ -172,9 +178,10 @@ export function topicDetailFromPage($: CheerioAPI, id: string | number) {
     : 0
   const subtles = $('#Wrapper .content .subtle')
     .map(function (i, el) {
+      const $subtle = $(el)
       return {
-        meta: $(el).find('.fade').text().trim(),
-        content_rendered: $(el).find('.topic_content').html()?.trim(),
+        meta: $subtle.find('.fade').text().trim(),
+        content_rendered: $subtle.find('.topic_content').html()?.trim(),
       }
     })
     .get()
@@ -201,9 +208,15 @@ export function topicDetailFromPage($: CheerioAPI, id: string | number) {
   }
 }
 
+const REPLIED_TO_REGEX = /(?<=<\/a>\s#)\d+/gm
+const BR_DOUBLE_REGEX = /<br><br>/g
+const CODE_BR_REGEX = /(```\w+)<br>/g
+const BR_SINGLE_REGEX = /<br>/g
+const LT_REGEX = /&lt;/g
+const GT_REGEX = /&gt;/g
+
 const getRepliedTo = (replyContent: string) => {
-  const regex = /(?<=<\/a>\s#)\d+/gm
-  const matches = replyContent.match(regex)
+  const matches = replyContent.match(REPLIED_TO_REGEX)
   return matches ? matches.map((val) => Number(val)) : null
 }
 
@@ -212,46 +225,49 @@ export function topicReplyFromCell(
   $: CheerioAPI,
 ): TopicReply {
   const member = memberFromImage($el.find('img.avatar').first())
-  const content_rendered = $el.find('.reply_content').html() ?? ''
-  const members_mentioned = $el
-    .find('.reply_content a[href^="/member/"]')
-    .map(function (j, a) {
-      return $(a).text().trim()
-    })
-    .get()
+  const $replyContent = $el.find('.reply_content')
+  const content_rendered = $replyContent.html() ?? ''
+  const members_mentioned: string[] = []
+  $replyContent.find('a[href^="/member/"]').each(function (_, a) {
+    members_mentioned.push($(a).text().trim())
+  })
 
-  const $clonedContent = $el.find('.reply_content').clone()
+  const $clonedContent = $replyContent.clone()
   $clonedContent.find('img').each(function (i, el) {
-    $(el).replaceWith($(`<span>${el.attribs.src}</span>`))
+    $(el).replaceWith(`<span>${el.attribs?.src ?? ''}</span>`)
   })
-  // 用户链接处理
-  $clonedContent.find('a[href^="/member/"]').each(function (i, el) {
-    $(el).replaceWith(`[${$(el).text()}](https://v2ex.com${el.attribs.href})`)
-  })
-  // 自动链接处理
   $clonedContent.find('a').each(function (i, el) {
-    const $el = $(el)
-    if ($el.attr('href') === $el.text()) {
-      $el.replaceWith($el.text())
+    const $a = $(el)
+    const href = $a.attr('href')
+    const text = $a.text()
+    if (href?.startsWith('/member/')) {
+      $a.replaceWith(`[${text}](https://v2ex.com${href})`)
+    } else if (href === text) {
+      $a.replaceWith(text)
     }
   })
 
   const content = getMarkdown($clonedContent.html())
 
-  const replyInfo = $el
-    .find('td:nth-child(3) span.fade.small')
-    .first()
-    .text()
-    .trim()
-  // let reply_time
-  // let reply_device
+  const $td3 = $el.find('td:nth-child(3)')
+  const replyInfo = $td3.find('span.fade.small').first().text().trim()
   const [reply_time, reply_device] = replyInfo.split(' via ')
-  const heartImg = $el
-    .find('td:nth-child(3) span.small.fade img[alt="❤️"]')
-    .first()
-  const thanks_count = heartImg ? Number(heartImg.parent().text().trim()) : 0
+  const heartImg = $td3.find('img[alt="❤️"]').first()
+  const thanks_count = heartImg.length
+    ? Number(heartImg.parent().text().trim())
+    : 0
 
   const replied_to = getRepliedTo(content_rendered)
+
+  let member_is_op = false
+  let member_is_mod = false
+  let member_is_pro = false
+  $el.find('.badge').each(function (_, b) {
+    const className = b.attribs?.class ?? ''
+    if (className.includes('op')) member_is_op = true
+    if (className.includes('mod')) member_is_mod = true
+    if (className.includes('pro')) member_is_pro = true
+  })
 
   return {
     id: Number($el.attr('id')?.replace('r_', '') ?? 0),
@@ -263,9 +279,9 @@ export function topicReplyFromCell(
     thanks_count,
     thanked: !!$el.find('.thanked').length,
     num: Number($el.find('.no').text()),
-    member_is_op: !!$el.find('.badge.op').length,
-    member_is_mod: !!$el.find('.badge.mod').length,
-    member_is_pro: !!$el.find('.badge.pro').length,
+    member_is_op,
+    member_is_mod,
+    member_is_pro,
     members_mentioned,
     replied_to,
   }
@@ -297,11 +313,11 @@ export function nodeDetailFromPage($: CheerioAPI, name: string) {
 
 export function getMarkdown(html?: string | null) {
   return (html ?? '')
-    .replace(/<br><br>/g, '\n\n')
-    .replace(/(```\w+)<br>/g, `$1\n`)
-    .replace(/<br>/g, '\n\n')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(BR_DOUBLE_REGEX, '\n\n')
+    .replace(CODE_BR_REGEX, `$1\n`)
+    .replace(BR_SINGLE_REGEX, '\n\n')
+    .replace(LT_REGEX, '<')
+    .replace(GT_REGEX, '>')
 }
 
 export async function getCookieHeader() {

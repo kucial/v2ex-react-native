@@ -236,7 +236,7 @@ interface TFA_Error extends ApiError {
   }
 }
 
-type XnaFeed = {
+export type XnaFeed = {
   title: string
   member: MemberBasic
   source: {
@@ -247,12 +247,12 @@ type XnaFeed = {
   updated_at: string
 }
 
-type PlanetSiteBasic = {
+export type PlanetSiteBasic = {
   avatar?: string
   site_title: string
   site_address: string
 }
-type PlanetFeedItem = {
+export type PlanetFeedItem = {
   uuid: string
   url?: string
   title: string
@@ -271,6 +271,6 @@ type PlanetFeedItem = {
   stats_num: number
 }
 
-type PlanetInfo = PlanetSiteBasic & {
+export type PlanetInfo = PlanetSiteBasic & {
   links: { text: string; href?: string }[]
 }

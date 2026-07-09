@@ -38,6 +38,7 @@ import {
   TopicDetail,
   TopicId,
   TopicReply,
+  XnaFeed,
 } from '@/utils/v2ex-client/types'
 
 import ApiError from './ApiError'
@@ -193,8 +194,8 @@ instance.interceptors.response.use(
     }
 
     const contentType = String(res.headers['content-type'] ?? '')
-    const $ = cheerioDoc(typeof res.data === 'string' ? res.data : '')
     if (contentType.includes('text/html') && !/poll_once$/.test(responseURL)) {
+      const $ = cheerioDoc(typeof res.data === 'string' ? res.data : '')
       res.$ = $
       // once token
       const link = $('a[href^="/settings/night/toggle?once="]')
@@ -202,97 +203,97 @@ instance.interceptors.response.use(
       if (onceValue) {
         cachedOnceToken = onceValue
       }
-    }
 
-    if (
-      responseURL === BASE_URL + '/2fa' &&
-      res.config.url !== '/2fa' &&
-      res.config.url !== '/signin' &&
-      res.config.url !== '/about?init=1'
-    ) {
-      const once = $('form[action="/2fa"] input[name=once]').attr('value')
-      const error = new ApiError({
-        code: '2FA_ENABLED',
-        message: '你的 V2EX 账号已经开启了两步验证，请输入验证码继续',
-        data: {
-          once,
-        },
-      })
-      dispatch('2fa_enabled', error as TFA_Error)
-      throw error
-    }
-    if (
-      responseURL &&
-      /\/signin\??/.test(responseURL) &&
-      !res.config.url?.startsWith('/signin')
-    ) {
-      const message = $('.message').text()
-      const error = new ApiError({
-        code: 'AUTH_REQUIRED',
-        message: message || '需要登录后再继续',
-      })
-      throw error
-    }
-    // https://www.v2ex.com/restricted
-    if (responseURL && /\/restricted\??/.test(responseURL)) {
-      const error = new ApiError({
-        code: 'RESTRICTED',
-        message: '访问限制',
-      })
-      throw error
-    }
-
-    // hometab side-effect
-    if (res.config?.url && /^\/(\?tab=\w+)?$/.test(res.config.url)) {
-      // current_user
-      const username = $('#menu-entry img.avatar').attr('alt')
-      dispatch('current_user', username)
-
-      // notification
-      const text = $('input.special.super.button').attr('value')
-      let unread_count = 0
-      if (text) {
-        const match = /\d+/.exec(text)
-        if (match) {
-          unread_count = Number(match[0])
-        }
+      if (
+        responseURL === BASE_URL + '/2fa' &&
+        res.config.url !== '/2fa' &&
+        res.config.url !== '/signin' &&
+        res.config.url !== '/about?init=1'
+      ) {
+        const once = $('form[action="/2fa"] input[name=once]').attr('value')
+        const error = new ApiError({
+          code: '2FA_ENABLED',
+          message: '你的 V2EX 账号已经开启了两步验证，请输入验证码继续',
+          data: {
+            once,
+          },
+        })
+        dispatch('2fa_enabled', error as TFA_Error)
+        throw error
       }
-      dispatch('unread_count', unread_count)
+      if (
+        responseURL &&
+        /\/signin\??/.test(responseURL) &&
+        !res.config.url?.startsWith('/signin')
+      ) {
+        const message = $('.message').text()
+        const error = new ApiError({
+          code: 'AUTH_REQUIRED',
+          message: message || '需要登录后再继续',
+        })
+        throw error
+      }
+      // https://www.v2ex.com/restricted
+      if (responseURL && /\/restricted\??/.test(responseURL)) {
+        const error = new ApiError({
+          code: 'RESTRICTED',
+          message: '访问限制',
+        })
+        throw error
+      }
 
-      let balanceText = $('.balance_area').html()
-      if (balanceText) {
-        const balanceBrief = {} as BalanceBrief
-        const goldImg = $('.balance_area img[src*=gold]')
-        if (goldImg) {
-          balanceText = balanceText.replace(
-            '<img src="/static/img/gold@2x.png" height="16" alt="G" border="0">',
-            'gold',
-          )
+      // hometab side-effect
+      if (res.config?.url && /^\/(\?tab=\w+)?$/.test(res.config.url)) {
+        // current_user
+        const username = $('#menu-entry img.avatar').attr('alt')
+        dispatch('current_user', username)
+
+        // notification
+        const text = $('input.special.super.button').attr('value')
+        let unread_count = 0
+        if (text) {
+          const match = /\d+/.exec(text)
+          if (match) {
+            unread_count = Number(match[0])
+          }
         }
-        const silverImg = $('.balance_area img[src*=silver]')
-        if (silverImg) {
-          balanceText = balanceText.replace(
-            '<img src="/static/img/silver@2x.png" height="16" alt="S" border="0">',
-            'silver',
-          )
+        dispatch('unread_count', unread_count)
+
+        let balanceText = $('.balance_area').html()
+        if (balanceText) {
+          const balanceBrief = {} as BalanceBrief
+          const goldImg = $('.balance_area img[src*=gold]')
+          if (goldImg) {
+            balanceText = balanceText.replace(
+              '<img src="/static/img/gold@2x.png" height="16" alt="G" border="0">',
+              'gold',
+            )
+          }
+          const silverImg = $('.balance_area img[src*=silver]')
+          if (silverImg) {
+            balanceText = balanceText.replace(
+              '<img src="/static/img/silver@2x.png" height="16" alt="S" border="0">',
+              'silver',
+            )
+          }
+          const bronzeImg = $('.balance_area img[src*=bronze]')
+          if (bronzeImg) {
+            balanceText = balanceText.replace(
+              '<img src="/static/img/bronze@2x.png" height="16" alt="B" border="0">',
+              'bronze',
+            )
+          }
+          const match =
+            /(?:\s?(\d+)\sgold)?(?:\s?(\d+)\ssilver)?(?:\s(\d+)\sbronze)?/.exec(
+              balanceText,
+            )
+          if (match) {
+            balanceBrief.gold = Number(match[1])
+            balanceBrief.silver = Number(match[2])
+            balanceBrief.bronze = Number(match[3])
+          }
+          dispatch('balance_brief', balanceBrief)
         }
-        const bronzeImg = $('.balance_area img[src*=bronze]')
-        if (bronzeImg) {
-          balanceText = balanceText.replace(
-            '<img src="/static/img/bronze@2x.png" height="16" alt="B" border="0">',
-            'bronze',
-          )
-        }
-        const match =
-          /(?:\s?(\d+)\sgold)?(?:\s?(\d+)\ssilver)?(?:\s(\d+)\sbronze)?/.exec(
-            balanceText,
-          )
-        if (match) {
-          balanceBrief.gold = Number(match[1])
-          balanceBrief.silver = Number(match[2])
-          balanceBrief.bronze = Number(match[3])
-        }
-        dispatch('balance_brief', balanceBrief)
       }
     }
 
@@ -399,17 +400,14 @@ export async function getHomeFeeds({
   const $ = res.$ ?? cheerioDoc(res.data)
   const data = $('#Wrapper .content .cell.item')
     .map(function (i, el) {
-      const member = memberFromImage($(el).find('td:nth-child(1) img').first())
-      const node = nodeFromLink($(el).find('td:nth-child(3) a.node').first())
-      const topic = topicFromLink($(el).find('.item_title a').first())
-      const last_reply_by = $(el)
-        .find('td:nth-child(3) span:last-child a')
-        .text()
-      const last_reply_time = $(el)
-        .find('td:nth-child(3) span:last-child')
-        .text()
-        ?.split('•')[0]
-        .trim()
+      const $el = $(el)
+      const $td3 = $el.find('td:nth-child(3)')
+      const member = memberFromImage($el.find('td:nth-child(1) img').first())
+      const node = nodeFromLink($td3.find('a.node').first())
+      const topic = topicFromLink($el.find('.item_title a').first())
+      const $lastChildSpan = $td3.find('span:last-child')
+      const last_reply_by = $lastChildSpan.find('a').text()
+      const last_reply_time = $lastChildSpan.text()?.split('•')[0].trim()
       return {
         ...topic,
         last_reply_by,
@@ -444,17 +442,14 @@ export async function getRecentFeeds({
   const $ = res.$ || cheerioDoc(res.data)
   const data = $('#Wrapper .content .cell.item')
     .map(function (i, el) {
-      const member = memberFromImage($(el).find('td:nth-child(1) img').first())
-      const node = nodeFromLink($(el).find('td:nth-child(3) a.node').first())
-      const topic = topicFromLink($(el).find('.item_title a').first())
-      const last_reply_by = $(el)
-        .find('td:nth-child(3) span:last-child a')
-        .text()
-      const last_reply_time = $(el)
-        .find('td:nth-child(3) span:last-child')
-        .text()
-        ?.split('•')[0]
-        .trim()
+      const $el = $(el)
+      const $td3 = $el.find('td:nth-child(3)')
+      const member = memberFromImage($el.find('td:nth-child(1) img').first())
+      const node = nodeFromLink($td3.find('a.node').first())
+      const topic = topicFromLink($el.find('.item_title a').first())
+      const $lastChildSpan = $td3.find('span:last-child')
+      const last_reply_by = $lastChildSpan.find('a').text()
+      const last_reply_time = $lastChildSpan.text()?.split('•')[0].trim()
       return {
         ...topic,
         last_reply_by,
@@ -490,15 +485,18 @@ export async function getXnaFeeds({
   const $ = res.$ || cheerioDoc(res.data)
   const data = $('#Wrapper .content .cell.item')
     .map(function (i, el) {
-      let url = $(el).find('.item_title a').attr('href')
-      const title = $(el).find('.item_title').text()
-      const member = memberFromImage($(el).find('td:nth-child(1) img').first())
-      const updated_at = $(el)
+      const $el = $(el)
+      const $itemTitle = $el.find('.item_title')
+      const $node = $el.find('.node')
+      let url = $itemTitle.find('a').attr('href')
+      const title = $itemTitle.text()
+      const member = memberFromImage($el.find('td:nth-child(1) img').first())
+      const updated_at = $el
         .find('td:nth-child(3) span:last-child')
         .text()
         ?.split('•')[0]
         .trim()
-      const source_link = $(el).find('.node').attr('href')
+      const source_link = $node.attr('href')
       if (url && !/^https?:\/\//.test(url) && source_link) {
         const sourceUrl = new URL(source_link)
         sourceUrl.pathname = url
@@ -508,7 +506,7 @@ export async function getXnaFeeds({
         title,
         member,
         source: {
-          name: $(el).find('.node').text(),
+          name: $node.text(),
           link: source_link,
         },
         url,
