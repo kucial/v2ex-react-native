@@ -32,6 +32,7 @@ import { useAlertService } from '@/containers/AlertService'
 import { openImageViewer } from '@/containers/ImageViewingService'
 import { useTheme } from '@/containers/ThemeService'
 import { extractBase64Decoded, getMaxLength } from '@/utils/content'
+import { replaceImgurImagesWithTrueEmoji } from '@/utils/emojis'
 import { dismissSheet, presentSheet } from '@/utils/trueSheet'
 import {
   getImgurResourceImageLink,
@@ -41,7 +42,6 @@ import {
   isImgurResourceLink,
   isURL,
 } from '@/utils/url'
-import { replaceImgurImagesWithTrueEmoji } from '@/utils/v2ex-polish-emojis'
 
 import AnchorRenderer from './AnchorRenderer'
 import { RenderContext } from './context'

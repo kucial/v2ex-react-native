@@ -1,18 +1,16 @@
 import {
   getEmojiTextFromImgurUrl,
   getTrueEmojiFromImgurUrl,
-  isV2exPolishImgurEmoji,
+  isKnownImgurEmoji,
   replaceImgurImagesWithTrueEmoji,
-} from '../v2ex-polish-emojis'
+} from '../emojis'
 
-describe('v2ex-polish-emojis utility', () => {
-  it('identifies V2EX Polish Imgur emoji URLs correctly', () => {
-    expect(isV2exPolishImgurEmoji('https://i.imgur.com/agAJ0Rd.png')).toBe(true)
-    expect(isV2exPolishImgurEmoji('https://i.imgur.com/HZL0hOa.png')).toBe(true)
-    expect(isV2exPolishImgurEmoji('https://i.imgur.com/io2SM1h.png')).toBe(true)
-    expect(isV2exPolishImgurEmoji('https://i.imgur.com/notanemoji.png')).toBe(
-      false,
-    )
+describe('emojis utility', () => {
+  it('identifies known Imgur emoji URLs correctly', () => {
+    expect(isKnownImgurEmoji('https://i.imgur.com/agAJ0Rd.png')).toBe(true)
+    expect(isKnownImgurEmoji('https://i.imgur.com/HZL0hOa.png')).toBe(true)
+    expect(isKnownImgurEmoji('https://i.imgur.com/io2SM1h.png')).toBe(true)
+    expect(isKnownImgurEmoji('https://i.imgur.com/notanemoji.png')).toBe(false)
   })
 
   it('maps Imgur URLs back to text emojis and true emojis', () => {

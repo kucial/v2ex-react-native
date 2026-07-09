@@ -22,8 +22,8 @@ import { useTheme } from '@/containers/ThemeService'
 import {
   getEmojiTextFromImgurUrl,
   getTrueEmojiFromImgurUrl,
-  isV2exPolishImgurEmoji,
-} from '@/utils/v2ex-polish-emojis'
+  isKnownImgurEmoji,
+} from '@/utils/emojis'
 
 import { RenderContext } from './context'
 
@@ -109,7 +109,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
       )
       const height = (imageQuery.data.height / imageQuery.data.width) * width
       return { width, height }
-    } else if (isV2exPolishImgurEmoji(uri)) {
+    } else if (isKnownImgurEmoji(uri)) {
       return { width: 36, height: 36 }
     } else {
       const width = contentWidth
@@ -124,7 +124,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
       uri.includes('/emoticon/') ||
       uri.includes('/smilies/') ||
       uri.includes('twemoji') ||
-      isV2exPolishImgurEmoji(uri)
+      isKnownImgurEmoji(uri)
     ) {
       return true
     }
@@ -185,7 +185,7 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
         ]}
       >
         {imageQuery.error ? (
-          isV2exPolishImgurEmoji(uri) ? (
+          isKnownImgurEmoji(uri) ? (
             <Text
               style={[
                 imgStyles.fallbackEmojiText,

@@ -1,18 +1,11 @@
-export type V2exPolishEmoji = {
+export type ImgurEmojiMapping = {
   text: string
   emoji: string
   ld: string
   hd: string
 }
 
-export type V2exClassicEmoticon = {
-  text: string
-  emoji: string
-  ld: string
-  hd: string
-}
-
-export const V2EX_POLISH_EMOJIS: V2exPolishEmoji[] = [
+export const V2EX_POLISH_IMGUR_EMOJIS: ImgurEmojiMapping[] = [
   // B 站表情
   {
     text: '[脱单doge]',
@@ -269,7 +262,7 @@ export const V2EX_POLISH_EMOJIS: V2exPolishEmoji[] = [
   },
 ]
 
-export const V2NEXT_CLASSIC_EMOTICONS: V2exClassicEmoticon[] = [
+export const V2NEXT_CLASSIC_IMGUR_EMOJIS: ImgurEmojiMapping[] = [
   {
     text: '[狗头]',
     emoji: '🐶',
@@ -398,19 +391,16 @@ export const V2NEXT_CLASSIC_EMOTICONS: V2exClassicEmoticon[] = [
   },
 ]
 
+export const KNOWN_IMGUR_EMOJIS: ImgurEmojiMapping[] = [
+  ...V2EX_POLISH_IMGUR_EMOJIS,
+  ...V2NEXT_CLASSIC_IMGUR_EMOJIS,
+]
+
 export const IMGUR_TO_EMOJI_TEXT_MAP = new Map<string, string>()
 export const IMGUR_TO_TRUE_EMOJI_MAP = new Map<string, string>()
 export const EMOJI_TEXT_TO_TRUE_EMOJI_MAP = new Map<string, string>()
 
-V2EX_POLISH_EMOJIS.forEach(({ text, emoji, ld, hd }) => {
-  IMGUR_TO_EMOJI_TEXT_MAP.set(ld, text)
-  IMGUR_TO_EMOJI_TEXT_MAP.set(hd, text)
-  IMGUR_TO_TRUE_EMOJI_MAP.set(ld, emoji)
-  IMGUR_TO_TRUE_EMOJI_MAP.set(hd, emoji)
-  EMOJI_TEXT_TO_TRUE_EMOJI_MAP.set(text, emoji)
-})
-
-V2NEXT_CLASSIC_EMOTICONS.forEach(({ text, emoji, ld, hd }) => {
+KNOWN_IMGUR_EMOJIS.forEach(({ text, emoji, ld, hd }) => {
   IMGUR_TO_EMOJI_TEXT_MAP.set(ld, text)
   IMGUR_TO_EMOJI_TEXT_MAP.set(hd, text)
   IMGUR_TO_TRUE_EMOJI_MAP.set(ld, emoji)
@@ -428,12 +418,10 @@ export function getTrueEmojiFromImgurUrl(url: string): string | undefined {
   return IMGUR_TO_TRUE_EMOJI_MAP.get(url)
 }
 
-export function isV2exPolishImgurEmoji(url: string): boolean {
+export function isKnownImgurEmoji(url: string): boolean {
   if (!url) return false
   return IMGUR_TO_EMOJI_TEXT_MAP.has(url)
 }
-
-export const isKnownImgurEmoji = isV2exPolishImgurEmoji
 
 export function replaceImgurImagesWithTrueEmoji(html: string): string {
   if (!html) return html
