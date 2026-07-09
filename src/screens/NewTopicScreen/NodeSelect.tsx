@@ -10,6 +10,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
+import { Portal } from '@gorhom/portal'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { useQuery } from '@tanstack/react-query'
 
@@ -97,44 +98,45 @@ function NodeSelect(props: NodeSelectProps) {
           </Text>
         )}
       </Pressable>
-      <TrueSheet
-        ref={selectRef}
-        scrollable
-        backgroundColor={
-          typeof styles.overlay.backgroundColor === 'string'
-            ? styles.overlay.backgroundColor
-            : '#000000'
-        }
-        header={
-          <View style={nodeSelectStyles.headerWrap}>
-            <TextInput
-              autoFocus={!props.value}
-              style={{
-                height: 36,
-                paddingHorizontal: 8,
-                borderRadius: 6,
-                backgroundColor: theme.colors.overlay_input_bg,
-                color: theme.colors.text,
-              }}
-              selectionColor={theme.colors.primary}
-              placeholderTextColor={theme.colors.text_placeholder}
-              placeholder={props.filterPlaceholder}
-              returnKeyType='search'
-              value={filter}
-              onChangeText={(text) => {
-                setFilter(text)
-              }}
-            />
-          </View>
-        }
-      >
-        <FlatList
-          nestedScrollEnabled
-          data={filtered}
-          renderItem={renderItem}
-          keyExtractor={(n) => `${n.id ?? n.name}`}
-        />
-      </TrueSheet>
+      <Portal hostName='overlay'>
+        <TrueSheet
+          ref={selectRef}
+          scrollable
+          backgroundColor={
+            typeof styles.overlay.backgroundColor === 'string'
+              ? styles.overlay.backgroundColor
+              : '#000000'
+          }
+          header={
+            <View style={nodeSelectStyles.headerWrap}>
+              <TextInput
+                autoFocus={!props.value}
+                style={{
+                  height: 36,
+                  paddingHorizontal: 8,
+                  borderRadius: 6,
+                  backgroundColor: theme.colors.overlay_input_bg,
+                  color: theme.colors.text,
+                }}
+                selectionColor={theme.colors.primary}
+                placeholderTextColor={theme.colors.text_placeholder}
+                placeholder={props.filterPlaceholder}
+                returnKeyType='search'
+                value={filter}
+                onChangeText={(text) => {
+                  setFilter(text)
+                }}
+              />
+            </View>
+          }
+        >
+          <FlatList
+            data={filtered}
+            renderItem={renderItem}
+            keyExtractor={(n) => `${n.id ?? n.name}`}
+          />
+        </TrueSheet>
+      </Portal>
     </>
   )
 }

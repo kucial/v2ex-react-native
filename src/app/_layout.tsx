@@ -3,6 +3,7 @@ import 'react-native-reanimated'
 import { useEffect } from 'react'
 import { Linking } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { RootSiblingParent } from 'react-native-root-siblings'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ActionSheetProvider } from '@expo/react-native-action-sheet'
@@ -60,30 +61,32 @@ export default function RootLayout() {
         <ThemeProvider>
           <ErrorBoundary>
             <GestureHandlerRootView>
-              <AlertService>
-                <FetchPrepare>
-                  <QueryClientProvider>
-                    <PortalProvider>
-                      <ActionSheetProvider>
-                        <ImgurService>
-                          <Layout>
-                            <Slot />
-                            <PortalHost name='overlay' />
-                            <FeedPanelSheet />
-                            <GlobalImageViewingModal />
-                            <TwoFAModal />
-                            <ClipboardWatcher />
-                            <NotificationWatcher />
-                            <AuthWatcher />
-                            <TopicSheetModal />
-                            <AudioWatcher />
-                          </Layout>
-                        </ImgurService>
-                      </ActionSheetProvider>
-                    </PortalProvider>
-                  </QueryClientProvider>
-                </FetchPrepare>
-              </AlertService>
+              <KeyboardProvider>
+                <AlertService>
+                  <FetchPrepare>
+                    <QueryClientProvider>
+                      <PortalProvider>
+                        <ActionSheetProvider>
+                          <ImgurService>
+                            <Layout>
+                              <Slot />
+                              <PortalHost name='overlay' />
+                              <FeedPanelSheet />
+                              <GlobalImageViewingModal />
+                              <TwoFAModal />
+                              <ClipboardWatcher />
+                              <NotificationWatcher />
+                              <AuthWatcher />
+                              <TopicSheetModal />
+                              <AudioWatcher />
+                            </Layout>
+                          </ImgurService>
+                        </ActionSheetProvider>
+                      </PortalProvider>
+                    </QueryClientProvider>
+                  </FetchPrepare>
+                </AlertService>
+              </KeyboardProvider>
             </GestureHandlerRootView>
           </ErrorBoundary>
         </ThemeProvider>

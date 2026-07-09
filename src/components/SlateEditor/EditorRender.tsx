@@ -62,6 +62,7 @@ export default function EditorRender(props: EditorRenderProps) {
         ref={editor.domRef}
         onEvent={editor.handleEvent}
         dom={{
+          hideKeyboardAccessoryView: true,
           // Disable DOM scrolling since we manage it in RN
           scrollEnabled: false,
           // Resize to match the HTML content height
