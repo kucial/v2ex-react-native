@@ -10,6 +10,7 @@ import TriangleCorner from '@/components/TriangleCorner'
 import { useTheme } from '@/containers/ThemeService'
 import { useViewedStatus } from '@/containers/ViewedTopicsService'
 import { preloadTopicInfo } from '@/utils/preload'
+import { areTopicRowPropsEqual } from '@/utils/memo'
 
 import MaxWidthWrapper from '../MaxWidthWrapper'
 
@@ -367,4 +368,5 @@ const rowStyles = StyleSheet.create({
   },
 })
 
-export default memo(TopicRow)
+export default memo(TopicRow, areTopicRowPropsEqual)
+
