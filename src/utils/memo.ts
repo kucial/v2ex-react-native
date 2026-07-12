@@ -34,4 +34,3 @@ export function areFeedRowPropsEqual<
 }
 
 export const areTopicRowPropsEqual = areFeedRowPropsEqual
-

@@ -5,8 +5,8 @@ import CookieManager from 'react-native-nitro-cookies'
 import * as Sentry from '@sentry/react-native'
 import axios, {
   AxiosRequestConfig,
-  AxiosRequestHeaders,
   AxiosResponse,
+  RawAxiosRequestHeaders,
 } from 'axios'
 import { CheerioAPI } from 'cheerio'
 import { stringify } from 'qs'
@@ -144,8 +144,7 @@ let n_403 = 0
 let cachedOnceToken: string | undefined
 
 instance.interceptors.request.use(async (config) => {
-  config.headers = config.headers ?? ({} as AxiosRequestHeaders)
-  const headers = config.headers as AxiosRequestHeaders
+  const headers = config.headers
 
   // handle oncp
   if (config.params?.once === ONCP || config.data?.once === ONCP) {
@@ -314,7 +313,7 @@ instance.interceptors.response.use(
     }
     if (
       error.response?.status === 404 &&
-      error.response.headers['content-type'].indexOf('html') !== -1
+      error.response.headers['content-type']?.indexOf('html') !== -1
     ) {
       const $ = cheerioDoc(error.response.data)
       throw new ApiError({
@@ -344,7 +343,7 @@ export const request = async (
 }
 
 export async function fetchOnce(
-  headers: AxiosRequestHeaders = {
+  headers: RawAxiosRequestHeaders = {
     Referer: BASE_URL,
     origin: BASE_URL,
   },

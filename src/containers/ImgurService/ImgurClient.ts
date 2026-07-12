@@ -23,7 +23,7 @@ export class ImgurClient {
     this.credentials = credentials
     this.fetcher.interceptors.request.use((config) => {
       console.log('imgur fetch....', config.url)
-      config.headers = config.headers ? config.headers : {}
+      config.headers = config.headers ?? {}
       if (this.credentials?.access_token) {
         config.headers.authorization = `Bearer ${this.credentials.access_token}`
       }
