@@ -235,14 +235,15 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
 const replyFormStyles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingTop: 12,
+    paddingBottom: 4,
     height: 180,
   },
   inputWrap: {
     flex: 1,
     width: '100%',
     borderRadius:
-      Platform.OS === 'ios' && Number(Platform.Version) > 18 ? 26 : 8,
+      Platform.OS === 'ios' && Number(Platform.Version) >= 26 ? 26 : 8,
   },
   input: {
     width: '100%',

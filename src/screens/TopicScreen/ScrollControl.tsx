@@ -189,7 +189,7 @@ const scrollControlStyles = StyleSheet.create({
   },
   inputBox: {
     borderRadius:
-      Platform.OS === 'ios' && Number(Platform.Version) > 18 ? 20 : 8,
+      Platform.OS === 'ios' && Number(Platform.Version) >= 26 ? 20 : 8,
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
@@ -226,7 +226,7 @@ const scrollControlStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius:
-      Platform.OS === 'ios' && Number(Platform.Version) > 18 ? 14 : 6,
+      Platform.OS === 'ios' && Number(Platform.Version) >= 26 ? 14 : 6,
     marginLeft: 4,
     marginRight: 7,
   },
