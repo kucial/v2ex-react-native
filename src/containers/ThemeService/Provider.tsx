@@ -1,5 +1,5 @@
 import { ReactNode, useContext, useEffect, useMemo } from 'react'
-import { AppState, Platform } from 'react-native'
+import { AppState, Platform, useColorScheme } from 'react-native'
 import { getAppIcon, setAppIcon } from '@howincodes/expo-dynamic-app-icon'
 import * as NavigationBar from 'expo-navigation-bar'
 import {
@@ -13,7 +13,6 @@ import * as SystemUI from 'expo-system-ui'
 import { useAppSettings } from '../AppSettingsService'
 import { ThemeContext } from './context'
 import { getThemeService } from './helpers'
-import { useColorScheme } from './hooks'
 
 // Themes that ship an alternate Icon Composer bundle
 // (src/assets/icons/composer/AppIcon-<theme>.icon, wired up by

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, useColorScheme, View } from 'react-native'
 import { useNavigation } from 'expo-router'
 
 import NavigationHeader from '@/components/NavigationHeader'
 
 import AlertService from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
-import { ThemeProvider, useColorScheme } from '@/containers/ThemeService'
+import { ThemeProvider } from '@/containers/ThemeService'
 
 import ThemePreview from './ThemePreview'
 
