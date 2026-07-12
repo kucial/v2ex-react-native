@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { ColorValue } from 'react-native'
-import { MusicalNoteIcon } from 'react-native-heroicons/outline'
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -9,6 +8,8 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useAudioPlayerStore } from '@/stores/audioPlayer'
 
@@ -43,7 +44,7 @@ export default function AudioTabIcon(props: {
 
   return (
     <Animated.View style={animatedStyle}>
-      <MusicalNoteIcon size={size} color={color} />
+      <V2exIcon name='musical-note-outline' size={size} color={color} />
     </Animated.View>
   )
 }

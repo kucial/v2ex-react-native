@@ -1,8 +1,4 @@
-import {
-  HomeModernIcon,
-  RectangleStackIcon,
-  UserIcon,
-} from 'react-native-heroicons/outline'
+import V2exIcon from '@/components/icons/V2exIcon'
 
 type TabType = 'home' | 'node' | 'user'
 export default function TypeIcon({
@@ -11,10 +7,10 @@ export default function TypeIcon({
 }: IconProps & { type: TabType }) {
   switch (type) {
     case 'home':
-      return <HomeModernIcon {...props} />
+      return <V2exIcon name='home-modern-outline' {...props} />
     case 'node':
-      return <RectangleStackIcon {...props} />
+      return <V2exIcon name='rectangle-stack-outline' {...props} />
     case 'user':
-      return <UserIcon {...props} />
+      return <V2exIcon name='user-outline' {...props} />
   }
 }

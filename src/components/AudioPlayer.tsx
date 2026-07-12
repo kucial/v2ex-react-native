@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import { PauseIcon, PlayIcon } from 'react-native-heroicons/outline'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useTheme } from '@/containers/ThemeService'
 import { useAudioPlayerStore } from '@/stores/audioPlayer'
@@ -213,9 +214,9 @@ export default function AudioPlayerComponent({ audio }: AudioPlayerProps) {
         accessibilityState={{ disabled: false }}
       >
         {showPlayIcon ? (
-          <PlayIcon size={20} color={theme.colors.text} />
+          <V2exIcon name='play-outline' size={20} color={theme.colors.text} />
         ) : (
-          <PauseIcon size={20} color={theme.colors.text} />
+          <V2exIcon name='pause-outline' size={20} color={theme.colors.text} />
         )}
       </Pressable>
       <View style={audioStyles.contentWrap}>

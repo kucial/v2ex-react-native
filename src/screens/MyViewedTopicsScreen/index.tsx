@@ -1,14 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import { Swipeable } from 'react-native-gesture-handler'
-import {
-  EllipsisHorizontalIcon,
-  TrashIcon,
-} from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 
 import Button from '@/components/Button'
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
 import { useAppSettings } from '@/containers/AppSettingsService'
@@ -36,7 +33,7 @@ const Actions = (props) => {
           props.onDelete(props.item)
         }}
       >
-        <TrashIcon color={styles.btn_danger__text.color} />
+        <V2exIcon name='trash-outline' color={styles.btn_danger__text.color} />
       </Pressable>
     </View>
   )
@@ -136,7 +133,11 @@ export default function ViewedTopicsScreen() {
           )
         }}
       >
-        <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
+        <V2exIcon
+          name='ellipsis-horizontal-outline'
+          size={24}
+          color={theme.colors.text}
+        />
       </Button>
     ),
     [

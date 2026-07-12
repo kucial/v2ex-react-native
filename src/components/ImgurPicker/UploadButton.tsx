@@ -1,8 +1,9 @@
 import { useCallback } from 'react'
 import { Alert, Pressable, StyleSheet, View } from 'react-native'
-import { ArrowUpTrayIcon } from 'react-native-heroicons/outline'
 import * as Sentry from '@sentry/react-native'
 import * as ImagePicker from 'expo-image-picker'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useImgurService } from '@/containers/ImgurService'
@@ -101,7 +102,11 @@ export default function UploadButton(props) {
           }
         }}
       >
-        <ArrowUpTrayIcon size={22} color={props.tintColor} />
+        <V2exIcon
+          name='arrow-up-tray-outline'
+          size={22}
+          color={props.tintColor}
+        />
       </Pressable>
     </View>
   )

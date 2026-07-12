@@ -7,24 +7,14 @@ import {
   Text,
   View,
 } from 'react-native'
-import {
-  ClockIcon,
-  Cog6ToothIcon,
-  DocumentPlusIcon,
-  HomeIcon,
-  InformationCircleIcon,
-  PaintBrushIcon,
-  PhotoIcon,
-  StarIcon,
-} from 'react-native-heroicons/outline'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
 import GroupWapper from '@/components/GroupWrapper'
+import V2exIcon from '@/components/icons/V2exIcon'
 import { LineItem, LineItemGroup } from '@/components/LineItem'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NavigationHeader from '@/components/NavigationHeader'
-import ReplyIcon from '@/components/ReplyIcon'
 import { Box, InlineText } from '@/components/Skeleton/Elements'
 
 import {
@@ -199,7 +189,13 @@ export default function MyScreen() {
                   style={styles.grouped_secondary}
                   title='创建的主题'
                   isLast
-                  icon={<DocumentPlusIcon size={22} color={iconColor} />}
+                  icon={
+                    <V2exIcon
+                      name='document-plus-outline'
+                      size={22}
+                      color={iconColor}
+                    />
+                  }
                   disabled={authStatus === 'loading'}
                   onPress={handleCreatedTopicsPressed}
                 />
@@ -211,7 +207,9 @@ export default function MyScreen() {
                   style={styles.grouped_secondary}
                   title='收藏的主题'
                   isLast
-                  icon={<StarIcon size={22} color={iconColor} />}
+                  icon={
+                    <V2exIcon name='star-outline' size={22} color={iconColor} />
+                  }
                   disabled={authStatus === 'loading'}
                   onPress={handleCollectedTopicsPressed}
                 />
@@ -223,7 +221,13 @@ export default function MyScreen() {
                   style={styles.grouped_secondary}
                   title='回复的主题'
                   isLast
-                  icon={<ReplyIcon size={22} color={iconColor} />}
+                  icon={
+                    <V2exIcon
+                      name='reply-outline'
+                      size={22}
+                      color={iconColor}
+                    />
+                  }
                   disabled={authStatus === 'loading'}
                   onPress={handleRepliedTopicsPressed}
                 />
@@ -235,7 +239,13 @@ export default function MyScreen() {
                   style={styles.grouped_secondary}
                   title='浏览的主题'
                   isLast
-                  icon={<ClockIcon size={22} color={iconColor} />}
+                  icon={
+                    <V2exIcon
+                      name='clock-outline'
+                      size={22}
+                      color={iconColor}
+                    />
+                  }
                   disabled={authStatus === 'loading'}
                   onPress={() => {
                     router.push('/me/viewed-topics')
@@ -249,7 +259,9 @@ export default function MyScreen() {
             <LineItem
               style={styles.grouped_secondary}
               title='首页 Tab 设置'
-              icon={<HomeIcon size={22} color={iconColor} />}
+              icon={
+                <V2exIcon name='home-outline' size={22} color={iconColor} />
+              }
               onPress={() => {
                 router.push('/home-tab-settings')
               }}
@@ -260,12 +272,20 @@ export default function MyScreen() {
               onPress={() => {
                 router.push('/imgur-settings')
               }}
-              icon={<PhotoIcon size={22} color={iconColor} />}
+              icon={
+                <V2exIcon name='photo-outline' size={22} color={iconColor} />
+              }
             />
             <LineItem
               style={styles.grouped_secondary}
               title='主题样式'
-              icon={<PaintBrushIcon size={22} color={iconColor} />}
+              icon={
+                <V2exIcon
+                  name='paint-brush-outline'
+                  size={22}
+                  color={iconColor}
+                />
+              }
               onPress={() => {
                 router.push('/theme-settings')
               }}
@@ -273,7 +293,13 @@ export default function MyScreen() {
             <LineItem
               style={styles.grouped_secondary}
               title='功能设置'
-              icon={<Cog6ToothIcon size={22} color={iconColor} />}
+              icon={
+                <V2exIcon
+                  name='cog6-tooth-outline'
+                  size={22}
+                  color={iconColor}
+                />
+              }
               onPress={() => {
                 router.push('/preference-settings')
               }}
@@ -287,7 +313,13 @@ export default function MyScreen() {
               onPress={() => {
                 router.push('/about')
               }}
-              icon={<InformationCircleIcon size={22} color={iconColor} />}
+              icon={
+                <V2exIcon
+                  name='information-circle-outline'
+                  size={22}
+                  color={iconColor}
+                />
+              }
               title='关于'
               isLast
             />

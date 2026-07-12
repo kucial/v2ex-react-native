@@ -8,11 +8,6 @@ import {
   Text,
   View,
 } from 'react-native'
-import {
-  ArrowUpOnSquareIcon,
-  ChatBubbleLeftEllipsisIcon,
-  StarIcon,
-} from 'react-native-heroicons/outline'
 import Share from 'react-native-share'
 import Constants from 'expo-constants'
 import { useRouter } from 'expo-router'
@@ -21,6 +16,7 @@ import { stringify } from 'qs'
 import AppBrandIcon from '@/components/AppBrandIcon'
 import GithubIcon from '@/components/GithubIcon'
 import GroupWapper from '@/components/GroupWrapper'
+import V2exIcon from '@/components/icons/V2exIcon'
 import { LineItem } from '@/components/LineItem'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NavigationHeader from '@/components/NavigationHeader'
@@ -130,7 +126,12 @@ export default function AboutScreen() {
                       console.log(error.message)
                     }
                   }}
-                  icon={<ArrowUpOnSquareIcon color={theme.colors.primary} />}
+                  icon={
+                    <V2exIcon
+                      name='arrow-up-on-square-outline'
+                      color={theme.colors.primary}
+                    />
+                  }
                   title='分享'
                 />
                 <LineItem
@@ -140,7 +141,13 @@ export default function AboutScreen() {
                       `itms-apps://apps.apple.com/app/id${IOS_APP_ID}?action=write-review`,
                     )
                   }}
-                  icon={<StarIcon size={22} color={theme.colors.primary} />}
+                  icon={
+                    <V2exIcon
+                      name='star-outline'
+                      size={22}
+                      color={theme.colors.primary}
+                    />
+                  }
                   title='五星好评'
                 />
               </>
@@ -162,7 +169,8 @@ export default function AboutScreen() {
                 }
               }}
               icon={
-                <ChatBubbleLeftEllipsisIcon
+                <V2exIcon
+                  name='chat-bubble-left-ellipsis-outline'
                   size={22}
                   color={theme.colors.primary}
                 />

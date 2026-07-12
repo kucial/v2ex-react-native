@@ -1,8 +1,9 @@
 import { useCallback, useRef } from 'react'
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 import ContextMenu from 'react-native-context-menu-view'
-import { LockClosedIcon, PhotoIcon } from 'react-native-heroicons/outline'
 import { Image } from 'expo-image'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useAlertService } from '@/containers/AlertService'
 import { getImageLink, useImgurService } from '@/containers/ImgurService'
@@ -110,7 +111,11 @@ export default function AlbumCard(props: {
                 style={albumCardStyles.absoluteInset}
               ></Image>
             ) : (
-              <PhotoIcon size={30} color={theme.colors.text} />
+              <V2exIcon
+                name='photo-outline'
+                size={30}
+                color={theme.colors.text}
+              />
             )}
           </View>
           <View style={albumCardStyles.badge}>
@@ -122,7 +127,11 @@ export default function AlbumCard(props: {
         <View style={albumCardStyles.infoRow}>
           {data.privacy === 'hidden' && (
             <View style={albumCardStyles.lockIcon}>
-              <LockClosedIcon size={14} color={theme.colors.text_meta} />
+              <V2exIcon
+                name='lock-closed-outline'
+                size={14}
+                color={theme.colors.text_meta}
+              />
             </View>
           )}
           <View style={albumCardStyles.flex1}>

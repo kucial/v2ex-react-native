@@ -1,9 +1,9 @@
 import { memo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { DocumentIcon } from 'react-native-heroicons/outline'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
+import V2exIcon from '@/components/icons/V2exIcon'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -46,7 +46,11 @@ function CollectedNodes(props: { data: NodeExtra[] }) {
                   </Text>
                   <View style={collectedNodesStyles.metaRow}>
                     <View style={collectedNodesStyles.mr1}>
-                      <DocumentIcon size={12} color={theme.colors.text_meta} />
+                      <V2exIcon
+                        name='document-outline'
+                        size={12}
+                        color={theme.colors.text_meta}
+                      />
                     </View>
                     <Text style={[styles.text_meta, styles.text_xs]}>
                       {node.topics}

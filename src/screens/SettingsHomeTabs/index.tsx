@@ -18,20 +18,13 @@ import {
 import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist'
-import {
-  EllipsisHorizontalIcon,
-  HomeModernIcon,
-  MinusCircleIcon,
-  PlusCircleIcon,
-  PlusIcon,
-  RectangleStackIcon,
-} from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { useNavigation, useRouter } from 'expo-router'
 import type { EventArg } from 'expo-router/react-navigation'
 
 import Button from '@/components/Button'
+import V2exIcon from '@/components/icons/V2exIcon'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NavigationHeader from '@/components/NavigationHeader'
 import SectionHeader from '@/components/SectionHeader'
@@ -119,9 +112,17 @@ export default function HomeTabs() {
       let icon
       const tintColor = theme.colors.text
       if (item.type === 'node') {
-        icon = <RectangleStackIcon size={18} color={tintColor} />
+        icon = (
+          <V2exIcon
+            name='rectangle-stack-outline'
+            size={18}
+            color={tintColor}
+          />
+        )
       } else {
-        icon = <HomeModernIcon size={18} color={tintColor} />
+        icon = (
+          <V2exIcon name='home-modern-outline' size={18} color={tintColor} />
+        )
       }
       return (
         <ScaleDecorator>
@@ -153,7 +154,10 @@ export default function HomeTabs() {
                     })
                   }}
                 >
-                  <MinusCircleIcon color={theme.colors.danger} />
+                  <V2exIcon
+                    name='minus-circle-outline'
+                    color={theme.colors.danger}
+                  />
                 </Pressable>
               }
             />
@@ -169,9 +173,17 @@ export default function HomeTabs() {
       let icon
       const tintColor = theme.colors.text
       if (item.type === 'node') {
-        icon = <RectangleStackIcon size={18} color={tintColor} />
+        icon = (
+          <V2exIcon
+            name='rectangle-stack-outline'
+            size={18}
+            color={tintColor}
+          />
+        )
       } else {
-        icon = <HomeModernIcon size={18} color={tintColor} />
+        icon = (
+          <V2exIcon name='home-modern-outline' size={18} color={tintColor} />
+        )
       }
       return (
         <MaxWidthWrapper
@@ -200,7 +212,10 @@ export default function HomeTabs() {
                   })
                 }}
               >
-                <PlusCircleIcon color={theme.colors.success} />
+                <V2exIcon
+                  name='plus-circle-outline'
+                  color={theme.colors.success}
+                />
               </Pressable>
             }
           />
@@ -283,7 +298,11 @@ export default function HomeTabs() {
               )
             }}
           >
-            <EllipsisHorizontalIcon size={24} color={theme.colors.text} />
+            <V2exIcon
+              name='ellipsis-horizontal-outline'
+              size={24}
+              color={theme.colors.text}
+            />
           </Pressable>
         )}
       />
@@ -327,7 +346,11 @@ export default function HomeTabs() {
             presentSheet(sheetRef.current)
           }}
         >
-          <PlusIcon color={styles.btn_primary__text.color} size={24} />
+          <V2exIcon
+            name='plus-outline'
+            color={styles.btn_primary__text.color}
+            size={24}
+          />
         </Button>
       </View>
       <AddTabPanelSheet ref={sheetRef} selected={tabs} onChange={setTabs} />

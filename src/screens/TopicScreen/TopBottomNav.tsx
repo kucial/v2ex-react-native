@@ -1,4 +1,3 @@
-import { ChevronDownIcon, ChevronUpIcon } from 'react-native-heroicons/outline'
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -6,6 +5,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import Button from '@/components/Button'
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -49,7 +49,11 @@ export default function TopBottomNav(props: {
           props.onNavTo(0)
         }}
       >
-        <ChevronUpIcon size={20} color={styles.text_desc.color} />
+        <V2exIcon
+          name='chevron-up-outline'
+          size={20}
+          color={styles.text_desc.color}
+        />
       </Button>
       <Button
         variant='default'
@@ -58,7 +62,11 @@ export default function TopBottomNav(props: {
           props.onNavTo(repliesCount)
         }}
       >
-        <ChevronDownIcon size={20} color={styles.text_desc.color} />
+        <V2exIcon
+          name='chevron-down-outline'
+          size={20}
+          color={styles.text_desc.color}
+        />
       </Button>
     </Animated.View>
   )

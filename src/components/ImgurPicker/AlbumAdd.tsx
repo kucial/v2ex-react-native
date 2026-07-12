@@ -1,5 +1,6 @@
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
-import { PlusIcon } from 'react-native-heroicons/outline'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useImgurService } from '@/containers/ImgurService'
 import { useTheme } from '@/containers/ThemeService'
@@ -31,7 +32,7 @@ export default function AlbumCard(props) {
             },
           ]}
         >
-          <PlusIcon size={30} color={theme.colors.text} />
+          <V2exIcon name='plus-outline' size={30} color={theme.colors.text} />
         </View>
       </View>
       <View style={albumAddStyles.textWrap}>

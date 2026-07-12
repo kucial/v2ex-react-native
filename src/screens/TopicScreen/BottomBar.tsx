@@ -1,11 +1,11 @@
 import { useCallback, useRef } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { ShareIcon } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useIsFocused } from 'expo-router/react-navigation'
 import LottieView from 'lottie-react-native'
 
 import HeartIcon from '@/components/HeartIcon'
+import V2exIcon from '@/components/icons/V2exIcon'
 import NumberIcon from '@/components/NumberIcon'
 import StarIcon from '@/components/StarIcon'
 import ToBottomIcon from '@/components/ToBottomIcon'
@@ -157,7 +157,7 @@ export default function BottomBar(props: BarProps) {
             onPress={onShare}
           >
             <View style={bottomBarStyles.iconMargin}>
-              <ShareIcon size={24} color={iconColor} />
+              <V2exIcon name='share-outline' size={24} color={iconColor} />
             </View>
             <Text style={[bottomBarStyles.iconText, styles.text_meta]}>
               分享

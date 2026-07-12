@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { MapPinIcon } from 'react-native-heroicons/outline'
 import * as Sentry from '@sentry/react-native'
 import * as WebBrowser from 'expo-web-browser'
 
 import Button from '@/components/Button'
 import GithubIcon from '@/components/GithubIcon'
+import V2exIcon from '@/components/icons/V2exIcon'
 import TwitterIcon from '@/components/TwitterIcon'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -20,7 +20,8 @@ export default function MemberInfoLinks(props: { data: MemberDetail }) {
     <View style={linkStyles.row}>
       {data.location && (
         <View style={linkStyles.locationWrap}>
-          <MapPinIcon
+          <V2exIcon
+            name='map-pin-outline'
             size={18}
             style={{ marginRight: 4 }}
             color={styles.text_primary.color}

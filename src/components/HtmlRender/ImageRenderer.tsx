@@ -6,13 +6,14 @@ import {
   Text,
   View,
 } from 'react-native'
-import { PhotoIcon } from 'react-native-heroicons/solid'
 import {
   CustomBlockRenderer,
   useInternalRenderer,
 } from 'react-native-render-html'
 import { useQuery } from '@tanstack/react-query'
 import { Image } from 'expo-image'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import {
   openImageViewer,
@@ -195,7 +196,8 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
               {getTrueEmojiFromImgurUrl(uri) || getEmojiTextFromImgurUrl(uri)}
             </Text>
           ) : (
-            <PhotoIcon
+            <V2exIcon
+              name='photo-solid'
               size={36}
               color={
                 typeof theme.colors.danger === 'string'
@@ -205,7 +207,8 @@ const ImageRenderer: CustomBlockRenderer = function ImageRenderer(props) {
             />
           )
         ) : (
-          <PhotoIcon
+          <V2exIcon
+            name='photo-solid'
             size={36}
             color={
               typeof theme.colors.text_meta === 'string'

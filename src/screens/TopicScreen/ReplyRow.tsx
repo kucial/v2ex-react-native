@@ -1,7 +1,5 @@
 import { memo, useCallback, useMemo, useRef } from 'react'
 import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
-import { ChatBubbleLeftRightIcon } from 'react-native-heroicons/outline'
-import { HeartIcon as FilledHeartIcon } from 'react-native-heroicons/solid'
 import { useRecyclingState } from '@shopify/flash-list'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
@@ -10,10 +8,8 @@ import { marked } from 'marked'
 
 import HeartIcon from '@/components/HeartIcon'
 import HtmlRender from '@/components/HtmlRender'
-import MarkdownFilledIcon from '@/components/MarkdownFilledIcon'
-import MarkdownIcon from '@/components/MarkdownIcon'
+import V2exIcon from '@/components/icons/V2exIcon'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import ReplyIcon from '@/components/ReplyIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
@@ -293,7 +289,11 @@ function ReplyRow(props: ReplyRowProps) {
                       <Text style={styles.text_meta}>·</Text>
                     </View>
                     <View style={rowStyles.thanksRow}>
-                      <FilledHeartIcon size={14} color={likedActiveColor} />
+                      <V2exIcon
+                        name='heart-solid'
+                        size={14}
+                        color={likedActiveColor}
+                      />
                       <Text
                         style={[
                           rowStyles.ml1,
@@ -342,7 +342,7 @@ function ReplyRow(props: ReplyRowProps) {
                   ]}
                   onPress={handleReply}
                 >
-                  <ReplyIcon size={14} color={iconColor} />
+                  <V2exIcon name='reply-outline' size={14} color={iconColor} />
                   <View style={rowStyles.ml1}>
                     <Text style={[styles.text_meta, styles.text_xs]}>回复</Text>
                   </View>
@@ -390,7 +390,11 @@ function ReplyRow(props: ReplyRowProps) {
                     ]}
                     onPress={handleConversation}
                   >
-                    <ChatBubbleLeftRightIcon size={14} color={iconColor} />
+                    <V2exIcon
+                      name='chat-bubble-left-right-outline'
+                      size={14}
+                      color={iconColor}
+                    />
                     <View style={rowStyles.ml1}>
                       <Text style={[styles.text_meta, styles.text_xs]}>
                         会话
@@ -414,12 +418,17 @@ function ReplyRow(props: ReplyRowProps) {
                   onPress={toggleMarkdown}
                 >
                   {showMarkdown ? (
-                    <MarkdownFilledIcon
+                    <V2exIcon
+                      name='markdown-solid'
                       size={20}
                       color={theme.colors.icon_markdown_bg}
                     />
                   ) : (
-                    <MarkdownIcon size={20} color={iconColor} />
+                    <V2exIcon
+                      name='markdown-outline'
+                      size={20}
+                      color={iconColor}
+                    />
                   )}
                 </Pressable>
               </View>

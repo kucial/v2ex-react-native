@@ -6,7 +6,6 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native'
-import { EllipsisHorizontalIcon } from 'react-native-heroicons/outline'
 import {
   useAnimatedScrollHandler,
   useSharedValue,
@@ -28,6 +27,7 @@ import AnimatedHeader from '@/components/AnimatedHeader'
 import Button from '@/components/Button'
 import CommonListFooter from '@/components/CommonListFooter'
 import { HtmlRenderProvider } from '@/components/HtmlRender'
+import V2exIcon from '@/components/icons/V2exIcon'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 
@@ -455,7 +455,11 @@ function TopicScreen() {
           )
         }}
       >
-        <EllipsisHorizontalIcon size={24} color={styles.text.color} />
+        <V2exIcon
+          name='ellipsis-horizontal-outline'
+          size={24}
+          color={styles.text.color}
+        />
       </Button>
     ),
     [

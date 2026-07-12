@@ -9,10 +9,10 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import { PhotoIcon } from 'react-native-heroicons/outline'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { encode } from 'js-base64'
 
+import V2exIcon from '@/components/icons/V2exIcon'
 import ImgurPicker from '@/components/ImgurPicker'
 import { Base64Icon } from '@/components/SlateEditor/EditorIcons'
 
@@ -157,7 +157,7 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
               presentSheet(pickerRef.current)
             }}
           >
-            <PhotoIcon size={22} color={iconColor} />
+            <V2exIcon name='photo-outline' size={22} color={iconColor} />
           </Pressable>
           <Pressable
             style={({ pressed }) => [

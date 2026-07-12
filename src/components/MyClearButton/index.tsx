@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
-import { XMarkIcon } from 'react-native-heroicons/outline'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -14,7 +15,7 @@ export default function MyClearButton(props: { onPress: () => void }) {
       radius={20}
       onPress={props.onPress}
     >
-      <XMarkIcon size={18} color={theme.colors.text} />
+      <V2exIcon name='x-mark-outline' size={18} color={theme.colors.text} />
     </Button>
   )
 }

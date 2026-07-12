@@ -1,5 +1,6 @@
 import { GestureResponderEvent, StyleSheet, ViewStyle } from 'react-native'
-import { ChevronLeftIcon } from 'react-native-heroicons/outline'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -22,7 +23,8 @@ export default function BackButton({
       onPress={onPress}
       radius={22}
     >
-      <ChevronLeftIcon
+      <V2exIcon
+        name='chevron-left-outline'
         size={28}
         color={tintColor || theme.colors.primary}
         style={{

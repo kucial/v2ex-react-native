@@ -1,15 +1,10 @@
 import { memo } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import {
-  ArrowsPointingOutIcon,
-  ChartBarIcon,
-  ChatBubbleLeftIcon,
-  HeartIcon,
-} from 'react-native-heroicons/outline'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
 
 import FixedPressable from '@/components/FixedPressable'
+import V2exIcon from '@/components/icons/V2exIcon'
 import { BlockText, Box, InlineText } from '@/components/Skeleton/Elements'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -187,7 +182,11 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
                 </Text>
 
                 <View style={cardStyles.expandIcon}>
-                  <ArrowsPointingOutIcon color={iconColor} size={16} />
+                  <V2exIcon
+                    name='arrows-pointing-out-outline'
+                    color={iconColor}
+                    size={16}
+                  />
                 </View>
               </Pressable>
             ) : (
@@ -209,19 +208,27 @@ function TopicCard(props: PlanetFeedRowProps & { contentWidth?: number }) {
             )}
             <View style={cardStyles.statsRow}>
               <View style={cardStyles.statItem}>
-                <ChatBubbleLeftIcon size={14} color={iconColor} />
+                <V2exIcon
+                  name='chat-bubble-left-outline'
+                  size={14}
+                  color={iconColor}
+                />
                 <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.comment_count}
                 </Text>
               </View>
               <View style={cardStyles.statItem}>
-                <HeartIcon size={14} color={iconColor} />
+                <V2exIcon name='heart-outline' size={14} color={iconColor} />
                 <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.liked_count}
                 </Text>
               </View>
               <View style={cardStyles.statItem}>
-                <ChartBarIcon size={14} color={iconColor} />
+                <V2exIcon
+                  name='chart-bar-outline'
+                  size={14}
+                  color={iconColor}
+                />
                 <Text style={[styles.text_meta, styles.text_xs]}>
                   {data.stats_num}
                 </Text>

@@ -101,3 +101,8 @@ skills-lock.json
 
 # Profiling / Coverage
 *.profraw
+
+# Custom Font Build Artifacts
+.fantasticon-tmp/
+src/assets/icons/svgs-fixed/
+

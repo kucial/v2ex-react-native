@@ -1,18 +1,10 @@
 import { ReactNode, useCallback, useMemo } from 'react'
 import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native'
-import {
-  ClockIcon,
-  DocumentPlusIcon,
-  EnvelopeIcon,
-  HomeIcon,
-  MagnifyingGlassIcon,
-  MusicalNoteIcon,
-  RectangleStackIcon,
-  UserIcon,
-} from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Image } from 'expo-image'
 import { usePathname, useRouter } from 'expo-router'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
@@ -86,7 +78,7 @@ export default function AppSidebar(props: {
   const CurrentUserIcon = useCallback(
     (props: IconProps) => {
       if (!user?.avatar_normal) {
-        return <UserIcon {...props} />
+        return <V2exIcon name='user-outline' {...props} />
       }
 
       return (
@@ -185,7 +177,7 @@ export default function AppSidebar(props: {
               label='主题'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
-              Icon={HomeIcon}
+              Icon={(props) => <V2exIcon name='home-outline' {...props} />}
               onPress={() => {
                 router.push('/feed')
               }}
@@ -195,7 +187,9 @@ export default function AppSidebar(props: {
               label='节点'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
-              Icon={RectangleStackIcon}
+              Icon={(props) => (
+                <V2exIcon name='rectangle-stack-outline' {...props} />
+              )}
               onPress={() => {
                 router.push('/nodes')
               }}
@@ -205,7 +199,9 @@ export default function AppSidebar(props: {
               label='搜索'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
-              Icon={MagnifyingGlassIcon}
+              Icon={(props) => (
+                <V2exIcon name='magnifying-glass-outline' {...props} />
+              )}
               onPress={handleSearchButtonPress}
             />
             <AppSidebarButton
@@ -213,7 +209,9 @@ export default function AppSidebar(props: {
               label='音频'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
-              Icon={MusicalNoteIcon}
+              Icon={(props) => (
+                <V2exIcon name='musical-note-outline' {...props} />
+              )}
               onPress={handleAudioButtonPress}
             />
             {props.position === 'BOTTOM' && width > 730 && (
@@ -245,7 +243,9 @@ export default function AppSidebar(props: {
               label='新主题'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
-              Icon={DocumentPlusIcon}
+              Icon={(props) => (
+                <V2exIcon name='document-plus-outline' {...props} />
+              )}
               onPress={handleNewTopicPress}
             />
             <AppSidebarButton
@@ -253,7 +253,7 @@ export default function AppSidebar(props: {
               label='历史'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
-              Icon={ClockIcon}
+              Icon={(props) => <V2exIcon name='clock-outline' {...props} />}
               onPress={handleViewedTopicButtonPress}
             />
             <AppSidebarButton
@@ -261,7 +261,7 @@ export default function AppSidebar(props: {
               label='消息'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
-              Icon={EnvelopeIcon}
+              Icon={(props) => <V2exIcon name='envelope-outline' {...props} />}
               badge={meta?.unread_count}
               onPress={handleNotificationPress}
             />
@@ -270,7 +270,11 @@ export default function AppSidebar(props: {
               label='我的'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}
-              Icon={user ? CurrentUserIcon : UserIcon}
+              Icon={
+                user
+                  ? CurrentUserIcon
+                  : (props) => <V2exIcon name='user-outline' {...props} />
+              }
               isLast
               onPress={() => {
                 router.push('/my')

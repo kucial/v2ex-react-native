@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { QrCodeIcon, ShareIcon } from 'react-native-heroicons/solid'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Share from 'react-native-share'
 import { BarcodeScanningResult, Camera } from 'expo-camera'
 
 import CheckIcon from '@/components/CheckIcon'
+import V2exIcon from '@/components/icons/V2exIcon'
 import { ImageViewing } from '@/components/ImageViewing'
 import Loader from '@/components/Loader'
 
@@ -52,7 +52,7 @@ const ImageViewingFooter = (props: {
                 handleQrCode(qrCodes[0])
               }}
             >
-              <QrCodeIcon size={16} color='#d4d4d4' />
+              <V2exIcon name='qr-code-solid' size={16} color='#d4d4d4' />
             </Pressable>
           )}
           <Pressable
@@ -79,7 +79,9 @@ const ImageViewingFooter = (props: {
               }
             }}
           >
-            {saveStatus === '' && <ShareIcon size={14} color='#d4d4d4' />}
+            {saveStatus === '' && (
+              <V2exIcon name='share-solid' size={14} color='#d4d4d4' />
+            )}
             {saveStatus === 'loading' && <Loader size={14} color='#d4d4d4' />}
             {saveStatus === 'success' && (
               <CheckIcon size={16} color='#d4d4d4' />

@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { PlayIcon } from 'react-native-heroicons/outline'
 import { Image } from 'expo-image'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useTheme } from '@/containers/ThemeService'
 import { AudioItem } from '@/stores/audio'
@@ -40,7 +41,8 @@ export function AudioRow({ item }: { item: AudioItem }) {
         {item.artworkUrl ? (
           <Image source={item.artworkUrl} style={audioRowStyles.artworkImage} />
         ) : (
-          <PlayIcon
+          <V2exIcon
+            name='play-outline'
             size={20}
             color={isActive ? theme.colors.primary : theme.colors.text}
           />

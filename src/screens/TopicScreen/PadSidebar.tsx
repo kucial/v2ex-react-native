@@ -1,16 +1,7 @@
 import { useEffect } from 'react'
-import {
-  ChatBubbleBottomCenterTextIcon,
-  HeartIcon,
-  ShareIcon,
-  StarIcon,
-} from 'react-native-heroicons/outline'
-import {
-  HeartIcon as FilledHeartIcon,
-  StarIcon as FilledStarIcon,
-} from 'react-native-heroicons/solid'
 
 import AppSidebarButton from '@/components/AppSidebar/AppSidebarButton'
+import V2exIcon from '@/components/icons/V2exIcon'
 import { useAppLayout } from '@/components/Layout'
 import NumberIcon from '@/components/NumberIcon'
 
@@ -44,7 +35,12 @@ export default function PadSidebar(props: BarProps) {
             label='评论'
             activeColor={theme.colors.primary}
             staticColor={theme.colors.text_desc}
-            Icon={ChatBubbleBottomCenterTextIcon}
+            Icon={(props) => (
+              <V2exIcon
+                name='chat-bubble-bottom-center-text-outline'
+                {...props}
+              />
+            )}
             onPress={() => {
               onInitReply()
             }}
@@ -82,7 +78,7 @@ export default function PadSidebar(props: BarProps) {
                   }
                   activeColor={theme.colors.primary}
                   staticColor={theme.colors.text_desc}
-                  Icon={Icon as typeof ChatBubbleBottomCenterTextIcon}
+                  Icon={Icon as any}
                   onPress={onPress}
                 />
               )
@@ -93,7 +89,11 @@ export default function PadSidebar(props: BarProps) {
             label='收藏'
             activeColor={theme.colors.icon_collected_bg}
             staticColor={theme.colors.text_desc}
-            Icon={collected ? FilledStarIcon : StarIcon}
+            Icon={
+              collected
+                ? (props) => <V2exIcon name='star-solid' {...props} />
+                : (props) => <V2exIcon name='star-outline' {...props} />
+            }
             onPress={onToggleCollect}
           />
           <AppSidebarButton
@@ -101,7 +101,11 @@ export default function PadSidebar(props: BarProps) {
             label='感谢'
             activeColor={theme.colors.icon_liked_bg}
             staticColor={theme.colors.text_desc}
-            Icon={thanked ? FilledHeartIcon : HeartIcon}
+            Icon={
+              thanked
+                ? (props) => <V2exIcon name='heart-solid' {...props} />
+                : (props) => <V2exIcon name='heart-outline' {...props} />
+            }
             onPress={onThankTopic}
           />
           <AppSidebarButton
@@ -109,7 +113,7 @@ export default function PadSidebar(props: BarProps) {
             label='分享'
             activeColor={theme.colors.text_desc}
             staticColor={theme.colors.text_desc}
-            Icon={ShareIcon}
+            Icon={(props) => <V2exIcon name='share-outline' {...props} />}
             onPress={onShare}
           />
         </>

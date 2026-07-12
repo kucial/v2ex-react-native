@@ -7,13 +7,13 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import { FunnelIcon } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
 import { useRouter } from 'expo-router'
 
 import BackButton from '@/components/BackButton'
 import Button from '@/components/Button'
+import V2exIcon from '@/components/icons/V2exIcon'
 import KeyboardDismiss from '@/components/KeyboardDismiss'
 import MyClearButton from '@/components/MyClearButton'
 import NodeLabel from '@/components/NodeLabel'
@@ -145,7 +145,11 @@ export default function Sov2exSearch() {
                     presentSheet(advancedSearchModalRef.current)
                   }}
                 >
-                  <FunnelIcon size={20} color={theme.colors.text} />
+                  <V2exIcon
+                    name='funnel-outline'
+                    size={20}
+                    color={theme.colors.text}
+                  />
                 </Button>
               </View>
             </View>

@@ -7,11 +7,6 @@ import {
   View,
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import {
-  MusicalNoteIcon,
-  PauseIcon,
-  PlayIcon,
-} from 'react-native-heroicons/outline'
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -22,6 +17,8 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Image } from 'expo-image'
 import { usePathname } from 'expo-router'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
@@ -145,7 +142,11 @@ export default function MiniPlayerBar(props: {
                 styles.layer2,
               ]}
             >
-              <MusicalNoteIcon size={20} color={theme.colors.text_meta} />
+              <V2exIcon
+                name='musical-note-outline'
+                size={20}
+                color={theme.colors.text_meta}
+              />
             </View>
           )}
           <View style={barStyles.info}>
@@ -174,9 +175,17 @@ export default function MiniPlayerBar(props: {
             {isLoading || isBuffering ? (
               <ActivityIndicator size='small' color={theme.colors.primary} />
             ) : isPlaying ? (
-              <PauseIcon size={26} color={theme.colors.primary} />
+              <V2exIcon
+                name='pause-outline'
+                size={26}
+                color={theme.colors.primary}
+              />
             ) : (
-              <PlayIcon size={26} color={theme.colors.primary} />
+              <V2exIcon
+                name='play-outline'
+                size={26}
+                color={theme.colors.primary}
+              />
             )}
           </Pressable>
         </View>

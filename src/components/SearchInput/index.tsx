@@ -13,7 +13,8 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import { XMarkIcon } from 'react-native-heroicons/outline'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -93,7 +94,11 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
                   service.reset()
                 }}
               >
-                <XMarkIcon size={18} color={theme.colors.primary} />
+                <V2exIcon
+                  name='x-mark-outline'
+                  size={18}
+                  color={theme.colors.primary}
+                />
               </Pressable>
             </View>
           )}

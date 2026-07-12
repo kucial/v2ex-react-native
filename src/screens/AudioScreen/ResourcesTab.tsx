@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { ArrowsUpDownIcon } from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { FlashList, FlashListRef } from '@shopify/flash-list'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useTheme } from '@/containers/ThemeService'
 import { AudioResourceItem, useAudioStore } from '@/stores/audio'
@@ -137,7 +138,11 @@ export function ResourcesTab() {
             pressed && tabStyles.pressed,
           ]}
         >
-          <ArrowsUpDownIcon size={16} color={theme.colors.text_desc} />
+          <V2exIcon
+            name='arrows-up-down-outline'
+            size={16}
+            color={theme.colors.text_desc}
+          />
           <Text style={[styles.text_meta, styles.text_sm]}>
             {SORT_LABELS[sortKey] || SORT_LABELS.discovered_desc}
           </Text>

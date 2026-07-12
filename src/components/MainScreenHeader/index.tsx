@@ -1,15 +1,10 @@
 import { useCallback } from 'react'
 import { Platform, StyleSheet, Text, View } from 'react-native'
-import {
-  ClockIcon,
-  DocumentPlusIcon,
-  EnvelopeIcon,
-  MagnifyingGlassIcon,
-  UserIcon,
-} from 'react-native-heroicons/outline'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
+
+import V2exIcon from '@/components/icons/V2exIcon'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
@@ -117,7 +112,11 @@ export default function MainScreenHeader(props) {
             radius={22}
             onPress={handleNewTopicPress}
           >
-            <DocumentPlusIcon size={24} color={iconColor} />
+            <V2exIcon
+              name='document-plus-outline'
+              size={24}
+              color={iconColor}
+            />
           </Button>
           <Button
             style={mainHeaderStyles.iconBtn}
@@ -126,7 +125,7 @@ export default function MainScreenHeader(props) {
             onPress={handleNotificationPress}
           >
             <View style={mainHeaderStyles.iconWrap}>
-              <EnvelopeIcon size={24} color={iconColor} />
+              <V2exIcon name='envelope-outline' size={24} color={iconColor} />
               {!!meta?.unread_count && (
                 <View
                   style={[
@@ -154,7 +153,11 @@ export default function MainScreenHeader(props) {
             radius={22}
             onPress={handleSearchButtonPress}
           >
-            <MagnifyingGlassIcon size={24} color={iconColor} />
+            <V2exIcon
+              name='magnifying-glass-outline'
+              size={24}
+              color={iconColor}
+            />
           </Button>
 
           <Button
@@ -163,7 +166,7 @@ export default function MainScreenHeader(props) {
             radius={22}
             onPress={handleViewedTopicButtonPress}
           >
-            <ClockIcon size={24} color={iconColor} />
+            <V2exIcon name='clock-outline' size={24} color={iconColor} />
           </Button>
 
           <Button
@@ -178,7 +181,7 @@ export default function MainScreenHeader(props) {
                 style={mainHeaderStyles.avatar}
               />
             ) : (
-              <UserIcon size={24} color={iconColor} />
+              <V2exIcon name='user-outline' size={24} color={iconColor} />
             )}
           </Button>
         </View>

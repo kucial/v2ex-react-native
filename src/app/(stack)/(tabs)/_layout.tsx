@@ -1,11 +1,11 @@
 import { View } from 'react-native'
-import { HomeIcon, RectangleStackIcon } from 'react-native-heroicons/outline'
 import { Tabs } from 'expo-router'
 // SDK 56: expo-router no longer allows importing @react-navigation/bottom-tabs
 // directly; use its vendored re-export instead.
 import { BottomTabBar } from 'expo-router/tabs'
 
 import AudioTabIcon from '@/components/AudioTabIcon'
+import V2exIcon from '@/components/icons/V2exIcon'
 import MainScreenHeader from '@/components/MainScreenHeader'
 import MiniPlayerBar from '@/components/MiniPlayerBar'
 
@@ -37,7 +37,9 @@ export default function TabsLayout() {
       <Tabs.Screen
         name='nodes'
         options={{
-          tabBarIcon: RectangleStackIcon,
+          tabBarIcon: (props) => (
+            <V2exIcon name='rectangle-stack-outline' {...props} />
+          ),
           tabBarLabel: '节点',
           title: '节点',
         }}
@@ -45,7 +47,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name='feed'
         options={{
-          tabBarIcon: HomeIcon,
+          tabBarIcon: (props) => <V2exIcon name='home-outline' {...props} />,
           tabBarLabel: '主题',
           title: '主题',
         }}

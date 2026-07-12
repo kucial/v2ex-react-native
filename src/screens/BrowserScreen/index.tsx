@@ -1,15 +1,11 @@
 import { useRef, useState } from 'react'
 import { Linking, Pressable, StyleSheet, View } from 'react-native'
-import {
-  ArrowTopRightOnSquareIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from 'react-native-heroicons/outline'
 import { NProgress } from 'react-native-nprogress'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { WebView } from 'react-native-webview'
 import { useLocalSearchParams } from 'expo-router'
 
+import V2exIcon from '@/components/icons/V2exIcon'
 import NavigationHeader from '@/components/NavigationHeader'
 
 import { USER_AGENT } from '@/constants'
@@ -42,7 +38,11 @@ export default function BrowserScreen() {
               Linking.openURL(url)
             }}
           >
-            <ArrowTopRightOnSquareIcon size={24} color={theme.colors.primary} />
+            <V2exIcon
+              name='arrow-top-right-on-square-outline'
+              size={24}
+              color={theme.colors.primary}
+            />
           </Pressable>
         )}
       />
@@ -88,7 +88,11 @@ export default function BrowserScreen() {
                 webviewRef.current?.goBack()
               }}
             >
-              <ChevronLeftIcon color={styles.text_meta.color} size={22} />
+              <V2exIcon
+                name='chevron-left-outline'
+                color={styles.text_meta.color}
+                size={22}
+              />
             </Pressable>
             <Pressable
               style={({ pressed }) => [
@@ -104,7 +108,11 @@ export default function BrowserScreen() {
                 webviewRef.current?.goForward()
               }}
             >
-              <ChevronRightIcon color={styles.text_meta.color} size={22} />
+              <V2exIcon
+                name='chevron-right-outline'
+                color={styles.text_meta.color}
+                size={22}
+              />
             </Pressable>
           </View>
         </View>
