@@ -1,4 +1,5 @@
 import { ReactNode, useState } from 'react'
+import { useController, useFormContext } from 'react-hook-form'
 import {
   StyleProp,
   StyleSheet,
@@ -9,7 +10,6 @@ import {
   ViewStyle,
 } from 'react-native'
 import DatePicker from 'react-native-date-picker'
-import { useField } from 'formik'
 import { padStart } from 'lodash'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -38,6 +38,7 @@ function DateField({
   style,
   name,
   canClear,
+  control,
   ...props
 }: Omit<TextInputProps, 'style'> & {
   label: ReactNode | false
@@ -49,9 +50,14 @@ function DateField({
   minDate?: Date
   maxDate?: Date
   pickerTitle?: string
+  control?: any
 }) {
   const { styles, theme } = useTheme()
-  const [field, meta, helpers] = useField(name)
+  const formContext = useFormContext()
+  const { field, fieldState } = useController({
+    name,
+    control: control || formContext?.control,
+  })
   const [open, setOpen] = useState(false)
 
   return (
@@ -69,7 +75,7 @@ function DateField({
             {label}
           </Text>
 
-          {field.value && meta.touched && (
+          {fieldState.error?.message && (
             <Text
               style={[
                 formFieldStyles.errorText,
@@ -77,7 +83,7 @@ function DateField({
                 styles.text_xs,
               ]}
             >
-              {meta.error}
+              {fieldState.error.message}
             </Text>
           )}
         </View>
@@ -106,7 +112,7 @@ function DateField({
           <View style={formFieldStyles.clearWrap}>
             <MyClearButton
               onPress={() => {
-                helpers.setValue(undefined)
+                field.onChange(undefined)
               }}
             />
           </View>
@@ -126,7 +132,7 @@ function DateField({
         date={field.value || new Date()}
         onConfirm={(date) => {
           setOpen(false)
-          helpers.setValue(date)
+          field.onChange(date)
         }}
         onCancel={() => {
           setOpen(false)

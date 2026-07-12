@@ -1,6 +1,6 @@
 import { MutableRefObject, ReactNode, useMemo } from 'react'
+import { useController, useFormContext } from 'react-hook-form'
 import { StyleSheet, Text, View, ViewProps, ViewStyle } from 'react-native'
-import { useField } from 'formik'
 import { marked } from 'marked'
 
 import { EditorRender } from '@/components/SlateEditor'
@@ -15,6 +15,7 @@ function RichTextField({
   onLayout,
   onCursorPositionUpdate,
   editorRenderContainerRef,
+  control,
 }: {
   label: ReactNode | false
   inputStyle?: ViewStyle
@@ -25,9 +26,14 @@ function RichTextField({
   onCursorPositionUpdate?(): void
   style?: ViewStyle
   editorRenderContainerRef: MutableRefObject<View>
+  control?: any
 }) {
-  const [field, meta] = useField(name)
   const { styles } = useTheme()
+  const formContext = useFormContext()
+  const { field, fieldState } = useController({
+    name,
+    control: control || formContext?.control,
+  })
 
   const html = useMemo(() => {
     if (!field.value) {
@@ -51,7 +57,7 @@ function RichTextField({
             {label}
           </Text>
 
-          {field.value && meta.touched && (
+          {fieldState.error?.message && (
             <Text
               style={[
                 richFieldStyles.errorText,
@@ -59,7 +65,7 @@ function RichTextField({
                 styles.text_xs,
               ]}
             >
-              {meta.error}
+              {fieldState.error.message}
             </Text>
           )}
         </View>

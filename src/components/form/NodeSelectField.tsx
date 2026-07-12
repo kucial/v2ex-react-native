@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
+import { useController, useFormContext } from 'react-hook-form'
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
-import { useField } from 'formik'
 
 import NodeSelect from '@/components/NodeSelect'
 
@@ -14,6 +14,7 @@ function NodeSelectField({
   style,
   canClear,
   renderLabel,
+  control,
 }: {
   name: string
   label: ReactNode | false
@@ -21,9 +22,14 @@ function NodeSelectField({
   style?: StyleProp<ViewStyle>
   canClear?: boolean
   renderLabel?: (node: NodeDetail) => ReactNode
+  control?: any
 }) {
   const { styles } = useTheme()
-  const [field, meta, helpers] = useField(name)
+  const formContext = useFormContext()
+  const { field, fieldState } = useController({
+    name,
+    control: control || formContext?.control,
+  })
 
   return (
     <View style={style}>
@@ -42,7 +48,7 @@ function NodeSelectField({
             </Text>
           </View>
 
-          {meta.error && meta.touched && (
+          {fieldState.error?.message && (
             <Text
               style={[
                 nodeSelectStyles.errorText,
@@ -50,7 +56,7 @@ function NodeSelectField({
                 styles.text_xs,
               ]}
             >
-              {meta.error}
+              {fieldState.error.message}
             </Text>
           )}
         </View>
@@ -58,10 +64,8 @@ function NodeSelectField({
       <NodeSelect
         canClear={canClear}
         value={field.value}
-        onChange={helpers.setValue}
-        onBlur={() => {
-          helpers.setTouched(true)
-        }}
+        onChange={field.onChange}
+        onBlur={field.onBlur}
         placeholder={placeholder}
         renderLabel={renderLabel}
       />

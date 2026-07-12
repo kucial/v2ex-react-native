@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react'
+import { useController, useFormContext } from 'react-hook-form'
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
-import { useField } from 'formik'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -10,15 +10,21 @@ function SelectField({
   style,
   name,
   options,
+  control,
   ...props
 }: {
   label: ReactNode | false
   style?: StyleProp<ViewStyle>
   name: string
   options: { label: string; value: string }[]
+  control?: any
 }) {
   const { styles, colorScheme } = useTheme()
-  const [field, meta, helpers] = useField(name)
+  const formContext = useFormContext()
+  const { field } = useController({
+    name,
+    control: control || formContext?.control,
+  })
 
   const labels = useMemo(() => options.map((o) => o.label), [options])
 
@@ -40,7 +46,7 @@ function SelectField({
             (item) => item.value === field.value,
           )}
           onChange={(event) => {
-            helpers.setValue(
+            field.onChange(
               options[event.nativeEvent.selectedSegmentIndex].value,
             )
           }}

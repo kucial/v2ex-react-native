@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { StyleSheet, Text, View } from 'react-native'
-import { Formik } from 'formik'
 
 import Button from '@/components/Button'
 import {
@@ -8,7 +8,7 @@ import {
   NodeSelectField,
   SelectField,
   TextField,
-} from '@/components/formik'
+} from '@/components/form'
 import KeyboardDismiss from '@/components/KeyboardDismiss'
 
 import { useTheme } from '@/containers/ThemeService'
@@ -74,7 +74,7 @@ export default function AdvancedSearchForm(props: {
   }, [props.initialValues])
   const now = useMemo(() => new Date(), [])
 
-  const handleSubmit = useCallback(
+  const onSubmit = useCallback(
     (values: FormValues) => {
       const { lte, gte, sort_str = 'sumup', node, ...rest } = values
       const [sort, order] = sort_str.split('_')
@@ -84,7 +84,7 @@ export default function AdvancedSearchForm(props: {
         gte: gte ? gte.valueOf() / 1000 : undefined,
         sort,
         order,
-        node: typeof node === 'object' ? node.name : node,
+        node: typeof node === 'object' && node ? node.name : (node as string),
       }
       props.onSubmit(mapped)
     },
@@ -92,130 +92,127 @@ export default function AdvancedSearchForm(props: {
   )
 
   const { styles } = useTheme()
+
+  const form = useForm<FormValues>({
+    values: initialValues,
+  })
+
+  const { watch, handleSubmit, reset } = form
+  const lteVal = watch('lte')
+  const gteVal = watch('gte')
+
   return (
-    <Formik<FormValues>
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      enableReinitialize
-    >
-      {(formikProps) => (
-        <KeyboardDismiss>
-          <View style={advFormStyles.container}>
-            <View style={advFormStyles.fieldWrap}>
+    <FormProvider {...form}>
+      <KeyboardDismiss>
+        <View style={advFormStyles.container}>
+          <View style={advFormStyles.fieldWrap}>
+            <View style={advFormStyles.labelWrap}>
+              <Text style={[advFormStyles.labelText, styles.text]}>关键词</Text>
+            </View>
+            <TextField
+              name='q'
+              autoFocus={!props.initialValues.q}
+              label={false}
+              placeholder='请输入查询的关键词'
+              canClear
+            />
+          </View>
+          <View style={advFormStyles.rowGap}>
+            <View style={advFormStyles.flexCol}>
               <View style={advFormStyles.labelWrap}>
-                <Text style={[advFormStyles.labelText, styles.text]}>
-                  关键词
-                </Text>
+                <Text style={[advFormStyles.labelText, styles.text]}>节点</Text>
+              </View>
+              <NodeSelectField
+                name='node'
+                canClear
+                label={false}
+                placeholder='为空时，查询所有节点'
+                renderLabel={renderLabel}
+              />
+            </View>
+            <View style={advFormStyles.flexCol}>
+              <View style={advFormStyles.labelWrap}>
+                <Text style={[advFormStyles.labelText, styles.text]}>作者</Text>
               </View>
               <TextField
-                name='q'
-                autoFocus={!props.initialValues.q}
+                name='username'
                 label={false}
-                placeholder='请输入查询的关键词'
+                placeholder='为空时，查询所有作者'
                 canClear
               />
             </View>
-            <View style={advFormStyles.rowGap}>
-              <View style={advFormStyles.flexCol}>
-                <View style={advFormStyles.labelWrap}>
-                  <Text style={[advFormStyles.labelText, styles.text]}>
-                    节点
-                  </Text>
-                </View>
-                <NodeSelectField
-                  name='node'
-                  canClear
-                  label={false}
-                  placeholder='为空时，查询所有节点'
-                  renderLabel={renderLabel}
-                />
+          </View>
+          <View style={advFormStyles.rowGap}>
+            <View style={advFormStyles.flex1}>
+              <View style={advFormStyles.labelWrap}>
+                <Text style={[advFormStyles.labelText, styles.text]}>
+                  发帖起始时间
+                </Text>
               </View>
-              <View style={advFormStyles.flexCol}>
-                <View style={advFormStyles.labelWrap}>
-                  <Text style={[advFormStyles.labelText, styles.text]}>
-                    作者
-                  </Text>
-                </View>
-                <TextField
-                  name='username'
-                  label={false}
-                  placeholder='为空时，查询所有作者'
-                  canClear
-                />
-              </View>
-            </View>
-            <View style={advFormStyles.rowGap}>
-              <View style={advFormStyles.flex1}>
-                <View style={advFormStyles.labelWrap}>
-                  <Text style={[advFormStyles.labelText, styles.text]}>
-                    发帖起始时间
-                  </Text>
-                </View>
-                <DateField
-                  name='gte'
-                  label={false}
-                  canClear
-                  pickerMode='date'
-                  placeholder='YYYY-MM-DD'
-                  maxDate={formikProps.values.lte || now}
-                />
-              </View>
-              <View style={advFormStyles.flexCol}>
-                <View style={advFormStyles.labelWrap}>
-                  <Text style={[advFormStyles.labelText, styles.text]}>
-                    发帖结束时间
-                  </Text>
-                </View>
-                <DateField
-                  name='lte'
-                  label={false}
-                  canClear
-                  pickerMode='date'
-                  placeholder='YYYY-MM-DD'
-                  minDate={formikProps.values.gte}
-                  maxDate={now}
-                />
-              </View>
-            </View>
-            <View style={advFormStyles.sortRow}>
-              <View style={advFormStyles.sortLabelWrap}>
-                <Text style={[advFormStyles.labelText, styles.text]}>排序</Text>
-              </View>
-              <View style={advFormStyles.flex1}>
-                <SelectField
-                  label={false}
-                  name='sort_str'
-                  options={sortOptions}
-                />
-              </View>
-            </View>
-            <View style={advFormStyles.rowGap}>
-              <Button
-                style={advFormStyles.resetBtn}
-                onPress={() => {
-                  formikProps.setValues({
-                    q: '',
-                    sort_str: 'sumup',
-                  })
-                }}
-                variant='default'
-                size='md'
-                label='重置'
+              <DateField
+                name='gte'
+                label={false}
+                canClear
+                pickerMode='date'
+                placeholder='YYYY-MM-DD'
+                maxDate={lteVal || now}
               />
-              <Button
-                style={advFormStyles.flex1}
-                onPress={() => {
-                  formikProps.handleSubmit()
-                }}
-                variant='primary'
-                size='md'
-                label='搜索'
+            </View>
+            <View style={advFormStyles.flexCol}>
+              <View style={advFormStyles.labelWrap}>
+                <Text style={[advFormStyles.labelText, styles.text]}>
+                  发帖结束时间
+                </Text>
+              </View>
+              <DateField
+                name='lte'
+                label={false}
+                canClear
+                pickerMode='date'
+                placeholder='YYYY-MM-DD'
+                minDate={gteVal}
+                maxDate={now}
               />
             </View>
           </View>
-        </KeyboardDismiss>
-      )}
-    </Formik>
+          <View style={advFormStyles.sortRow}>
+            <View style={advFormStyles.sortLabelWrap}>
+              <Text style={[advFormStyles.labelText, styles.text]}>排序</Text>
+            </View>
+            <View style={advFormStyles.flex1}>
+              <SelectField
+                label={false}
+                name='sort_str'
+                options={sortOptions}
+              />
+            </View>
+          </View>
+          <View style={advFormStyles.rowGap}>
+            <Button
+              style={advFormStyles.resetBtn}
+              onPress={() => {
+                reset({
+                  q: '',
+                  sort_str: 'sumup',
+                })
+              }}
+              variant='default'
+              size='md'
+              label='重置'
+            />
+            <Button
+              style={advFormStyles.flex1}
+              onPress={() => {
+                handleSubmit(onSubmit)()
+              }}
+              variant='primary'
+              size='md'
+              label='搜索'
+            />
+          </View>
+        </View>
+      </KeyboardDismiss>
+    </FormProvider>
   )
 }
 

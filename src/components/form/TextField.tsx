@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { useController, useFormContext } from 'react-hook-form'
 import {
   Platform,
   StyleProp,
@@ -10,7 +11,6 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import { useField } from 'formik'
 
 import { useTheme } from '@/containers/ThemeService'
 
@@ -22,6 +22,7 @@ function TextField({
   inputStyle,
   name,
   canClear,
+  control,
   ...props
 }: {
   label: ReactNode | false
@@ -30,9 +31,14 @@ function TextField({
   style?: StyleProp<ViewStyle>
   bottomSheet?: boolean
   canClear?: boolean
+  control?: any
 } & TextInputProps) {
   const { styles, theme } = useTheme()
-  const [field, meta, helpers] = useField(name)
+  const formContext = useFormContext()
+  const { field, fieldState } = useController({
+    name,
+    control: control || formContext?.control,
+  })
 
   const Component = TextInput
   return (
@@ -50,7 +56,7 @@ function TextField({
             {label}
           </Text>
 
-          {field.value && meta.touched && (
+          {fieldState.error?.message && (
             <Text
               style={[
                 textFieldStyles.errorText,
@@ -58,7 +64,7 @@ function TextField({
                 styles.text_xs,
               ]}
             >
-              {meta.error}
+              {fieldState.error.message}
             </Text>
           )}
         </View>
@@ -79,16 +85,14 @@ function TextField({
           placeholderTextColor={theme.colors.text_placeholder}
           {...props}
           value={field.value}
-          onChangeText={helpers.setValue}
-          onBlur={() => {
-            helpers.setTouched(true)
-          }}
+          onChangeText={field.onChange}
+          onBlur={field.onBlur}
         />
         {canClear && field.value && (
           <View style={textFieldStyles.clearWrap}>
             <MyClearButton
               onPress={() => {
-                helpers.setValue(undefined)
+                field.onChange(undefined)
               }}
             />
           </View>
