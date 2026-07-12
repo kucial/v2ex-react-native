@@ -126,7 +126,6 @@
     "@types/qs": "^6.14.0",
     "@types/react": "~19.2.17",
     "@typescript-eslint/parser": "^8.41.0",
-    "eas-local-cache": "^1.0.3",
     "eslint": "^9.34.0",
     "eslint-config-expo": "~56.0.4",
     "eslint-config-prettier": "^10.1.8",

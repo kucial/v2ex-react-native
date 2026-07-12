@@ -84,9 +84,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     experiments: {
       typedRoutes: true,
       reactCompiler: true,
-      buildCacheProvider: {
-        plugin: 'eas-local-cache',
-      },
     },
     plugins: [
       [
