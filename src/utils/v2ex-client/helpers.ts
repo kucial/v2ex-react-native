@@ -1,6 +1,5 @@
 import CookieManager from 'react-native-nitro-cookies'
 import { Cheerio, CheerioAPI, Element, load } from 'cheerio'
-import hljs from 'highlight.js'
 import { fromUint8Array } from 'js-base64'
 
 import {
@@ -74,6 +73,9 @@ export function cheerioDoc(html: string) {
 
   // handle code block
   if (html.includes('language-')) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const hljsMod = require('highlight.js')
+    const hljs = hljsMod.default || hljsMod
     $('pre code[class^=language]').each(function (i, el) {
       const $el = $(el)
       $el.replaceWith(function () {
