@@ -1,4 +1,14 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  createContext,
+  memo,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   Alert,
   Linking,
@@ -13,7 +23,10 @@ import {
 import ContextMenu from 'react-native-context-menu-view'
 import BaseRender, {
   HTMLSourceInline,
+  RenderHTMLConfigProvider,
   RenderHTMLProps,
+  RenderHTMLSource,
+  TRenderEngineProvider,
 } from 'react-native-render-html'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import WebView from 'react-native-webview'
@@ -64,6 +77,123 @@ const customHTMLElementModels = {
 
 const defaultTextProps = { selectable: false }
 
+// Shared render-engine context. When `HtmlRender` is rendered inside a
+// `HtmlRenderProvider`, it renders via the low-level `RenderHTMLSource`, which
+// consumes the single shared `TRenderEngineProvider`/`RenderHTMLConfigProvider`
+// from the provider. This avoids each `HtmlRender` instance building its own
+// engine (the default `BaseRender` behaviour) — the documented fix for screens
+// that render many HTML snippets (e.g. a topic + its reply list).
+const HtmlRenderEngineContext = createContext(false)
+
+function buildHtmlRenderTagsStyles({
+  tagsStyles,
+  baseStyle,
+  theme,
+  themeStyles,
+}: {
+  tagsStyles?: any
+  baseStyle?: any
+  theme: any
+  themeStyles: any
+}) {
+  const baseFontSize = (baseStyle?.fontSize ||
+    themeStyles.text_base.fontSize) as number
+  return {
+    body: {
+      color:
+        typeof theme.colors.text === 'string' ? theme.colors.text : undefined,
+      fontSize: baseFontSize,
+      lineHeight: baseFontSize * 1.5,
+    },
+    h1: {
+      fontSize: (28 / 16) * baseFontSize,
+      lineHeight: (28 / 16) * baseFontSize * 1.1,
+      marginTop: 1.25 * baseFontSize,
+      marginBottom: baseFontSize,
+    },
+    h2: {
+      fontSize: (24 / 16) * baseFontSize,
+      lineHeight: (24 / 16) * baseFontSize * 1.1,
+      marginTop: 1.25 * baseFontSize,
+      marginBottom: baseFontSize,
+    },
+    h3: {
+      fontSize: (20 / 16) * baseFontSize,
+      lineHeight: (20 / 16) * baseFontSize * 1.1,
+      marginTop: 1.25 * baseFontSize,
+      marginBottom: baseFontSize,
+    },
+    h4: {
+      fontSize: (18 / 16) * baseFontSize,
+      lineHeight: (18 / 16) * baseFontSize * 1.1,
+      marginTop: baseFontSize / 1.5,
+      marginBottom: baseFontSize / 2,
+    },
+    h5: {
+      fontSize: (16 / 16) * baseFontSize,
+      lineHeight: (16 / 16) * baseFontSize * 1.1,
+      marginVertical: baseFontSize / 2,
+    },
+    h6: {
+      fontSize: (14 / 16) * baseFontSize,
+      lineHeight: (14 / 16) * baseFontSize * 1.1,
+      marginVertical: baseFontSize / 2,
+    },
+    hr: { marginVertical: baseFontSize },
+    pre: {
+      backgroundColor: theme.colors.html_pre_bg,
+      paddingVertical: baseFontSize * 0.8,
+      lineHeight: 1.25 * baseFontSize,
+      borderRadius: 4,
+    },
+    br: { backgroundColor: 'orange' },
+    code: { fontSize: 14 },
+    ul: { marginTop: 0, marginBottom: baseFontSize },
+    p: { marginTop: 0, marginBottom: baseFontSize },
+    a: {
+      textDecorationLine: 'none' as const,
+      color:
+        typeof theme.colors.text_link === 'string'
+          ? theme.colors.text_link
+          : undefined,
+    },
+    blockquote: {
+      marginLeft: 0,
+      paddingLeft: baseFontSize * 1.5,
+      paddingVertical: baseFontSize * 0.25,
+      borderLeftWidth: 3,
+      borderLeftColor:
+        typeof theme.colors.text === 'string' ? theme.colors.text : undefined,
+    },
+    tr: { flexDirection: 'row' as const, width: '100%' },
+    td: { flex: 1 },
+    th: {
+      borderBottomWidth: 1,
+      borderBottomColor:
+        typeof theme.colors.text_meta === 'string'
+          ? theme.colors.text_meta
+          : undefined,
+      flex: 1,
+    },
+    ...(tagsStyles || {}),
+  }
+}
+
+function buildHtmlRenderRenderersProps(themeStyles: any) {
+  return {
+    iframe: {
+      scalesPageToFit: true,
+      webViewProps: {
+        style: themeStyles.layer1,
+        userAgent: USER_AGENT,
+      },
+    },
+    table: { tableRenderers: true },
+    ul: { markerBoxStyle: { paddingRight: 4 } },
+    ol: { markerBoxStyle: { paddingRight: 2 } },
+  }
+}
+
 function HtmlRender({
   tagsStyles,
   baseStyle,
@@ -81,6 +211,7 @@ function HtmlRender({
   const base64ModalRef = useRef<TrueSheet>(null)
   const router = useRouter()
   const insets = useSafeAreaInsets()
+  const inProvider = useContext(HtmlRenderEngineContext)
 
   // Tracks the insertion-ordered list of image origin URLs registered by
   // ImageRenderer / AnchorRenderer instances within this HtmlRender tree.
@@ -88,18 +219,7 @@ function HtmlRender({
   const imageOrigins = useRef<string[]>([])
 
   const renderersProps = useMemo(
-    () => ({
-      iframe: {
-        scalesPageToFit: true,
-        webViewProps: {
-          style: themeStyles.layer1,
-          userAgent: USER_AGENT,
-        },
-      },
-      table: { tableRenderers: true },
-      ul: { markerBoxStyle: { paddingRight: 4 } },
-      ol: { markerBoxStyle: { paddingRight: 2 } },
-    }),
+    () => buildHtmlRenderRenderersProps(themeStyles),
     [themeStyles],
   )
 
@@ -126,89 +246,11 @@ function HtmlRender({
     null,
   )
 
-  const styles = useMemo(() => {
-    const baseFontSize = (baseStyle?.fontSize ||
-      themeStyles.text_base.fontSize) as number
-    return {
-      body: {
-        color:
-          typeof theme.colors.text === 'string' ? theme.colors.text : undefined,
-        fontSize: baseFontSize,
-        lineHeight: baseFontSize * 1.5,
-      },
-      h1: {
-        fontSize: (28 / 16) * baseFontSize,
-        lineHeight: (28 / 16) * baseFontSize * 1.1,
-        marginTop: 1.25 * baseFontSize,
-        marginBottom: baseFontSize,
-      },
-      h2: {
-        fontSize: (24 / 16) * baseFontSize,
-        lineHeight: (24 / 16) * baseFontSize * 1.1,
-        marginTop: 1.25 * baseFontSize,
-        marginBottom: baseFontSize,
-      },
-      h3: {
-        fontSize: (20 / 16) * baseFontSize,
-        lineHeight: (20 / 16) * baseFontSize * 1.1,
-        marginTop: 1.25 * baseFontSize,
-        marginBottom: baseFontSize,
-      },
-      h4: {
-        fontSize: (18 / 16) * baseFontSize,
-        lineHeight: (18 / 16) * baseFontSize * 1.1,
-        marginTop: baseFontSize / 1.5,
-        marginBottom: baseFontSize / 2,
-      },
-      h5: {
-        fontSize: (16 / 16) * baseFontSize,
-        lineHeight: (16 / 16) * baseFontSize * 1.1,
-        marginVertical: baseFontSize / 2,
-      },
-      h6: {
-        fontSize: (14 / 16) * baseFontSize,
-        lineHeight: (14 / 16) * baseFontSize * 1.1,
-        marginVertical: baseFontSize / 2,
-      },
-      hr: { marginVertical: baseFontSize },
-      pre: {
-        backgroundColor: theme.colors.html_pre_bg,
-        paddingVertical: baseFontSize * 0.8,
-        lineHeight: 1.25 * baseFontSize,
-        borderRadius: 4,
-      },
-      br: { backgroundColor: 'orange' },
-      code: { fontSize: 14 },
-      ul: { marginTop: 0, marginBottom: baseFontSize },
-      p: { marginTop: 0, marginBottom: baseFontSize },
-      a: {
-        textDecorationLine: 'none' as const,
-        color:
-          typeof theme.colors.text_link === 'string'
-            ? theme.colors.text_link
-            : undefined,
-      },
-      blockquote: {
-        marginLeft: 0,
-        paddingLeft: baseFontSize * 1.5,
-        paddingVertical: baseFontSize * 0.25,
-        borderLeftWidth: 3,
-        borderLeftColor:
-          typeof theme.colors.text === 'string' ? theme.colors.text : undefined,
-      },
-      tr: { flexDirection: 'row' as const, width: '100%' },
-      td: { flex: 1 },
-      th: {
-        borderBottomWidth: 1,
-        borderBottomColor:
-          typeof theme.colors.text_meta === 'string'
-            ? theme.colors.text_meta
-            : undefined,
-        flex: 1,
-      },
-      ...(tagsStyles || {}),
-    }
-  }, [tagsStyles, baseStyle, themeStyles, theme])
+  const styles = useMemo(
+    () =>
+      buildHtmlRenderTagsStyles({ tagsStyles, baseStyle, theme, themeStyles }),
+    [tagsStyles, baseStyle, themeStyles, theme],
+  )
 
   // Per-instance QR handler — passed through RenderContext so ImageRenderer
   // can hand it to the global viewer when opening, without needing a Provider.
@@ -398,18 +440,25 @@ function HtmlRender({
             nativeID='CONTEXT_WORK_ARROUND'
             style={[{ padding: 6, borderRadius: 8 }]}
           >
-            <BaseRender
-              WebView={WebView}
-              tagsStyles={styles}
-              renderers={renderers}
-              renderersProps={renderersProps}
-              defaultTextProps={defaultTextProps}
-              customHTMLElementModels={customHTMLElementModels}
-              classesStyles={atomOne[colorScheme]}
-              {...props}
-              source={source}
-              dangerouslyDisableWhitespaceCollapsing
-            />
+            {inProvider ? (
+              <RenderHTMLSource
+                source={source}
+                contentWidth={props.contentWidth as number}
+              />
+            ) : (
+              <BaseRender
+                WebView={WebView}
+                tagsStyles={styles}
+                renderers={renderers}
+                renderersProps={renderersProps}
+                defaultTextProps={defaultTextProps}
+                customHTMLElementModels={customHTMLElementModels}
+                classesStyles={atomOne[colorScheme]}
+                {...props}
+                source={source}
+                dangerouslyDisableWhitespaceCollapsing
+              />
+            )}
           </View>
         </ContextMenu>
       </View>
@@ -521,6 +570,32 @@ function HtmlRender({
         </TrueSheet>
       )}
     </RenderContext.Provider>
+  )
+}
+
+export function HtmlRenderProvider({ children }: { children: ReactNode }) {
+  const { theme, colorScheme, styles: themeStyles } = useTheme()
+  const engineConfig = useMemo(
+    () => ({
+      WebView,
+      tagsStyles: buildHtmlRenderTagsStyles({ theme, themeStyles }),
+      renderers,
+      renderersProps: buildHtmlRenderRenderersProps(themeStyles),
+      defaultTextProps,
+      customHTMLElementModels,
+      classesStyles: atomOne[colorScheme],
+      dangerouslyDisableWhitespaceCollapsing: true,
+    }),
+    [theme, themeStyles, colorScheme],
+  )
+  return (
+    <HtmlRenderEngineContext.Provider value={true}>
+      <TRenderEngineProvider {...engineConfig}>
+        <RenderHTMLConfigProvider {...engineConfig}>
+          {children}
+        </RenderHTMLConfigProvider>
+      </TRenderEngineProvider>
+    </HtmlRenderEngineContext.Provider>
   )
 }
 

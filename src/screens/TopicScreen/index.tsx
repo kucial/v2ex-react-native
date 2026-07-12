@@ -27,6 +27,7 @@ import AnimatedFlashList from '@/components/AnimatedFlashList'
 import AnimatedHeader from '@/components/AnimatedHeader'
 import Button from '@/components/Button'
 import CommonListFooter from '@/components/CommonListFooter'
+import { HtmlRenderProvider } from '@/components/HtmlRender'
 import MyRefreshControl from '@/components/MyRefreshControl'
 import TopicSkeleton from '@/components/Skeleton/TopicSkeleton'
 
@@ -988,24 +989,26 @@ function TopicScreen() {
         title={topic?.title}
         headerRight={headerRight}
       />
-      <AnimatedFlashList
-        ref={listRef}
-        style={screenStyles.list}
-        data={replyItems}
-        extraData={extraData}
-        renderItem={renderReply}
-        keyExtractor={keyExtractor}
-        ListHeaderComponent={listHeader}
-        ListFooterComponent={listFooter}
-        onEndReachedThreshold={0.4}
-        onEndReached={handleReachEnd}
-        // FIX: was an inline arrow function — caused FlashList to remount all
-        // visible rows on every render. Now a stable useCallback with [] deps.
-        onViewableItemsChanged={handleViewableItemsChanged}
-        refreshControl={refreshControl}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      />
+      <HtmlRenderProvider>
+        <AnimatedFlashList
+          ref={listRef}
+          style={screenStyles.list}
+          data={replyItems}
+          extraData={extraData}
+          renderItem={renderReply}
+          keyExtractor={keyExtractor}
+          ListHeaderComponent={listHeader}
+          ListFooterComponent={listFooter}
+          onEndReachedThreshold={0.4}
+          onEndReached={handleReachEnd}
+          // FIX: was an inline arrow function — caused FlashList to remount all
+          // visible rows on every render. Now a stable useCallback with [] deps.
+          onViewableItemsChanged={handleViewableItemsChanged}
+          refreshControl={refreshControl}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        />
+      </HtmlRenderProvider>
       {showScrollToLastPosition && (
         <ScrollToLastPosition
           style={screenStyles.scrollToLast}
