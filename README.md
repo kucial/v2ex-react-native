@@ -57,7 +57,7 @@
 
 ## 主要开发库
 
-React Native (Expo SDK 56) + NativeWind + React Query + Zustand
+React Native (Expo SDK 56) + NativeWind + React Query + Zustand + React Hook Form + Zod
 
 ## 功能列表
 
@@ -150,7 +150,7 @@ React Native (Expo SDK 56) + NativeWind + React Query + Zustand
 - zustand -- 状态管理
 - react-native-render-html -- 内容渲染
 - marked -- markdown 预览
-- formik + react-hook-form -- 表单
+- react-hook-form + zod -- 表单与校验
 - slatejs + webview -- 富文本编辑
 - @lodev09/react-native-true-sheet -- 底部弹出层
 - react-native-root-toast -- 信息提示

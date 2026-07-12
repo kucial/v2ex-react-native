@@ -18,6 +18,7 @@
     "@bacons/apple-targets": "^3.0.6",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@gorhom/portal": "^1.0.14",
+    "@hookform/resolvers": "^5.4.0",
     "@howincodes/expo-dynamic-app-icon": "^3.0.2",
     "@lodev09/react-native-true-sheet": "3.11.2",
     "@native-html/iframe-plugin": "^2.6.1",
@@ -61,7 +62,6 @@
     "expo-task-manager": "~56.0.20",
     "expo-updates": "~56.0.21",
     "expo-web-browser": "~56.0.5",
-    "formik": "^2.4.9",
     "highlight.js": "^11.11.1",
     "html-to-md": "^0.8.8",
     "is-hotkey": "0.2.0",
@@ -105,7 +105,7 @@
     "slate-hyperscript": "^0.77.0",
     "slate-react": "^0.82.2",
     "socketcluster-client": "19.2.7",
-    "yup": "^1.7.1",
+    "zod": "^4.4.3",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
