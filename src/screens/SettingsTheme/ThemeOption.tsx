@@ -27,7 +27,8 @@ export default function ThemeOption(props: {
         style={[
           optionStyles.colorCircle,
           {
-            backgroundColor: data[colorScheme].colors.primary,
+            backgroundColor:
+              data[colorScheme || 'light']?.colors?.primary || '#333333',
           },
         ]}
       >

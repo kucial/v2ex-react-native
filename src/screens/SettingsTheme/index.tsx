@@ -21,8 +21,12 @@ export default function SettingsTheme() {
   )
   const [previewDarkTheme, setPreviewDarkTheme] = useState(darkTheme || theme)
   const [scale, setScale] = useState(fontScale)
-  const { colorScheme: currentScheme } = useColorScheme()
-  const [colorScheme, setColorScheme] = useState(currentScheme)
+  const systemColorScheme = useColorScheme()
+  const currentScheme: 'light' | 'dark' =
+    systemColorScheme === 'dark' ? 'dark' : 'light'
+  const [colorScheme, setColorScheme] = useState<'light' | 'dark'>(
+    currentScheme,
+  )
   const [pureDark, setPureDark] = useState(pureDarkTheme)
   const previewTheme =
     colorScheme === 'dark' ? previewDarkTheme : previewLightTheme

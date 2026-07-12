@@ -44,7 +44,7 @@ export const ThemeProvider = (props: {
   colorScheme?: 'light' | 'dark'
   children: ReactNode
 }) => {
-  const { colorScheme } = useColorScheme()
+  const systemColorScheme = useColorScheme()
   const {
     data: {
       theme: themeName,
@@ -56,7 +56,7 @@ export const ThemeProvider = (props: {
   } = useAppSettings()
 
   const activeScheme =
-    props.colorScheme ?? (colorScheme === 'dark' ? 'dark' : 'light')
+    props.colorScheme ?? (systemColorScheme === 'dark' ? 'dark' : 'light')
   const activeTheme =
     props.theme ??
     (activeScheme === 'dark' ? darkTheme : lightTheme) ??
