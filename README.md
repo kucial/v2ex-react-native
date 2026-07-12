@@ -57,7 +57,7 @@
 
 ## 主要开发库
 
-React Native + Tailwindcss + SWR
+React Native (Expo SDK 56) + NativeWind + React Query + Zustand
 
 ## 功能列表
 
@@ -77,7 +77,7 @@ React Native + Tailwindcss + SWR
   - [x] Imgur 网页省流（直接打开 imgur post 链接 对应的图片）
   - [x] 滚动到顶部/底部，定位到某一楼层
   - [x] 图片预览，及分享、保存
-  - [ ] 回复，“表情图” ｜ emoji
+  - [ ] 回复，"表情图" ｜ emoji
   - [ ] 回复，"mention" 功能
 - [ ] 节点相关
   - [x] 收藏/取消收藏
@@ -118,9 +118,9 @@ React Native + Tailwindcss + SWR
       - [x] 可以调整 Tabs 顺序
       - [x] 可以调整 Tabs 内容
         - [x] 默认使用 v2ex.com 移动端的 tabs
-        - [x] 默认添加 “最近” 的 标签
-        - [x] 可以 添加 “节点“ 的 作为标签
-    - [x] 已读内容“置灰”设置
+        - [x] 默认添加 "最近" 的 标签
+        - [x] 可以 添加 "节点" 的 作为标签
+    - [x] 已读内容"置灰"设置
     - [x] 已读内容更新提示
     - [x] 自动刷新设置
     - [x] 主题设置
@@ -137,27 +137,24 @@ React Native + Tailwindcss + SWR
 - [ ] 添加测试用例。
 - [ ] 调整用户主页的界面设计 尝试使用 Animated 处理用户主页头部高度
 
-## 框架/库 -- NOTES
+## 框架/库
 
-- react-native
-- react-navigation -- 页面导航
-- ~~tailwindcss-react-native -- 样式系统~~
+- react-native (Expo SDK 56) -- 跨平台框架
+- expo-router -- 文件路由系统
 - nativewind + custom theme provider -- 样式主题系统
-- sentry-expo -- 错误跟踪
-- MMKV -- 存储
-- ~~swr -- 请求管理~~ react-query
+- @sentry/react-native -- 错误跟踪
+- react-native-mmkv -- 存储
+- @tanstack/react-query -- 请求管理
   - fetcher -- V2EX V1 API + 自定义 webview 封装接口
   - cacheProvider -- MMKV storage
+- zustand -- 状态管理
 - react-native-render-html -- 内容渲染
 - marked -- markdown 预览
-- ~~react-native-image-modal -- 图片预览~~
-- ~~react-hook-form -- 表单~~ formik
+- formik + react-hook-form -- 表单
 - slatejs + webview -- 富文本编辑
-- ~~@gorhom/bottom-sheet -- 底部弹出层~~ react-native-truesheet
-- react-native-image-viewing -- imgur 图片预览
-- ~~react-native-dropdownalert~~ react-native-root-toast -- 信息提示
-- ~~react-native-selectable-text -- 可选择文本~~ 使用 context menu 替代
-
+- @lodev09/react-native-true-sheet -- 底部弹出层
+- react-native-root-toast -- 信息提示
+- lottie-react-native -- 动画
 
 ## AE & Lottie
 
