@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   KeyboardAvoidingView,
   Platform,
@@ -9,8 +9,9 @@ import {
   View,
 } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
+import * as Crypto from 'expo-crypto'
 import * as Linking from 'expo-linking'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 
 import GroupWapper from '@/components/GroupWrapper'
 import ImgurLogo from '@/components/ImgurLogo'
@@ -19,14 +20,22 @@ import NavigationHeader from '@/components/NavigationHeader'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useImgurService } from '@/containers/ImgurService'
-import { ImgurCredentials } from '@/containers/ImgurService/types'
 import { useTheme } from '@/containers/ThemeService'
 import { IMGUR_CLIENT_ID } from '@/env'
+import {
+  createImgurAuthorizationUrl,
+  IMGUR_OAUTH_CALLBACK_PATH,
+} from '@/utils/imgur-oauth'
+import {
+  clearPendingImgurOAuth,
+  savePendingImgurOAuth,
+} from '@/utils/imgur-oauth-pending'
+
+const IMGUR_REDIRECT_URI = Linking.createURL(IMGUR_OAUTH_CALLBACK_PATH)
 
 export default function ImgurSettings() {
   const params = useLocalSearchParams()
   const autoBack = params.autoBack === '1'
-  const router = useRouter()
 
   const { theme, styles } = useTheme()
   const alert = useAlertService()
@@ -34,33 +43,6 @@ export default function ImgurSettings() {
   const [clientInfo, setClientInfo] = useState({
     clientId: IMGUR_CLIENT_ID,
   })
-  const REDIRECT_URI = Linking.createURL('imgur-oauth')
-  useEffect(() => {
-    const subscription = Linking.addEventListener('url', function (event) {
-      const parsed = Linking.parse(event.url)
-      if (parsed.hostname === 'imgur-oauth') {
-        const { queryParams } = Linking.parse(
-          `r2v://callback?${event.url.split('#')[1]}`,
-        )
-        if (queryParams) {
-          imgurService.updateCredentials({
-            client_id: clientInfo.clientId,
-            ...queryParams,
-          } as ImgurCredentials)
-          alert.show({
-            type: 'success',
-            message: 'Imgur 授权成功',
-          })
-          if (autoBack) {
-            router.back()
-          }
-        }
-      }
-    })
-    return () => {
-      subscription.remove()
-    }
-  }, [autoBack, alert, clientInfo.clientId, imgurService, router])
 
   return (
     <View style={imgurStyles.container}>
@@ -176,14 +158,14 @@ export default function ImgurSettings() {
                           pressed && imgurStyles.pressed60,
                         ]}
                         onPress={async () => {
-                          await Clipboard.setStringAsync(REDIRECT_URI)
+                          await Clipboard.setStringAsync(IMGUR_REDIRECT_URI)
                           alert.show({
                             type: 'success',
                             message: ' URL 已复制到剪切板',
                           })
                         }}
                       >
-                        <Text style={styles.text}>{REDIRECT_URI}</Text>
+                        <Text style={styles.text}>{IMGUR_REDIRECT_URI}</Text>
                       </Pressable>
                     </View>
                     <View style={imgurStyles.mt2}>
@@ -220,13 +202,34 @@ export default function ImgurSettings() {
                         styles.btn_primary__bg,
                         pressed && imgurStyles.pressed60,
                       ]}
-                      onPress={() => {
+                      onPress={async () => {
                         if (!clientInfo.clientId) {
                           return
                         }
-                        Linking.openURL(
-                          `https://api.imgur.com/oauth2/authorize?client_id=${clientInfo.clientId}&response_type=token`,
-                        )
+
+                        const state = Crypto.randomUUID()
+                        savePendingImgurOAuth({
+                          clientId: clientInfo.clientId,
+                          state,
+                          autoBack,
+                          createdAt: Date.now(),
+                        })
+
+                        try {
+                          await Linking.openURL(
+                            createImgurAuthorizationUrl({
+                              clientId: clientInfo.clientId,
+                              redirectUri: IMGUR_REDIRECT_URI,
+                              state,
+                            }),
+                          )
+                        } catch {
+                          clearPendingImgurOAuth()
+                          alert.show({
+                            type: 'error',
+                            message: '无法打开 Imgur 授权页面。',
+                          })
+                        }
                       }}
                     >
                       <Text style={[styles.btn_primary__text, styles.text_sm]}>

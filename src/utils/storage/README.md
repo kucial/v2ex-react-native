@@ -10,6 +10,7 @@
 `$app$` -- 应用数据缓存
 
 - `$app$/services/imgur` Imgur credentials
+- `$app$/oauth/imgur/pending` Pending Imgur OAuth request metadata
 - `$app$/settings/imgur` Imgur 设置
 - `$app$/settings` App Settings
 - `$app$/viewed-topics` 浏览过的主题

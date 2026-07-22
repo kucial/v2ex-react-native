@@ -1,11 +1,11 @@
-import { ViewStyle } from 'react-native'
+import { ColorValue, ViewStyle } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 
 export default function ImgurLogo({
   color,
   style,
 }: {
-  color?: string
+  color?: ColorValue
   style: ViewStyle
 }) {
   return (

@@ -133,6 +133,13 @@ export default function StackLayout() {
         }}
       />
       <Stack.Screen
+        name='imgur-oauth'
+        options={{
+          animation: 'none',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name='home-tab-settings'
         options={{
           title: '首页标签设置',
