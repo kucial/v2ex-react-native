@@ -31,7 +31,7 @@ const withListsPlugin = withLists({
   isListNode(node, type) {
     if (type) {
       const nodeType =
-        type === ListType.ORDERED_LIST ? TYPE.ORDERED_LIST : TYPE.UNORDERED_LIST
+        type === ListType.ORDERED ? TYPE.ORDERED_LIST : TYPE.UNORDERED_LIST
       return Element.isElementType(node, nodeType)
     }
     return (
@@ -50,7 +50,7 @@ const withListsPlugin = withLists({
   },
   createListNode(type = ListType.UNORDERED, props = {}) {
     const nodeType =
-      type === ListType.ORDERED_LIST ? TYPE.ORDERED_LIST : TYPE.UNORDERED_LIST
+      type === ListType.ORDERED ? TYPE.ORDERED_LIST : TYPE.UNORDERED_LIST
     return { children: [{ text: '' }], ...props, type: nodeType }
   },
   createListItemNode(props = {}) {
