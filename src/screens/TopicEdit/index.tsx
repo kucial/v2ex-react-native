@@ -10,6 +10,8 @@ import Button from '@/components/Button'
 import { SelectField, TextField } from '@/components/form'
 import KeyboardAwareView from '@/components/KeyboardAwareView'
 import Loader from '@/components/Loader'
+import MaxWidthWrapper from '@/components/MaxWidthWrapper'
+import NavigationHeader from '@/components/NavigationHeader'
 
 import { useAlertService } from '@/containers/AlertService'
 import { useTheme } from '@/containers/ThemeService'
@@ -17,8 +19,8 @@ import { editTopic, fetchTopicEditForm } from '@/utils/v2ex-client'
 
 const TopicEditSchema = z.object({
   title: z.string().min(1, '标题不能为空'),
-  syntax: z.string().optional().default('0'),
-  content: z.string().optional().default(''),
+  syntax: z.enum(['0', '1']),
+  content: z.string(),
 })
 
 type FormValues = z.infer<typeof TopicEditSchema>
@@ -34,14 +36,8 @@ export default function TopicEdit() {
   const topicId = Number(id)
 
   const fetchFormData = useCallback(async () => {
-    try {
-      const res = await fetchTopicEditForm(topicId)
-      return res.data
-    } catch (err: any) {
-      if (err.code == 'NOT_ALLOWED') {
-      }
-      throw err
-    }
+    const res = await fetchTopicEditForm(topicId)
+    return res.data
   }, [topicId])
 
   const formQuery = useQuery({
@@ -54,7 +50,18 @@ export default function TopicEdit() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(TopicEditSchema),
-    values: formQuery.data?.values as FormValues,
+    defaultValues: {
+      title: '',
+      syntax: '0',
+      content: '',
+    },
+    values: formQuery.data
+      ? {
+          title: formQuery.data.values.title,
+          syntax: formQuery.data.values.syntax === '1' ? '1' : '0',
+          content: formQuery.data.values.content,
+        }
+      : undefined,
     mode: 'onChange',
   })
 
@@ -66,7 +73,10 @@ export default function TopicEdit() {
   const onSubmit = useCallback(
     async (values: FormValues) => {
       try {
-        const res = await editTopic(topicId, values)
+        const res = await editTopic(topicId, {
+          ...values,
+          syntax: Number(values.syntax) as 0 | 1,
+        })
         alert.show({ type: 'success', message: '主题更新成功' })
         router.back()
         queryClient.setQueryData([`/page/t/:id/topic.json`, topicId], res.data)
@@ -80,22 +90,29 @@ export default function TopicEdit() {
 
   if (formQuery.error) {
     return (
-      <View style={editStyles.centerPy8}>
-        <Text style={styles.text}>{formQuery.error.message}</Text>
+      <View style={[editStyles.container, styles.layer1]}>
+        <NavigationHeader canGoBack title='编辑主题' />
+        <View style={editStyles.centerPy8}>
+          <Text style={styles.text}>{formQuery.error.message}</Text>
+        </View>
       </View>
     )
   }
 
   if (!formQuery.data) {
     return (
-      <View style={editStyles.centerPy8}>
-        <Loader />
+      <View style={[editStyles.container, styles.layer1]}>
+        <NavigationHeader canGoBack title='编辑主题' />
+        <View style={editStyles.centerPy8}>
+          <Loader />
+        </View>
       </View>
     )
   }
 
   return (
     <View style={[editStyles.container, styles.layer1]}>
+      <NavigationHeader canGoBack title='编辑主题' />
       <KeyboardAwareView animated style={editStyles.kav}>
         <FormProvider {...form}>
           <ScrollView
@@ -103,32 +120,39 @@ export default function TopicEdit() {
             ref={scrollViewRef}
             scrollEventThrottle={16}
           >
-            <View style={editStyles.formWrap}>
-              <TextField name='title' label='标题' />
-              <SelectField
-                name='syntax'
-                label='内容类型'
-                options={formQuery.data.schema.syntaxOptions}
-              />
-              <TextField
-                name='content'
-                label='内容'
-                placeholder='正文内容'
-                multiline
-                inputStyle={{ minHeight: 200 }}
-              />
-              <Button
-                style={editStyles.submitBtn}
-                size='md'
-                variant='primary'
-                label='更新'
-                loading={isSubmitting}
-                disabled={isSubmitting}
-                onPress={() => {
-                  handleSubmit(onSubmit)()
-                }}
-              />
-            </View>
+            <MaxWidthWrapper>
+              <View style={editStyles.formWrap}>
+                <TextField name='title' label='标题' />
+                <SelectField
+                  name='syntax'
+                  label='内容类型'
+                  options={formQuery.data.schema.syntaxOptions.map(
+                    (option) => ({
+                      label: option.label,
+                      value: option.value ?? '',
+                    }),
+                  )}
+                />
+                <TextField
+                  name='content'
+                  label='内容'
+                  placeholder='正文内容'
+                  multiline
+                  inputStyle={{ minHeight: 200 }}
+                />
+                <Button
+                  style={editStyles.submitBtn}
+                  size='md'
+                  variant='primary'
+                  label='更新'
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
+                  onPress={() => {
+                    handleSubmit(onSubmit)()
+                  }}
+                />
+              </View>
+            </MaxWidthWrapper>
           </ScrollView>
         </FormProvider>
       </KeyboardAwareView>
