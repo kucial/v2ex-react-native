@@ -34,7 +34,7 @@ export default function AppSidebar(props: {
     composeAuthedNavigation(
       useCallback(() => {
         router.push('/new-topic')
-      }, []),
+      }, [router]),
     ),
     {
       message: '[AppSidebar] `New-Topic` button pressed',
@@ -53,7 +53,7 @@ export default function AppSidebar(props: {
   const handleSearchButtonPress = usePressBreadcrumb(
     useCallback(() => {
       router.push('/search')
-    }, []),
+    }, [router]),
     {
       message: '[AppSidebar] `Search` button pressed',
     },
@@ -61,7 +61,7 @@ export default function AppSidebar(props: {
   const handleViewedTopicButtonPress = usePressBreadcrumb(
     useCallback(() => {
       router.push('/me/viewed-topics')
-    }, []),
+    }, [router]),
     {
       message: '[AppSidebar] `Viewed-Topic` button pressed',
     },
@@ -69,9 +69,17 @@ export default function AppSidebar(props: {
   const handleAudioButtonPress = usePressBreadcrumb(
     useCallback(() => {
       router.push('/audio')
-    }, []),
+    }, [router]),
     {
       message: '[AppSidebar] `Audio` button pressed',
+    },
+  )
+  const handleAIButtonPress = usePressBreadcrumb(
+    useCallback(() => {
+      router.push('/ai' as any)
+    }, [router]),
+    {
+      message: '[AppSidebar] `AI` button pressed',
     },
   )
 
@@ -213,6 +221,19 @@ export default function AppSidebar(props: {
                 <V2exIcon name='musical-note-outline' {...props} />
               )}
               onPress={handleAudioButtonPress}
+            />
+            <AppSidebarButton
+              isActive={pathname === '/ai'}
+              label='AI'
+              activeColor={theme.colors.primary}
+              staticColor={theme.colors.text_desc}
+              Icon={(props) => (
+                <V2exIcon
+                  name='chat-bubble-bottom-center-text-outline'
+                  {...props}
+                />
+              )}
+              onPress={handleAIButtonPress}
             />
             {props.position === 'BOTTOM' && width > 730 && (
               <View

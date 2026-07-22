@@ -60,6 +60,20 @@ export default function TabsLayout() {
           title: '音频资源',
         }}
       />
+      <Tabs.Screen
+        name='ai'
+        options={{
+          headerShown: false,
+          tabBarIcon: (props) => (
+            <V2exIcon
+              name='chat-bubble-bottom-center-text-outline'
+              {...props}
+            />
+          ),
+          tabBarLabel: 'AI',
+          title: 'AI',
+        }}
+      />
     </Tabs>
   )
 }

@@ -5,6 +5,7 @@ import {
   PressableProps,
   StyleSheet,
   Text,
+  TextStyle,
   View,
   ViewStyle,
 } from 'react-native'
@@ -16,7 +17,7 @@ import { useLayoutStyle } from './context'
 type SidebarIconProps = {
   color: ColorValue
   size: number
-  style?: ViewStyle
+  style?: TextStyle
 }
 
 function AppSidebarButton(props: {
@@ -27,7 +28,7 @@ function AppSidebarButton(props: {
   activeColor: ColorValue
   onPress: PressableProps['onPress']
   disabled?: boolean
-  iconStyle?: ViewStyle
+  iconStyle?: TextStyle
   badge?: number
   isLast?: boolean
   style?: ViewStyle
@@ -40,8 +41,18 @@ function AppSidebarButton(props: {
       style={({ pressed }) => [
         sidebarBtnStyles.btn,
         layoutStyle,
+        props.style,
+        isActive && {
+          backgroundColor: theme.colors.bg_layer2,
+        },
         pressed && sidebarBtnStyles.pressed,
       ]}
+      accessibilityLabel={props.label}
+      accessibilityRole='button'
+      accessibilityState={{
+        disabled: props.disabled,
+        selected: isActive,
+      }}
       disabled={props.disabled}
       onPress={(e) => {
         if (isActive) {
@@ -87,7 +98,8 @@ const sidebarBtnStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   pressed: {
-    opacity: 0.6,
+    opacity: 0.68,
+    transform: [{ scale: 0.92 }],
   },
   iconContainer: {
     position: 'relative',
