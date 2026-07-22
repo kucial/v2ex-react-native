@@ -97,6 +97,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-image',
       'expo-splash-screen',
       'expo-status-bar',
+      'expo-secure-store',
       'expo-image-picker',
       'expo-audio',
       'expo-router',
