@@ -5,7 +5,7 @@
   opacity: 1 !important;
 }
 
-[data-slate-node='element'] {
+[data-slate-editor='true'] > [data-slate-node='element'] {
   margin-bottom: 1em;
 }
 
@@ -90,7 +90,7 @@ ol {
 }
 
 li {
-  line-height: 1.5;
+  line-height: 1.33;
 }
 
 ul {

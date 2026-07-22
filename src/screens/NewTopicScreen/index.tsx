@@ -66,7 +66,6 @@ export default function NewTopicScreen() {
   const [values, setValues] = useState({
     title: '',
     node: typeof nodeName === 'string' ? nodeName : '',
-    content: '',
   })
 
   const isValid = useMemo(() => {
@@ -151,7 +150,7 @@ export default function NewTopicScreen() {
     try {
       setIsSubmitting(true)
       const editor = editorRef.current
-      if (!editor) {
+      if (!editor?.isReady()) {
         throw new ApiError({
           code: 'EDITOR_NOT_READY',
           message: '编辑器还没有准备好',

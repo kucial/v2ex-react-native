@@ -177,18 +177,18 @@ export default function SlateEditorDOM({ onEvent, ref }: Props) {
       },
       getHTML() {
         const editor = editorRef.current
-        if (!editor?.html || !editorState.value) return
+        if (!editor?.html) return
         postEvent({
           type: 'html',
-          value: editor.html.htmlFromFragment(editorState.value),
+          value: editor.html.htmlFromFragment(editor.children),
         })
       },
       getMarkdown() {
         const editor = editorRef.current
-        if (!editor?.md || !editorState.value) return
+        if (!editor?.md) return
         postEvent({
           type: 'markdown',
-          value: editor.md.mdFromFragment(editorState.value),
+          value: editor.md.mdFromFragment(editor.children),
         })
       },
       toggleBlock(block: string) {
@@ -216,7 +216,7 @@ export default function SlateEditorDOM({ onEvent, ref }: Props) {
         editorRef.current?.redo()
       },
     }),
-    [postEvent, editorState.value],
+    [postEvent],
   )
 
   useDOMImperativeHandle(
