@@ -28,6 +28,7 @@ import NotificationWatcher from '@/containers/NotificationWatcher'
 import QueryClientProvider from '@/containers/QueryClientProvider'
 import { getThemeService, ThemeProvider } from '@/containers/ThemeService'
 import TopicSheetModal from '@/containers/TopicSheetService'
+import TrackingService from '@/containers/TrackingService'
 import { initSentry } from '@/lib/sentry'
 import { registerBackgroundTaskAsync } from '@/lib/widget-background-task'
 import { handleDeepLink } from '@/utils/deeplink'
@@ -81,6 +82,7 @@ export default function RootLayout() {
                               <TopicSheetModal />
                               <AudioWatcher />
                               <FullPlayer />
+                              <TrackingService />
                             </Layout>
                           </ImgurService>
                         </ActionSheetProvider>

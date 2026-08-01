@@ -6,7 +6,12 @@ import * as Updates from 'expo-updates'
 import { SENTRY_DSN } from '@/env'
 let inited = false
 
-const navigationIntegration = Sentry.reactNavigationIntegration({
+/**
+ * Must be handed the navigation container ref via
+ * `registerNavigationContainer` or it silently does nothing — see
+ * `TrackingService`.
+ */
+export const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: true,
 })
 
@@ -25,7 +30,6 @@ export const initSentry = () => {
       deviceYearClass: Device.deviceYearClass,
       linkingUri: Constants.linkingUri,
     })
-    Sentry.setTag('expoReleaseChannel', Updates.channel)
     Sentry.setTag('expoReleaseChannel', Updates.channel)
     Sentry.setTag('runtimeVersion', Updates.manifest.runtimeVersion)
     Sentry.setTag('appPublishedTime', Updates.manifest.publishedTime)

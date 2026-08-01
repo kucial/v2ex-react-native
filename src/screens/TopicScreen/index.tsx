@@ -41,6 +41,7 @@ import {
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
 import { useTouchViewedTopic } from '@/containers/ViewedTopicsService'
+import { track } from '@/lib/tracking'
 import { useCurrentUser } from '@/stores/auth'
 import { useTopicSheetStore } from '@/stores/topicSheet'
 import { getRelatedReplies } from '@/utils/content'
@@ -156,6 +157,7 @@ function TopicScreen() {
       }
       if (!touchViewedCalledRef.current) {
         touchViewedCalledRef.current = true
+        track('topic.opened', { node: topicQuery.data.node?.name })
         setTimeout(() => {
           touchViewed(topicQuery.data)
         }, 500)

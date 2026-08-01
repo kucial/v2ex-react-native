@@ -49,7 +49,8 @@ export default function MyScreen() {
       }, [router]),
     ),
     {
-      message: 'MyScreen `created-topics` button pressed',
+      component: 'MyScreen',
+      action: 'created-topics',
     },
   )
 
@@ -60,7 +61,8 @@ export default function MyScreen() {
       }, [router]),
     ),
     {
-      message: 'MyScreen `collected-topics` button pressed',
+      component: 'MyScreen',
+      action: 'collected-topics',
     },
   )
 
@@ -71,7 +73,8 @@ export default function MyScreen() {
       }, [router]),
     ),
     {
-      message: 'MyScreen `replied-topics` button pressed',
+      component: 'MyScreen',
+      action: 'replied-topics',
     },
   )
 

@@ -31,10 +31,7 @@ export const useNavigationWithBreadcrumb = (
     ? composeAuthedNavigation(navigationCallback)
     : navigationCallback
 
-  return usePressBreadcrumb(wrapped, {
-    message: 'Button pressed',
-    data: { component, action, route },
-  })
+  return usePressBreadcrumb(wrapped, { component, action })
 }
 
 export default function MainScreenHeader(props) {

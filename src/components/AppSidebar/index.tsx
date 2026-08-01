@@ -39,7 +39,8 @@ export default function AppSidebar(props: {
       }, [router]),
     ),
     {
-      message: '[AppSidebar] `New-Topic` button pressed',
+      component: 'AppSidebar',
+      action: 'new-topic',
     },
   )
   const handleNotificationPress = usePressBreadcrumb(
@@ -49,7 +50,8 @@ export default function AppSidebar(props: {
       }, [router]),
     ),
     {
-      message: '[AppSidebar] `Notification` button pressed',
+      component: 'AppSidebar',
+      action: 'notification',
     },
   )
   const handleSearchButtonPress = usePressBreadcrumb(
@@ -57,7 +59,8 @@ export default function AppSidebar(props: {
       router.push('/search')
     }, [router]),
     {
-      message: '[AppSidebar] `Search` button pressed',
+      component: 'AppSidebar',
+      action: 'search',
     },
   )
   const handleViewedTopicButtonPress = usePressBreadcrumb(
@@ -65,7 +68,8 @@ export default function AppSidebar(props: {
       router.push('/me/viewed-topics')
     }, [router]),
     {
-      message: '[AppSidebar] `Viewed-Topic` button pressed',
+      component: 'AppSidebar',
+      action: 'viewed-topics',
     },
   )
   const handleAudioButtonPress = usePressBreadcrumb(
@@ -73,7 +77,8 @@ export default function AppSidebar(props: {
       usePlayerUiStore.getState().expand()
     }, []),
     {
-      message: '[AppSidebar] `Audio` button pressed',
+      component: 'AppSidebar',
+      action: 'audio',
     },
   )
   const handleAIButtonPress = usePressBreadcrumb(
@@ -81,7 +86,8 @@ export default function AppSidebar(props: {
       router.push('/ai' as any)
     }, [router]),
     {
-      message: '[AppSidebar] `AI` button pressed',
+      component: 'AppSidebar',
+      action: 'ai',
     },
   )
 

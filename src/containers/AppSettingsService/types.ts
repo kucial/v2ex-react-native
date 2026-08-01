@@ -30,6 +30,9 @@ export type AppSettings = {
 
   searchProvider: SearchProvider
   historyRecordLimit: number
+
+  /** Opt-out for anonymous usage analytics. Gates the whole tracking layer. */
+  trackingEnabled: boolean
 }
 
 export type SearchProvider = 'google' | 'sov2ex'

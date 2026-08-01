@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import RNRestart from 'react-native-restart'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { useNavigation } from 'expo-router'
 import { EventArg } from 'expo-router/react-navigation'
@@ -18,6 +19,7 @@ import {
   SearchProvider,
 } from '@/containers/AppSettingsService/types'
 import { useTheme } from '@/containers/ThemeService'
+import { useAudioPlayerStore } from '@/stores/audioPlayer'
 
 import { topic } from './mock'
 import NormalTopicRowDemo from './NormalTopicRowDemo'
@@ -71,6 +73,11 @@ export default function PreferenceSettings() {
     useState<DemoRowProps['viewedStatus']>(undefined)
   const { styles, colorScheme } = useTheme()
   const navigation = useNavigation()
+  const insets = useSafeAreaInsets()
+  // The mini player floats over the scroll view; reserve room so the last rows
+  // aren't hidden behind it.
+  const hasMiniPlayer = useAudioPlayerStore((s) => !!s.currentAudio)
+  const scrollPaddingBottom = insets.bottom + 16 + (hasMiniPlayer ? 68 : 0)
 
   useEffect(() => {
     const unsubscribe = navigation.addListener(
@@ -100,7 +107,10 @@ export default function PreferenceSettings() {
   return (
     <View style={prefStyles.container}>
       <NavigationHeader canGoBack title='功能设置' />
-      <ScrollView style={prefStyles.scrollView}>
+      <ScrollView
+        style={prefStyles.scrollView}
+        contentContainerStyle={{ paddingBottom: scrollPaddingBottom }}
+      >
         <MaxWidthWrapper>
           <SectionHeader title='显示' />
           <GroupWapper>
@@ -464,6 +474,31 @@ export default function PreferenceSettings() {
                 </View>
               </View>
             </View>
+            <View style={[prefStyles.rowWrap, styles.layer1]}>
+              <View style={prefStyles.rowContent}>
+                <View style={prefStyles.titleRow}>
+                  <Text style={[styles.text, styles.text_base]}>
+                    使用数据统计
+                  </Text>
+                  <View style={prefStyles.descWrap}>
+                    <Text style={[styles.text_desc, styles.text_xs]}>
+                      匿名统计功能使用情况，不含账号与内容
+                    </Text>
+                  </View>
+                </View>
+                <View style={prefStyles.switchWrap}>
+                  <MySwitch
+                    value={state.trackingEnabled}
+                    onValueChange={(val) =>
+                      setState((prev) => ({
+                        ...prev,
+                        trackingEnabled: val,
+                      }))
+                    }
+                  />
+                </View>
+              </View>
+            </View>
           </GroupWapper>
 
           <SectionHeader title='布局' desc='修改此项时会重新启动应用' />
@@ -533,10 +568,14 @@ const prefStyles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    // Short descriptions sit inline next to the title; longer ones wrap onto a
+    // second line instead of running under the switch and being clipped.
+    flexWrap: 'wrap',
+    paddingVertical: 8,
   },
   descWrap: {
     marginLeft: 4,
-    marginTop: 4,
+    flexShrink: 1,
   },
   mb8: {
     marginBottom: 32,

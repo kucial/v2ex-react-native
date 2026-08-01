@@ -29,6 +29,7 @@ import {
   DEFAULT_PERSONA,
   V2EXChatClient,
 } from '@/lib/ai-chat/v2ex'
+import { lengthBucket, track } from '@/lib/tracking'
 import {
   AIChatConversation,
   AIChatMessage,
@@ -73,6 +74,20 @@ type AIChatContextValue = {
   reloadPersonas: () => Promise<void>
   savePersonalToken: (token: string) => Promise<void>
   clearPersonalToken: () => Promise<void>
+}
+
+/**
+ * Map a user-facing error string onto a stable, non-identifying reason code.
+ * The raw message is deliberately never tracked — it can contain server text.
+ */
+function classifyStreamError(message: string): string {
+  if (message.includes('Token 无效')) return 'auth'
+  if (message.includes('超时')) return 'timeout'
+  if (message.includes('额度已用完')) return 'rate_limit'
+  if (message.includes('服务暂时不可用')) return 'server'
+  if (message.includes('意外中断')) return 'interrupted'
+  if (message.includes('无法解析')) return 'parse'
+  return 'other'
 }
 
 const initialConversation = createConversation(DEFAULT_PERSONA)
@@ -147,6 +162,10 @@ export function AIChatProvider({ children }: PropsWithChildren) {
   const [activeRequest, setActiveRequest] = useState<ActiveRequest | null>(null)
   const activeRequestRef = useRef<ActiveRequest | null>(null)
   const personaRequestIdRef = useRef(0)
+  /** Persona + start time of the in-flight stream, for duration/TTFT metrics. */
+  const streamMetaRef = useRef<{ persona: string; startedAt: number } | null>(
+    null,
+  )
   const [transport] = useState(() => new V2EXChatClient())
 
   const applyAvailablePersonas = useCallback(
@@ -270,12 +289,17 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       activeRequestRef.current = request
       setActiveRequest(request)
 
+      const startedAt = Date.now()
+      streamMetaRef.current = { persona: conversation.persona, startedAt }
+      let firstDeltaAt = 0
+
       await transport.sendTurn({
         messages: messageHistory(history),
         persona: conversation.persona,
         callbacks: {
           onConnectionState: setConnectionState,
           onTextDelta: (delta, responseId) => {
+            if (!firstDeltaAt) firstDeltaAt = Date.now()
             patchMessage(conversation.id, assistantMessageId, (message) => ({
               ...message,
               status: 'streaming',
@@ -285,6 +309,11 @@ export function AIChatProvider({ children }: PropsWithChildren) {
             }))
           },
           onCompleted: () => {
+            track('ai.stream_completed', {
+              persona: conversation.persona,
+              ms: Date.now() - startedAt,
+              ttft_ms: firstDeltaAt ? firstDeltaAt - startedAt : 0,
+            })
             patchMessage(conversation.id, assistantMessageId, (message) => ({
               ...message,
               status: 'complete',
@@ -299,6 +328,10 @@ export function AIChatProvider({ children }: PropsWithChildren) {
             ) {
               return
             }
+            track('ai.stream_failed', {
+              persona: conversation.persona,
+              reason: classifyStreamError(message),
+            })
             patchMessage(conversation.id, assistantMessageId, (current) => ({
               ...current,
               status: 'failed',
@@ -316,6 +349,11 @@ export function AIChatProvider({ children }: PropsWithChildren) {
     const active = activeRequestRef.current
     transport.cancel()
     if (active) {
+      const meta = streamMetaRef.current
+      track('ai.stream_cancelled', {
+        persona: meta?.persona ?? 'unknown',
+        ms: meta ? Date.now() - meta.startedAt : 0,
+      })
       patchMessage(
         active.conversationId,
         active.assistantMessageId,
@@ -351,7 +389,9 @@ export function AIChatProvider({ children }: PropsWithChildren) {
         setPersonalTokenSource('secure')
         setPersonalTokenState('ready')
         setPersonalTokenPreview(maskPersonalToken(cleaned))
+        track('ai.token_saved', { ok: true })
       } catch (error) {
+        track('ai.token_saved', { ok: false })
         transport.setPersonalToken(previousToken)
         setPersonalTokenSource(previousSource)
         setPersonalTokenState(previousToken ? 'ready' : 'missing')
@@ -390,6 +430,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
     stopGenerating()
     setState((current) => {
       const conversation = createConversation(current.preferredPersona)
+      track('ai.conversation_created', { persona: conversation.persona })
       return {
         ...current,
         selectedConversationId: conversation.id,
@@ -407,6 +448,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       const cleaned = nextPersona.trim()
       if (!cleaned || cleaned === selectedConversation.persona) return
       stopGenerating()
+      track('ai.persona_changed', { persona: cleaned })
       setState((current) => ({
         ...current,
         preferredPersona: cleaned,
@@ -423,6 +465,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
   const renameConversation = useCallback((id: string, title: string) => {
     const cleaned = title.trim()
     if (!cleaned) return
+    track('ai.conversation_renamed')
     setState((current) => ({
       ...current,
       conversations: current.conversations.map((conversation) =>
@@ -436,6 +479,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
   const deleteConversation = useCallback(
     (id: string) => {
       if (activeRequestRef.current?.conversationId === id) stopGenerating()
+      track('ai.conversation_deleted')
       setState((current) => {
         const remaining = current.conversations.filter(
           (conversation) => conversation.id !== id,
@@ -460,6 +504,11 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       const cleanText = text.trim()
       if (!cleanText) return
       stopGenerating()
+
+      track('ai.message_sent', {
+        persona: selectedConversation.persona,
+        len: lengthBucket(cleanText.length),
+      })
 
       const userMessage = createUserMessage(cleanText)
       const assistantMessage = createAssistantPlaceholder()
@@ -501,6 +550,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
         return
       }
       stopGenerating()
+      track('ai.message_retried', { persona: selectedConversation.persona })
       patchMessage(selectedConversation.id, assistantMessageId, (message) => ({
         ...message,
         text: '',
@@ -515,6 +565,9 @@ export function AIChatProvider({ children }: PropsWithChildren) {
 
   const setFeedback = useCallback(
     (messageId: string, feedback: AIChatMessageFeedback) => {
+      if (feedback === 'up' || feedback === 'down') {
+        track('ai.feedback', { value: feedback })
+      }
       patchMessage(selectedConversation.id, messageId, (message) => ({
         ...message,
         feedback: message.feedback === feedback ? null : feedback,

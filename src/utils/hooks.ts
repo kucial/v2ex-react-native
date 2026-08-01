@@ -1,7 +1,8 @@
 import { SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import * as Sentry from '@sentry/react-native'
-import { setAudioModeAsync } from 'expo-audio'
 import { debounce } from 'lodash'
+
+import { track } from '@/lib/tracking'
 
 import { getJSON, setJSON } from './storage'
 
@@ -57,23 +58,34 @@ export const useCachedState = function useCachedState<
   return [state, updateState]
 }
 type PressBreadCrumbConfig = {
-  message: string
-  data?: object
+  /** Where the control lives, e.g. `AppSidebar`. */
+  component: string
+  /** What it does, e.g. `search`. Must be a stable identifier, not prose. */
+  action: string
 }
+
+/**
+ * Wrap a press handler so it records a `ui.press` analytics event and a Sentry
+ * breadcrumb (the latter is crash context, and is only uploaded with an error).
+ *
+ * `component`/`action` are deliberately structured rather than a free-form
+ * message — the values leave the device.
+ */
 export const usePressBreadcrumb = (
   func: (...args: any[]) => void,
   config: PressBreadCrumbConfig,
 ) => {
+  const { component, action } = config
   return useCallback(
     (...args: any[]) => {
+      track('ui.press', { component, action })
       Sentry.addBreadcrumb({
         type: 'info',
         category: 'ui.press',
-        message: config.message,
-        data: config.data,
+        message: `${component}.${action}`,
       })
       func(...args)
     },
-    [func],
+    [func, component, action],
   )
 }

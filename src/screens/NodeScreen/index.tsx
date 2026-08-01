@@ -107,7 +107,8 @@ export default function NodeScreen() {
       }, [node, alert, name, queryClient, nodeQuery]),
     ),
     {
-      message: '[NodeScreen] `Collect` button pressed',
+      component: 'NodeScreen',
+      action: 'collect',
     },
   )
 
@@ -125,7 +126,8 @@ export default function NodeScreen() {
       }, [node, router]),
     ),
     {
-      message: '[NodeScreen] `New topic` button pressed',
+      component: 'NodeScreen',
+      action: 'new-topic',
     },
   )
 

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 import { audioService, Track } from '@/lib/AudioService'
+import { track as trackEvent } from '@/lib/tracking'
 import { AudioItem, selectSortedResources, useAudioStore } from '@/stores/audio'
 
 interface AudioPlayerState {
@@ -94,6 +95,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
       }
 
       set({ isLoading: true })
+      trackEvent('audio.play')
 
       try {
         // The queue is always the full discovered-resources list, so next/prev
@@ -138,10 +140,12 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
     },
 
     playNext: () => {
+      trackEvent('audio.skip', { direction: 'next' })
       audioService.next()
     },
 
     playPrev: () => {
+      trackEvent('audio.skip', { direction: 'prev' })
       audioService.prev()
     },
 

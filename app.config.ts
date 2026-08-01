@@ -77,6 +77,10 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       IOS_APP_ID: process.env.IOS_APP_ID,
       SENTRY_DSN: process.env.SENTRY_DSN,
       IMGUR_CLIENT_ID: process.env.IMGUR_CLIENT_ID,
+      ANALYTICS_INGEST_URL: process.env.ANALYTICS_INGEST_URL,
+      ANALYTICS_INGEST_KEY: process.env.ANALYTICS_INGEST_KEY,
+      // env vars are strings; coerce here so `@/env` can expose a real boolean
+      ANALYTICS_DEBUG_INGEST: process.env.ANALYTICS_DEBUG_INGEST === '1',
     },
     appRouter: {
       root: './src/app',

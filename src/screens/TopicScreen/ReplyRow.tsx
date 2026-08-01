@@ -76,8 +76,8 @@ function ReplyRow(props: ReplyRowProps) {
       }, [data, onReply]),
     ),
     {
-      message: '[ReplyRow] `reply` button press',
-      data: { target: data?.id },
+      component: 'ReplyRow',
+      action: 'reply',
     },
   )
 
@@ -86,8 +86,8 @@ function ReplyRow(props: ReplyRowProps) {
       setMarkdownVisible((prev) => !prev)
     }, [setMarkdownVisible]),
     {
-      message: '[ReplyRow] `markdown` button press',
-      data: { target: data?.id },
+      component: 'ReplyRow',
+      action: 'markdown',
     },
   )
 
@@ -102,8 +102,8 @@ function ReplyRow(props: ReplyRowProps) {
       }, [data, onThank]),
     ),
     {
-      message: '[ReplyRow] `thank` button press',
-      data: { target: data?.id },
+      component: 'ReplyRow',
+      action: 'thank',
     },
   )
 
@@ -115,8 +115,8 @@ function ReplyRow(props: ReplyRowProps) {
       })
     }, [data, onShowConversation]),
     {
-      message: '[ReplyRow] `conversation` button press',
-      data: { target: data?.id },
+      component: 'ReplyRow',
+      action: 'conversation',
     },
   )
 
