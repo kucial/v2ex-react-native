@@ -4,7 +4,6 @@ import { Tabs } from 'expo-router'
 // directly; use its vendored re-export instead.
 import { BottomTabBar } from 'expo-router/tabs'
 
-import AudioTabIcon from '@/components/AudioTabIcon'
 import V2exIcon from '@/components/icons/V2exIcon'
 import MainScreenHeader from '@/components/MainScreenHeader'
 import MiniPlayerBar from '@/components/MiniPlayerBar'
@@ -50,14 +49,6 @@ export default function TabsLayout() {
           tabBarIcon: (props) => <V2exIcon name='home-outline' {...props} />,
           tabBarLabel: '主题',
           title: '主题',
-        }}
-      />
-      <Tabs.Screen
-        name='audio'
-        options={{
-          tabBarIcon: (props) => <AudioTabIcon {...props} />,
-          tabBarLabel: '音频',
-          title: '音频资源',
         }}
       />
       <Tabs.Screen

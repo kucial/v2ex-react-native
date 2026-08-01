@@ -4,13 +4,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useActionSheet } from '@expo/react-native-action-sheet'
 import { FlashList, FlashListRef } from '@shopify/flash-list'
 
+import { AudioRow } from '@/components/AudioRow'
 import V2exIcon from '@/components/icons/V2exIcon'
 
 import { useTheme } from '@/containers/ThemeService'
-import { AudioResourceItem, useAudioStore } from '@/stores/audio'
+import {
+  AudioResourceItem,
+  selectSortedResources,
+  useAudioStore,
+} from '@/stores/audio'
 import { useCachedState } from '@/utils/hooks'
 
-import { AudioRow } from './AudioRow'
+import EmptyHint from './EmptyHint'
 
 type SortKey = 'discovered_desc' | 'discovered_asc' | 'title'
 
@@ -52,7 +57,7 @@ function FilterChip(props: {
   )
 }
 
-export function ResourcesTab() {
+export default function ResourcesList() {
   const resourcesMap = useAudioStore((state) => state.resources)
   const { theme, styles, colorScheme } = useTheme()
   const insets = useSafeAreaInsets()
@@ -81,7 +86,7 @@ export function ResourcesTab() {
   }, [resourcesMap])
 
   const items = useMemo(() => {
-    let list = Object.values(resourcesMap)
+    let list = selectSortedResources({ resources: resourcesMap })
     if (artistFilter) {
       list = list.filter((item) => item.artist === artistFilter)
     }
@@ -93,7 +98,7 @@ export function ResourcesTab() {
           (a.title || '').localeCompare(b.title || '', 'zh-Hans-CN'),
         )
       default:
-        return [...list].sort((a, b) => b.discoveredAt - a.discoveredAt)
+        return list
     }
   }, [resourcesMap, sortKey, artistFilter])
 
@@ -125,8 +130,6 @@ export function ResourcesTab() {
     setSortKey,
   ])
 
-  console.log(items[0])
-
   return (
     <View style={tabStyles.container}>
       <View style={[tabStyles.toolbar, styles.border_b_light]}>
@@ -146,6 +149,12 @@ export function ResourcesTab() {
           <Text style={[styles.text_meta, styles.text_sm]}>
             {SORT_LABELS[sortKey] || SORT_LABELS.discovered_desc}
           </Text>
+          <View style={tabStyles.spacer} />
+          <V2exIcon
+            name='chevron-down-outline'
+            size={14}
+            color={theme.colors.text_meta}
+          />
         </Pressable>
         {artists.length >= 2 && (
           <ScrollView
@@ -178,6 +187,7 @@ export function ResourcesTab() {
         // chat-style position anchoring leaves the list over-scrolled after
         // a re-sort, showing a single item
         maintainVisibleContentPosition={{ disabled: true }}
+        ListEmptyComponent={<EmptyHint text='浏览星球时会自动收集音频资源' />}
       />
     </View>
   )
@@ -187,26 +197,29 @@ const tabStyles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  // Column so the sort trigger can span the full width; the artist chips get
+  // their own row underneath instead of competing for horizontal space.
   toolbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
     paddingVertical: 4,
-    gap: 8,
+    gap: 4,
   },
   sortButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'stretch',
     gap: 4,
-    minHeight: 36,
-    paddingHorizontal: 4,
-    width: '100%',
+    minHeight: 40,
+    paddingHorizontal: 16,
+  },
+  spacer: {
+    flex: 1,
   },
   pressed: {
     opacity: 0.6,
   },
   chipScroll: {
-    flex: 1,
+    flexGrow: 0,
+    paddingHorizontal: 16,
   },
   chipRow: {
     flexDirection: 'row',

@@ -31,7 +31,6 @@ export interface PlayerState {
   duration: number // seconds
   volume: number // 0.0 – 1.0
   muted: boolean
-  loop: boolean
   rate: number
   buffering: boolean
 }
@@ -55,7 +54,6 @@ class AudioService {
     duration: 0,
     volume: 1.0,
     muted: false,
-    loop: false,
     rate: 1.0,
     buffering: false,
   }
@@ -111,13 +109,8 @@ class AudioService {
   }
 
   private _handleTrackEnd() {
-    if (this._state.loop) {
-      // Loop current track
-      this.player.seekTo(0)
-      this.player.play()
-    } else {
-      this.next()
-    }
+    // Advance; `next()` stops on the last track rather than wrapping.
+    this.next()
   }
 
   // ── Playback ─────────────────────────────────────────────────────────────
@@ -178,20 +171,42 @@ class AudioService {
   }
 
   next(): void {
-    const nextIdx = (this._state.currentIndex + 1) % this._state.queue.length
+    const { queue, currentIndex } = this._state
+    if (queue.length === 0) return
+
+    const nextIdx = currentIndex + 1
+    if (nextIdx >= queue.length) {
+      // End of the queue — stay on the last track and stop.
+      this.player.pause()
+      return
+    }
     this.playAt(nextIdx)
   }
 
   prev(): void {
+    const { queue, currentIndex } = this._state
+    if (queue.length === 0) return
+
     // If more than 3s in, restart current track; otherwise go to previous
     if (this._state.position > 3) {
       this.seekTo(0)
       return
     }
-    const prevIdx =
-      (this._state.currentIndex - 1 + this._state.queue.length) %
-      this._state.queue.length
-    this.playAt(prevIdx)
+
+    if (currentIndex - 1 < 0) {
+      this.seekTo(0)
+      return
+    }
+    this.playAt(currentIndex - 1)
+  }
+
+  get hasNext(): boolean {
+    const { queue, currentIndex } = this._state
+    return currentIndex + 1 < queue.length
+  }
+
+  get hasPrev(): boolean {
+    return this._state.queue.length > 0 && this._state.currentIndex > 0
   }
 
   seekTo(seconds: number): void {
@@ -210,12 +225,6 @@ class AudioService {
   setMuted(muted: boolean): void {
     this.player.muted = muted
     this._state = { ...this._state, muted }
-    this._emit()
-  }
-
-  setLoop(loop: boolean): void {
-    this.player.loop = loop
-    this._state = { ...this._state, loop }
     this._emit()
   }
 

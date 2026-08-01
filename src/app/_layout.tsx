@@ -13,6 +13,7 @@ import { Slot } from 'expo-router'
 
 import ErrorBoundary from '@/components/ErrorBoundary'
 import FeedPanelSheet from '@/components/FeedPanelSheet'
+import FullPlayer from '@/components/FullPlayer'
 import Layout from '@/components/Layout'
 
 import AlertService from '@/containers/AlertService'
@@ -79,6 +80,7 @@ export default function RootLayout() {
                               <AuthWatcher />
                               <TopicSheetModal />
                               <AudioWatcher />
+                              <FullPlayer />
                             </Layout>
                           </ImgurService>
                         </ActionSheetProvider>

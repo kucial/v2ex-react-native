@@ -1,11 +1,14 @@
 import { create } from 'zustand'
 
-import { audioService } from '@/lib/AudioService'
-import { AudioItem, useAudioStore } from '@/stores/audio'
+import { audioService, Track } from '@/lib/AudioService'
+import { AudioItem, selectSortedResources, useAudioStore } from '@/stores/audio'
 
 interface AudioPlayerState {
   currentAudio: AudioItem | null
-  history: AudioItem[]
+  queue: AudioItem[]
+  currentIndex: number
+  hasNext: boolean
+  hasPrev: boolean
   isPlaying: boolean
   isLoading: boolean
   status: {
@@ -17,25 +20,46 @@ interface AudioPlayerState {
   playAudio: (item: AudioItem) => Promise<void>
   pauseAudio: () => Promise<void>
   togglePlayPause: () => Promise<void>
+  playNext: () => void
+  playPrev: () => void
+  playQueueIndex: (index: number) => void
   seekTo: (seconds: number) => Promise<void>
   clearCurrentAudio: () => void
+}
+
+function toTrack(item: AudioItem): Track {
+  return {
+    id: item.url,
+    url: item.url,
+    title: item.title,
+    artist: item.artist || '',
+    // Carrying artwork through is what gives the lock-screen Now Playing
+    // widget its image.
+    artworkUrl: item.artworkUrl,
+  }
+}
+
+function toAudioItem(track: Track): AudioItem {
+  return {
+    title: track.title,
+    url: track.url,
+    artist: track.artist,
+    artworkUrl: track.artworkUrl,
+  }
 }
 
 export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
   // Mount the background listener to `audioService` to bind global metadata state to this Zustand store
   audioService.subscribe((state) => {
     const track = state.queue[state.currentIndex]
-    const currentAudio = track
-      ? {
-          title: track.title,
-          url: track.url,
-          artist: track.artist,
-        }
-      : null
 
     set((prev) => ({
       ...prev,
-      currentAudio,
+      currentAudio: track ? toAudioItem(track) : null,
+      queue: state.queue.map(toAudioItem),
+      currentIndex: state.currentIndex,
+      hasNext: audioService.hasNext,
+      hasPrev: audioService.hasPrev,
       isPlaying: state.playing,
       status: {
         currentTime: state.position,
@@ -48,7 +72,10 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
 
   return {
     currentAudio: null,
-    history: [],
+    queue: [],
+    currentIndex: -1,
+    hasNext: false,
+    hasPrev: false,
     isPlaying: false,
     isLoading: false,
     status: {
@@ -59,42 +86,35 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
     },
 
     playAudio: async (item: AudioItem) => {
-      set({ isLoading: true })
-
-      // Update local ephemeral history
-      const prevHistory = get().history
-      const nextHistory = [
-        item,
-        ...prevHistory.filter((entry) => entry.url !== item.url),
-      ].slice(0, 10)
-      set({ history: nextHistory })
-
       const { currentAudio } = get()
 
-      if (currentAudio?.url !== item.url) {
-        const historyItem = useAudioStore.getState().history[item.url]
-
-        await audioService.loadQueue(
-          [
-            {
-              id: item.url,
-              url: item.url,
-              title: item.title,
-              artist: item.artist || '',
-            },
-          ],
-          0,
-        )
-
-        if (historyItem && historyItem.lastPosition > 0) {
-          // Only seek if we have at least 2 seconds left
-          audioService.seekTo(historyItem.lastPosition)
-        }
-      } else {
+      if (currentAudio?.url === item.url) {
         audioService.player.play()
+        return
       }
 
-      set({ isLoading: false })
+      set({ isLoading: true })
+
+      try {
+        // The queue is always the full discovered-resources list, so next/prev
+        // walk the library. An item that isn't a known resource yet (e.g. a
+        // freshly rendered feed card) is played at the head of that list.
+        const resources = selectSortedResources(useAudioStore.getState())
+        const foundIndex = resources.findIndex((e) => e.url === item.url)
+        const items: AudioItem[] =
+          foundIndex >= 0 ? resources : [item, ...resources]
+        const startIndex = foundIndex >= 0 ? foundIndex : 0
+
+        const historyItem = useAudioStore.getState().history[item.url]
+
+        await audioService.loadQueue(items.map(toTrack), startIndex)
+
+        if (historyItem && historyItem.lastPosition > 0) {
+          audioService.seekTo(historyItem.lastPosition)
+        }
+      } finally {
+        set({ isLoading: false })
+      }
     },
 
     pauseAudio: async () => {
@@ -115,6 +135,28 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => {
       } else {
         await playAudio(currentAudio)
       }
+    },
+
+    playNext: () => {
+      audioService.next()
+    },
+
+    playPrev: () => {
+      audioService.prev()
+    },
+
+    playQueueIndex: (index: number) => {
+      const { currentIndex, isPlaying } = get()
+      if (index === currentIndex) {
+        // Tapping the active row toggles it, matching AudioRow's behaviour.
+        if (isPlaying) {
+          get().pauseAudio()
+        } else {
+          audioService.player.play()
+        }
+        return
+      }
+      audioService.playAt(index)
     },
 
     seekTo: async (seconds: number) => {

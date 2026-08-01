@@ -8,13 +8,13 @@ import {
 } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { scheduleOnRN } from 'react-native-worklets'
 import { Image } from 'expo-image'
 import { usePathname } from 'expo-router'
 
@@ -22,14 +22,15 @@ import V2exIcon from '@/components/icons/V2exIcon'
 
 import { usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { useAudioStore } from '@/stores/audio'
 import { useAudioPlayerStore } from '@/stores/audioPlayer'
+import { usePlayerUiStore } from '@/stores/playerUi'
 import {
   selectScreenBottomBarHeight,
   useUiMetricsStore,
 } from '@/stores/uiMetrics'
 
-const TAB_PATHS = ['/feed', '/nodes', '/audio']
+const TAB_PATHS = ['/feed', '/nodes', '/ai']
+const EXPAND_DISTANCE = 40
 
 // Three placements are handled:
 // 1. Main tab screens — a `dock` instance rendered inside the tab bar slot,
@@ -55,11 +56,9 @@ export default function MiniPlayerBar(props: {
     (state) => state.clearCurrentAudio,
   )
   const screenBottomBarHeight = useUiMetricsStore(selectScreenBottomBarHeight)
-  // currentAudio in the player store carries no artwork; look it up from the
-  // discovered resources.
-  const artworkUrl = useAudioStore((state) =>
-    currentAudio ? state.resources[currentAudio.url]?.artworkUrl : undefined,
-  )
+  const expanded = usePlayerUiStore((state) => state.expanded)
+  const expand = usePlayerUiStore((state) => state.expand)
+  const artworkUrl = currentAudio?.artworkUrl
 
   const translateX = useSharedValue(0)
   const opacity = useSharedValue(1)
@@ -78,6 +77,11 @@ export default function MiniPlayerBar(props: {
   }))
 
   if (!currentAudio) {
+    return null
+  }
+
+  if (expanded) {
+    // the full player covers this bar
     return null
   }
 
@@ -107,7 +111,7 @@ export default function MiniPlayerBar(props: {
     positionStyle = [barStyles.overlayPosition, { bottom }]
   }
 
-  const panGesture = Gesture.Pan()
+  const dismissGesture = Gesture.Pan()
     .activeOffsetX([-15, 15])
     .onUpdate((event) => {
       translateX.value = event.translationX
@@ -116,11 +120,22 @@ export default function MiniPlayerBar(props: {
       if (translateX.value > 30) {
         translateX.value = withSpring(400)
         opacity.value = withTiming(0, { duration: 200 })
-        runOnJS(clearCurrentAudio)()
+        scheduleOnRN(clearCurrentAudio)
       } else {
         translateX.value = withSpring(0)
       }
     })
+
+  const expandGesture = Gesture.Pan()
+    .activeOffsetY([-15, 15])
+    .onEnd((event) => {
+      if (event.translationY < -EXPAND_DISTANCE) {
+        scheduleOnRN(expand)
+      }
+    })
+
+  // Whichever axis the finger commits to first wins.
+  const panGesture = Gesture.Race(dismissGesture, expandGesture)
 
   return (
     <GestureDetector gesture={panGesture}>
@@ -132,39 +147,49 @@ export default function MiniPlayerBar(props: {
             { shadowColor: theme.colors.text },
           ]}
         >
-          {artworkUrl ? (
-            <Image style={barStyles.artwork} source={{ uri: artworkUrl }} />
-          ) : (
-            <View
-              style={[
-                barStyles.artwork,
-                barStyles.artworkFallback,
-                styles.layer2,
-              ]}
-            >
-              <V2exIcon
-                name='musical-note-outline'
-                size={20}
-                color={theme.colors.text_meta}
-              />
-            </View>
-          )}
-          <View style={barStyles.info}>
-            <Text
-              style={[styles.text, styles.text_sm, barStyles.title]}
-              numberOfLines={1}
-            >
-              {currentAudio.title}
-            </Text>
-            {!!currentAudio.artist && (
+          <Pressable
+            onPress={expand}
+            accessibilityRole='button'
+            accessibilityLabel='展开播放器'
+            style={({ pressed }) => [
+              barStyles.expandArea,
+              pressed && barStyles.pressed,
+            ]}
+          >
+            {artworkUrl ? (
+              <Image style={barStyles.artwork} source={{ uri: artworkUrl }} />
+            ) : (
+              <View
+                style={[
+                  barStyles.artwork,
+                  barStyles.artworkFallback,
+                  styles.layer2,
+                ]}
+              >
+                <V2exIcon
+                  name='musical-note-outline'
+                  size={20}
+                  color={theme.colors.text_meta}
+                />
+              </View>
+            )}
+            <View style={barStyles.info}>
               <Text
-                style={[styles.text_meta, styles.text_xs]}
+                style={[styles.text, styles.text_sm, barStyles.title]}
                 numberOfLines={1}
               >
-                {currentAudio.artist}
+                {currentAudio.title}
               </Text>
-            )}
-          </View>
+              {!!currentAudio.artist && (
+                <Text
+                  style={[styles.text_meta, styles.text_xs]}
+                  numberOfLines={1}
+                >
+                  {currentAudio.artist}
+                </Text>
+              )}
+            </View>
+          </Pressable>
           <Pressable
             onPress={() => togglePlayPause()}
             style={({ pressed }) => [
@@ -217,6 +242,12 @@ const barStyles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 8,
+  },
+  expandArea: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   artwork: {
     width: 40,

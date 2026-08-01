@@ -24,6 +24,7 @@ import {
 } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
 import { useAuthMeta, useAuthStatus, useCurrentUser } from '@/stores/auth'
+import { usePlayerUiStore } from '@/stores/playerUi'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 import BalanceArea from './BalanceArea'
@@ -256,6 +257,20 @@ export default function MyScreen() {
           </View>
 
           <LineItemGroup style={myScreenStyles.groupMargin}>
+            <LineItem
+              style={styles.grouped_secondary}
+              title='音频资源'
+              icon={
+                <V2exIcon
+                  name='musical-note-outline'
+                  size={22}
+                  color={iconColor}
+                />
+              }
+              onPress={() => {
+                usePlayerUiStore.getState().expand()
+              }}
+            />
             <LineItem
               style={styles.grouped_secondary}
               title='首页 Tab 设置'

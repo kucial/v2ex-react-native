@@ -10,6 +10,7 @@ import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useComposeAuthedNavigation } from '@/containers/AuthWatcher/hooks'
 import { useTheme } from '@/containers/ThemeService'
 import { useAuthMeta, useCurrentUser } from '@/stores/auth'
+import { usePlayerUiStore } from '@/stores/playerUi'
 import { usePressBreadcrumb } from '@/utils/hooks'
 
 import AppSidebarButton from './AppSidebarButton'
@@ -27,6 +28,7 @@ export default function AppSidebar(props: {
   const { width, height } = useWindowDimensions()
   const pathname = usePathname()
   const router = useRouter()
+  const playerExpanded = usePlayerUiStore((state) => state.expanded)
 
   const insets = useSafeAreaInsets()
 
@@ -68,8 +70,8 @@ export default function AppSidebar(props: {
   )
   const handleAudioButtonPress = usePressBreadcrumb(
     useCallback(() => {
-      router.push('/audio')
-    }, [router]),
+      usePlayerUiStore.getState().expand()
+    }, []),
     {
       message: '[AppSidebar] `Audio` button pressed',
     },
@@ -213,7 +215,7 @@ export default function AppSidebar(props: {
               onPress={handleSearchButtonPress}
             />
             <AppSidebarButton
-              isActive={pathname === '/audio'}
+              isActive={playerExpanded}
               label='音频'
               activeColor={theme.colors.primary}
               staticColor={theme.colors.text_desc}

@@ -7,14 +7,39 @@ import { useTheme } from '@/containers/ThemeService'
 import { AudioItem } from '@/stores/audio'
 import { useAudioPlayerStore } from '@/stores/audioPlayer'
 
-export function AudioRow({ item }: { item: AudioItem }) {
+export function AudioRow({
+  item,
+  active,
+  onPress,
+}: {
+  item: AudioItem
+  /**
+   * Override the "is this the playing track" test. Queue rows compare by index
+   * so duplicate URLs don't all light up; list rows fall back to URL matching.
+   */
+  active?: boolean
+  /** Override the default play/pause-this-item behaviour. */
+  onPress?: () => void
+}) {
   const { styles, theme } = useTheme()
   const playAudio = useAudioPlayerStore((s) => s.playAudio)
   const pauseAudio = useAudioPlayerStore((s) => s.pauseAudio)
   const currentAudio = useAudioPlayerStore((s) => s.currentAudio)
   const isPlaying = useAudioPlayerStore((s) => s.isPlaying)
 
-  const isActive = currentAudio?.url === item.url
+  const isActive = active ?? currentAudio?.url === item.url
+
+  const handlePress = () => {
+    if (onPress) {
+      onPress()
+      return
+    }
+    if (isActive && isPlaying) {
+      pauseAudio()
+    } else {
+      playAudio(item)
+    }
+  }
 
   return (
     <Pressable
@@ -24,13 +49,7 @@ export function AudioRow({ item }: { item: AudioItem }) {
         styles.border_b_light,
         pressed && audioRowStyles.pressed,
       ]}
-      onPress={() => {
-        if (isActive && isPlaying) {
-          pauseAudio()
-        } else {
-          playAudio(item)
-        }
-      }}
+      onPress={handlePress}
     >
       <View
         style={[
@@ -42,9 +61,9 @@ export function AudioRow({ item }: { item: AudioItem }) {
           <Image source={item.artworkUrl} style={audioRowStyles.artworkImage} />
         ) : (
           <V2exIcon
-            name='play-outline'
+            name='musical-note-outline'
             size={20}
-            color={isActive ? theme.colors.primary : theme.colors.text}
+            color={isActive ? theme.colors.primary : theme.colors.text_meta}
           />
         )}
       </View>
@@ -65,6 +84,13 @@ export function AudioRow({ item }: { item: AudioItem }) {
           </Text>
         )}
       </View>
+      {isActive && (
+        <V2exIcon
+          name={isPlaying ? 'pause-solid' : 'play-solid'}
+          size={14}
+          color={theme.colors.primary}
+        />
+      )}
     </Pressable>
   )
 }
@@ -75,6 +101,7 @@ const audioRowStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
+    gap: 12,
   },
   pressed: {
     opacity: 0.6,
@@ -82,16 +109,16 @@ const audioRowStyles = StyleSheet.create({
   iconWrap: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    overflow: 'hidden',
   },
   flex1: {
     flex: 1,
   },
   artworkImage: {
-    width: 20,
-    height: 20,
+    width: 40,
+    height: 40,
   },
 })

@@ -1,4 +1,8 @@
-import { getAudioResourcesFromPages, useAudioStore } from '@/stores/audio'
+import {
+  getAudioResourcesFromPages,
+  selectSortedResources,
+  useAudioStore,
+} from '@/stores/audio'
 
 jest.mock('@/utils/remoteDevtools', () => ({
   remoteDevtools: (initializer: unknown) => initializer,
@@ -71,6 +75,32 @@ describe('audio store', () => {
       artist: 'Planet',
       artworkUrl: 'https://example.com/cover.jpg',
     })
+  })
+
+  it('orders the playback queue by newest discovery first', () => {
+    useAudioStore.setState({
+      resources: {
+        'https://example.com/old.mp3': {
+          title: 'Old',
+          url: 'https://example.com/old.mp3',
+          discoveredAt: 1000,
+        },
+        'https://example.com/new.mp3': {
+          title: 'New',
+          url: 'https://example.com/new.mp3',
+          discoveredAt: 3000,
+        },
+        'https://example.com/mid.mp3': {
+          title: 'Mid',
+          url: 'https://example.com/mid.mp3',
+          discoveredAt: 2000,
+        },
+      },
+    })
+
+    expect(
+      selectSortedResources(useAudioStore.getState()).map((item) => item.title),
+    ).toEqual(['New', 'Mid', 'Old'])
   })
 
   it('maps planet avatar to intercepted audio artwork', () => {

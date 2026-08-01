@@ -28,6 +28,18 @@ type AudioState = {
   resources: Record<string, AudioResourceItem>
 }
 
+/**
+ * Canonical playback order for the discovered resources — newest first.
+ * Shared by the player queue and the `资源` list so both agree on the ordering.
+ */
+export function selectSortedResources(
+  state: Pick<AudioState, 'resources'>,
+): AudioResourceItem[] {
+  return Object.values(state.resources).sort(
+    (a, b) => b.discoveredAt - a.discoveredAt,
+  )
+}
+
 type AudioStore = AudioState & {
   updateHistory: (item: AudioItem, position: number, duration: number) => void
   clearHistory: () => void
