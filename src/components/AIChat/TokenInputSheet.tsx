@@ -104,18 +104,20 @@ export default forwardRef<TokenInputSheetHandle, Props>(
             <V2exIcon name='key-outline' size={19} color={colors.text} />
             <Text style={styles.title}>V2EX Token</Text>
           </View>
-          <View style={styles.descRow}>
-            <Text style={styles.description}>
-              请在个人设置页面中创建Token后，粘贴到此处。
-            </Text>
-            <Pressable
+          {/* The link is nested inline rather than sitting in a row beside the
+              text — as a sibling it could not shrink and overflowed the sheet. */}
+          <Text style={styles.description}>
+            请在个人设置页面中创建Token后，粘贴到此处。{' '}
+            <Text
+              style={styles.link}
+              accessibilityRole='link'
               onPress={() => {
                 Linking.openURL('https://edge.v2ex.com/settings/tokens')
               }}
             >
-              <Text style={styles.link}>打开token设置页面</Text>
-            </Pressable>
-          </View>
+              打开token设置页面
+            </Text>
+          </Text>
 
           <TextInput
             accessibilityLabel='V2EX Personal Access Token'
@@ -186,16 +188,11 @@ function createStyles(colors: AIChatColors) {
     content: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 34 },
     titleRow: { flexDirection: 'row', alignItems: 'center', gap: 9 },
     title: { color: colors.text, fontSize: 20, fontWeight: '700' },
-    descRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 9,
-      marginTop: 10,
-    },
     description: {
       color: colors.secondaryText,
       fontSize: 13.5,
       lineHeight: 20,
+      marginTop: 10,
     },
     link: {
       color: colors.link,
