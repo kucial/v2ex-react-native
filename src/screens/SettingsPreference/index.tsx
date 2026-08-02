@@ -482,7 +482,7 @@ export default function PreferenceSettings() {
                   </Text>
                   <View style={prefStyles.descWrap}>
                     <Text style={[styles.text_desc, styles.text_xs]}>
-                      匿名统计功能使用情况，不含账号与内容
+                      匿名统计功能使用情况与 AI 提问内容，不含账号信息
                     </Text>
                   </View>
                 </View>

@@ -29,7 +29,7 @@ import {
   DEFAULT_PERSONA,
   V2EXChatClient,
 } from '@/lib/ai-chat/v2ex'
-import { lengthBucket, track } from '@/lib/tracking'
+import { lengthBucket, track, truncateForTracking } from '@/lib/tracking'
 import {
   AIChatConversation,
   AIChatMessage,
@@ -508,6 +508,8 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       track('ai.message_sent', {
         persona: selectedConversation.persona,
         len: lengthBucket(cleanText.length),
+        conversation_id: selectedConversation.id,
+        text: truncateForTracking(cleanText),
       })
 
       const userMessage = createUserMessage(cleanText)

@@ -3,9 +3,14 @@
  *
  * Rules for anything added here:
  *  - name is `domain.action`, props are snake_case
- *  - NO free text, NO user-authored content, NO usernames. Buckets and enums
+ *  - No usernames, no topic/reply content, no search terms. Buckets and enums
  *    only. Everything here leaves the device.
  *  - keep props small; row size is the binding constraint on the backend.
+ *
+ * ONE deliberate exception: `ai.message_sent.text` carries the prompt the user
+ * typed, so AI answer quality can be reviewed. It is disclosed in
+ * privacy_policy.md and is covered by the same 使用数据统计 opt-out. Do not
+ * treat it as licence to add content fields elsewhere.
  */
 
 export type LengthBucket = 'xs' | 's' | 'm' | 'l' | 'xl'
@@ -33,7 +38,14 @@ export type TrackedEvents = {
   'ai.conversation_created': { persona: string }
   'ai.conversation_deleted': void
   'ai.conversation_renamed': void
-  'ai.message_sent': { persona: string; len: LengthBucket }
+  'ai.message_sent': {
+    persona: string
+    len: LengthBucket
+    /** Groups messages into a thread. A local UUID, not tied to any account. */
+    conversation_id: string
+    /** The user's prompt, truncated to MAX_TRACKED_TEXT. */
+    text: string
+  }
   'ai.stream_completed': { persona: string; ms: number; ttft_ms: number }
   'ai.stream_failed': { persona: string; reason: string }
   'ai.stream_cancelled': { persona: string; ms: number }
@@ -96,7 +108,21 @@ export const EVENT_NAMES = [
   'ui.press',
 ] as const satisfies readonly EventName[]
 
-/** Bucket a character count so we never ship the text itself. */
+/**
+ * Cap on any tracked free-text field. Keeps a single row well under the
+ * ingest function's props limit and stops one pathological paste from
+ * dominating the storage budget.
+ */
+export const MAX_TRACKED_TEXT = 4000
+
+/** Truncate to `MAX_TRACKED_TEXT`, marking it so partial rows are obvious. */
+export function truncateForTracking(text: string): string {
+  return text.length <= MAX_TRACKED_TEXT
+    ? text
+    : `${text.slice(0, MAX_TRACKED_TEXT)}…[truncated]`
+}
+
+/** Bucket a character count, so aggregates don't have to scan the text. */
 export function lengthBucket(len: number): LengthBucket {
   if (len < 20) return 'xs'
   if (len < 100) return 's'

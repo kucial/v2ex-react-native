@@ -16,7 +16,7 @@ import {
 } from './queue'
 import { isPermanentFailure, resolveSink, type Sink } from './sink'
 
-export { lengthBucket } from './events'
+export { lengthBucket, MAX_TRACKED_TEXT, truncateForTracking } from './events'
 export type { EventName, TrackedEvents } from './events'
 
 const INSTALL_ID_KEY = '$app$/analytics-install-id'

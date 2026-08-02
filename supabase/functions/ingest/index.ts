@@ -42,7 +42,12 @@ const ALLOWED_EVENTS = new Set([
 ])
 
 const MAX_EVENTS_PER_BATCH = 100
-const MAX_PROPS_BYTES = 2048
+/**
+ * Must exceed the client's MAX_TRACKED_TEXT (4000 chars) plus JSON overhead —
+ * `ai.message_sent` carries the user's prompt. Too low and long prompts are
+ * silently dropped here.
+ */
+const MAX_PROPS_BYTES = 12288
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 

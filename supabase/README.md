@@ -207,6 +207,17 @@ select props->>'reason' as reason, count(*)
 from events where name = 'ai.stream_failed'
 group by 1 order by 2 desc;
 
+-- what people actually ask the AI (newest first)
+select ts, props->>'persona' as persona, props->>'text' as prompt
+from events where name = 'ai.message_sent'
+order by ts desc limit 50;
+
+-- reconstruct a single conversation thread
+select ts, props->>'text' as prompt
+from events
+where name = 'ai.message_sent' and props->>'conversation_id' = 'conv_...'
+order by ts;
+
 -- long-term trend (survives the 30-day prune)
 select day, name, count, uniques from daily_rollup order by day desc limit 100;
 
@@ -289,9 +300,16 @@ INGEST_KEY=test SUPABASE_URL=http://127.0.0.1:1 SUPABASE_SERVICE_ROLE_KEY=x \
 - **Adding an event needs two edits.** `src/lib/tracking/events.ts` *and* the
   `ALLOWED_EVENTS` set in `supabase/functions/ingest/index.ts` — the function
   silently drops unknown names, by design.
-- **Never put content in `props`.** No usernames, titles, message text or search
-  terms. Buckets and enums only; use `lengthBucket()` for sizes. This is what
-  `privacy_policy.md` promises.
+- **Content in `props` is limited to one disclosed field.**
+  `ai.message_sent.text` carries the user's AI prompt (capped at 4000 chars via
+  `truncateForTracking`) so answer quality can be reviewed. Everything else is
+  buckets and enums — no usernames, topic/reply content or search terms. Adding
+  another content field means updating `privacy_policy.md`, the 使用数据统计
+  toggle copy, and the App Store privacy labels. The
+  `__test__/no-content.test.ts` guard will fail if you don't.
+- **Prompts are user data.** Treat the `events` table as sensitive: don't paste
+  rows into issues, and remember the 30-day prune is what bounds how long
+  prompts are retained.
 - **The throttle is 20 requests/minute per install**, tuned for a client that
   batches. If you see `429`, the client is flushing too often — fix the client,
   don't raise the limit.
