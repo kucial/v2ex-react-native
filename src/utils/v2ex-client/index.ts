@@ -11,6 +11,7 @@ import axios, {
 import { CheerioAPI } from 'cheerio'
 import { stringify } from 'qs'
 
+import { isTransportNoise } from '@/lib/sentry'
 import { formatTimeAgo } from '@/utils/time'
 import {
   BalanceBrief,
@@ -321,7 +322,10 @@ instance.interceptors.response.use(
         message: $('.gray.bigger').text() || '资源未找到',
       })
     }
-    Sentry.captureEvent(error)
+    // Timeouts / offline / cancelled requests are environmental, not bugs.
+    if (!isTransportNoise(error)) {
+      Sentry.captureEvent(error)
+    }
     return Promise.reject(error)
   },
 )

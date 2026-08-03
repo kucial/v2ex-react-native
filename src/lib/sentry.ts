@@ -15,6 +15,41 @@ export const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: true,
 })
 
+/**
+ * Transport failures that say something about the network, not about the app:
+ * request timeouts, cancellations and offline errors. Nothing can be fixed in
+ * response to them, so reporting them just buries real bugs.
+ *
+ * `ECONNABORTED` is what axios uses for `timeout of 10000ms exceeded`
+ * (REQUEST_TIMEOUT in the v2ex client).
+ */
+const TRANSPORT_NOISE_CODES = new Set([
+  'ECONNABORTED', // axios timeout
+  'ETIMEDOUT', // axios timeout with transitional.clarifyTimeoutError
+  'ERR_CANCELED', // we aborted the request ourselves
+  'ERR_NETWORK', // device offline / DNS failure
+])
+
+export function isTransportNoise(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false
+  }
+  const candidate = error as { code?: unknown; message?: unknown }
+
+  if (
+    typeof candidate.code === 'string' &&
+    TRANSPORT_NOISE_CODES.has(candidate.code)
+  ) {
+    return true
+  }
+
+  // Fallback: some axios builds surface a timeout without setting `code`.
+  return (
+    typeof candidate.message === 'string' &&
+    /^timeout of \d+ms exceeded$/.test(candidate.message)
+  )
+}
+
 export const initSentry = () => {
   if (!inited) {
     inited = true
@@ -23,6 +58,12 @@ export const initSentry = () => {
       integrations: [navigationIntegration],
       sendDefaultPii: true,
       enabled: !__DEV__,
+      // Belt-and-braces: the v2ex client filters these at the interceptor, but
+      // an AxiosError can also reach Sentry via the ErrorBoundary, an
+      // unhandled rejection, or another client entirely.
+      beforeSend(event, hint) {
+        return isTransportNoise(hint?.originalException) ? null : event
+      },
     })
 
     Sentry.setExtras({
