@@ -67,6 +67,7 @@ function TopicRow(props: HomeFeedRowProps) {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label='TopicRow'
+        accessibilityLabel={title}
         style={({ pressed }) => [
           rowStyles.mainPressable,
           styles.layer1,

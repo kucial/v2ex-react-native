@@ -26,6 +26,10 @@ export default function ResultRow(props: { data: SearchHit }) {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label='TopicRow'
+        // PERF: Pressable is an accessibility element. Without an explicit
+        // label, UIKit walks this row's whole subtree (including the
+        // HtmlRender body) to synthesise one — see RCTRecursiveAccessibilityLabel.
+        accessibilityLabel={_source.title}
         style={({ pressed }) => [
           resultRowStyles.row,
           styles.layer1,

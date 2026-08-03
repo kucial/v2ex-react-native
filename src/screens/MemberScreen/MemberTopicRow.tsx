@@ -17,6 +17,7 @@ export default function MemberTopicRow(props: MemberFeedRowProps) {
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <Pressable
+        accessibilityLabel={data?.title}
         style={({ pressed }) => [
           rowStyles.mainPressable,
           !isLast && styles.border_b_light,

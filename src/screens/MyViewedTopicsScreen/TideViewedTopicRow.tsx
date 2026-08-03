@@ -15,6 +15,7 @@ const TideViewedTopicRow = (props: ViewedTopicRowProps) => {
   return (
     <FixedPressable
       sentry-label='TideTopicRow'
+      accessibilityLabel={title}
       style={[tideViewedStyles.pressable, !isLast && styles.border_b_light]}
       onPress={() => {
         router.push({

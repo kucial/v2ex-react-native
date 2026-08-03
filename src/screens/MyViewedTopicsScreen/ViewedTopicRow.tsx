@@ -14,6 +14,7 @@ const ViewedTopicRow = (props: ViewedTopicRowProps) => {
   const { styles } = useTheme()
   return (
     <FixedPressable
+      accessibilityLabel={title}
       style={[viewedRowStyles.pressable, !isLast && styles.border_b_light]}
       onPress={() => {
         router.push({

@@ -53,6 +53,7 @@ function TideTopicRow(props: HomeFeedRowProps) {
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
         sentry-label='TideTopicRow'
+        accessibilityLabel={title}
         style={({ pressed }) => [
           rowStyles.mainPressable,
           !isLast && styles.border_b_light,

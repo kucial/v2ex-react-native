@@ -57,6 +57,7 @@ function NodeTopicRow(props: NodeFeedRowProps) {
   return (
     <MaxWidthWrapper style={styles.layer1}>
       <FixedPressable
+        accessibilityLabel={data.title}
         style={({ pressed }) => [
           rowStyles.mainPressable,
           !isLast && styles.border_b_light,
