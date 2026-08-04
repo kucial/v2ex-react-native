@@ -33,7 +33,10 @@ const PERSONA_ROW_HEIGHT = 54
 const STATUS_HEIGHT = 120
 const MAX_SHEET_CONTENT_HEIGHT = 720
 
-export type PersonaPickerSheetHandle = { present: () => void }
+export type PersonaPickerSheetHandle = {
+  present: () => void
+  dismiss: () => Promise<void>
+}
 
 type Props = {
   selectedPersona: string
@@ -58,6 +61,9 @@ export default forwardRef<PersonaPickerSheetHandle, Props>(
       present: () => {
         setQuery('')
         void sheetRef.current?.present()
+      },
+      dismiss: async () => {
+        await sheetRef.current?.dismiss()
       },
     }))
 

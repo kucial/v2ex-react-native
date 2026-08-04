@@ -312,6 +312,7 @@ export default function ChatView({
         maskedToken={personalTokenPreview}
         onSave={savePersonalToken}
         onClear={clearPersonalToken}
+        onBeforeNavigate={() => personaSheet.current?.dismiss()}
       />
     </View>
   )

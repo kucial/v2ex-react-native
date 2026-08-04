@@ -7,7 +7,6 @@ import {
 } from 'react'
 import {
   Alert,
-  Linking,
   Pressable,
   StyleSheet,
   Text,
@@ -15,6 +14,7 @@ import {
   View,
 } from 'react-native'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
+import { useRouter } from 'expo-router'
 
 import V2exIcon from '@/components/icons/V2exIcon'
 
@@ -25,16 +25,30 @@ import { AIChatColors, useAIChatTheme } from './theme'
 
 export type TokenInputSheetHandle = { present: () => void }
 
+// The token is account-level and sent as `Authorization: Bearer`, so the host
+// serving this settings page does not affect which tokens the chat API accepts.
+// www.v2ex.com matches BASE_URL, which is where the app's session cookies are
+// stored — so an in-app WebView reaches this page already signed in.
+const TOKEN_SETTINGS_URL = 'https://www.v2ex.com/settings/tokens'
+
 type Props = {
   source: PersonalTokenSource
   maskedToken: string
   onSave: (token: string) => Promise<void>
   onClear: () => Promise<void>
+  // Called before navigating away, so the caller can dismiss whatever sheet it
+  // opened this one from. This sheet can be presented on top of another (the
+  // persona picker), and a sheet left presented would cover the pushed screen.
+  onBeforeNavigate?: () => Promise<void> | void
 }
 
 export default forwardRef<TokenInputSheetHandle, Props>(
-  function TokenInputSheet({ source, maskedToken, onSave, onClear }, ref) {
+  function TokenInputSheet(
+    { source, maskedToken, onSave, onClear, onBeforeNavigate },
+    ref,
+  ) {
     const sheetRef = useRef<TrueSheet>(null)
+    const router = useRouter()
     const { colors } = useAIChatTheme()
     const styles = useMemo(() => createStyles(colors), [colors])
     const [token, setToken] = useState('')
@@ -68,6 +82,23 @@ export default forwardRef<TokenInputSheetHandle, Props>(
       } finally {
         setSaving(false)
       }
+    }
+
+    // Route to the in-app browser rather than SFSafariViewController / Safari:
+    // BrowserScreen's WebView has sharedCookiesEnabled, so it sends the app's
+    // own www.v2ex.com session and the user lands on the token page already
+    // signed in. An external browser has an isolated cookie store and would
+    // make them log in again just to read their own token.
+    //
+    // Dismiss first — a sheet left presented would sit on top of the pushed
+    // screen instead of navigating out from under it.
+    const openTokenSettings = async () => {
+      await sheetRef.current?.dismiss()
+      await onBeforeNavigate?.()
+      router.push({
+        pathname: '/browser',
+        params: { url: TOKEN_SETTINGS_URL },
+      })
     }
 
     const clear = () => {
@@ -111,9 +142,7 @@ export default forwardRef<TokenInputSheetHandle, Props>(
             <Text
               style={styles.link}
               accessibilityRole='link'
-              onPress={() => {
-                Linking.openURL('https://edge.v2ex.com/settings/tokens')
-              }}
+              onPress={() => void openTokenSettings()}
             >
               打开token设置页面
             </Text>
