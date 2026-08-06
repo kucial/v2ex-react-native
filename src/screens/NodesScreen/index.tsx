@@ -40,9 +40,21 @@ export default function NodesScreen() {
   const filterInput = useRef(null)
   const listRef = useRef<SectionList>(null)
 
+  const normalizedFilter = filter.trim().toLowerCase()
+  const isFiltering = !!normalizedFilter
+
   const sections = useMemo(() => {
+    // Plain substring match rather than a RegExp built from the raw input:
+    // typing a bare `(`, `[` or `*` made `new RegExp` throw during render.
+    const matchesFilter = (node: { name: string; title: string }) =>
+      node.name.toLowerCase().includes(normalizedFilter) ||
+      node.title.toLowerCase().includes(normalizedFilter)
+
     return [
-      hasAuthed && collectedNodesQuery.data?.data
+      // The followed nodes are a card grid that the filter never applied to,
+      // so while filtering it sat above the results showing unrelated nodes.
+      // Drop it for the duration of the filter.
+      !isFiltering && hasAuthed && collectedNodesQuery.data?.data
         ? {
             title: '收藏的节点',
             data: [
@@ -55,18 +67,18 @@ export default function NodesScreen() {
         : null,
       commonNodesQuery.data?.data.map((group) => ({
         title: group.title,
-        data: filter
-          ? group.nodes.filter(
-              (node) =>
-                node.name.match(new RegExp(filter, 'i')) ||
-                node.title.match(new RegExp(filter, 'i')),
-            )
-          : group.nodes,
+        data: isFiltering ? group.nodes.filter(matchesFilter) : group.nodes,
       })),
     ]
       .flat()
       .filter((section) => !!section && !!section.data.length)
-  }, [commonNodesQuery.data, collectedNodesQuery.data, hasAuthed, filter])
+  }, [
+    commonNodesQuery.data,
+    collectedNodesQuery.data,
+    hasAuthed,
+    normalizedFilter,
+    isFiltering,
+  ])
 
   const renderItem = useCallback(({ item }) => {
     switch (item.type) {
@@ -77,7 +89,12 @@ export default function NodesScreen() {
     }
   }, [])
 
-  const keyExtractor = useCallback((item) => item.name, [])
+  // The favourite row is a single grid item with no `name`, which left its key
+  // undefined and fell back to the list index.
+  const keyExtractor = useCallback(
+    (item) => (item.type === 'favorite' ? 'favorite' : item.name),
+    [],
+  )
 
   const renderSectionHeader = useCallback(
     ({ section }) => {
@@ -122,11 +139,26 @@ export default function NodesScreen() {
         </View>
       )
     }
+    // Without this, filtering to no matches left a blank screen with no
+    // indication that the filter was the reason.
+    if (isFiltering && !sections.length) {
+      return (
+        <View style={nodesScreenStyles.emptyWrap}>
+          <Text style={[styles.text_meta, styles.text_sm]}>
+            没有匹配「{filter.trim()}」的节点
+          </Text>
+        </View>
+      )
+    }
     return null
   }, [
     sections.length,
     collectedNodesQuery.isLoading,
     commonNodesQuery.isLoading,
+    isFiltering,
+    filter,
+    styles.text_meta,
+    styles.text_sm,
   ])
 
   const handleRefresh = useCallback(() => {
@@ -218,6 +250,12 @@ const nodesScreenStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 24,
   },
   searchWrap: {
     height: 52,
