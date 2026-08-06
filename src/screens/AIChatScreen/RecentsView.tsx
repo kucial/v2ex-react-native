@@ -207,14 +207,11 @@ export default function RecentsView({
                       alignItems: 'center',
                     }}
                   >
-                    <Text style={recentsStyles.rowTitle}>
-                      [{item.persona}]{' '}
-                    </Text>
                     <Text
                       numberOfLines={1}
                       style={[recentsStyles.rowTitle, { color: colors.text }]}
                     >
-                      {item.title}
+                      [{item.persona}] {item.title}
                     </Text>
                   </View>
                   <Text
