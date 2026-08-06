@@ -38,6 +38,8 @@ import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import AddTabPanelSheet, { AddTabPanelSheetRef } from './AddTabPanelSheet'
 
+const ACTION_ICON_SIZE = 22
+
 const LineItem = (props: {
   disabled?: boolean
   isFirst: boolean
@@ -143,6 +145,8 @@ export default function HomeTabs() {
                     homeTabsStyles.actionBtn,
                     pressed && homeTabsStyles.pressed50,
                   ]}
+                  accessibilityRole='button'
+                  accessibilityLabel={`停用 ${item.label}`}
                   onPress={() => {
                     setTabs((prev) => {
                       return [
@@ -156,6 +160,7 @@ export default function HomeTabs() {
                 >
                   <V2exIcon
                     name='minus-circle-outline'
+                    size={ACTION_ICON_SIZE}
                     color={theme.colors.danger}
                   />
                 </Pressable>
@@ -201,6 +206,8 @@ export default function HomeTabs() {
                   homeTabsStyles.actionBtn,
                   pressed && homeTabsStyles.pressed50,
                 ]}
+                accessibilityRole='button'
+                accessibilityLabel={`启用 ${item.label}`}
                 onPress={() => {
                   setTabs((prev) => {
                     return [
@@ -214,6 +221,7 @@ export default function HomeTabs() {
               >
                 <V2exIcon
                   name='plus-circle-outline'
+                  size={ACTION_ICON_SIZE}
                   color={theme.colors.success}
                 />
               </Pressable>
@@ -301,7 +309,7 @@ export default function HomeTabs() {
             <V2exIcon
               name='ellipsis-horizontal-outline'
               size={24}
-              color={theme.colors.text}
+              color={theme.colors.primary}
             />
           </Pressable>
         )}
@@ -396,15 +404,17 @@ const homeTabsStyles = StyleSheet.create({
     height: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingRight: 12,
+    paddingRight: 4,
   },
   px2: {
     paddingHorizontal: 8,
   },
   actionBtn: {
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    borderRadius: 6,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 22,
   },
   pressed50: {
     opacity: 0.5,

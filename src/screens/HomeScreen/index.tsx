@@ -16,9 +16,15 @@ import {
 import { useSharedValue } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TabBar, TabView } from 'react-native-tab-view'
-import { useLocalSearchParams, useNavigation, usePathname } from 'expo-router'
+import {
+  useLocalSearchParams,
+  useNavigation,
+  usePathname,
+  useRouter,
+} from 'expo-router'
 
 import HomeTopicList from '@/components/HomeTopicList'
+import V2exIcon from '@/components/icons/V2exIcon'
 import NodeTopicList from '@/components/NodeTopicList'
 import PlanetFeedList from '@/components/PlanetFeedList'
 import HomeSkeleton from '@/components/Skeleton/HomeSkeleton'
@@ -27,13 +33,15 @@ import XnaTopicList from '@/components/XnaTopicList'
 import { APP_SIDEBAR_SIZE } from '@/constants'
 import { useAppSettings, usePadLayout } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { useCachedState } from '@/utils/hooks'
+import { useCachedState, usePressBreadcrumb } from '@/utils/hooks'
 import { HomeTabOption } from '@/utils/v2ex-client/types'
 
 import HomeDataPrefetch from './HomeDataPrefetch'
 
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'
+const TAB_BAR_HEIGHT = 42
+const TAB_SETTINGS_BUTTON_WIDTH = 40
 
 const TAB_STYLE = {
   flexShrink: 0,
@@ -105,6 +113,7 @@ export default function HomeScreen() {
 
   const pathname = usePathname()
   const navigation = useNavigation()
+  const router = useRouter()
 
   const normalizedIndex = Math.min(index, routes ? routes.length - 1 : 0)
   const normalizedIndexRef = useRef(normalizedIndex)
@@ -134,7 +143,7 @@ export default function HomeScreen() {
     () => ({
       display: 'flex' as const,
       flexDirection: 'row' as const,
-      minWidth: viewWidth,
+      minWidth: viewWidth - TAB_SETTINGS_BUTTON_WIDTH,
       overflow: 'scroll' as const,
     }),
     [viewWidth],
@@ -216,29 +225,59 @@ export default function HomeScreen() {
     [routes],
   )
 
+  const handleTabSettingsPress = usePressBreadcrumb(
+    useCallback(() => {
+      router.push('/home-tab-settings')
+    }, [router]),
+    { component: 'HomeScreen', action: 'home-tab-settings' },
+  )
+
   const renderTabBar = useCallback(
     (props: ComponentProps<typeof TabBar<HomeRoute>>) => {
       return (
-        <TabBar
-          {...props}
-          scrollEnabled
-          pressColor={theme.colors.bg_layer3}
-          indicatorStyle={indicatorStyle}
-          style={styles.layer1}
-          tabStyle={TAB_STYLE}
-          contentContainerStyle={contentContainerStyle}
-          activeColor={
-            typeof theme.colors.primary === 'string'
-              ? theme.colors.primary
-              : undefined
-          }
-          inactiveColor={
-            typeof theme.colors.text === 'string'
-              ? theme.colors.text
-              : undefined
-          }
-          onTabPress={handleTabPress}
-        />
+        <View
+          style={[
+            homeStyles.tabBarRow,
+            { backgroundColor: theme.colors.bg_layer1 },
+          ]}
+        >
+          <TabBar
+            {...props}
+            scrollEnabled
+            pressColor={theme.colors.bg_layer3}
+            indicatorStyle={indicatorStyle}
+            style={[styles.layer1, homeStyles.tabBar]}
+            tabStyle={TAB_STYLE}
+            contentContainerStyle={contentContainerStyle}
+            activeColor={
+              typeof theme.colors.primary === 'string'
+                ? theme.colors.primary
+                : undefined
+            }
+            inactiveColor={
+              typeof theme.colors.text === 'string'
+                ? theme.colors.text
+                : undefined
+            }
+            onTabPress={handleTabPress}
+          />
+          <Pressable
+            style={({ pressed }) => [
+              homeStyles.tabSettingsBtn,
+              { borderLeftColor: theme.colors.border_light },
+              pressed && homeStyles.pressed,
+            ]}
+            accessibilityRole='button'
+            accessibilityLabel='首页 Tab 设置'
+            onPress={handleTabSettingsPress}
+          >
+            <V2exIcon
+              name='cog6-tooth-outline'
+              size={18}
+              color={theme.colors.text_desc}
+            />
+          </Pressable>
+        </View>
       )
     },
     [
@@ -247,6 +286,7 @@ export default function HomeScreen() {
       indicatorStyle,
       contentContainerStyle,
       handleTabPress,
+      handleTabSettingsPress,
     ],
   )
 
@@ -352,6 +392,20 @@ export default function HomeScreen() {
 }
 
 const homeStyles = StyleSheet.create({
+  tabBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  tabBar: {
+    flex: 1,
+  },
+  tabSettingsBtn: {
+    width: TAB_SETTINGS_BUTTON_WIDTH,
+    height: TAB_BAR_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderLeftWidth: StyleSheet.hairlineWidth,
+  },
   errorContainer: {
     flex: 1,
     flexDirection: 'row',
