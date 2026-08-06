@@ -61,8 +61,8 @@ export default function TabsLayout() {
               {...props}
             />
           ),
-          tabBarLabel: 'AI',
-          title: 'AI',
+          tabBarLabel: 'Persona',
+          title: 'Persona',
         }}
       />
     </Tabs>
