@@ -53,6 +53,7 @@ type AIChatContextValue = {
   selectedConversation: AIChatConversation
   persona: string
   personas: AIChatPersonaSummary[]
+  pinnedPersonas: string[]
   hasLoadedPersonas: boolean
   personaLoadState: PersonaLoadState
   personaError?: string
@@ -71,6 +72,7 @@ type AIChatContextValue = {
   stopGenerating: () => void
   setFeedback: (messageId: string, feedback: AIChatMessageFeedback) => void
   setPersona: (persona: string) => void
+  togglePersonaPin: (persona: string) => void
   reloadPersonas: () => Promise<void>
   savePersonalToken: (token: string) => Promise<void>
   clearPersonalToken: () => Promise<void>
@@ -93,6 +95,13 @@ function classifyStreamError(message: string): string {
 const initialConversation = createConversation(DEFAULT_PERSONA)
 const AIChatContext = createContext<AIChatContextValue | null>(null)
 
+/**
+ * The default persona starts pinned. An explicit empty array means the user
+ * unpinned it, so only a missing field (fresh install, or state written before
+ * pinning existed) falls back to this.
+ */
+const DEFAULT_PINNED_PERSONAS = [DEFAULT_PERSONA]
+
 function repairState(saved: PersistedAIChatState | null): PersistedAIChatState {
   if (!saved) {
     return {
@@ -100,6 +109,7 @@ function repairState(saved: PersistedAIChatState | null): PersistedAIChatState {
       preferredPersona: DEFAULT_PERSONA,
       selectedConversationId: initialConversation.id,
       conversations: [initialConversation],
+      pinnedPersonas: DEFAULT_PINNED_PERSONAS,
     }
   }
 
@@ -120,6 +130,7 @@ function repairState(saved: PersistedAIChatState | null): PersistedAIChatState {
   return {
     schemaVersion: 2,
     preferredPersona: saved.preferredPersona || DEFAULT_PERSONA,
+    pinnedPersonas: saved.pinnedPersonas ?? DEFAULT_PINNED_PERSONAS,
     conversations: conversations.length ? conversations : [fallback],
     selectedConversationId: conversations.some(
       (conversation) => conversation.id === saved.selectedConversationId,
@@ -246,6 +257,11 @@ export function AIChatProvider({ children }: PropsWithChildren) {
     state.conversations.find(
       (conversation) => conversation.id === state.selectedConversationId,
     ) ?? state.conversations[0]
+
+  const pinnedPersonas = useMemo(
+    () => state.pinnedPersonas ?? [],
+    [state.pinnedPersonas],
+  )
 
   const patchMessage = useCallback(
     (
@@ -462,6 +478,25 @@ export function AIChatProvider({ children }: PropsWithChildren) {
     [selectedConversation.persona, stopGenerating],
   )
 
+  const togglePersonaPin = useCallback(
+    (persona: string) => {
+      const cleaned = persona.trim()
+      if (!cleaned) return
+      const isPinned = pinnedPersonas.includes(cleaned)
+      track('ai.persona_pinned', { persona: cleaned, pinned: !isPinned })
+      setState((current) => {
+        const pinned = current.pinnedPersonas ?? []
+        return {
+          ...current,
+          pinnedPersonas: pinned.includes(cleaned)
+            ? pinned.filter((entry) => entry !== cleaned)
+            : [...pinned, cleaned],
+        }
+      })
+    },
+    [pinnedPersonas],
+  )
+
   const renameConversation = useCallback((id: string, title: string) => {
     const cleaned = title.trim()
     if (!cleaned) return
@@ -585,6 +620,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       selectedConversation,
       persona: selectedConversation.persona,
       personas,
+      pinnedPersonas,
       hasLoadedPersonas,
       personaLoadState,
       personaError,
@@ -604,6 +640,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       stopGenerating,
       setFeedback,
       setPersona,
+      togglePersonaPin,
       reloadPersonas,
       savePersonalToken,
       clearPersonalToken,
@@ -621,6 +658,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       personalTokenState,
       personalTokenPreview,
       personas,
+      pinnedPersonas,
       reloadPersonas,
       renameConversation,
       retryMessage,
@@ -633,6 +671,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       startNewConversation,
       state.conversations,
       stopGenerating,
+      togglePersonaPin,
     ],
   )
 

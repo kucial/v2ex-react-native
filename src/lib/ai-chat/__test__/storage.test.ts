@@ -18,6 +18,27 @@ describe('AI chat storage', () => {
     expect(parseChatState(state)).toEqual(state)
   })
 
+  it('keeps pinned personas, dropping blanks and duplicates', () => {
+    const parsed = parseChatState({
+      schemaVersion: 2,
+      preferredPersona: 'v2ex',
+      selectedConversationId: 'one',
+      conversations: [],
+      pinnedPersonas: ['v2ex', ' gpt ', 'v2ex', '', 3],
+    })
+    expect(parsed?.pinnedPersonas).toEqual(['v2ex', 'gpt'])
+  })
+
+  it('accepts state written before pinning existed', () => {
+    const parsed = parseChatState({
+      schemaVersion: 2,
+      preferredPersona: 'v2ex',
+      selectedConversationId: 'one',
+      conversations: [],
+    })
+    expect(parsed?.pinnedPersonas).toBeUndefined()
+  })
+
   it('rejects unsupported or incomplete state', () => {
     expect(parseChatState({ schemaVersion: 1 })).toBeNull()
     expect(parseChatState(null)).toBeNull()

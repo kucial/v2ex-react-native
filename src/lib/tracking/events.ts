@@ -52,6 +52,7 @@ export type TrackedEvents = {
   'ai.message_retried': { persona: string }
   'ai.feedback': { value: 'up' | 'down' }
   'ai.persona_changed': { persona: string }
+  'ai.persona_pinned': { persona: string; pinned: boolean }
   'ai.token_saved': { ok: boolean }
 
   // ── content ──────────────────────────────────────────────────────────────
@@ -94,6 +95,7 @@ export const EVENT_NAMES = [
   'ai.message_retried',
   'ai.feedback',
   'ai.persona_changed',
+  'ai.persona_pinned',
   'ai.token_saved',
   'topic.opened',
   'topic.replied',

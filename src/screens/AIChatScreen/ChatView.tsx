@@ -81,6 +81,7 @@ export default function ChatView({
     selectedConversation,
     persona,
     personas,
+    pinnedPersonas,
     hasLoadedPersonas,
     personaLoadState,
     personaError,
@@ -89,6 +90,7 @@ export default function ChatView({
     personalTokenPreview,
     hasPersonalToken,
     setPersona,
+    togglePersonaPin,
     reloadPersonas,
     savePersonalToken,
     clearPersonalToken,
@@ -298,11 +300,13 @@ export default function ChatView({
         ref={personaSheet}
         selectedPersona={persona}
         personas={personas}
+        pinnedPersonas={pinnedPersonas}
         hasLoadedPersonas={hasLoadedPersonas}
         loadState={personaLoadState}
         error={personaError}
         tokenSource={personalTokenSource}
         onSelect={setPersona}
+        onTogglePin={togglePersonaPin}
         onRetry={reloadPersonas}
         onManageToken={openTokenInput}
       />

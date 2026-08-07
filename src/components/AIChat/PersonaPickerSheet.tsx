@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native'
 import { TrueSheet } from '@lodev09/react-native-true-sheet'
-import { FlashList } from '@shopify/flash-list'
+import { FlashList, FlashListRef } from '@shopify/flash-list'
 
 import V2exIcon from '@/components/icons/V2exIcon'
 
@@ -41,11 +41,13 @@ export type PersonaPickerSheetHandle = {
 type Props = {
   selectedPersona: string
   personas: AIChatPersonaSummary[]
+  pinnedPersonas: string[]
   hasLoadedPersonas: boolean
   loadState: PersonaLoadState
   error?: string
   tokenSource: PersonalTokenSource
   onSelect: (persona: string) => void
+  onTogglePin: (persona: string) => void
   onRetry: () => Promise<void>
   onManageToken: () => void
 }
@@ -53,6 +55,7 @@ type Props = {
 export default forwardRef<PersonaPickerSheetHandle, Props>(
   function PersonaPickerSheet(props, ref) {
     const sheetRef = useRef<TrueSheet>(null)
+    const listRef = useRef<FlashListRef<AIChatPersonaSummary>>(null)
     const { colors } = useAIChatTheme()
     const styles = useMemo(() => createStyles(colors), [colors])
     const [query, setQuery] = useState('')
@@ -67,17 +70,42 @@ export default forwardRef<PersonaPickerSheetHandle, Props>(
       },
     }))
 
+    const pinned = useMemo(
+      () => new Set(props.pinnedPersonas),
+      [props.pinnedPersonas],
+    )
+
     const filtered = useMemo(() => {
       const needle = query.trim().toLowerCase()
-      if (!needle) return props.personas
-      return props.personas.filter((persona) =>
-        persona.id.toLowerCase().includes(needle),
-      )
-    }, [props.personas, query])
+      const matched = needle
+        ? props.personas.filter((persona) =>
+            persona.id.toLowerCase().includes(needle),
+          )
+        : props.personas
+      if (!pinned.size) return matched
+      // Stable partition: pinned personas float up, each group keeps its
+      // original order so the list does not reshuffle on every pin toggle.
+      return [
+        ...matched.filter((persona) => pinned.has(persona.id)),
+        ...matched.filter((persona) => !pinned.has(persona.id)),
+      ]
+    }, [pinned, props.personas, query])
 
     const select = async (persona: string) => {
       props.onSelect(persona)
       await sheetRef.current?.dismiss()
+    }
+
+    const togglePin = (persona: string) => {
+      const willPin = !pinned.has(persona)
+      props.onTogglePin(persona)
+      // A freshly pinned persona jumps to the top of the list — follow it there
+      // instead of leaving the user staring at the gap it left behind.
+      if (willPin) {
+        requestAnimationFrame(() => {
+          listRef.current?.scrollToOffset({ offset: 0, animated: true })
+        })
+      }
     }
 
     const hasUsablePersonas =
@@ -208,6 +236,7 @@ export default forwardRef<PersonaPickerSheetHandle, Props>(
             </View>
           ) : (
             <FlashList
+              ref={listRef}
               data={filtered}
               keyExtractor={(item) => item.id}
               keyboardShouldPersistTaps='handled'
@@ -219,11 +248,22 @@ export default forwardRef<PersonaPickerSheetHandle, Props>(
               }
               renderItem={({ item }) => {
                 const selected = item.id === props.selectedPersona
+                const isPinned = pinned.has(item.id)
                 return (
                   <Pressable
-                    accessibilityLabel={`使用 ${item.id} Persona`}
+                    accessibilityLabel={`使用 ${item.id} Persona${isPinned ? '（已置顶）' : ''}`}
                     accessibilityRole='button'
                     accessibilityState={{ selected }}
+                    // The row swallows its children into one element, so the pin
+                    // button is only reachable as a row action for VoiceOver.
+                    accessibilityActions={[
+                      { name: 'pin', label: isPinned ? '取消置顶' : '置顶' },
+                    ]}
+                    onAccessibilityAction={(event) => {
+                      if (event.nativeEvent.actionName === 'pin') {
+                        togglePin(item.id)
+                      }
+                    }}
                     onPress={() => void select(item.id)}
                     style={({ pressed }) => [
                       styles.row,
@@ -246,6 +286,23 @@ export default forwardRef<PersonaPickerSheetHandle, Props>(
                         color={colors.text}
                       />
                     ) : null}
+                    <Pressable
+                      accessibilityLabel={`${isPinned ? '取消置顶' : '置顶'} ${item.id} Persona`}
+                      accessibilityRole='button'
+                      accessibilityState={{ selected: isPinned }}
+                      hitSlop={6}
+                      onPress={() => togglePin(item.id)}
+                      style={({ pressed }) => [
+                        styles.pinButton,
+                        pressed && pressFeedbackStyles.compact,
+                      ]}
+                    >
+                      <V2exIcon
+                        name={isPinned ? 'star-solid' : 'star-outline'}
+                        size={16}
+                        color={isPinned ? colors.accent : colors.tertiaryText}
+                      />
+                    </Pressable>
                   </Pressable>
                 )
               }}
@@ -335,6 +392,14 @@ function createStyles(colors: AIChatColors) {
     },
     rowSelected: { backgroundColor: colors.elevated },
     rowText: { flex: 1 },
+    pinButton: {
+      width: 34,
+      height: 34,
+      marginRight: -6,
+      borderRadius: 17,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     personaName: { color: colors.text, fontSize: 15.5, fontWeight: '600' },
     owner: { marginTop: 2, color: colors.tertiaryText, fontSize: 11 },
   })

@@ -35,6 +35,8 @@ export interface PersistedAIChatState {
   preferredPersona: string
   selectedConversationId: string
   conversations: AIChatConversation[]
+  /** Persona ids the user pinned to the top of the picker. */
+  pinnedPersonas?: string[]
 }
 
 export interface AIChatPersonaSummary {
