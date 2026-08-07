@@ -40,7 +40,7 @@ import HomeDataPrefetch from './HomeDataPrefetch'
 
 const REFRESH_IDLE_RESET_TIMEOUT = 1000
 const CACHE_KEY = '$app$/home-screen-index'
-const TAB_BAR_HEIGHT = 42
+const TAB_BAR_HEIGHT = 48
 const TAB_SETTINGS_BUTTON_WIDTH = 40
 
 const TAB_STYLE = {
@@ -264,7 +264,7 @@ export default function HomeScreen() {
           <Pressable
             style={({ pressed }) => [
               homeStyles.tabSettingsBtn,
-              { borderLeftColor: theme.colors.border_light },
+              styles.layer1,
               pressed && homeStyles.pressed,
             ]}
             accessibilityRole='button'
@@ -404,7 +404,8 @@ const homeStyles = StyleSheet.create({
     height: TAB_BAR_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
-    borderLeftWidth: StyleSheet.hairlineWidth,
+    paddingBottom: 4,
+    zIndex: 10,
   },
   errorContainer: {
     flex: 1,
