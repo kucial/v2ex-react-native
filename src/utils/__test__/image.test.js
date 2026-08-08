@@ -1,15 +1,5 @@
 import { getBasename, getFilename, getImgXtension } from '../image'
 
-jest.mock('expo-file-system', () => ({
-  File: {
-    downloadFileAsync: jest.fn(),
-  },
-  Paths: {
-    cache: 'cache',
-  },
-  readAsStringAsync: jest.fn(),
-}))
-
 describe('image utils', () => {
   describe('getImgXtension', () => {
     it('https://pbs.twimg.com/media/FppS3KwaQAA_MDX?format=jpg&name=medium', () => {

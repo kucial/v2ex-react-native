@@ -1,20 +1,6 @@
 import 'react-native-url-polyfill/auto'
 
-import * as FileSystem from 'expo-file-system'
 import { Image } from 'expo-image'
-
-/**
- * Downloads an image and returns the local file URI, using cache if available.
- * @param url - Image URL to download
- * @returns Local file URI
- */
-export async function downloadOrUseCachedImage(url: string): Promise<string> {
-  const downloadResult = await FileSystem.File.downloadFileAsync(
-    url,
-    FileSystem.Paths.cache,
-  )
-  return downloadResult.uri
-}
 
 /**
  * Extracts the file extension from a URI.
