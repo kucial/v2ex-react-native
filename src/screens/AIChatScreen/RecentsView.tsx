@@ -277,8 +277,7 @@ export default function RecentsView({
           recentsStyles.footer,
           {
             width: maxWidth,
-            paddingBottom: Math.max(insets.bottom, 14),
-            borderTopColor: colors.border,
+            paddingBottom: 8,
           },
         ]}
       >
@@ -366,7 +365,6 @@ const recentsStyles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: 12,
     paddingTop: 10,
-    borderTopWidth: StyleSheet.hairlineWidth,
   },
   tokenRow: {
     minHeight: 44,

@@ -29,6 +29,9 @@ import ReasoningSheet, {
   ReasoningSheetHandle,
 } from '@/components/AIChat/ReasoningSheet'
 import { useAIChatTheme } from '@/components/AIChat/theme'
+import TokenSetupPrompt, {
+  TokenPromptStatus,
+} from '@/components/AIChat/TokenSetupPrompt'
 import VirtualizedChatScrollView, {
   ChatScrollViewHandle,
 } from '@/components/AIChat/VirtualizedChatScrollView'
@@ -88,6 +91,7 @@ export default function ChatView({
     personalTokenSource,
     personalTokenValidity,
     hasPersonalToken,
+    canSendMessage,
     setPersona,
     togglePersonaPin,
     reloadPersonas,
@@ -137,6 +141,23 @@ export default function ChatView({
     },
     [],
   )
+
+  // Both the composer and its stand-in report height the same way, so the
+  // message list keeps its bottom inset when they swap.
+  const measureComposer = useCallback(
+    (height: number) => {
+      setComposerHeight(height)
+      composerInset.set(height + MESSAGE_COMPOSER_GAP)
+    },
+    [composerInset],
+  )
+
+  const tokenPromptStatus: TokenPromptStatus =
+    personalTokenState === 'loading' || personalTokenState === 'saving'
+      ? 'loading'
+      : hasPersonalToken && personalTokenValidity === 'invalid'
+        ? 'invalid'
+        : 'missing'
 
   const handleSend = useCallback(
     (text: string) => {
@@ -292,15 +313,20 @@ export default function ChatView({
         </Pressable>
       </View>
 
-      <Composer
-        isGenerating={isGenerating}
-        onSend={handleSend}
-        onStop={stopGenerating}
-        onHeightChange={(height) => {
-          setComposerHeight(height)
-          composerInset.set(height + MESSAGE_COMPOSER_GAP)
-        }}
-      />
+      {canSendMessage ? (
+        <Composer
+          isGenerating={isGenerating}
+          onSend={handleSend}
+          onStop={stopGenerating}
+          onHeightChange={measureComposer}
+        />
+      ) : (
+        <TokenSetupPrompt
+          status={tokenPromptStatus}
+          onManageToken={() => onManageToken()}
+          onHeightChange={measureComposer}
+        />
+      )}
       <ReasoningSheet ref={reasoningSheet} />
       <PersonaPickerSheet
         ref={personaSheet}
