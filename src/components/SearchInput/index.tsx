@@ -74,7 +74,6 @@ const SearchInput = forwardRef<SearchModel, SearchInputProps>((props, ref) => {
               styles.text,
               { fontSize: styles.text_base.fontSize },
             ]}
-            selectionColor={theme.colors.primary}
             placeholderTextColor={theme.colors.text_placeholder}
             ref={searchInput}
             placeholder={props.placeholder}

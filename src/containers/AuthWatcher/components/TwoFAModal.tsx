@@ -148,7 +148,6 @@ export function TwoFAModal() {
                       },
                     ]}
                     placeholderTextColor={theme.colors.text_meta}
-                    selectionColor={theme.colors.primary}
                     onSubmitEditing={handleSubmit}
                   />
                 </View>

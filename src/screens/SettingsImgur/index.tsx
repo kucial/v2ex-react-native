@@ -181,7 +181,6 @@ export default function ImgurSettings() {
                       </Text>
                       <TextInput
                         style={[imgurStyles.boxRow, styles.text, styles.layer2]}
-                        selectionColor={theme.colors.primary}
                         placeholderTextColor={theme.colors.text_placeholder}
                         placeholder='Client Id'
                         onChangeText={(value) =>

@@ -166,7 +166,6 @@ export default forwardRef<TokenInputSheetHandle, Props>(
             placeholderTextColor={
               source === 'secure' ? colors.secondaryText : colors.tertiaryText
             }
-            selectionColor={colors.accent}
             value={token}
             onChangeText={setToken}
             onSubmitEditing={() => void save()}

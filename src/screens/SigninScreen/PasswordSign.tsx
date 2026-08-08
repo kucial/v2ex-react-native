@@ -161,7 +161,6 @@ function PasswordSignin(props: PasswordSigninProps) {
                           ? styles.input__bg
                           : styles.overlay_input__bg,
                       ]}
-                      selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
                       placeholder='用户名'
@@ -197,7 +196,6 @@ function PasswordSignin(props: PasswordSigninProps) {
                           ? styles.input__bg
                           : styles.overlay_input__bg,
                       ]}
-                      selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
                       placeholder='密码'
@@ -256,7 +254,6 @@ function PasswordSignin(props: PasswordSigninProps) {
                           ? styles.input__bg
                           : styles.overlay_input__bg,
                       ]}
-                      selectionColor={theme.colors.primary}
                       placeholderTextColor={theme.colors.text_placeholder}
                       onBlur={onBlur}
                       placeholder='验证码'

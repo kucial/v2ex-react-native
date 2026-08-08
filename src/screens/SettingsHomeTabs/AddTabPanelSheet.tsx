@@ -159,7 +159,6 @@ const AddTabPanelSheet = forwardRef<AddTabPanelSheetRef, Props>(
                 backgroundColor: theme.colors.overlay_input_bg,
                 color: theme.colors.text,
               }}
-              selectionColor={theme.colors.primary}
               placeholderTextColor={theme.colors.text_placeholder}
               placeholder={'查找'}
               returnKeyType='search'

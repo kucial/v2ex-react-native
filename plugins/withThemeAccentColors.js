@@ -30,6 +30,24 @@ const VARIANTS = ['light', 'dark', 'pure_dark']
 /** Must match `androidAccentStyle` in modules/accent-color/index.ts. */
 const styleName = (theme, variant) => `app_accent_${theme}_${variant}`
 const colorName = (theme, variant) => `accent_${theme}_${variant}`
+const selectionColorName = (theme, variant) =>
+  `accent_${theme}_${variant}_selection`
+
+/**
+ * Alpha for the text selection highlight. A solid accent behind selected text
+ * makes it unreadable — the platform default (`textColorHighlight`) is
+ * translucent for the same reason.
+ */
+const SELECTION_ALPHA = '66'
+
+/**
+ * Android wants #AARRGGBB, with alpha leading; the manifest stores #RRGGBB or
+ * #RRGGBBAA, with alpha trailing. Normalise, then apply our own alpha.
+ */
+function withSelectionAlpha(value) {
+  const rgb = value.replace('#', '').slice(0, 6)
+  return `#${SELECTION_ALPHA}${rgb}`
+}
 
 function eachAccent(callback) {
   for (const [theme, variants] of Object.entries(accents)) {
@@ -48,6 +66,13 @@ function withThemeAccentColors(config) {
       config.modResults = AndroidConfig.Colors.assignColorValue(
         config.modResults,
         { name: colorName(theme, variant), value },
+      )
+      config.modResults = AndroidConfig.Colors.assignColorValue(
+        config.modResults,
+        {
+          name: selectionColorName(theme, variant),
+          value: withSelectionAlpha(value),
+        },
       )
     })
     return config
@@ -84,6 +109,20 @@ function withThemeAccentColors(config) {
           {
             $: { name: 'colorAccent' },
             _: `@color/${colorName(theme, variant)}`,
+          },
+          // Caret and selection handles.
+          {
+            $: { name: 'colorControlActivated' },
+            _: `@color/${colorName(theme, variant)}`,
+          },
+          // Selection highlight. Without this, a TextInput carrying no
+          // `selectionColor` prop falls back to the platform default rather
+          // than the accent: React Native reads android.R.attr
+          // .textColorHighlight, not colorAccent (ReactTextInputManager ->
+          // DefaultStyleValuesUtil.getDefaultTextColorHighlight).
+          {
+            $: { name: 'android:textColorHighlight' },
+            _: `@color/${selectionColorName(theme, variant)}`,
           },
         ],
       })

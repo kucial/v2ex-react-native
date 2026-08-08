@@ -58,7 +58,6 @@ export default forwardRef<
           value={title}
           onChangeText={setTitle}
           onSubmitEditing={() => void save()}
-          selectionColor={colors.accent}
           style={styles.input}
         />
         <Pressable

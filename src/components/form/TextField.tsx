@@ -81,7 +81,6 @@ function TextField({
               lineHeight: 20,
             },
           ]}
-          selectionColor={theme.colors.primary}
           placeholderTextColor={theme.colors.text_placeholder}
           {...props}
           value={field.value}

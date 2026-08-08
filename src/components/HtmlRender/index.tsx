@@ -487,7 +487,6 @@ function HtmlRender({
                 value={textToSelect}
                 readOnly
                 multiline
-                selectionColor={theme.colors.primary}
               />
             ) : (
               <Text

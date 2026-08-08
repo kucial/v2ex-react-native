@@ -79,7 +79,17 @@ export const ThemeProvider = (props: {
   const activeVariant: AccentVariant =
     activeScheme === 'dark' && pureDarkTheme ? 'pure_dark' : activeScheme
 
+  // The accent is process-wide, so only the app-level provider may drive it.
+  // A scoped provider — SettingsTheme wraps its preview in one — would
+  // otherwise leave the whole app tinted with a theme the user only previewed
+  // and never chose, since the outer provider has no reason to re-run and put
+  // it back.
+  const ownsNativeAccent = props.theme === undefined
+
   useEffect(() => {
+    if (!ownsNativeAccent) {
+      return
+    }
     // Tint the chrome the app cannot style from JS — alert and action sheet
     // buttons, context menus, text handles — to match the active theme.
     try {
@@ -91,7 +101,7 @@ export const ThemeProvider = (props: {
     } catch {
       // Native module missing (older dev client): the build-time accent stands.
     }
-  }, [activeTheme, activeVariant, service])
+  }, [activeTheme, activeVariant, ownsNativeAccent, service])
 
   useEffect(() => {
     if (Platform.OS !== 'ios') {

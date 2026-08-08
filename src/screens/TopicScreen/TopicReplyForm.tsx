@@ -126,7 +126,6 @@ export default function TopicReplyForm(props: TopicReplyFormProps) {
                       backgroundColor: theme.colors.danger + '26',
                     },
                 ]}
-                selectionColor={theme.colors.primary}
                 onChangeText={(val) => {
                   onChange(val)
                 }}

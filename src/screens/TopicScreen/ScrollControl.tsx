@@ -110,7 +110,6 @@ const ScrollControl = forwardRef<ScrollControlApi, ScrollControlProps>(
                           color: theme.colors.text,
                         },
                       ]}
-                      selectionColor={theme.colors.primary}
                     />
                   </View>
                   <Pressable

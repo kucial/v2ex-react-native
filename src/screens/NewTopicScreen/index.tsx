@@ -238,7 +238,6 @@ export default function NewTopicScreen() {
                           styles.text,
                           { fontSize: 16 },
                         ]}
-                        selectionColor={theme.colors.primary}
                         placeholderTextColor={theme.colors.text_placeholder}
                         placeholder='请输入主题标题'
                         onChangeText={(value) =>

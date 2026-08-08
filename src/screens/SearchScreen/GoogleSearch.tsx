@@ -116,7 +116,6 @@ export default function GoogleSearch() {
                   ? { fontSize: styles.text_base.fontSize }
                   : styles.text_base,
               ]}
-              selectionColor={theme.colors.primary}
               placeholderTextColor={theme.colors.text_placeholder}
               defaultValue={searchParams.q || ''}
               ref={searchInput}

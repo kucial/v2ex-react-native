@@ -73,7 +73,6 @@ export default function Composer({
               multiline
               placeholder='输入消息'
               placeholderTextColor={colors.tertiaryText}
-              selectionColor={colors.accent}
               value={value}
               onChangeText={setValue}
               style={styles.input}
