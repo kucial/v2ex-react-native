@@ -129,6 +129,7 @@ export default function AboutScreen() {
                   icon={
                     <V2exIcon
                       name='arrow-up-on-square-outline'
+                      size={22}
                       color={theme.colors.primary}
                     />
                   }
