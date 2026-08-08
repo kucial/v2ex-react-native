@@ -2,6 +2,7 @@ import { ConfigContext, ExpoConfig } from 'expo/config'
 import { execSync } from 'node:child_process'
 
 import packageJson from './package.json'
+import nativeAccents from './src/containers/ThemeService/themes/native-accents.json'
 
 /**
  * Build identity, shown on the About screen and put in the feedback email
@@ -68,6 +69,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     userInterfaceStyle: 'automatic',
     scheme: 'r2v',
     jsEngine: 'hermes',
+    // Android `colorPrimary`, which otherwise defaults to Expo's #023c69 — a
+    // blue used nowhere in the app. This is only the pre-JS baseline; once the
+    // theme loads, modules/accent-color points the activity theme at the
+    // active accent (see plugins/withThemeAccentColors).
+    primaryColor: nativeAccents.r2v.light,
     updates: {
       fallbackToCacheTimeout: 0,
       url: 'https://u.expo.dev/5c24d369-c0ba-41e3-8679-8b8cee82fc13',
@@ -143,6 +149,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       '@sentry/react-native',
       './plugins/withSkipLocalSentryUpload',
       './plugins/withFixShadowNodeRaceCondition',
+      './plugins/withThemeAccentColors',
       'expo-image',
       'expo-splash-screen',
       'expo-status-bar',

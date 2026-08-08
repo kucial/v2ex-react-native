@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["AccentColorModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.accentcolor.AccentColorModule"]
+  }
+}

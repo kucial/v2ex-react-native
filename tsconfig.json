@@ -3,7 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@modules/*": ["modules/*"]
     },
     "ignoreDeprecations": "6.0",
     "skipLibCheck": true,
@@ -21,6 +22,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "modules/**/*.ts",
     "src/types/global.d.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"

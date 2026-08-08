@@ -1,0 +1,52 @@
+{
+  "r2v": {
+    "light": "#171717",
+    "dark": "#fffbeb",
+    "pure_dark": "#fffbeb"
+  },
+  "gin_blue": {
+    "light": "#0550e6",
+    "dark": "#90aeef",
+    "pure_dark": "#90aeef"
+  },
+  "gin_dark_purple": {
+    "light": "#4300bf",
+    "dark": "#ad8fe8",
+    "pure_dark": "#ad8fe8"
+  },
+  "gin_green": {
+    "light": "#00875f",
+    "dark": "#6bd4a1",
+    "pure_dark": "#6bd4a1"
+  },
+  "gin_orange": {
+    "light": "#ef5c20",
+    "dark": "#f79576",
+    "pure_dark": "#f79576"
+  },
+  "gin_pink": {
+    "light": "#e23177",
+    "dark": "#e79da3",
+    "pure_dark": "#e79da3"
+  },
+  "gin_purple": {
+    "light": "#5b00ff",
+    "dark": "#dba5ef",
+    "pure_dark": "#dba5ef"
+  },
+  "gin_red": {
+    "light": "#d8002f",
+    "dark": "#ec8989",
+    "pure_dark": "#ec8989"
+  },
+  "gin_teal": {
+    "light": "#10857f",
+    "dark": "#00ead0",
+    "pure_dark": "#00ead0"
+  },
+  "gin_yellow": {
+    "light": "#c58900",
+    "dark": "#f1c970",
+    "pure_dark": "#f1c970"
+  }
+}

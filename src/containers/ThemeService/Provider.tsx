@@ -1,6 +1,7 @@
 import { ReactNode, useContext, useEffect, useMemo } from 'react'
 import { AppState, Platform, useColorScheme } from 'react-native'
 import { getAppIcon, setAppIcon } from '@howincodes/expo-dynamic-app-icon'
+import { AccentVariant, setAccentColor } from '@modules/accent-color'
 import * as NavigationBar from 'expo-navigation-bar'
 import {
   DarkTheme,
@@ -74,6 +75,23 @@ export const ThemeProvider = (props: {
       SystemUI.setBackgroundColorAsync(service.theme.colors.bg_overlay)
     }
   }, [service])
+
+  const activeVariant: AccentVariant =
+    activeScheme === 'dark' && pureDarkTheme ? 'pure_dark' : activeScheme
+
+  useEffect(() => {
+    // Tint the chrome the app cannot style from JS — alert and action sheet
+    // buttons, context menus, text handles — to match the active theme.
+    try {
+      setAccentColor(
+        service.theme.colors.primary as string,
+        activeTheme,
+        activeVariant,
+      )
+    } catch {
+      // Native module missing (older dev client): the build-time accent stands.
+    }
+  }, [activeTheme, activeVariant, service])
 
   useEffect(() => {
     if (Platform.OS !== 'ios') {
