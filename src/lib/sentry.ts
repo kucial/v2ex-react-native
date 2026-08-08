@@ -50,6 +50,28 @@ export function isTransportNoise(error: unknown): boolean {
   )
 }
 
+type NoiseCandidateEvent = {
+  message?: unknown
+  exception?: { values?: { value?: unknown }[] }
+}
+
+/**
+ * Same judgement as {@link isTransportNoise}, but applied to an outgoing
+ * Sentry event rather than the thrown value.
+ *
+ * `hint.originalException` is only populated by `captureException`. Anything
+ * reported as a bare message — or via `captureEvent` with an error object,
+ * which is how V2EX-REACT-NATIVE-5P logged 31k timeouts — arrives with no
+ * exception to inspect, so match on the payload instead.
+ */
+export function isTransportNoiseEvent(event: NoiseCandidateEvent): boolean {
+  const messages = [
+    event.message,
+    ...(event.exception?.values ?? []).map((value) => value?.value),
+  ]
+  return messages.some((message) => isTransportNoise({ message }))
+}
+
 export const initSentry = () => {
   if (!inited) {
     inited = true
@@ -62,7 +84,11 @@ export const initSentry = () => {
       // an AxiosError can also reach Sentry via the ErrorBoundary, an
       // unhandled rejection, or another client entirely.
       beforeSend(event, hint) {
-        return isTransportNoise(hint?.originalException) ? null : event
+        if (isTransportNoise(hint?.originalException)) {
+          return null
+        }
+        // Last resort for reports that carry no original exception.
+        return isTransportNoiseEvent(event) ? null : event
       },
     })
 

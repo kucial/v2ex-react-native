@@ -324,8 +324,11 @@ instance.interceptors.response.use(
       })
     }
     // Timeouts / offline / cancelled requests are environmental, not bugs.
+    // `captureException`, not `captureEvent`: the latter treats the error as a
+    // ready-made event payload, which strips the stacktrace and leaves
+    // `hint.originalException` unset so `beforeSend` cannot filter it.
     if (!isTransportNoise(error)) {
-      Sentry.captureEvent(error)
+      Sentry.captureException(error)
     }
     return Promise.reject(error)
   },

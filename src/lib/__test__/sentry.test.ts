@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
 
-import { isTransportNoise } from '@/lib/sentry'
+import { isTransportNoise, isTransportNoiseEvent } from '@/lib/sentry'
 
 jest.mock('@sentry/react-native', () => ({
   reactNavigationIntegration: () => ({}),
@@ -69,5 +69,55 @@ describe('isTransportNoise', () => {
     for (const value of [null, undefined, 0, '', 'timeout', [], NaN]) {
       expect(isTransportNoise(value)).toBe(false)
     }
+  })
+})
+
+describe('isTransportNoiseEvent', () => {
+  it('drops the bare-message timeout that V2EX-REACT-NATIVE-5P reported', () => {
+    // `captureEvent(axiosError)` produced exactly this: a `default` event
+    // carrying the message, with no exception interface and no stacktrace.
+    expect(
+      isTransportNoiseEvent({ message: 'timeout of 10000ms exceeded' }),
+    ).toBe(true)
+  })
+
+  it('drops a timeout carried on the exception interface', () => {
+    expect(
+      isTransportNoiseEvent({
+        exception: {
+          values: [{ value: 'timeout of 10000ms exceeded' }],
+        },
+      }),
+    ).toBe(true)
+  })
+
+  it('keeps real failures', () => {
+    expect(
+      isTransportNoiseEvent({ message: 'Request failed with status code 500' }),
+    ).toBe(false)
+    expect(
+      isTransportNoiseEvent({
+        exception: { values: [{ value: 'x is not a function' }] },
+      }),
+    ).toBe(false)
+  })
+
+  it('drops a chained exception whose cause is a timeout', () => {
+    expect(
+      isTransportNoiseEvent({
+        exception: {
+          values: [
+            { value: 'timeout of 10000ms exceeded' },
+            { value: 'Failed to load topics' },
+          ],
+        },
+      }),
+    ).toBe(true)
+  })
+
+  it('tolerates an empty event', () => {
+    expect(isTransportNoiseEvent({})).toBe(false)
+    expect(isTransportNoiseEvent({ exception: { values: [] } })).toBe(false)
+    expect(isTransportNoiseEvent({ exception: {} })).toBe(false)
   })
 })
