@@ -98,6 +98,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
       '@sentry/react-native',
       './plugins/withSkipLocalSentryUpload',
+      './plugins/withFixShadowNodeRaceCondition',
       'expo-image',
       'expo-splash-screen',
       'expo-status-bar',
