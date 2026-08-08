@@ -1,59 +1,44 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { StyleSheet, Text } from 'react-native'
 import Animated, {
   cancelAnimation,
   Easing,
-  interpolateColor,
-  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
 } from 'react-native-reanimated'
+import MaskedView from '@react-native-masked-view/masked-view'
+import { LinearGradient } from 'expo-linear-gradient'
 
-import { AIChatColors, useAIChatTheme } from './theme'
+import { useAIChatTheme } from './theme'
 
 const LABEL = '正在思考'
-const CHARACTERS = Array.from(LABEL)
-const SWEEP_OVERFLOW = 0.28
+const DURATION = 1250
 
-function ShimmerCharacter({
-  character,
-  index,
-  progress,
-  colors,
-}: {
-  character: string
-  index: number
-  progress: SharedValue<number>
-  colors: AIChatColors
-}) {
-  const animatedStyle = useAnimatedStyle(() => {
-    const characterPosition = index / (CHARACTERS.length - 1)
-    const sweepPosition =
-      progress.value * (1 + SWEEP_OVERFLOW * 2) - SWEEP_OVERFLOW
-    const distance = Math.min(Math.abs(characterPosition - sweepPosition), 0.34)
+/**
+ * Width of the sweeping gradient as a multiple of the label width. The
+ * highlight sits in the middle of it, so the band has to be wider than the
+ * label for the bright core to travel all the way across.
+ */
+const SWEEP_WIDTH_RATIO = 2.5
 
-    return {
-      color: interpolateColor(
-        distance,
-        [0, 0.13, 0.34],
-        [colors.text, colors.secondaryText, colors.tertiaryText],
-      ),
-    }
-  })
-
-  return <Animated.Text style={animatedStyle}>{character}</Animated.Text>
-}
+/**
+ * Where the highlight sits inside the gradient. Tight stops around the midpoint
+ * keep the bright core narrow, so it reads as a moving highlight rather than
+ * the whole label brightening and dimming.
+ */
+const GRADIENT_LOCATIONS = [0, 0.42, 0.5, 0.58, 1] as const
 
 export default function ThinkingShimmer() {
   const { colors } = useAIChatTheme()
   const progress = useSharedValue(0)
+  const [labelWidth, setLabelWidth] = useState(0)
 
   useEffect(() => {
     progress.set(
       withRepeat(
-        withTiming(1, { duration: 1250, easing: Easing.linear }),
+        withTiming(1, { duration: DURATION, easing: Easing.linear }),
         -1,
         false,
       ),
@@ -61,31 +46,83 @@ export default function ThinkingShimmer() {
     return () => cancelAnimation(progress)
   }, [progress])
 
+  const sweepWidth = labelWidth * SWEEP_WIDTH_RATIO
+
+  const sweepStyle = useAnimatedStyle(() => {
+    // Travel from fully off the leading edge to fully off the trailing edge, so
+    // the highlight enters and exits cleanly instead of popping at the bounds.
+    const from = -sweepWidth
+    const to = labelWidth
+    return {
+      width: sweepWidth,
+      transform: [{ translateX: from + (to - from) * progress.value }],
+    }
+  })
+
   return (
-    <Text
-      accessibilityLabel={LABEL}
-      accessibilityLiveRegion='polite'
-      style={thinkingStyles.text}
+    <MaskedView
+      // The mask is the text itself, so the gradient is clipped to the glyphs.
+      // Unlike a per-character colour ramp this sweeps *within* each glyph,
+      // giving a continuous highlight rather than one quantised to 4 steps.
+      maskElement={
+        <Text style={[thinkingStyles.text, thinkingStyles.mask]}>{LABEL}</Text>
+      }
+      style={thinkingStyles.container}
     >
-      {CHARACTERS.map((character, index) => (
-        <ShimmerCharacter
-          key={`${character}-${index}`}
-          character={character}
-          index={index}
-          progress={progress}
-          colors={colors}
-        />
-      ))}
-    </Text>
+      {/* Base colour shows wherever the sweep is not. */}
+      <Text
+        accessibilityLabel={LABEL}
+        accessibilityLiveRegion='polite'
+        onLayout={(event) => setLabelWidth(event.nativeEvent.layout.width)}
+        style={[thinkingStyles.text, { color: colors.mutedText }]}
+      >
+        {LABEL}
+      </Text>
+      {labelWidth > 0 && (
+        <Animated.View style={[thinkingStyles.sweep, sweepStyle]}>
+          <LinearGradient
+            colors={
+              [
+                colors.mutedText,
+                colors.secondaryText,
+                colors.text,
+                colors.secondaryText,
+                colors.mutedText,
+              ] as const
+            }
+            locations={GRADIENT_LOCATIONS}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={StyleSheet.absoluteFill}
+          />
+        </Animated.View>
+      )}
+    </MaskedView>
   )
 }
 
 const thinkingStyles = StyleSheet.create({
+  container: {
+    // MaskedView needs an intrinsic size; the text inside establishes it.
+    alignSelf: 'flex-start',
+  },
   text: {
     minHeight: 28,
     fontSize: 16,
     fontWeight: '500',
     letterSpacing: -0.2,
     lineHeight: 24,
+  },
+  mask: {
+    // Any opaque colour works: only the alpha of the mask is used.
+    color: '#000',
+    backgroundColor: 'transparent',
+  },
+  sweep: {
+    // Width and horizontal offset come from the animated style.
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
   },
 })
