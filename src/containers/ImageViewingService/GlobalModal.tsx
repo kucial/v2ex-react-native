@@ -24,11 +24,30 @@ const ImageViewingFooter = (props: {
   const insets = useSafeAreaInsets()
 
   useEffect(() => {
-    if (displayUri) {
-      Camera.scanFromURLAsync(displayUri, ['qr']).then(setQrCodes)
-      return () => {
-        setQrCodes(null)
-      }
+    if (!displayUri) {
+      return
+    }
+    let current = true
+    Camera.scanFromURLAsync(displayUri, ['qr'])
+      .then((results) => {
+        if (current) {
+          setQrCodes(results)
+        }
+      })
+      // Scanning fails for anything the OS can't decode into an image, and
+      // for remote images it couldn't fetch. That just means "no QR code
+      // here" — it is not worth reporting, and an unhandled rejection sends
+      // it to Sentry (V2EX-REACT-NATIVE-EC).
+      .catch(() => {
+        if (current) {
+          setQrCodes(null)
+        }
+      })
+    return () => {
+      // Swiping to the next image while a scan is in flight would otherwise
+      // let the stale result land on the new image.
+      current = false
+      setQrCodes(null)
     }
   }, [displayUri])
 
