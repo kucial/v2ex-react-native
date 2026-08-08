@@ -5,7 +5,9 @@ import { fromUint8Array } from 'js-base64'
 import {
   MemberBasic,
   NodeBasic,
+  Notification,
   TopicBasic,
+  TopicNotification,
   TopicReply,
 } from '@/utils/v2ex-client/types'
 
@@ -139,6 +141,61 @@ export function memberFromImage($el: Cheerio<Element>): MemberBasic {
     avatar_normal: mapAvatarSize(avatarUrl, 'normal'),
     avatar_large: mapAvatarSize(avatarUrl, 'large'),
     avatar_mini: mapAvatarSize(avatarUrl, 'mini'),
+  }
+}
+
+/**
+ * Parses a single `#notifications .cell`.
+ *
+ * Returns null for a cell we don't recognise, so the caller can report it —
+ * that is how new V2EX notification types surface (see Sentry
+ * V2EX-REACT-NATIVE-E4, which is how the Solana tip type was found).
+ */
+export function notificationFromCell(
+  $: CheerioAPI,
+  el: Element,
+): Notification | null {
+  const $cell = $(el)
+  const $memberImage = $cell.find('img.avatar').first()
+  if (!$memberImage.length) {
+    return null
+  }
+
+  const base = {
+    id: $cell.attr('id'),
+    member: memberFromImage($memberImage),
+    content_rendered: $cell.find('.payload').html()?.trim(),
+    time: $cell.find('.snow').text(),
+  }
+
+  const $topicLink = $cell.find('a[href^="/t/"]').first()
+  if (!$topicLink.length) {
+    // Solana tips link to the tips page instead of a topic.
+    const $tipLink = $cell.find('a[href^="/solana/tips"]').first()
+    if (!$tipLink.length) {
+      return null
+    }
+    return {
+      ...base,
+      action: 'solana_tip',
+      amount: $tipLink.text().trim(),
+    }
+  }
+
+  const text = $cell.find('[valign=middle] .fade').text()
+  let action: TopicNotification['action'] = 'reply'
+  if (/收藏了你发布的主题/.test(text)) {
+    action = 'collect'
+  } else if (/感谢了你发布的主题/.test(text)) {
+    action = 'thank'
+  } else if (/感谢了你在主题/.test(text)) {
+    action = 'thank_reply'
+  }
+
+  return {
+    ...base,
+    action,
+    topic: topicFromLink($topicLink),
   }
 }
 

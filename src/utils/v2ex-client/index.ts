@@ -56,6 +56,7 @@ import {
   memberFromImage,
   nodeDetailFromPage,
   nodeFromLink,
+  notificationFromCell,
   paginationFromText,
   resolveUrl,
   topicDetailFromPage,
@@ -1705,13 +1706,8 @@ export async function getMyNotifications({
   const $ = res.$ || cheerioDoc(res.data)
   const notifications = $('#notifications .cell')
     .map(function (i, el) {
-      const $memberImage = $(el).find('img.avatar').first()
-      if (!$memberImage) {
-        return null
-      }
-      const member = memberFromImage($memberImage)
-      const $topicLink = $(el).find('a[href^="/t/"]').first()
-      if (!$topicLink.length) {
+      const notification = notificationFromCell($, el)
+      if (!notification) {
         Sentry.captureMessage('UNEXPECTED_NOTIFICATION', {
           extra: {
             body: $(el).html(),
@@ -1719,24 +1715,7 @@ export async function getMyNotifications({
         })
         return null
       }
-      const topic = topicFromLink($topicLink)
-      const text = $(el).find('[valign=middle] .fade').text()
-      let action: Notification['action'] = 'reply'
-      if (/收藏了你发布的主题/.test(text)) {
-        action = 'collect'
-      } else if (/感谢了你发布的主题/.test(text)) {
-        action = 'thank'
-      } else if (/感谢了你在主题/.test(text)) {
-        action = 'thank_reply'
-      }
-      return {
-        id: $(el).attr('id'),
-        member,
-        topic,
-        action,
-        content_rendered: $(el).find('.payload').html()?.trim(),
-        time: $(el).find('.snow').text(),
-      }
+      return notification
     })
     .get()
     .filter(Boolean)

@@ -164,6 +164,32 @@ const NotificationRow = (props: { data: Notification }) => {
         </View>
       )
       break
+    case 'solana_tip':
+      header = (
+        <View style={rowStyles.rowNoPad}>
+          <Text style={[styles.text_meta, rowStyles.leading5]}>
+            <Text
+              style={[styles.text_desc, rowStyles.fontMedium]}
+              onPress={() => {
+                router.push({
+                  pathname: '/member/[username]',
+                  params: {
+                    username: data.member.username,
+                  },
+                })
+              }}
+            >
+              {data.member.username}
+            </Text>
+            <Text>{' 给你 Solana 打赏 '}</Text>
+            <Text style={[styles.text_desc, rowStyles.fontMedium]}>
+              {data.amount}
+            </Text>
+            <Text style={rowStyles.px2}>{` ${data.time}`}</Text>
+          </Text>
+        </View>
+      )
+      break
     case 'reply':
     default:
       header = (

@@ -159,14 +159,30 @@ export type NodeGroup = {
 }
 export type NodeGroups = NodeGroup[]
 
-export type Notification = {
+type NotificationBase = {
   id?: string
   member: MemberBasic
-  topic: TopicBasic
-  action: 'reply' | 'collect' | 'thank' | 'thank_reply'
   content_rendered?: string
   time: string
 }
+
+/** Notifications that point at a topic — the common case. */
+export type TopicNotification = NotificationBase & {
+  action: 'reply' | 'collect' | 'thank' | 'thank_reply'
+  topic: TopicBasic
+}
+
+/**
+ * Solana tip. Carries no topic: the only link is `/solana/tips`, and
+ * `content_rendered` holds the message the tipper attached.
+ */
+export type SolanaTipNotification = NotificationBase & {
+  action: 'solana_tip'
+  /** Formatted by V2EX, e.g. `0.005 SOL`. */
+  amount: string
+}
+
+export type Notification = TopicNotification | SolanaTipNotification
 
 export type BalanceBrief = {
   gold: number
