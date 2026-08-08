@@ -301,7 +301,8 @@ instance.interceptors.response.use(
     return res
   },
   function (error) {
-    if (error.response?.status === 403) {
+    const isForbidden = error.response?.status === 403
+    if (isForbidden) {
       console.log('403 url: ', error.response?.config?.url, 'count', n_403)
       n_403 += 1
       if (n_403 === 3) {
@@ -310,6 +311,18 @@ instance.interceptors.response.use(
       if (n_403 === 6) {
         dispatch('warn_vpn_status')
       }
+      // V2EX answers 403 when it wants the client to pass the Cloudflare check
+      // again. That is a handled, recoverable state -- `should_prepare_fetch`
+      // drives the prepare flow and `warn_vpn_status` warns the user -- so
+      // reporting it as an error just buries real bugs
+      // (V2EX-REACT-NATIVE-1V). Leave a breadcrumb instead, so a genuine
+      // failure later in the session still shows the 403 run-up.
+      Sentry.addBreadcrumb({
+        category: 'http',
+        level: 'warning',
+        message: `403 ${error.response?.config?.url ?? ''}`.trim(),
+        data: { consecutive: n_403 },
+      })
     } else {
       n_403 = 0
     }
@@ -327,7 +340,7 @@ instance.interceptors.response.use(
     // `captureException`, not `captureEvent`: the latter treats the error as a
     // ready-made event payload, which strips the stacktrace and leaves
     // `hint.originalException` unset so `beforeSend` cannot filter it.
-    if (!isTransportNoise(error)) {
+    if (!isForbidden && !isTransportNoise(error)) {
       Sentry.captureException(error)
     }
     return Promise.reject(error)

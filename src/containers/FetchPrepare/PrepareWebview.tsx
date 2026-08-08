@@ -16,6 +16,25 @@ const USER_AGENT =
     ios: USER_AGENT_IOS,
     android: USER_AGENT_ANDROID,
   }) || USER_AGENT_IOS
+
+/** iOS `NSURLErrorTimedOut` / Android `WebViewClient.ERROR_TIMEOUT`. */
+const WEBVIEW_TIMEOUT_CODE = Platform.OS === 'ios' ? -1001 : -8
+
+/**
+ * A CF-check request that timed out is a network condition, not a bug.
+ *
+ * Match on the native error code, not the description: iOS returns a
+ * *localized* `NSLocalizedDescription`, so on a zh device it reads `请求超时。`
+ * and an English string comparison lets the timeout through as an error
+ * (V2EX-REACT-NATIVE-AZ). The English description is kept only as a fallback
+ * for the case where no code is reported.
+ */
+function isWebViewTimeout(code?: number, description?: string): boolean {
+  return (
+    code === WEBVIEW_TIMEOUT_CODE || description === 'The request timed out.'
+  )
+}
+
 /**
  * 场景一： 不需要 CF 验证
  *
@@ -50,8 +69,9 @@ export default function PrepareWebview(props: {
     if (cfState.current == 'none') {
       return
     }
-    const error = new Error(e.nativeEvent.description)
-    if (e.nativeEvent.description !== 'The request timed out.') {
+    const { code, description } = e.nativeEvent
+    const error = new Error(description)
+    if (!isWebViewTimeout(code, description)) {
       Sentry.captureException(error)
     }
     cfState.current = 'error'
