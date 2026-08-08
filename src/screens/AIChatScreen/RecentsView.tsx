@@ -282,6 +282,9 @@ export default function RecentsView({
           },
         ]}
       >
+        <Text style={[recentsStyles.hint, { color: colors.mutedText }]}>
+          向左滑动返回聊天
+        </Text>
         <Pressable
           accessibilityLabel={tokenRow.label}
           accessibilityRole='button'
@@ -314,9 +317,6 @@ export default function RecentsView({
             color={colors.tertiaryText}
           />
         </Pressable>
-        <Text style={[recentsStyles.hint, { color: colors.mutedText }]}>
-          向左滑动返回聊天
-        </Text>
       </View>
       <RenameConversationSheet
         ref={renameSheet}
@@ -377,5 +377,7 @@ const recentsStyles = StyleSheet.create({
     gap: 10,
   },
   tokenText: { flex: 1, fontSize: 14, fontWeight: '500' },
-  hint: { paddingTop: 10, textAlign: 'center', fontSize: 11 },
+  // Sits above the token row, so the gap belongs underneath it — the footer
+  // already supplies the padding above.
+  hint: { paddingBottom: 10, textAlign: 'center', fontSize: 11 },
 })
