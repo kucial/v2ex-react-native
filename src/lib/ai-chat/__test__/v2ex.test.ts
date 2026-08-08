@@ -1,6 +1,11 @@
 /// <reference types='jest' />
 
-import { buildChatCompletionPayload, V2EXChatClient } from '@/lib/ai-chat/v2ex'
+import {
+  buildChatCompletionPayload,
+  isTokenAuthError,
+  TOKEN_AUTH_ERROR_MESSAGE,
+  V2EXChatClient,
+} from '@/lib/ai-chat/v2ex'
 
 const mockFetch = jest.fn()
 
@@ -61,5 +66,32 @@ describe('V2EX AI chat client', () => {
         }),
       }),
     )
+  })
+})
+
+describe('isTokenAuthError', () => {
+  it('recognises the message the API layer produces for 401/403', () => {
+    expect(isTokenAuthError(new Error(TOKEN_AUTH_ERROR_MESSAGE))).toBe(true)
+    expect(isTokenAuthError(TOKEN_AUTH_ERROR_MESSAGE)).toBe(true)
+  })
+
+  it('leaves the token alone for failures that are not its fault', () => {
+    // These must stay `false`: marking the token invalid on a network blip
+    // would lock the user out of sending until they re-entered a good token.
+    for (const message of [
+      'V2EX 响应超时，请稍后重试。',
+      'V2EX 请求额度已用完，请稍后重试。',
+      'V2EX 服务暂时不可用，请稍后重试。',
+      'V2EX 返回 HTTP 418。',
+      'Network request failed',
+    ]) {
+      expect(isTokenAuthError(new Error(message))).toBe(false)
+    }
+  })
+
+  it('tolerates junk input', () => {
+    for (const value of [null, undefined, 0, '', {}, []]) {
+      expect(isTokenAuthError(value)).toBe(false)
+    }
   })
 })

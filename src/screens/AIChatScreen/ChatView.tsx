@@ -29,9 +29,6 @@ import ReasoningSheet, {
   ReasoningSheetHandle,
 } from '@/components/AIChat/ReasoningSheet'
 import { useAIChatTheme } from '@/components/AIChat/theme'
-import TokenInputSheet, {
-  TokenInputSheetHandle,
-} from '@/components/AIChat/TokenInputSheet'
 import VirtualizedChatScrollView, {
   ChatScrollViewHandle,
 } from '@/components/AIChat/VirtualizedChatScrollView'
@@ -71,8 +68,10 @@ function EmptyMark({ composerHeight }: { composerHeight: number }) {
 
 export default function ChatView({
   onOpenRecents,
+  onManageToken,
 }: {
   onOpenRecents: () => void
+  onManageToken: (reason?: string) => void
 }) {
   const insets = useSafeAreaInsets()
   const { width } = useWindowDimensions()
@@ -87,13 +86,11 @@ export default function ChatView({
     personaError,
     personalTokenState,
     personalTokenSource,
-    personalTokenPreview,
+    personalTokenValidity,
     hasPersonalToken,
     setPersona,
     togglePersonaPin,
     reloadPersonas,
-    savePersonalToken,
-    clearPersonalToken,
     activeRequest,
     sendMessage,
     retryMessage,
@@ -110,7 +107,6 @@ export default function ChatView({
   const scrollFrameRef = useRef<number | null>(null)
   const reasoningSheet = useRef<ReasoningSheetHandle>(null)
   const personaSheet = useRef<PersonaPickerSheetHandle>(null)
-  const tokenSheet = useRef<TokenInputSheetHandle>(null)
   const messages = selectedConversation.messages
   const isGenerating = activeRequest?.conversationId === selectedConversation.id
   const lastMessage = messages[messages.length - 1]
@@ -142,24 +138,34 @@ export default function ChatView({
     [],
   )
 
-  const openTokenInput = useCallback(() => {
-    Keyboard.dismiss()
-    tokenSheet.current?.present()
-  }, [])
-
   const handleSend = useCallback(
     (text: string) => {
+      // Still reading secure storage, or mid-verification: neither a prompt nor
+      // a send is right yet, so swallow the tap and keep the draft.
       if (personalTokenState === 'loading' || personalTokenState === 'saving') {
         return false
       }
       if (!hasPersonalToken) {
-        openTokenInput()
+        onManageToken('发送前请先设置 V2EX Token。')
+        return false
+      }
+      if (personalTokenValidity === 'invalid') {
+        // V2EX has rejected this token — either on the last persona load or on
+        // a previous turn. Sending would fail the same way, so ask for a new
+        // one instead of burning a request.
+        onManageToken('已保存的 Token 无效或已失效，请重新输入。')
         return false
       }
       void sendMessage(text)
       return true
     },
-    [hasPersonalToken, openTokenInput, personalTokenState, sendMessage],
+    [
+      hasPersonalToken,
+      onManageToken,
+      personalTokenState,
+      personalTokenValidity,
+      sendMessage,
+    ],
   )
 
   const renderItem = useCallback(
@@ -308,15 +314,6 @@ export default function ChatView({
         onSelect={setPersona}
         onTogglePin={togglePersonaPin}
         onRetry={reloadPersonas}
-        onManageToken={openTokenInput}
-      />
-      <TokenInputSheet
-        ref={tokenSheet}
-        source={personalTokenSource}
-        maskedToken={personalTokenPreview}
-        onSave={savePersonalToken}
-        onClear={clearPersonalToken}
-        onBeforeNavigate={() => personaSheet.current?.dismiss()}
       />
     </View>
   )

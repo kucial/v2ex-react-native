@@ -28,7 +28,9 @@ import { AIChatPersonaSummary } from '@/types/ai-chat'
 import { pressFeedbackStyles } from './pressFeedback'
 import { AIChatColors, useAIChatTheme } from './theme'
 
-const SHEET_CHROME_HEIGHT = 162
+// Header + search box + padding. Was 162 while a 38pt token row (plus its 8pt
+// margin) also lived up here.
+const SHEET_CHROME_HEIGHT = 116
 const PERSONA_ROW_HEIGHT = 54
 const STATUS_HEIGHT = 120
 const MAX_SHEET_CONTENT_HEIGHT = 720
@@ -49,7 +51,6 @@ type Props = {
   onSelect: (persona: string) => void
   onTogglePin: (persona: string) => void
   onRetry: () => Promise<void>
-  onManageToken: () => void
 }
 
 export default forwardRef<PersonaPickerSheetHandle, Props>(
@@ -166,28 +167,6 @@ export default forwardRef<PersonaPickerSheetHandle, Props>(
             </Pressable>
           </View>
 
-          <Pressable
-            accessibilityLabel='管理 V2EX Token'
-            accessibilityRole='button'
-            onPress={props.onManageToken}
-            style={({ pressed }) => [
-              styles.tokenButton,
-              pressed && pressFeedbackStyles.regular,
-            ]}
-          >
-            <V2exIcon name='key-outline' size={15} color={colors.text} />
-            <Text style={styles.tokenText}>
-              {props.tokenSource === 'secure'
-                ? '更新或移除 Token'
-                : '输入 Token'}
-            </Text>
-            <V2exIcon
-              name='chevron-right-outline'
-              size={13}
-              color={colors.tertiaryText}
-            />
-          </Pressable>
-
           <View style={styles.searchBox}>
             <V2exIcon
               name='magnifying-glass-outline'
@@ -209,25 +188,26 @@ export default forwardRef<PersonaPickerSheetHandle, Props>(
               <Text style={styles.errorText}>
                 {props.error || '无法加载 V2EX Persona。'}
               </Text>
-              <Pressable
-                accessibilityLabel={
-                  props.tokenSource === 'none' ? '输入 Token' : '重试'
-                }
-                accessibilityRole='button'
-                onPress={
-                  props.tokenSource === 'none'
-                    ? props.onManageToken
-                    : () => void props.onRetry()
-                }
-                style={({ pressed }) => [
-                  styles.retryButton,
-                  pressed && pressFeedbackStyles.regular,
-                ]}
-              >
-                <Text style={styles.retryText}>
-                  {props.tokenSource === 'none' ? '输入 Token' : '重试'}
+              {/* Token setup lives at the bottom of the recents list now, so
+                  with no token there is nothing to retry — point there instead
+                  of offering a button that would just fail again. */}
+              {props.tokenSource === 'none' ? (
+                <Text style={styles.statusText}>
+                  在「最近对话」页面底部设置 Token
                 </Text>
-              </Pressable>
+              ) : (
+                <Pressable
+                  accessibilityLabel='重试'
+                  accessibilityRole='button'
+                  onPress={() => void props.onRetry()}
+                  style={({ pressed }) => [
+                    styles.retryButton,
+                    pressed && pressFeedbackStyles.regular,
+                  ]}
+                >
+                  <Text style={styles.retryText}>重试</Text>
+                </Pressable>
+              )}
             </View>
           ) : props.loadState === 'loading' && !hasUsablePersonas ? (
             <View style={styles.status}>
@@ -334,18 +314,6 @@ function createStyles(colors: AIChatColors) {
       justifyContent: 'center',
     },
     disabled: { opacity: 0.35 },
-    tokenButton: {
-      height: 38,
-      marginHorizontal: 16,
-      marginBottom: 8,
-      paddingHorizontal: 12,
-      borderRadius: 12,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-      backgroundColor: colors.elevated,
-    },
-    tokenText: { flex: 1, color: colors.secondaryText, fontSize: 13 },
     searchBox: {
       height: 40,
       marginHorizontal: 16,

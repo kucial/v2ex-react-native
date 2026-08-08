@@ -23,7 +23,13 @@ import { PersonalTokenSource } from '@/containers/AIChatService'
 import { pressFeedbackStyles } from './pressFeedback'
 import { AIChatColors, useAIChatTheme } from './theme'
 
-export type TokenInputSheetHandle = { present: () => void }
+export type TokenInputSheetHandle = {
+  /**
+   * `reason` is shown in the error slot, so a sheet opened by a guard can say
+   * what it is blocking on instead of appearing unprompted.
+   */
+  present: (reason?: string) => void
+}
 
 // The token is account-level and sent as `Authorization: Bearer`, so the host
 // serving this settings page does not affect which tokens the chat API accepts.
@@ -56,9 +62,9 @@ export default forwardRef<TokenInputSheetHandle, Props>(
     const [error, setError] = useState<string>()
 
     useImperativeHandle(ref, () => ({
-      present: () => {
+      present: (reason?: string) => {
         setToken('')
-        setError(undefined)
+        setError(reason)
         void sheetRef.current?.present()
       },
     }))

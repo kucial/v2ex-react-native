@@ -20,7 +20,7 @@ import { useAIChatTheme } from '@/components/AIChat/theme'
 import V2exIcon from '@/components/icons/V2exIcon'
 
 import { CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
-import { useAIChat } from '@/containers/AIChatService'
+import { PersonalTokenValidity, useAIChat } from '@/containers/AIChatService'
 import { AIChatConversation } from '@/types/ai-chat'
 
 function sectionLabel(timestamp: number): string {
@@ -43,10 +43,38 @@ function sectionLabel(timestamp: number): string {
   return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' })
 }
 
+/**
+ * Label and tone for the token row. `loading`/`saving` deliberately keep the
+ * previous wording rather than flashing a spinner: the row is chrome, not the
+ * thing the user came here for.
+ */
+function tokenRowState({
+  hasPersonalToken,
+  validity,
+  preview,
+}: {
+  hasPersonalToken: boolean
+  validity: PersonalTokenValidity
+  preview: string
+}): { label: string; danger: boolean } {
+  if (!hasPersonalToken) {
+    return { label: '设置 V2EX Token', danger: false }
+  }
+  if (validity === 'invalid') {
+    return { label: 'Token 无效，点击重新设置', danger: true }
+  }
+  return {
+    label: preview ? `V2EX Token ${preview}` : 'V2EX Token',
+    danger: false,
+  }
+}
+
 export default function RecentsView({
   onOpenChat,
+  onManageToken,
 }: {
   onOpenChat: () => void
+  onManageToken: (reason?: string) => void
 }) {
   const insets = useSafeAreaInsets()
   const { width } = useWindowDimensions()
@@ -59,7 +87,16 @@ export default function RecentsView({
     startNewConversation,
     renameConversation,
     deleteConversation,
+    hasPersonalToken,
+    personalTokenValidity,
+    personalTokenPreview,
   } = useAIChat()
+
+  const tokenRow = tokenRowState({
+    hasPersonalToken,
+    validity: personalTokenValidity,
+    preview: personalTokenPreview,
+  })
 
   const openConversation = useCallback(
     (id: string) => {
@@ -235,17 +272,52 @@ export default function RecentsView({
         }}
       />
 
-      <Text
+      <View
         style={[
-          recentsStyles.hint,
+          recentsStyles.footer,
           {
+            width: maxWidth,
             paddingBottom: Math.max(insets.bottom, 14),
-            color: colors.mutedText,
+            borderTopColor: colors.border,
           },
         ]}
       >
-        向左滑动返回聊天
-      </Text>
+        <Pressable
+          accessibilityLabel={tokenRow.label}
+          accessibilityRole='button'
+          onPress={() => onManageToken()}
+          style={({ pressed }) => [
+            recentsStyles.tokenRow,
+            { backgroundColor: colors.elevatedStrong },
+            pressed && pressFeedbackStyles.regular,
+          ]}
+        >
+          <V2exIcon
+            name='key-outline'
+            size={15}
+            color={tokenRow.danger ? colors.dangerText : colors.secondaryText}
+          />
+          <Text
+            numberOfLines={1}
+            style={[
+              recentsStyles.tokenText,
+              {
+                color: tokenRow.danger ? colors.dangerText : colors.text,
+              },
+            ]}
+          >
+            {tokenRow.label}
+          </Text>
+          <V2exIcon
+            name='chevron-right-outline'
+            size={13}
+            color={colors.tertiaryText}
+          />
+        </Pressable>
+        <Text style={[recentsStyles.hint, { color: colors.mutedText }]}>
+          向左滑动返回聊天
+        </Text>
+      </View>
       <RenameConversationSheet
         ref={renameSheet}
         onRename={renameConversation}
@@ -290,5 +362,20 @@ const recentsStyles = StyleSheet.create({
   rowText: { flex: 1, gap: 4 },
   rowTitle: { fontSize: 15.5, fontWeight: '600' },
   preview: { fontSize: 13 },
-  hint: { paddingTop: 8, textAlign: 'center', fontSize: 11 },
+  footer: {
+    alignSelf: 'center',
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  tokenRow: {
+    minHeight: 44,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  tokenText: { flex: 1, fontSize: 14, fontWeight: '500' },
+  hint: { paddingTop: 10, textAlign: 'center', fontSize: 11 },
 })

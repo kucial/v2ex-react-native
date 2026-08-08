@@ -27,6 +27,7 @@ import {
   AIChatConnectionState,
   AIChatHistoryMessage,
   DEFAULT_PERSONA,
+  isTokenAuthError,
   V2EXChatClient,
 } from '@/lib/ai-chat/v2ex'
 import { lengthBucket, track, truncateForTracking } from '@/lib/tracking'
@@ -47,6 +48,17 @@ export type PersonaLoadState = 'loading' | 'ready' | 'error'
 export type PersonalTokenState = 'loading' | 'ready' | 'missing' | 'saving'
 export type PersonalTokenSource = 'secure' | 'none'
 
+/**
+ * Whether the stored token actually works, which is a separate question from
+ * whether one exists — `personalTokenState: 'ready'` only means we read one out
+ * of secure storage.
+ *
+ * `unknown` covers "we have a token but haven't heard back yet", and also a
+ * failure that was not the token's fault (offline, V2EX down). Only a rejected
+ * token becomes `invalid`, so a flaky network never locks the user out.
+ */
+export type PersonalTokenValidity = 'unknown' | 'valid' | 'invalid'
+
 type AIChatContextValue = {
   hydrated: boolean
   conversations: AIChatConversation[]
@@ -60,7 +72,10 @@ type AIChatContextValue = {
   personalTokenState: PersonalTokenState
   personalTokenSource: PersonalTokenSource
   personalTokenPreview: string
+  personalTokenValidity: PersonalTokenValidity
   hasPersonalToken: boolean
+  /** A token exists and has not been rejected — safe to start a turn. */
+  canSendMessage: boolean
   connectionState: AIChatConnectionState
   activeRequest: ActiveRequest | null
   selectConversation: (id: string) => void
@@ -168,6 +183,8 @@ export function AIChatProvider({ children }: PropsWithChildren) {
   const [personalTokenSource, setPersonalTokenSource] =
     useState<PersonalTokenSource>('none')
   const [personalTokenPreview, setPersonalTokenPreview] = useState('')
+  const [personalTokenValidity, setPersonalTokenValidity] =
+    useState<PersonalTokenValidity>('unknown')
   const [connectionState, setConnectionState] =
     useState<AIChatConnectionState>('idle')
   const [activeRequest, setActiveRequest] = useState<ActiveRequest | null>(null)
@@ -189,6 +206,9 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       setHasLoadedPersonas(true)
       setPersonaLoadState('ready')
       setPersonaError(undefined)
+      // A successful listPersonas is an authenticated round trip, so it doubles
+      // as proof the token still works.
+      setPersonalTokenValidity('valid')
     },
     [],
   )
@@ -208,6 +228,11 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       setPersonaError(
         error instanceof Error ? error.message : '无法加载 V2EX Persona。',
       )
+      // Only an outright rejection condemns the token. Anything else (offline,
+      // timeout, V2EX 5xx) leaves it unknown so the user can still try to send.
+      if (isTokenAuthError(error)) {
+        setPersonalTokenValidity('invalid')
+      }
     }
   }, [applyAvailablePersonas, transport])
 
@@ -226,7 +251,10 @@ export function AIChatProvider({ children }: PropsWithChildren) {
         setPersonalTokenSource(token ? 'secure' : 'none')
         setPersonalTokenState(token ? 'ready' : 'missing')
         setPersonalTokenPreview(maskPersonalToken(token))
+        setPersonalTokenValidity('unknown')
         if (token) {
+          // reloadPersonas settles validity: 'valid' on success, 'invalid' only
+          // if V2EX rejects the token.
           void reloadPersonas()
         } else {
           setPersonaLoadState('error')
@@ -239,6 +267,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
         setPersonalTokenSource('none')
         setPersonalTokenState('missing')
         setPersonalTokenPreview('')
+        setPersonalTokenValidity('unknown')
         setPersonaLoadState('error')
         setPersonaError('无法读取安全凭据，请重新输入 Token。')
       })
@@ -344,10 +373,16 @@ export function AIChatProvider({ children }: PropsWithChildren) {
             ) {
               return
             }
+            const reason = classifyStreamError(message)
             track('ai.stream_failed', {
               persona: conversation.persona,
-              reason: classifyStreamError(message),
+              reason,
             })
+            // A token revoked mid-session only shows up here. Recording it now
+            // means the next send is guarded instead of failing the same way.
+            if (reason === 'auth') {
+              setPersonalTokenValidity('invalid')
+            }
             patchMessage(conversation.id, assistantMessageId, (current) => ({
               ...current,
               status: 'failed',
@@ -392,6 +427,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       const previousToken = transport.getPersonalToken()
       const previousSource = personalTokenSource
       const previousPreview = personalTokenPreview
+      const previousValidity = personalTokenValidity
       personaRequestIdRef.current += 1
       setPersonalTokenState('saving')
       setPersonaLoadState('loading')
@@ -412,6 +448,9 @@ export function AIChatProvider({ children }: PropsWithChildren) {
         setPersonalTokenSource(previousSource)
         setPersonalTokenState(previousToken ? 'ready' : 'missing')
         setPersonalTokenPreview(previousPreview)
+        // The rejected token was never stored, so the restored one is only as
+        // suspect as it was before this attempt.
+        setPersonalTokenValidity(previousValidity)
         setPersonaLoadState('error')
         setPersonaError(
           error instanceof Error ? error.message : '无法验证 V2EX Token。',
@@ -423,6 +462,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       applyAvailablePersonas,
       personalTokenPreview,
       personalTokenSource,
+      personalTokenValidity,
       stopGenerating,
       transport,
     ],
@@ -436,6 +476,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
     setPersonalTokenSource('none')
     setPersonalTokenState('missing')
     setPersonalTokenPreview('')
+    setPersonalTokenValidity('unknown')
     setPersonas([{ id: DEFAULT_PERSONA }])
     setHasLoadedPersonas(false)
     setPersonaLoadState('error')
@@ -627,8 +668,13 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       personalTokenState,
       personalTokenSource,
       personalTokenPreview,
+      personalTokenValidity,
       hasPersonalToken:
         personalTokenState === 'ready' && personalTokenSource === 'secure',
+      canSendMessage:
+        personalTokenState === 'ready' &&
+        personalTokenSource === 'secure' &&
+        personalTokenValidity !== 'invalid',
       connectionState,
       activeRequest,
       selectConversation,
@@ -657,6 +703,7 @@ export function AIChatProvider({ children }: PropsWithChildren) {
       personalTokenSource,
       personalTokenState,
       personalTokenPreview,
+      personalTokenValidity,
       personas,
       pinnedPersonas,
       reloadPersonas,

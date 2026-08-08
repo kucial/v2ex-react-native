@@ -50,9 +50,32 @@ function authorizationHeaders(token: string): Record<string, string> {
   }
 }
 
+/**
+ * Message used for every 401/403 from the AI endpoints. Exported so callers can
+ * recognise an auth failure without re-deriving it from an HTTP status they no
+ * longer have — see {@link isTokenAuthError}.
+ */
+export const TOKEN_AUTH_ERROR_MESSAGE =
+  'V2EX Personal Access Token 无效，或没有 AI Chat 权限。'
+
+/**
+ * True when a failure means the stored token was rejected, as opposed to the
+ * network being down or V2EX being unhappy for some other reason. Only an auth
+ * failure should make the app treat a saved token as unusable.
+ */
+export function isTokenAuthError(error: unknown): boolean {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === 'string'
+        ? error
+        : ''
+  return message.includes('Token 无效')
+}
+
 function apiErrorMessage(status: number, body: string): string {
   if (status === 401 || status === 403) {
-    return 'V2EX Personal Access Token 无效，或没有 AI Chat 权限。'
+    return TOKEN_AUTH_ERROR_MESSAGE
   }
   if (status === 408 || status === 504) {
     return 'V2EX 响应超时，请稍后重试。'
