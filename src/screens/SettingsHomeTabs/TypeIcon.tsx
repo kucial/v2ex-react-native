@@ -4,7 +4,7 @@ type TabType = 'home' | 'node' | 'user'
 export default function TypeIcon({
   type,
   ...props
-}: IconProps & { type: TabType }) {
+}: IconProps & { type: TabType; size: number }) {
   switch (type) {
     case 'home':
       return <V2exIcon name='home-modern-outline' {...props} />

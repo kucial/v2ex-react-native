@@ -92,7 +92,7 @@ export default function AppSidebar(props: {
   )
 
   const CurrentUserIcon = useCallback(
-    (props: IconProps) => {
+    (props: IconProps & { size: number }) => {
       if (!user?.avatar_normal) {
         return <V2exIcon name='user-outline' {...props} />
       }

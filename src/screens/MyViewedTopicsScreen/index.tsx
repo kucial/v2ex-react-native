@@ -33,7 +33,11 @@ const Actions = (props) => {
           props.onDelete(props.item)
         }}
       >
-        <V2exIcon name='trash-outline' color={styles.btn_danger__text.color} />
+        <V2exIcon
+          name='trash-outline'
+          size={24}
+          color={styles.btn_danger__text.color}
+        />
       </Pressable>
     </View>
   )

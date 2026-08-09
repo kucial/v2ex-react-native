@@ -1,6 +1,12 @@
+patchedDependencies:
+  react-native-nprogress@1.1.0: patches/react-native-nprogress@1.1.0.patch
+
 ignoredBuiltDependencies:
   - '@apollo/protobufjs'
+  - '@sentry/cli'
   - electron
+  - unrs-resolver
 
 onlyBuiltDependencies:
+  - react-native-nitro-modules
   - sqlite3
