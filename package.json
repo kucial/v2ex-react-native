@@ -22,7 +22,7 @@
     "@gorhom/portal": "^1.0.14",
     "@hookform/resolvers": "^5.4.0",
     "@howincodes/expo-dynamic-app-icon": "^3.0.2",
-    "@lodev09/react-native-true-sheet": "3.11.2",
+    "@lodev09/react-native-true-sheet": "3.11.9",
     "@native-html/iframe-plugin": "^2.6.1",
     "@prezly/slate-lists": "^0.57.1",
     "@react-native-community/slider": "5.2.0",

@@ -8,6 +8,7 @@ import {
 import {
   Alert,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -36,6 +37,7 @@ export type TokenInputSheetHandle = {
 // www.v2ex.com matches BASE_URL, which is where the app's session cookies are
 // stored — so an in-app WebView reaches this page already signed in.
 const TOKEN_SETTINGS_URL = 'https://www.v2ex.com/settings/tokens'
+const TOKEN_ACTION_VISIBILITY_OFFSET = 68
 
 type Props = {
   source: PersonalTokenSource
@@ -60,6 +62,7 @@ export default forwardRef<TokenInputSheetHandle, Props>(
     const [token, setToken] = useState('')
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState<string>()
+    const inputRef = useRef<TextInput>(null)
 
     useImperativeHandle(ref, () => ({
       present: (reason?: string) => {
@@ -131,10 +134,13 @@ export default forwardRef<TokenInputSheetHandle, Props>(
       <TrueSheet
         ref={sheetRef}
         detents={['auto']}
-        maxContentHeight={520}
-        cornerRadius={28}
         grabber
         backgroundColor={colors.elevatedStrong}
+        onDidPresent={() => {
+          if (token?.trim().length > 0) {
+            inputRef.current?.focus()
+          }
+        }}
       >
         <View style={styles.content}>
           <View style={styles.titleRow}>
@@ -170,6 +176,7 @@ export default forwardRef<TokenInputSheetHandle, Props>(
             onChangeText={setToken}
             onSubmitEditing={() => void save()}
             style={styles.input}
+            ref={inputRef}
           />
 
           {error ? (
@@ -219,7 +226,9 @@ export default forwardRef<TokenInputSheetHandle, Props>(
 
 function createStyles(colors: AIChatColors) {
   return StyleSheet.create({
-    content: { paddingHorizontal: 20, paddingTop: 18, paddingBottom: 34 },
+    content: {
+      padding: 16,
+    },
     titleRow: { flexDirection: 'row', alignItems: 'center', gap: 9 },
     title: { color: colors.text, fontSize: 20, fontWeight: '700' },
     description: {
