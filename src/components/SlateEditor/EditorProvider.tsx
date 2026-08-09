@@ -154,53 +154,53 @@ const EditorProvider = forwardRef<SlateEditorService, EditorProviderProps>(
           return Promise.resolve()
         },
         focus: () => {
-          domRef.current?.focus()
+          domRef.current?.focus?.()
           return Promise.resolve()
         },
         blur: () => {
-          domRef.current?.blur()
+          domRef.current?.blur?.()
           return Promise.resolve()
         },
         getHTML: () =>
           new Promise<string>((resolve) => {
             pendingHTML.current = resolve
-            domRef.current?.getHTML()
+            domRef.current?.getHTML?.()
           }),
         getMarkdown: () =>
           new Promise<string>((resolve) => {
             pendingMarkdown.current = resolve
-            domRef.current?.getMarkdown()
+            domRef.current?.getMarkdown?.()
           }),
         toggleBlock: (block) => {
-          domRef.current?.toggleBlock(block)
+          domRef.current?.toggleBlock?.(block)
           return Promise.resolve()
         },
         toggleMark: (mark) => {
-          domRef.current?.toggleMark(mark)
+          domRef.current?.toggleMark?.(mark)
           return Promise.resolve()
         },
         listIndent: () => {
-          domRef.current?.listIndent()
+          domRef.current?.listIndent?.()
           return Promise.resolve()
         },
         listOutdent: () => {
-          domRef.current?.listOutdent()
+          domRef.current?.listOutdent?.()
           return Promise.resolve()
         },
         insertImage: (args) => {
-          domRef.current?.insertImage(args.url, args.width, args.height)
+          domRef.current?.insertImage?.(args.url, args.width, args.height)
           return Promise.resolve()
         },
         base64Encode: () => {
-          domRef.current?.base64Encode()
+          domRef.current?.base64Encode?.()
           return Promise.resolve()
         },
         undo: () => {
-          domRef.current?.undo()
+          domRef.current?.undo?.()
           return Promise.resolve()
         },
         redo: () => {
-          domRef.current?.redo()
+          domRef.current?.redo?.()
           return Promise.resolve()
         },
       }),
