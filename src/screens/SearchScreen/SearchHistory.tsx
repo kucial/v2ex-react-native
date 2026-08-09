@@ -2,12 +2,15 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { useTheme } from '@/containers/ThemeService'
 
-import { useSearchHistory } from './hooks'
+import { SearchHistoryService, SearchParams } from './types'
 
-export default function SearchHistory(props) {
-  const searchHistory = useSearchHistory()
+export default function SearchHistory(props: {
+  history: SearchHistoryService
+  onSelect: (params: SearchParams) => void
+}) {
+  const { history } = props
   const { styles } = useTheme()
-  if (searchHistory.records.length) {
+  if (history.records.length) {
     return (
       <View style={searchHistoryStyles.container}>
         <View style={searchHistoryStyles.headerRow}>
@@ -23,20 +26,24 @@ export default function SearchHistory(props) {
                 pressed && searchHistoryStyles.pressed,
               ]}
               hitSlop={10}
-              onPress={searchHistory.clear}
+              accessibilityRole='button'
+              accessibilityLabel='清空搜索历史'
+              onPress={history.clear}
             >
               <Text style={[styles.text_primary, styles.text_base]}>清空</Text>
             </Pressable>
           </View>
         </View>
         <View>
-          {searchHistory.records.map((item) => (
+          {history.records.map((item) => (
             <Pressable
               style={({ pressed }) => [
                 searchHistoryStyles.itemPressable,
                 pressed && searchHistoryStyles.pressed,
               ]}
               key={item.q}
+              accessibilityRole='button'
+              accessibilityLabel={`搜索 ${item.q}`}
               onPress={() => {
                 props.onSelect(item)
               }}
@@ -53,12 +60,35 @@ export default function SearchHistory(props) {
     )
   }
 
-  return null
+  return (
+    <View style={searchHistoryStyles.emptyContainer}>
+      <Text style={[styles.text_meta, searchHistoryStyles.emptyTitle]}>
+        搜索 V2EX 主题
+      </Text>
+      <Text style={[styles.text_meta, searchHistoryStyles.emptyDescription]}>
+        输入关键词后按搜索键开始
+      </Text>
+    </View>
+  )
 }
 
 const searchHistoryStyles = StyleSheet.create({
   container: {
     paddingTop: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 80,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  emptyDescription: {
+    marginTop: 8,
+    fontSize: 14,
   },
   headerRow: {
     paddingLeft: 16,

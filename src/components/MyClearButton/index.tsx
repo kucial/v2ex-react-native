@@ -14,6 +14,7 @@ export default function MyClearButton(props: { onPress: () => void }) {
       variant='icon'
       radius={20}
       onPress={props.onPress}
+      accessibilityLabel='清除内容'
     >
       <V2exIcon name='x-mark-outline' size={18} color={theme.colors.text} />
     </Button>

@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
+  ActivityIndicator,
   InteractionManager,
   Platform,
   StyleSheet,
+  Text,
   TextInput,
   View,
 } from 'react-native'
@@ -15,7 +17,7 @@ import BackButton from '@/components/BackButton'
 import MyClearButton from '@/components/MyClearButton'
 
 import { useTheme } from '@/containers/ThemeService'
-import { getScreenInfo } from '@/utils/url'
+import { getScreenInfo, isAppLink } from '@/utils/url'
 
 import { useSearchHistory } from './hooks'
 import SearchHistory from './SearchHistory'
@@ -60,24 +62,54 @@ export default function GoogleSearch() {
 
   const searchHistory = useSearchHistory()
 
+  const [query, setQuery] = useState('')
   const [searchParams, setSearchParams] = useState<SearchParams>({ q: '' })
   const onceLoaded = useRef(false)
   const [loading, setLoading] = useState(false)
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       InteractionManager.runAfterInteractions(() => {
         searchInput.current?.focus()
       })
     }, 500)
+    return () => clearTimeout(timer)
   }, [])
 
   const keyword = searchParams.q.trim()
 
+  const commitSearch = useCallback((params: SearchParams) => {
+    const next = { ...params, q: params.q.trim() }
+    setQuery(next.q)
+    onceLoaded.current = false
+    setSearchParams(next)
+  }, [])
+
+  const openV2exLink = useCallback(
+    (url: string) => {
+      const screen = getScreenInfo(url)
+      switch (screen?.name) {
+        case 'topic':
+          router.push({ pathname: '/topic/[id]', params: screen.params })
+          break
+        case 'member':
+          router.push({ pathname: '/member/[username]', params: screen.params })
+          break
+        case 'node':
+          router.push({ pathname: '/node/[name]', params: screen.params })
+          break
+        default:
+          router.push({ pathname: '/browser', params: { url } })
+      }
+    },
+    [router],
+  )
+
+  const addHistoryRecord = searchHistory.addRecord
   useEffect(() => {
     if (searchParams.q) {
-      searchHistory.addRecord(searchParams)
+      addHistoryRecord(searchParams)
     }
-  }, [searchParams, searchHistory])
+  }, [searchParams, addHistoryRecord])
 
   return (
     <View style={googleSearchStyles.container}>
@@ -117,27 +149,30 @@ export default function GoogleSearch() {
                   : styles.text_base,
               ]}
               placeholderTextColor={theme.colors.text_placeholder}
-              defaultValue={searchParams.q || ''}
+              value={query}
+              onChangeText={setQuery}
               ref={searchInput}
               placeholder='输入关键词'
+              accessibilityLabel='搜索关键词'
               returnKeyType='search'
               onSubmitEditing={({ nativeEvent }) => {
-                setSearchParams((prev) => ({
-                  ...prev,
+                commitSearch({
+                  ...searchParams,
                   q: nativeEvent.text,
-                }))
+                })
               }}
             />
-            {!!keyword && (
+            {!!query && (
               <View style={googleSearchStyles.clearWrap}>
                 <MyClearButton
                   onPress={() => {
+                    setQuery('')
                     setSearchParams((prev) => ({
                       ...prev,
                       q: '',
                     }))
                     setLoading(false)
-                    searchInput.current?.clear()
+                    onceLoaded.current = false
                     searchInput.current?.focus()
                   }}
                 />
@@ -165,28 +200,40 @@ export default function GoogleSearch() {
               setLoading(false)
               onceLoaded.current = true
             }}
+            onShouldStartLoadWithRequest={({ url }) => {
+              if (!isAppLink(url)) {
+                return true
+              }
+              openV2exLink(url)
+              return false
+            }}
             onMessage={(event) => {
-              console.log(event, 'onMessage')
-              if (event.nativeEvent.data) {
+              try {
                 const data = JSON.parse(event.nativeEvent.data)
                 if (data.type === 'open-app-link') {
-                  const screen = getScreenInfo(data.payload.link)
-                  if (screen) {
-                    router.push({
-                      pathname: screen.pathname,
-                      params: screen.params,
-                    })
-                  }
+                  openV2exLink(data.payload.link)
                 }
-              }
+              } catch {}
             }}
           />
         ) : (
-          <SearchHistory onSelect={setSearchParams} />
+          <SearchHistory history={searchHistory} onSelect={commitSearch} />
+        )}
+        {loading && !onceLoaded.current && (
+          <View
+            style={[googleSearchStyles.loading, styles.layer1]}
+            accessibilityRole='progressbar'
+            accessibilityLabel='正在搜索'
+          >
+            <ActivityIndicator color={theme.colors.primary} />
+            <Text style={[styles.text_meta, googleSearchStyles.loadingText]}>
+              正在搜索…
+            </Text>
+          </View>
         )}
         <View style={googleSearchStyles.progressWrap}>
           <NProgress
-            backgroundColor={theme.colors.primary}
+            backgroundColor={theme.colors.primary as string}
             height={3}
             enabled={loading}
           />
@@ -249,5 +296,13 @@ const googleSearchStyles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     top: 0,
+  },
+  loading: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
   },
 })

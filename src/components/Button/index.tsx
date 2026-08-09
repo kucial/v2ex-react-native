@@ -40,6 +40,8 @@ function Button(props: {
   variant?: ButtonVariant
   size?: 'md' | 'sm'
   radius?: number | 'md' | 'sm' | 'full'
+  accessibilityLabel?: string
+  accessibilityHint?: string
 }) {
   const { styles, theme } = useTheme()
   const { size, variant = 'default', radius = 'md' } = props
@@ -71,6 +73,10 @@ function Button(props: {
   return (
     <Pressable
       disabled={props.disabled}
+      accessibilityRole='button'
+      accessibilityLabel={props.accessibilityLabel ?? props.label}
+      accessibilityHint={props.accessibilityHint}
+      accessibilityState={{ disabled: props.disabled }}
       style={(state: PressableStateCallbackType) => {
         const { pressed } = state
         return [

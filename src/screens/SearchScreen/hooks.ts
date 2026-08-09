@@ -1,11 +1,11 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { uniqBy } from 'lodash'
 
 import { useCachedState } from '@/utils/hooks'
 import { getJSON } from '@/utils/storage'
 
 import { CACHE_KEY, HISTORY_CACHE_KEY } from './constants'
-import { SearcHistorySerivce, SearchParams } from './types'
+import { SearchHistoryService, SearchParams } from './types'
 
 export const useSearchHistory = () => {
   const [history, setHistory] = useCachedState<SearchParams[]>(
@@ -23,20 +23,18 @@ export const useSearchHistory = () => {
     },
   )
 
-  return useMemo(
-    () =>
-      ({
-        records: history,
-        addRecord(param) {
-          // unique by keyword
-          setHistory((prev) => {
-            return uniqBy([param, ...prev], 'q').slice(0, 15)
-          })
-        },
-        clear() {
-          setHistory([])
-        },
-      }) as SearcHistorySerivce,
-    [history],
+  const addRecord = useCallback(
+    (param: SearchParams) => {
+      setHistory((prev) => uniqBy([param, ...prev], 'q').slice(0, 15))
+    },
+    [setHistory],
+  )
+  const clear = useCallback(() => {
+    setHistory([])
+  }, [setHistory])
+
+  return useMemo<SearchHistoryService>(
+    () => ({ records: history, addRecord, clear }),
+    [history, addRecord, clear],
   )
 }

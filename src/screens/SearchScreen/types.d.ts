@@ -8,7 +8,7 @@ export type SearchParams = {
   order?: string
 }
 
-export type SearcHistorySerivce = {
+export type SearchHistoryService = {
   records: SearchParams[]
   addRecord: (record: SearchParams) => void
   clear: () => void

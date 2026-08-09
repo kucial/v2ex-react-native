@@ -1,4 +1,9 @@
-import { GestureResponderEvent, StyleSheet, ViewStyle } from 'react-native'
+import {
+  ColorValue,
+  GestureResponderEvent,
+  StyleSheet,
+  ViewStyle,
+} from 'react-native'
 
 import V2exIcon from '@/components/icons/V2exIcon'
 
@@ -11,7 +16,7 @@ export default function BackButton({
   onPress,
   style,
 }: {
-  tintColor?: string
+  tintColor?: ColorValue
   onPress: (event: GestureResponderEvent) => void
   style?: ViewStyle
 }) {
@@ -22,6 +27,7 @@ export default function BackButton({
       variant='icon'
       onPress={onPress}
       radius={22}
+      accessibilityLabel='返回'
     >
       <V2exIcon
         name='chevron-left-outline'

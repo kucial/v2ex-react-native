@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   InteractionManager,
   Platform,
@@ -29,7 +29,7 @@ import AdvancedSearchForm from './AdvancedSearchForm'
 import SearchResultView from './SearchResultView'
 
 const hasAdvancedOption = (params: SearchParams) => {
-  return (
+  return !!(
     params.gte ||
     params.lte ||
     params.node ||
@@ -44,21 +44,30 @@ export default function Sov2exSearch() {
   const insets = useSafeAreaInsets()
   const searchInput = useRef<TextInput>(null)
   const advancedSearchModalRef = useRef<TrueSheet>(null)
+  const [query, setQuery] = useState('')
   const [searchParams, setSearchParams] = useState<SearchParams>({ q: '' })
   const searchHistory = useSearchHistory()
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       InteractionManager.runAfterInteractions(() => {
         searchInput.current?.focus()
       })
     }, 500)
+    return () => clearTimeout(timer)
   }, [])
 
+  const commitSearch = useCallback((params: SearchParams) => {
+    const next = { ...params, q: params.q.trim() }
+    setQuery(next.q)
+    setSearchParams(next)
+  }, [])
+
+  const addHistoryRecord = searchHistory.addRecord
   useEffect(() => {
     if (searchParams.q) {
-      searchHistory.addRecord(searchParams)
+      addHistoryRecord(searchParams)
     }
-  }, [searchParams, searchHistory])
+  }, [searchParams, addHistoryRecord])
 
   return (
     <KeyboardDismiss style={sov2exStyles.container}>
@@ -107,26 +116,28 @@ export default function Sov2exSearch() {
                         : styles.text_base,
                     ]}
                     placeholderTextColor={theme.colors.text_placeholder}
-                    defaultValue={searchParams.q || ''}
+                    value={query}
+                    onChangeText={setQuery}
                     ref={searchInput}
                     placeholder='输入关键词'
+                    accessibilityLabel='搜索关键词'
                     returnKeyType='search'
                     onSubmitEditing={({ nativeEvent }) => {
-                      setSearchParams((prev) => ({
-                        ...prev,
+                      commitSearch({
+                        ...searchParams,
                         q: nativeEvent.text,
-                      }))
+                      })
                     }}
                   />
-                  {!!searchParams.q && (
+                  {!!query && (
                     <View style={sov2exStyles.clearWrap}>
                       <MyClearButton
                         onPress={() => {
+                          setQuery('')
                           setSearchParams((prev) => ({
                             ...prev,
                             q: '',
                           }))
-                          searchInput.current?.clear()
                           searchInput.current?.focus()
                         }}
                       />
@@ -139,6 +150,7 @@ export default function Sov2exSearch() {
                   style={sov2exStyles.filterBtn}
                   variant='icon'
                   radius={22}
+                  accessibilityLabel='高级搜索'
                   onPress={() => {
                     searchInput.current?.blur()
                     presentSheet(advancedSearchModalRef.current)
@@ -156,6 +168,7 @@ export default function Sov2exSearch() {
             {hasAdvancedOption(searchParams) && (
               <Button
                 style={sov2exStyles.advBtn}
+                accessibilityLabel='编辑高级搜索条件'
                 onPress={() => {
                   searchInput.current?.blur()
                   presentSheet(advancedSearchModalRef.current)
@@ -221,7 +234,7 @@ export default function Sov2exSearch() {
           {searchParams.q ? (
             <SearchResultView params={searchParams} />
           ) : (
-            <SearchHistory onSelect={setSearchParams} />
+            <SearchHistory history={searchHistory} onSelect={commitSearch} />
           )}
         </View>
         <TrueSheet
@@ -234,7 +247,7 @@ export default function Sov2exSearch() {
             <AdvancedSearchForm
               initialValues={searchParams}
               onSubmit={(values) => {
-                setSearchParams(values)
+                commitSearch(values)
                 dismissSheet(advancedSearchModalRef.current)
               }}
             />
