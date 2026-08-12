@@ -17,11 +17,21 @@ export type ImgurOAuthCallbackResult =
       error: string
     }
 
-function isImgurOAuthCallback(url: URL) {
+function hasImgurOAuthCallbackPath(url: URL) {
   if (url.hostname === IMGUR_OAUTH_CALLBACK_PATH) return true
 
   const pathSegments = url.pathname.split('/').filter(Boolean)
   return pathSegments.at(-1) === IMGUR_OAUTH_CALLBACK_PATH
+}
+
+export function isImgurOAuthCallbackUrl(callbackUrl: string) {
+  try {
+    const url = new URL(callbackUrl)
+    const isAppScheme = ['r2v:', 'exp:', 'exps:'].includes(url.protocol)
+    return isAppScheme && hasImgurOAuthCallbackPath(url)
+  } catch {
+    return false
+  }
 }
 
 export function createImgurAuthorizationUrl(options: {
@@ -49,7 +59,7 @@ export function parseImgurOAuthCallback(
     return null
   }
 
-  if (!isImgurOAuthCallback(url)) return null
+  if (!hasImgurOAuthCallbackPath(url)) return null
 
   const params = new URLSearchParams(url.search.slice(1))
   const fragmentParams = new URLSearchParams(url.hash.slice(1))

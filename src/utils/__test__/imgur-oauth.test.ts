@@ -1,10 +1,30 @@
 import {
   createImgurAuthorizationUrl,
+  isImgurOAuthCallbackUrl,
   parseImgurOAuthCallback,
   redirectImgurOAuthSystemPath,
 } from '@/utils/imgur-oauth'
 
 describe('Imgur OAuth helpers', () => {
+  it('identifies OAuth callbacks that should not be treated as copied links', () => {
+    expect(isImgurOAuthCallbackUrl('r2v://imgur-oauth')).toBe(true)
+    expect(
+      isImgurOAuthCallbackUrl(
+        'r2v://imgur-oauth#access_token=secret&state=request-state',
+      ),
+    ).toBe(true)
+    expect(
+      isImgurOAuthCallbackUrl(
+        'exp://127.0.0.1:8081/--/imgur-oauth#access_token=secret',
+      ),
+    ).toBe(true)
+    expect(isImgurOAuthCallbackUrl('https://v2ex.com/t/123')).toBe(false)
+    expect(isImgurOAuthCallbackUrl('https://example.com/imgur-oauth')).toBe(
+      false,
+    )
+    expect(isImgurOAuthCallbackUrl('not a URL')).toBe(false)
+  })
+
   it('creates an authorization URL with callback and state', () => {
     const url = new URL(
       createImgurAuthorizationUrl({

@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { Linking, Platform } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 
+import { isImgurOAuthCallbackUrl } from '@/utils/imgur-oauth'
+
 import { useAlertService } from '../AlertService'
 
 export default function ClipboardWatcher() {
@@ -11,7 +13,7 @@ export default function ClipboardWatcher() {
       if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
         if (Platform.OS == 'ios') {
           Clipboard.getUrlAsync().then((url) => {
-            if (url) {
+            if (url && !isImgurOAuthCallbackUrl(url)) {
               alert.show({
                 type: 'info',
                 message: `点击打开链接：${url}`,
