@@ -61,6 +61,7 @@ const ICON_THEMES = [
 ]
 
 export default ({ config }: ConfigContext): ExpoConfig => {
+  const runtimeVersion = packageJson.version.split('.').slice(0, 2).join('.')
   const merged = {
     ...config,
     name: 'R2V',
@@ -69,6 +70,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     userInterfaceStyle: 'automatic',
     scheme: 'r2v',
     jsEngine: 'hermes',
+    // Keep OTA updates compatible within one major/minor app release. Patch
+    // releases such as 1.11.1 and 1.11.2 share runtime 1.11 on both platforms.
+    runtimeVersion,
     // Android `colorPrimary`, which otherwise defaults to Expo's #023c69 — a
     // blue used nowhere in the app. This is only the pre-JS baseline; once the
     // theme loads, modules/accent-color points the activity theme at the
@@ -83,7 +87,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       supportsTablet: true,
       bundleIdentifier: 'com.kucial.v2ex',
       appleTeamId: 'HVCHYVPAAC',
-      runtimeVersion: packageJson.version.split('.').slice(0, -1).join('.'),
       icon: './src/assets/r2v-icon.icon',
       splash: {
         image: './src/assets/splash.png',

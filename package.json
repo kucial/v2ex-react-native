@@ -1,7 +1,7 @@
 {
   "name": "v2ex-react-native",
   "main": "expo-router/entry",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "scripts": {
     "start": "expo start --dev-client",
     "prebuild": "expo prebuild",
