@@ -62,6 +62,11 @@ export default function EditorRender(props: EditorRenderProps) {
         ref={editor.domRef}
         onEvent={editor.handleEvent}
         dom={{
+          // The Expo DOM WebView bridge can reject injectJavaScript while its
+          // Fabric view is still being registered on slower Android devices.
+          // This editor does not call Expo native modules from the DOM runtime,
+          // so use react-native-webview and avoid that uncatchable mount race.
+          useExpoDOMWebView: false,
           hideKeyboardAccessoryView: true,
           // Disable DOM scrolling since we manage it in RN
           scrollEnabled: false,
