@@ -50,6 +50,22 @@ export function isTransportNoise(error: unknown): boolean {
   )
 }
 
+/**
+ * A remote post can reference an image that has expired, been deleted, or
+ * rejects hotlinking. The image library reports that content failure as an
+ * exception even though the app can continue rendering its fallback UI.
+ */
+export function isImageLoadNoise(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false
+  }
+  const message = (error as { message?: unknown }).message
+  return (
+    typeof message === 'string' &&
+    /^Could not get the image from given url: \S+$/.test(message)
+  )
+}
+
 type NoiseCandidateEvent = {
   message?: unknown
   exception?: { values?: { value?: unknown }[] }
@@ -72,6 +88,14 @@ export function isTransportNoiseEvent(event: NoiseCandidateEvent): boolean {
   return messages.some((message) => isTransportNoise({ message }))
 }
 
+export function isImageLoadNoiseEvent(event: NoiseCandidateEvent): boolean {
+  const messages = [
+    event.message,
+    ...(event.exception?.values ?? []).map((value) => value?.value),
+  ]
+  return messages.some((message) => isImageLoadNoise({ message }))
+}
+
 export const initSentry = () => {
   if (!inited) {
     inited = true
@@ -84,11 +108,16 @@ export const initSentry = () => {
       // an AxiosError can also reach Sentry via the ErrorBoundary, an
       // unhandled rejection, or another client entirely.
       beforeSend(event, hint) {
-        if (isTransportNoise(hint?.originalException)) {
+        if (
+          isTransportNoise(hint?.originalException) ||
+          isImageLoadNoise(hint?.originalException)
+        ) {
           return null
         }
         // Last resort for reports that carry no original exception.
-        return isTransportNoiseEvent(event) ? null : event
+        return isTransportNoiseEvent(event) || isImageLoadNoiseEvent(event)
+          ? null
+          : event
       },
     })
 

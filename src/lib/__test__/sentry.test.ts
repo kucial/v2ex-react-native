@@ -1,6 +1,11 @@
 import { AxiosError } from 'axios'
 
-import { isTransportNoise, isTransportNoiseEvent } from '@/lib/sentry'
+import {
+  isImageLoadNoise,
+  isImageLoadNoiseEvent,
+  isTransportNoise,
+  isTransportNoiseEvent,
+} from '@/lib/sentry'
 
 jest.mock('@sentry/react-native', () => ({
   reactNavigationIntegration: () => ({}),
@@ -119,5 +124,30 @@ describe('isTransportNoiseEvent', () => {
     expect(isTransportNoiseEvent({})).toBe(false)
     expect(isTransportNoiseEvent({ exception: { values: [] } })).toBe(false)
     expect(isTransportNoiseEvent({ exception: {} })).toBe(false)
+  })
+})
+
+describe('image load noise', () => {
+  const message =
+    'Could not get the image from given url: https://example.com/deleted.png'
+
+  it('drops the expected unavailable remote-image exception', () => {
+    expect(isImageLoadNoise(new Error(message))).toBe(true)
+    expect(
+      isImageLoadNoiseEvent({ exception: { values: [{ value: message }] } }),
+    ).toBe(true)
+    expect(isImageLoadNoiseEvent({ message })).toBe(true)
+  })
+
+  it('requires the exact library message and a non-empty URL', () => {
+    expect(isImageLoadNoise(new Error('Could not get the image'))).toBe(false)
+    expect(
+      isImageLoadNoise(new Error('Could not get the image from given url: ')),
+    ).toBe(false)
+    expect(
+      isImageLoadNoise(
+        new Error('Upload failed for https://example.com/deleted.png'),
+      ),
+    ).toBe(false)
   })
 })
