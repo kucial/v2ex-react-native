@@ -28,9 +28,9 @@ export default function ImagesGrid(props: ImagesGridProps) {
   const context = usePickerContext()
 
   const imageViewingProps = useMemo(() => {
-    const imageItems = imagesQuery.data
+    const imageItems = imagesQuery.data ?? []
     return {
-      images: imageItems?.map((item) => ({
+      images: imageItems.map((item) => ({
         uri: item.link,
       })),
       FooterComponent: ({ imageIndex }) => {
@@ -147,6 +147,7 @@ export default function ImagesGrid(props: ImagesGridProps) {
 
   return (
     <ScrollView
+      style={gridStyles.scrollView}
       refreshControl={
         <MyRefreshControl
           refreshing={imagesQuery.isRefetching}
@@ -169,6 +170,9 @@ export default function ImagesGrid(props: ImagesGridProps) {
 }
 
 const gridStyles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
   footerContainer: {
     flexDirection: 'row',
     width: '100%',
@@ -178,7 +182,7 @@ const gridStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   footerLeft: {
-    width: 80,
+    width: 96,
   },
   footerIndexWrap: {
     paddingHorizontal: 8,
@@ -217,11 +221,11 @@ const gridStyles = StyleSheet.create({
     borderColor: '#d4d4d4',
   },
   footerRight: {
-    width: 80,
+    width: 96,
   },
   closeBtn: {
     height: 52,
-    minWidth: 60,
+    width: '100%',
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',

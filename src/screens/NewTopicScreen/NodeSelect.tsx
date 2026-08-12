@@ -1,6 +1,7 @@
 import { ReactElement, useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
+  Keyboard,
   Pressable,
   StyleProp,
   StyleSheet,
@@ -29,13 +30,44 @@ type NodeSelectProps = {
   value?: string
 }
 function NodeSelect(props: NodeSelectProps) {
+  const { onChange, renderLabel } = props
   const nodesQuery = useQuery({
     queryKey: ['/api/nodes/all.json'],
     queryFn: getNodes,
   })
   const { theme, styles } = useTheme()
   const [filter, setFilter] = useState('')
+  const filterInputRef = useRef<TextInput>(null)
   const selectRef = useRef<TrueSheet>(null)
+
+  const filterHeader = useMemo(
+    () => (
+      <View style={nodeSelectStyles.headerWrap}>
+        <TextInput
+          ref={filterInputRef}
+          autoFocus={!props.value}
+          style={{
+            height: 36,
+            paddingHorizontal: 8,
+            borderRadius: 6,
+            backgroundColor: theme.colors.overlay_input_bg,
+            color: theme.colors.text,
+          }}
+          placeholderTextColor={theme.colors.text_placeholder}
+          placeholder={props.filterPlaceholder}
+          returnKeyType='search'
+          onChangeText={setFilter}
+        />
+      </View>
+    ),
+    [
+      props.filterPlaceholder,
+      props.value,
+      theme.colors.overlay_input_bg,
+      theme.colors.text,
+      theme.colors.text_placeholder,
+    ],
+  )
 
   const filtered = useMemo(() => {
     if (!nodesQuery.data) {
@@ -60,17 +92,19 @@ function NodeSelect(props: NodeSelectProps) {
             pressed && nodeSelectStyles.pressed,
           ]}
           onPress={() => {
-            props.onChange(item)
+            onChange(item)
+            filterInputRef.current?.blur()
+            Keyboard.dismiss()
             dismissSheet(selectRef.current)
           }}
         >
           <View style={[nodeSelectStyles.itemRow, styles.border_b_light]}>
-            {props.renderLabel(item)}
+            {renderLabel(item)}
           </View>
         </Pressable>
       )
     },
-    [props.renderLabel, styles.border_b_light],
+    [onChange, renderLabel, styles.border_b_light],
   )
 
   const selectedValue = nodesQuery.data?.data.find(
@@ -102,37 +136,19 @@ function NodeSelect(props: NodeSelectProps) {
         <TrueSheet
           ref={selectRef}
           scrollable
+          onDidDismiss={Keyboard.dismiss}
           backgroundColor={
             typeof styles.overlay.backgroundColor === 'string'
               ? styles.overlay.backgroundColor
               : '#000000'
           }
-          header={
-            <View style={nodeSelectStyles.headerWrap}>
-              <TextInput
-                autoFocus={!props.value}
-                style={{
-                  height: 36,
-                  paddingHorizontal: 8,
-                  borderRadius: 6,
-                  backgroundColor: theme.colors.overlay_input_bg,
-                  color: theme.colors.text,
-                }}
-                placeholderTextColor={theme.colors.text_placeholder}
-                placeholder={props.filterPlaceholder}
-                returnKeyType='search'
-                value={filter}
-                onChangeText={(text) => {
-                  setFilter(text)
-                }}
-              />
-            </View>
-          }
+          header={filterHeader}
         >
           <FlatList
             data={filtered}
             renderItem={renderItem}
             keyExtractor={(n) => `${n.id ?? n.name}`}
+            keyboardShouldPersistTaps='handled'
           />
         </TrueSheet>
       </Portal>

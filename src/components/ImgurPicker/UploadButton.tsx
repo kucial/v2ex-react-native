@@ -104,7 +104,7 @@ export default function UploadButton(props) {
       >
         <V2exIcon
           name='arrow-up-tray-outline'
-          size={22}
+          size={20}
           color={props.tintColor}
         />
       </Pressable>
@@ -115,17 +115,17 @@ export default function UploadButton(props) {
 const uploadStyles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 56,
-    right: 16,
+    bottom: 60,
+    right: 20,
   },
   button: {
     opacity: 0.7,
-    height: 56,
-    width: 56,
+    height: 48,
+    width: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 28,
+    borderRadius: 24,
   },
   pressed: {
     opacity: 0.5,

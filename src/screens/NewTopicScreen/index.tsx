@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native'
 import type { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller'
@@ -18,7 +19,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { debounce } from 'lodash'
 
 import Button from '@/components/Button'
-import KeyboardDismiss from '@/components/KeyboardDismiss'
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
 import NavigationHeader from '@/components/NavigationHeader'
 import {
@@ -43,6 +43,7 @@ const VISIBLE_BOTTOM_OFFSET = TOOLBAR_HEIGHT + KEYBOARD_GAP
 
 export default function NewTopicScreen() {
   const { theme, styles } = useTheme()
+  const { height: windowHeight } = useWindowDimensions()
   const { nodeName } = useLocalSearchParams<{ nodeName?: string }>()
   const router = useRouter()
 
@@ -203,13 +204,13 @@ export default function NewTopicScreen() {
         <View style={newTopicStyles.container}>
           <EditorProvider ref={editorRef}>
             <MaxWidthWrapper>
-              <KeyboardDismiss style={newTopicStyles.container}>
+              <View style={newTopicStyles.container}>
                 <KeyboardAwareScrollView
                   ref={scrollViewRef}
                   bottomOffset={VISIBLE_BOTTOM_OFFSET}
                   disableScrollOnKeyboardHide
                   extraKeyboardSpace={TOOLBAR_HEIGHT}
-                  keyboardDismissMode='interactive'
+                  keyboardDismissMode='none'
                   keyboardShouldPersistTaps='handled'
                   mode='insets'
                   scrollEventThrottle={16}
@@ -328,7 +329,7 @@ export default function NewTopicScreen() {
 
                   <View style={newTopicStyles.bottomSpacer} />
                 </KeyboardAwareScrollView>
-              </KeyboardDismiss>
+              </View>
               <KeyboardStickyView
                 style={newTopicStyles.toolbarSticky}
                 offset={{ closed: 0, opened: 0 }}
@@ -346,6 +347,7 @@ export default function NewTopicScreen() {
             <TrueSheet
               ref={pickerModalRef}
               detents={[0.9]}
+              scrollable
               onDidDismiss={() => {
                 showImagePicker(false)
                 editorRef.current?.focus()
@@ -354,6 +356,7 @@ export default function NewTopicScreen() {
               {imagePickerOpened && (
                 <EditorImagePicker
                   editor={editorRef.current}
+                  style={{ height: windowHeight * 0.9 }}
                   onConfigSettings={() => {
                     dismissSheet(pickerModalRef.current)
                     router.push({

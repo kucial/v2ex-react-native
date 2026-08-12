@@ -1,4 +1,4 @@
-import { Editor, Range, Transforms } from 'slate'
+import { Editor, Path, Range, Transforms } from 'slate'
 
 import { log } from './helper'
 import Image from './Image'
@@ -37,10 +37,26 @@ export const withImage = (editor) => {
   }
 
   editor.insertImage = (data) => {
+    const imageNode = {
+      type: BLOCK_TYPE_IMAGE,
+      data,
+      children: [{ text: '' }],
+    }
     const blockEntry = Editor.above(editor, {
       at: editor.selection,
       match: (n) => Editor.isBlock(editor, n),
     })
+
+    // Opening the native image picker blurs Slate. On iOS that can clear the
+    // DOM editor selection before the picker returns, so append the image when
+    // there is no longer a block to replace.
+    if (!blockEntry) {
+      Transforms.insertNodes(editor, imageNode, {
+        at: [editor.children.length],
+        select: true,
+      })
+      return
+    }
 
     if (Editor.isEmpty(editor, blockEntry[0])) {
       Transforms.setNodes(
@@ -54,18 +70,9 @@ export const withImage = (editor) => {
         },
       )
     } else {
-      Editor.withoutNormalizing(editor, () => {
-        editor.insertBreak()
-        Transforms.setNodes(
-          editor,
-          {
-            type: BLOCK_TYPE_IMAGE,
-            data,
-          },
-          {
-            at: blockEntry[1],
-          },
-        )
+      Transforms.insertNodes(editor, imageNode, {
+        at: Path.next(blockEntry[1]),
+        select: true,
       })
     }
   }

@@ -167,7 +167,6 @@ const imgurPickerStyles = StyleSheet.create({
   },
   mainContainer: {
     position: 'relative',
-    flex: 1,
     width: '100%',
   },
 })
