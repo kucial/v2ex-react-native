@@ -12,6 +12,7 @@ import * as Clipboard from 'expo-clipboard'
 import * as Crypto from 'expo-crypto'
 import * as Linking from 'expo-linking'
 import { useLocalSearchParams } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
 
 import GroupWapper from '@/components/GroupWrapper'
 import ImgurLogo from '@/components/ImgurLogo'
@@ -141,10 +142,17 @@ export default function ImgurSettings() {
                         由于 Imgur 服务的资源限制，您可能需要在 imgur 上{' '}
                         <Text
                           style={[imgurStyles.underline, styles.text_link]}
-                          onPress={() => {
-                            Linking.openURL(
-                              'https://api.imgur.com/oauth2/addclient',
-                            )
+                          onPress={async () => {
+                            try {
+                              await WebBrowser.openBrowserAsync(
+                                'https://api.imgur.com/oauth2/addclient',
+                              )
+                            } catch {
+                              alert.show({
+                                type: 'error',
+                                message: '无法打开 Imgur 应用创建页面。',
+                              })
+                            }
                           }}
                         >
                           创建应用
