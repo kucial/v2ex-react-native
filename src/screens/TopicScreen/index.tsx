@@ -56,6 +56,11 @@ import { TopicDetail, TopicReply } from '@/utils/v2ex-client/types'
 
 import BottomBar from './BottomBar'
 import PadSidebar from './PadSidebar'
+import {
+  mergeTopicReplies,
+  reconcileCachedReplies,
+  upsertCachedReply,
+} from './reply-cache'
 import ReplyRow from './ReplyRow'
 import { ScrollControlApi } from './ScrollControl'
 import ScrollToLastPosition from './ScrollToLastPosition'
@@ -188,10 +193,6 @@ function TopicScreen() {
     `my-topic-replies:${id}`,
     [],
   )
-  const myRepliesRef = useRef(myReplies)
-  useEffect(() => {
-    myRepliesRef.current = myReplies
-  }, [myReplies])
 
   const composeAuthedNavigation = useComposeAuthedNavigation()
   const currentUser = useCurrentUser()
@@ -209,17 +210,16 @@ function TopicScreen() {
     if (repliesQuery.isLoading && !repliesQuery.error) {
       return new Array(10)
     }
-    const items: TopicReply[] = [...myReplies]
+    const fetchedReplies: TopicReply[] = []
     if (repliesQuery.data?.pages) {
       for (const page of repliesQuery.data.pages) {
         if (page.data) {
-          items.push(...page.data)
+          fetchedReplies.push(...page.data)
         }
       }
     }
 
-    // FIX: sort into a new array instead of mutating in place
-    return [...items].sort((a, b) => a.num - b.num)
+    return mergeTopicReplies(fetchedReplies, myReplies)
   }, [
     repliesQuery.data?.pages,
     repliesQuery.isLoading,
@@ -227,37 +227,20 @@ function TopicScreen() {
     myReplies,
   ])
 
-  // cleanup replies
+  // Remove submitted replies from the persistent cache once the server returns
+  // those exact reply IDs. Render-time merging also deduplicates so the list
+  // never briefly renders duplicate keys before this effect runs.
   useEffect(() => {
-    const currentMyReplies = myRepliesRef.current
-    if (currentMyReplies.length && repliesQuery.data) {
-      for (let i = 0; i < currentMyReplies.length; i += 1) {
-        let loaded = false
-        const myReply = currentMyReplies[i]
-        const page = Math.ceil(myReply.num / 100)
-        const page_i = myReply.num % 100
-        if (
-          repliesQuery.data.pages[page - 1] &&
-          repliesQuery.data.pages[page - 1].data.length > page_i
-        ) {
-          loaded = true
-        }
-        if (loaded) {
-          setMyReplies((prev) => {
-            const index = prev.findIndex((item) => item.id === myReply.id)
-            if (index > -1) {
-              return [...prev.slice(0, index), ...prev.slice(index + 1)]
-            }
-            return prev
-          })
-        }
-      }
+    const pages = repliesQuery.data?.pages
+    if (!pages) {
+      return
     }
-    // FIX: Use repliesQuery.data?.pages, not repliesQuery.data.
-    // repliesQuery.data is a brand-new object reference on every background
-    // refetch/isFetching flip, causing this effect to run far too often and
-    // spam setMyReplies calls. data.pages only changes when a new page loads.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    const fetchedReplies = pages.flatMap((page) => page.data ?? [])
+    setMyReplies((prev) => {
+      const reconciled = reconcileCachedReplies(prev, fetchedReplies)
+      return reconciled.length === prev.length ? prev : reconciled
+    })
   }, [repliesQuery.data?.pages, setMyReplies])
 
   const handleToggleBlock = composeAuthedNavigation(
@@ -506,7 +489,7 @@ function TopicScreen() {
                 content: values.content,
               })
               if (reply) {
-                setMyReplies((prev) => [...prev, reply])
+                setMyReplies((prev) => upsertCachedReply(prev, reply))
               }
               const cacheKey = getReplyFormCacheKey(context)
               setJSON(cacheKey, undefined)
