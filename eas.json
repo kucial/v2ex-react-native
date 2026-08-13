@@ -5,6 +5,7 @@
   "build": {
     "development": {
       "channel": "development",
+      "environment": "development",
       "android": {
         "gradleCommand": ":app:assembleDebug"
       },
@@ -12,33 +13,9 @@
         "buildConfiguration": "Debug"
       }
     },
-    "staging": {
-      "channel": "staging",
-      "env": {
-        "CI": "true",
-        "IMGUR_CLIENT_ID": "eb2dd6d8927e275",
-        "SENTRY_ORG": "kucial",
-        "SENTRY_PROJECT": "v2ex-react-native",
-        "SENTRY_DSN": "https://cb3af3c00cb64d519c65468bfd661c7e@o4503925891334144.ingest.sentry.io/4503928221466624"
-      },
-      "ios": {
-        "distribution": "internal",
-        "credentialsSource": "local"
-      },
-      "android": {
-        "buildType": "apk"
-      }
-    },
     "production": {
       "channel": "production",
-      "env": {
-        "CI": "true",
-        "IMGUR_CLIENT_ID": "eb2dd6d8927e275",
-        "SENTRY_ORG": "kucial",
-        "SENTRY_PROJECT": "v2ex-react-native",
-        "SENTRY_DSN": "https://cb3af3c00cb64d519c65468bfd661c7e@o4503925891334144.ingest.sentry.io/4503928221466624",
-        "IOS_APP_ID": "1645766550"
-      }
+      "environment": "production"
     }
   },
   "submit": {

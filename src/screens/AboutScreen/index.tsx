@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
+  Alert as NativeAlert,
   Linking,
   Platform,
   Pressable,
@@ -24,24 +25,80 @@ import NavigationHeader from '@/components/NavigationHeader'
 import { useAlertService } from '@/containers/AlertService'
 import { useAppSettings } from '@/containers/AppSettingsService'
 import { useTheme } from '@/containers/ThemeService'
-import { IOS_APP_ID } from '@/env'
+import {
+  getSelectedUpdateChannel,
+  switchUpdateChannel,
+  UpdateChannel,
+} from '@/lib/update-channel'
 import { clearCache, reset } from '@/utils/app-state'
+
+const IOS_APP_ID = '1645766550'
 
 export default function AboutScreen() {
   const { theme, styles } = useTheme()
   const [count, setCount] = useState(0)
+  const [showUpdateChannel, setShowUpdateChannel] = useState(false)
+  const [updateChannel, setUpdateChannel] = useState(
+    getSelectedUpdateChannel,
+  )
+  const [switchingChannel, setSwitchingChannel] = useState(false)
   const settings = useAppSettings()
   const alert = useAlertService()
   const router = useRouter()
   useEffect(() => {
-    if (count === 3) {
+    if (count === 3 && !settings.data.googleSigninEnabled) {
       settings.update((prev) => ({
         ...prev,
         googleSigninEnabled: true,
       }))
       alert.show({ type: 'success', message: '😁 Google 登陆已启用' })
     }
-  }, [count, alert, settings])
+  }, [alert, count, settings.data.googleSigninEnabled, settings.update])
+
+  useEffect(() => {
+    if (count === 5) {
+      setShowUpdateChannel(true)
+      alert.show({ type: 'success', message: 'OTA 更新频道设置已启用' })
+    }
+  }, [alert, count])
+
+  const selectUpdateChannel = (channel: UpdateChannel) => {
+    if (channel === updateChannel || switchingChannel) return
+    setSwitchingChannel(true)
+    void switchUpdateChannel(channel)
+      .then(({ updateAvailable }) => {
+        setUpdateChannel(channel)
+        if (!updateAvailable) {
+          alert.show({
+            type: 'success',
+            message: `已切换到 ${channel}，暂无可用更新`,
+          })
+        }
+      })
+      .catch((error: unknown) => {
+        alert.show({
+          type: 'error',
+          message:
+            error instanceof Error ? error.message : '切换更新频道失败',
+        })
+      })
+      .finally(() => setSwitchingChannel(false))
+  }
+
+  const openUpdateChannelPicker = () => {
+    NativeAlert.alert(
+      'OTA 更新频道',
+      `当前选择：${updateChannel}\n切换后会检查兼容当前运行时的更新。`,
+      [
+        {
+          text: 'Production',
+          onPress: () => selectUpdateChannel('production'),
+        },
+        { text: 'Preview', onPress: () => selectUpdateChannel('preview') },
+        { text: '取消', style: 'cancel' },
+      ],
+    )
+  }
   return (
     <View style={aboutStyles.container}>
       <NavigationHeader canGoBack title='关于' />
@@ -111,7 +168,27 @@ export default function AboutScreen() {
               icon={<GithubIcon color={theme.colors.primary} />}
               title='Github'
             />
-            {Platform.OS === 'ios' && IOS_APP_ID && (
+            {showUpdateChannel ? (
+              <LineItem
+                style={styles.grouped_secondary}
+                disabled={switchingChannel}
+                onPress={openUpdateChannelPicker}
+                icon={
+                  <V2exIcon
+                    name='arrow-path-outline'
+                    size={22}
+                    color={theme.colors.primary}
+                  />
+                }
+                title='OTA 更新频道'
+                extra={
+                  <Text style={[styles.text_meta, styles.text_sm]}>
+                    {switchingChannel ? '检查中…' : updateChannel}
+                  </Text>
+                }
+              />
+            ) : null}
+            {Platform.OS === 'ios' && (
               <>
                 <LineItem
                   style={styles.grouped_secondary}
