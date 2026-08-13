@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Keyboard,
   Pressable,
@@ -113,7 +113,6 @@ export default function ChatView({
   const personaSheet = useRef<PersonaPickerSheetHandle>(null)
   const messages = selectedConversation.messages
   const isGenerating = activeRequest?.conversationId === selectedConversation.id
-  const lastMessage = messages[messages.length - 1]
 
   const scrollToLatest = useCallback((animated = true) => {
     if (scrollFrameRef.current !== null)
@@ -124,15 +123,15 @@ export default function ChatView({
     })
   }, [])
 
+  // Following the stream is FlashList's job: `autoscrollToBottomThreshold`
+  // keeps us pinned while the reply grows, and its offset correction absorbs
+  // the re-measures the native markdown view triggers. Scrolling from here on
+  // every chunk would fight both that and the keyboard's own scroll writes.
+  // Only the jump into a conversation is ours.
   useEffect(() => {
-    if (messages.length) scrollToLatest(lastMessage?.status !== 'streaming')
-  }, [
-    composerHeight,
-    lastMessage?.status,
-    lastMessage?.text,
-    messages.length,
-    scrollToLatest,
-  ])
+    if (messages.length) scrollToLatest(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedConversation.id])
 
   useEffect(
     () => () => {
@@ -178,6 +177,7 @@ export default function ChatView({
         return false
       }
       void sendMessage(text)
+      scrollToLatest()
       return true
     },
     [
@@ -185,6 +185,7 @@ export default function ChatView({
       onManageToken,
       personalTokenState,
       personalTokenValidity,
+      scrollToLatest,
       sendMessage,
     ],
   )
@@ -215,6 +216,17 @@ export default function ChatView({
   )
 
   const listWidth = Math.min(width, CONTENT_CONTAINER_MAX_WIDTH)
+  const contentContainerStyle = useMemo(
+    () => ({
+      paddingTop: insets.top + 72,
+      paddingHorizontal: Math.max(16, (width - listWidth) / 2 + 16),
+    }),
+    [insets.top, listWidth, width],
+  )
+  const emptyComponent = useMemo(
+    () => <EmptyMark composerHeight={composerHeight} />,
+    [composerHeight],
+  )
 
   return (
     <View style={[chatStyles.screen, { backgroundColor: colors.background }]}>
@@ -231,17 +243,19 @@ export default function ChatView({
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         getItemType={(item) => item.role}
-        maintainVisibleContentPosition={{ disabled: true }}
+        // Cells are absolutely positioned from measured sizes, so the anchor
+        // this enables is what absorbs a re-measure instead of letting it shove
+        // the visible rows around. It also pins us to the newest message while
+        // a reply streams in.
+        maintainVisibleContentPosition={{ autoscrollToBottomThreshold: 0.2 }}
         keyboardDismissMode='interactive'
         keyboardShouldPersistTaps='handled'
         showsVerticalScrollIndicator={false}
         renderScrollComponent={renderScrollComponent}
-        ListEmptyComponent={<EmptyMark composerHeight={composerHeight} />}
-        contentContainerStyle={{
-          paddingTop: insets.top + 72,
-          // paddingBottom: composerHeight + 12,
-          paddingHorizontal: Math.max(16, (width - listWidth) / 2 + 16),
-        }}
+        ListEmptyComponent={emptyComponent}
+        // The gap under the last message is owned by the scroll view's content
+        // inset (`extraContentPadding`), not by padding here.
+        contentContainerStyle={contentContainerStyle}
       />
 
       <View

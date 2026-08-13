@@ -4,9 +4,8 @@ import {
   KeyboardChatScrollView,
   KeyboardChatScrollViewProps,
 } from 'react-native-keyboard-controller'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import { KEYBOARD_COMPOSER_GAP } from './Composer'
+import { useComposerKeyboardOffset } from './Composer'
 
 export type ChatScrollViewHandle = ElementRef<typeof KeyboardChatScrollView>
 
@@ -17,7 +16,7 @@ type Props = ScrollViewProps &
 
 export default forwardRef<ChatScrollViewHandle, Props>(
   function VirtualizedChatScrollView({ chatScrollViewRef, ...props }, ref) {
-    const { bottom } = useSafeAreaInsets()
+    const keyboardOffset = useComposerKeyboardOffset()
     const combinedRef: RefCallback<ChatScrollViewHandle> = useCallback(
       (instance) => {
         if (typeof ref === 'function') ref(instance)
@@ -35,7 +34,7 @@ export default forwardRef<ChatScrollViewHandle, Props>(
         contentInsetAdjustmentBehavior='never'
         keyboardDismissMode='interactive'
         keyboardLiftBehavior='whenAtEnd'
-        offset={bottom - KEYBOARD_COMPOSER_GAP}
+        offset={keyboardOffset}
       />
     )
   },

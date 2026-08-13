@@ -19,7 +19,22 @@ import GlassSurface from './GlassSurface'
 import { pressFeedbackStyles } from './pressFeedback'
 import { AIChatColors, useAIChatTheme } from './theme'
 
-export const KEYBOARD_COMPOSER_GAP = 8
+/**
+ * Distance between the bottom of the window and the bottom of the chat surface
+ * — the tab bar on phones, the safe area on a pad. The composer subtracts it
+ * from the keyboard height when it lifts, and the message list has to use the
+ * exact same number for `KeyboardChatScrollView`'s `offset`, or the two lift by
+ * different amounts and the layout jumps every time the keyboard opens.
+ */
+export function useComposerKeyboardOffset() {
+  const { width, height: windowHeight } = useWindowDimensions()
+  const insets = useSafeAreaInsets()
+  const tabBarHeight = useBottomTabBarHeight()
+  const isPadPortrait = isPad && width <= windowHeight
+
+  if (!isPad) return tabBarHeight
+  return isPadPortrait ? 80 : insets.bottom - 8
+}
 
 type Props = {
   isGenerating: boolean
@@ -40,9 +55,8 @@ export default function Composer({
   const canSend = value.trim().length > 0
   const { width, height: windowHeight } = useWindowDimensions()
   const insets = useSafeAreaInsets()
-  const tabBarHeight = useBottomTabBarHeight()
+  const keyboardOffset = useComposerKeyboardOffset()
   const isPadLandscape = isPad && width > windowHeight
-  const isPadPortrait = isPad && width <= windowHeight
 
   const submit = useCallback(async () => {
     if (!canSend || isGenerating) return
@@ -54,9 +68,7 @@ export default function Composer({
 
   return (
     <KeyboardStickyView
-      offset={{
-        opened: isPad ? (isPadPortrait ? 80 : insets.bottom - 8) : tabBarHeight,
-      }}
+      offset={{ opened: keyboardOffset }}
       style={styles.sticky}
     >
       <View
