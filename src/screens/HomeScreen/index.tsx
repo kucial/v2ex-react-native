@@ -239,6 +239,7 @@ export default function HomeScreen() {
           style={[
             homeStyles.tabBarRow,
             { backgroundColor: theme.colors.bg_layer1 },
+            styles.border_b_light,
           ]}
         >
           <TabBar
@@ -398,6 +399,8 @@ const homeStyles = StyleSheet.create({
   },
   tabBar: {
     flex: 1,
+    elevation: 0,
+    shadowOpacity: 0,
   },
   tabSettingsBtn: {
     width: TAB_SETTINGS_BUTTON_WIDTH,
