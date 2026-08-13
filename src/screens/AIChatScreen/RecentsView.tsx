@@ -6,7 +6,6 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -19,7 +18,6 @@ import RenameConversationSheet, {
 import { useAIChatTheme } from '@/components/AIChat/theme'
 import V2exIcon from '@/components/icons/V2exIcon'
 
-import { CONTENT_CONTAINER_MAX_WIDTH } from '@/constants'
 import { PersonalTokenValidity, useAIChat } from '@/containers/AIChatService'
 import { AIChatConversation } from '@/types/ai-chat'
 
@@ -70,14 +68,15 @@ function tokenRowState({
 }
 
 export default function RecentsView({
-  onOpenChat,
+  menuWidth,
+  onCloseMenu,
   onManageToken,
 }: {
-  onOpenChat: () => void
+  menuWidth: number
+  onCloseMenu: () => void
   onManageToken: (reason?: string) => void
 }) {
   const insets = useSafeAreaInsets()
-  const { width } = useWindowDimensions()
   const { colors } = useAIChatTheme()
   const renameSheet = useRef<RenameConversationSheetHandle>(null)
   const {
@@ -101,9 +100,9 @@ export default function RecentsView({
   const openConversation = useCallback(
     (id: string) => {
       selectConversation(id)
-      onOpenChat()
+      onCloseMenu()
     },
-    [onOpenChat, selectConversation],
+    [onCloseMenu, selectConversation],
   )
 
   const confirmDelete = useCallback(
@@ -153,8 +152,6 @@ export default function RecentsView({
     [confirmDelete],
   )
 
-  const maxWidth = Math.min(width, CONTENT_CONTAINER_MAX_WIDTH)
-
   return (
     <View
       style={[
@@ -162,7 +159,7 @@ export default function RecentsView({
         { paddingTop: insets.top, backgroundColor: colors.recentsBackground },
       ]}
     >
-      <View style={[recentsStyles.header, { width: maxWidth }]}>
+      <View style={[recentsStyles.header, { width: menuWidth }]}>
         <View>
           <Text style={[recentsStyles.eyebrow, { color: colors.tertiaryText }]}>
             V2EX AI
@@ -176,7 +173,7 @@ export default function RecentsView({
           accessibilityRole='button'
           onPress={() => {
             startNewConversation()
-            onOpenChat()
+            onCloseMenu()
           }}
           style={({ pressed }) => [
             recentsStyles.headerButton,
@@ -192,15 +189,21 @@ export default function RecentsView({
         </Pressable>
       </View>
 
-      <FlashList
-        data={conversations}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingHorizontal: Math.max(12, (width - maxWidth) / 2 + 12),
-          paddingBottom: 30,
-        }}
-        renderItem={({ item, index }) => {
+      <View
+        style={[
+          recentsStyles.list,
+          { top: insets.top + 82, bottom: insets.bottom + 72 },
+        ]}
+      >
+        <FlashList
+          data={conversations}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 12,
+            paddingBottom: 30,
+          }}
+          renderItem={({ item, index }) => {
           const previous = conversations[index - 1]
           const label = sectionLabel(item.updatedAt)
           const showSection =
@@ -269,20 +272,21 @@ export default function RecentsView({
               </Pressable>
             </View>
           )
-        }}
-      />
+          }}
+        />
+      </View>
 
       <View
         style={[
           recentsStyles.footer,
           {
-            width: maxWidth,
-            paddingBottom: 8,
+            width: menuWidth,
+            bottom: Math.max(insets.bottom, 8),
           },
         ]}
       >
         <Text style={[recentsStyles.hint, { color: colors.mutedText }]}>
-          向左滑动返回聊天
+          选择对话，或向左滑动关闭
         </Text>
         <Pressable
           accessibilityLabel={tokenRow.label}
@@ -327,6 +331,7 @@ export default function RecentsView({
 
 const recentsStyles = StyleSheet.create({
   screen: { flex: 1 },
+  list: { position: 'absolute', left: 0, right: 0 },
   header: {
     height: 82,
     paddingHorizontal: 20,
@@ -362,6 +367,7 @@ const recentsStyles = StyleSheet.create({
   rowTitle: { fontSize: 15.5, fontWeight: '600' },
   preview: { fontSize: 13 },
   footer: {
+    position: 'absolute',
     alignSelf: 'center',
     paddingHorizontal: 12,
     paddingTop: 10,
