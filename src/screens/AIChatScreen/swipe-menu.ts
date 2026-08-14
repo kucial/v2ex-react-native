@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Keyboard } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
 import {
   Extrapolation,
@@ -9,6 +10,8 @@ import {
   withSpring,
 } from 'react-native-reanimated'
 
+import { shouldOpenSwipeMenu } from './swipe-menu-threshold'
+
 const SWIPE_SPRING = {
   damping: 26,
   mass: 0.8,
@@ -16,27 +19,12 @@ const SWIPE_SPRING = {
   stiffness: 220,
 }
 
-type SwipeEndState = {
-  currentPosition: number
-  menuWidth: number
-  translationX: number
-  velocityX: number
-}
-
-export function shouldOpenSwipeMenu({
-  currentPosition,
-  menuWidth,
-  translationX,
-  velocityX,
-}: SwipeEndState) {
-  'worklet'
-
-  if (Math.abs(translationX) > 12 || Math.abs(velocityX) > 160) {
-    return translationX + velocityX * 0.05 > 0
-  }
-
-  return currentPosition > menuWidth * 0.18
-}
+// The pan lives on the whole screen rather than an edge strip, so it has to
+// share the touch with the vertical lists under it: it only claims the finger
+// after this much horizontal travel, and drops out entirely once the finger has
+// drifted vertically first.
+const ACTIVATION_OFFSET_X = 14
+const FAIL_OFFSET_Y = 18
 
 function clamp(value: number, minimum: number, maximum: number) {
   'worklet'
@@ -63,14 +51,26 @@ export function useSwipeMenu(menuWidth: number) {
     previousMenuWidth.current = menuWidth
   }, [isMenuOpen, menuWidth, translateX])
 
-  const gestures = useMemo(() => {
-    const makeGesture = (enabled: boolean) =>
+  // `Keyboard.dismiss` is a bound method on a native module instance, which
+  // worklets cannot capture — hand `runOnJS` a plain function instead.
+  const dismissKeyboard = useCallback(() => {
+    Keyboard.dismiss()
+  }, [])
+
+  const panGesture = useMemo(
+    () =>
       Gesture.Pan()
-        .enabled(enabled)
-        .activeOffsetX([-8, 8])
-        .failOffsetY([-18, 18])
+        // Closed, only a rightward drag has anywhere to go; open, only a
+        // leftward one does. A drag the other way is left to the content.
+        .activeOffsetX(isMenuOpen ? -ACTIVATION_OFFSET_X : ACTIVATION_OFFSET_X)
+        .failOffsetY([-FAIL_OFFSET_Y, FAIL_OFFSET_Y])
         .onBegin(() => {
           gestureStartX.value = translateX.value
+        })
+        .onStart(() => {
+          // The menu would otherwise slide in over a raised keyboard; drop it
+          // as soon as the drag is real, not once the finger lifts.
+          runOnJS(dismissKeyboard)()
         })
         .onUpdate((event) => {
           translateX.value = clamp(
@@ -83,18 +83,13 @@ export function useSwipeMenu(menuWidth: number) {
           const open = shouldOpenSwipeMenu({
             currentPosition: translateX.value,
             menuWidth,
-            translationX: event.translationX,
             velocityX: event.velocityX,
           })
           translateX.value = withSpring(open ? menuWidth : 0, SWIPE_SPRING)
           runOnJS(setIsMenuOpen)(open)
-        })
-
-    return {
-      closeGesture: makeGesture(isMenuOpen),
-      openGesture: makeGesture(!isMenuOpen),
-    }
-  }, [gestureStartX, isMenuOpen, menuWidth, translateX])
+        }),
+    [dismissKeyboard, gestureStartX, isMenuOpen, menuWidth, translateX],
+  )
 
   const surfaceAnimatedStyle = useAnimatedStyle(() => {
     const progress = menuWidth ? translateX.value / menuWidth : 0
@@ -107,10 +102,20 @@ export function useSwipeMenu(menuWidth: number) {
   const menuAnimatedStyle = useAnimatedStyle(() => {
     const progress = menuWidth ? translateX.value / menuWidth : 0
     return {
-      opacity: interpolate(progress, [0, 0.08, 0.5], [0, 0, 1], Extrapolation.CLAMP),
+      opacity: interpolate(
+        progress,
+        [0, 0.08, 0.5],
+        [0, 0, 1],
+        Extrapolation.CLAMP,
+      ),
       transform: [
         {
-          translateY: interpolate(progress, [0, 1], [8, 0], Extrapolation.CLAMP),
+          translateY: interpolate(
+            progress,
+            [0, 1],
+            [8, 0],
+            Extrapolation.CLAMP,
+          ),
         },
         {
           scale: interpolate(progress, [0, 1], [0.975, 1], Extrapolation.CLAMP),
@@ -120,11 +125,10 @@ export function useSwipeMenu(menuWidth: number) {
   })
 
   return {
-    closeGesture: gestures.closeGesture,
     isMenuOpen,
     menuAnimatedStyle,
+    panGesture,
     setMenuOpen,
     surfaceAnimatedStyle,
-    openGesture: gestures.openGesture,
   }
 }

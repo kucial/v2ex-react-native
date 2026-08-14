@@ -25,18 +25,16 @@ import { useSwipeMenu } from './swipe-menu'
 
 const MENU_WIDTH_RATIO = 0.78
 const MAX_MENU_WIDTH = 400
-const EDGE_GESTURE_WIDTH = 24
 
 function AIChatSwipeMenu() {
   const { width } = useWindowDimensions()
   const menuWidth = Math.min(width * MENU_WIDTH_RATIO, MAX_MENU_WIDTH)
   const {
-    closeGesture,
     isMenuOpen,
     menuAnimatedStyle,
+    panGesture,
     setMenuOpen,
     surfaceAnimatedStyle,
-    openGesture,
   } = useSwipeMenu(menuWidth)
   const {
     hydrated,
@@ -54,10 +52,13 @@ function AIChatSwipeMenu() {
 
   useEffect(() => {
     if (Platform.OS !== 'android' || !isMenuOpen) return
-    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      closeMenu()
-      return true
-    })
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        closeMenu()
+        return true
+      },
+    )
     return () => subscription.remove()
   }, [closeMenu, isMenuOpen])
 
@@ -81,28 +82,30 @@ function AIChatSwipeMenu() {
 
   return (
     <>
-      <View
-        style={[
-          screenStyles.root,
-          { backgroundColor: colors.recentsBackground },
-        ]}
-      >
-        <Animated.View
-          accessibilityElementsHidden={!isMenuOpen}
-          importantForAccessibility={
-            isMenuOpen ? 'auto' : 'no-hide-descendants'
-          }
-          pointerEvents={isMenuOpen ? 'auto' : 'none'}
-          style={[screenStyles.menu, { width: menuWidth }, menuAnimatedStyle]}
+      {/* One pan for the whole screen: the menu and the surface both sit inside
+          it, so the drawer follows the finger wherever the drag starts. */}
+      <GestureDetector gesture={panGesture}>
+        <View
+          style={[
+            screenStyles.root,
+            { backgroundColor: colors.recentsBackground },
+          ]}
         >
-          <RecentsView
-            menuWidth={menuWidth}
-            onCloseMenu={closeMenu}
-            onManageToken={manageToken}
-          />
-        </Animated.View>
+          <Animated.View
+            accessibilityElementsHidden={!isMenuOpen}
+            importantForAccessibility={
+              isMenuOpen ? 'auto' : 'no-hide-descendants'
+            }
+            pointerEvents={isMenuOpen ? 'auto' : 'none'}
+            style={[screenStyles.menu, { width: menuWidth }, menuAnimatedStyle]}
+          >
+            <RecentsView
+              menuWidth={menuWidth}
+              onCloseMenu={closeMenu}
+              onManageToken={manageToken}
+            />
+          </Animated.View>
 
-        <GestureDetector gesture={closeGesture}>
           <Animated.View
             accessibilityElementsHidden={isMenuOpen}
             importantForAccessibility={
@@ -127,14 +130,8 @@ function AIChatSwipeMenu() {
               />
             ) : null}
           </Animated.View>
-        </GestureDetector>
-
-        {!isMenuOpen ? (
-          <GestureDetector gesture={openGesture}>
-            <View style={screenStyles.edgeGesture} />
-          </GestureDetector>
-        ) : null}
-      </View>
+        </View>
+      </GestureDetector>
       <TokenInputSheet
         ref={tokenSheet}
         source={personalTokenSource}
@@ -165,14 +162,6 @@ const screenStyles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 18,
     elevation: 12,
-  },
-  edgeGesture: {
-    position: 'absolute',
-    zIndex: 3,
-    top: 0,
-    bottom: 0,
-    left: 0,
-    width: EDGE_GESTURE_WIDTH,
   },
   loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 })

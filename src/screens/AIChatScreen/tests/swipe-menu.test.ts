@@ -1,42 +1,39 @@
-import { shouldOpenSwipeMenu } from '../swipe-menu'
+import { shouldOpenSwipeMenu } from '../swipe-menu-threshold'
 
 const base = {
   currentPosition: 0,
   menuWidth: 320,
-  translationX: 0,
   velocityX: 0,
 }
 
 describe('shouldOpenSwipeMenu', () => {
-  it('opens after crossing the resting position threshold', () => {
+  it('settles by the release position, not the drag direction', () => {
+    // Dragged most of the way open and let go: it stays open even though the
+    // finger had already started coming back.
     expect(
-      shouldOpenSwipeMenu({ ...base, currentPosition: 60 }),
+      shouldOpenSwipeMenu({ ...base, currentPosition: 200, velocityX: -80 }),
     ).toBe(true)
+    // A short pull that never reached halfway falls back closed.
+    expect(shouldOpenSwipeMenu({ ...base, currentPosition: 120 })).toBe(false)
+    expect(shouldOpenSwipeMenu({ ...base, currentPosition: 200 })).toBe(true)
   })
 
-  it('uses drag direction when the gesture has clear intent', () => {
+  it('counts leftover momentum as extra travel', () => {
+    // 145px is short of the 160px midpoint, but still moving right at 400px/s.
     expect(
-      shouldOpenSwipeMenu({
-        ...base,
-        currentPosition: 300,
-        translationX: -20,
-      }),
+      shouldOpenSwipeMenu({ ...base, currentPosition: 145, velocityX: 400 }),
+    ).toBe(true)
+    expect(
+      shouldOpenSwipeMenu({ ...base, currentPosition: 175, velocityX: -400 }),
     ).toBe(false)
-    expect(
-      shouldOpenSwipeMenu({ ...base, translationX: 20 }),
-    ).toBe(true)
   })
 
-  it('uses velocity to finish a short flick', () => {
+  it('lets a decisive flick win from anywhere', () => {
     expect(
-      shouldOpenSwipeMenu({ ...base, velocityX: 200 }),
+      shouldOpenSwipeMenu({ ...base, currentPosition: 30, velocityX: 900 }),
     ).toBe(true)
     expect(
-      shouldOpenSwipeMenu({
-        ...base,
-        currentPosition: 300,
-        velocityX: -200,
-      }),
+      shouldOpenSwipeMenu({ ...base, currentPosition: 300, velocityX: -900 }),
     ).toBe(false)
   })
 })
