@@ -1,5 +1,7 @@
 import { View } from 'react-native'
+import Color from 'color'
 import { Tabs } from 'expo-router'
+import { PlatformPressable } from 'expo-router/react-navigation'
 // SDK 56: expo-router no longer allows importing @react-navigation/bottom-tabs
 // directly; use its vendored re-export instead.
 import { BottomTabBar } from 'expo-router/tabs'
@@ -23,6 +25,12 @@ export default function TabsLayout() {
         header: (props) => <MainScreenHeader {...props} />,
         tabBarInactiveTintColor: theme.colors.text_meta,
         tabBarStyle: padLayout.active ? { display: 'none' } : styles.overlay,
+        tabBarButton: (props) => (
+          <PlatformPressable
+            {...props}
+            pressColor={Color(theme.colors.text).alpha(0.08).toString()}
+          />
+        ),
       }}
       tabBar={(props) => (
         <View>
